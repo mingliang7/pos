@@ -1,7 +1,8 @@
 import {Mongo} from 'meteor/mongo';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {AutoForm} from 'meteor/aldeed:autoform';
-
+import {Units} from './units.js';
+import {Meteor} from 'meteor/meteor';
 // Lib
 import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 
@@ -34,6 +35,70 @@ Item.schema = new SimpleSchema({
                 accept: 'image/*'
             }
         }
+    },
+    barcode: {
+        type: String
+    },
+    unitId: {
+        type: String,
+        autoform: {
+          type: 'universe-select',
+          options(){
+            let list = [{label: '(Select One)', value: ''}];
+            try {
+              Meteor.subscribe('pos.unit');
+            } catch (e) {
+
+            }
+            let units = Units.find() || 0;
+            if(units.count() > 0){
+              units.forEach((unit)=>{
+                list.push({label: `${unit._id}: ${unit.name}`, value: unit._id})
+              })
+            }
+            return list;
+          }
+        }
+    },
+    sellingUnit: {
+        type: [Object]
+    },
+    'sellingUnit.$.unitId': {
+        type: String,
+        autoform: {
+          type: 'universe-select',
+          options(){
+            let list = [{label: '(Select One)', value: ''}];
+            try {
+              Meteor.subscribe('pos.unit');
+            } catch (e) {
+
+            }
+            let units = Units.find() || 0;
+            if(units.count() > 0){
+              units.forEach((unit)=>{
+                list.push({label: `${unit._id}: ${unit.name}`, value: unit._id})
+              })
+            }
+            return list;
+          }
+        }
+    },
+    'sellingUnit.$.converter':{
+      type: Number,
+      decimal: true
+    },
+    categoryId: {
+        type: String
+    },
+    itemType: {
+        type: String,
+    },
+    status: {
+        type: String,
+    },
+    accountId: {
+        type: String
     }
 });
 

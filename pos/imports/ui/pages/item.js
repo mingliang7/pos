@@ -21,12 +21,13 @@ import '../../../../core/client/components/form-footer.js';
 
 // Collection
 import {Item} from '../../api/collections/item.js';
-
+import {Units} from '../../api/collections/units.js'
 // Tabular
 import {ItemTabular} from '../../../common/tabulars/item.js';
 
 // Page
 import './item.html';
+import './unit.js'
 
 // Declare template
 let indexTmpl = Template.Pos_item,
@@ -39,7 +40,8 @@ let indexTmpl = Template.Pos_item,
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    createNewAlertify('item');
+    createNewAlertify('item', {size: 'lg'});
+    createNewAlertify('addOn');
 });
 
 indexTmpl.helpers({
@@ -73,6 +75,11 @@ newTmpl.helpers({
         return Item;
     }
 });
+newTmpl.events({
+  'click [name="unitId"]'(event, instance){
+      alertify.addOn(fa('plus', 'Add Unit'), renderTemplate(Template.Pos_unitNew));
+  }
+})
 
 // Edit
 editTmpl.onCreated(function () {
