@@ -52,6 +52,10 @@ indexTmpl.onCreated(function () {
     });
 });
 
+indexTmpl.onDestroyed(()=>{
+  ReactiveTable.clearFilters(['pos.customerByBranchFilter']);
+})
+
 indexTmpl.helpers({
     tabularTable(){
         return CustomerTabular;

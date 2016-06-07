@@ -106,3 +106,17 @@ PosRoutes.route('/unit', {
     }
 
 });
+
+import '../imports/ui/pages/term.js'
+PosRoutes.route('/term', {
+  name: 'pos.term',
+  title: 'term',
+  action: function(params, queryParams){
+    Layout.main('Pos_term');
+  },
+  breadcrumb: {
+    title: 'term',
+    icon: 'cart-plus',
+    parent: 'pos.home'
+  }
+})

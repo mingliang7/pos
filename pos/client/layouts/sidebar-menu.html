@@ -37,21 +37,34 @@
 
     <!--Settings-->
     {{#if isInRole 'setting' 'Pos'}}
-        <li class="header"><i class="fa fa-cogs"></i> SETTING</li>
-        <li class="{{isActiveRoute name='core.exchange'}}">
-            <a href="{{pathFor 'core.exchange'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "core.sidebarMenu.exchange"}}</span>
-            </a>
-        </li>
-        <li class="{{isActiveRoute name='pos.item'}}">
-            <a href="{{pathFor 'pos.item'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.item"}}</span>
-            </a>
-        </li>
-        <li class="{{isActiveRoute name='pos.unit'}}">
-            <a href="{{pathFor 'pos.unit'}}">
-                <i class="fa fa-circle-o"></i> <span>Unit</span>
-            </a>
-        </li>
+    <li class="treeview">
+          <a href="#">
+            <i class="fa fa-cogs"></i>
+            <span>SETTING</span>
+            <i class="fa fa-angle-left pull-right"></i>
+          </a>
+          <ul class="treeview-menu" style="display: none;">
+            <li class="{{isActiveRoute name='core.exchange'}}">
+                <a href="{{pathFor 'core.exchange'}}">
+                    <i class="fa fa-circle-o"></i> <span>{{_ "core.sidebarMenu.exchange"}}</span>
+                </a>
+            </li>
+            <li class="{{isActiveRoute name='pos.item'}}">
+                <a href="{{pathFor 'pos.item'}}">
+                    <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.item"}}</span>
+                </a>
+            </li>
+            <li class="{{isActiveRoute name='pos.unit'}}">
+                <a href="{{pathFor 'pos.unit'}}">
+                    <i class="fa fa-circle-o"></i> <span>Unit</span>
+                </a>
+            </li>
+            <li class="{{isActiveRoute name='pos.term'}}">
+                <a href="{{pathFor 'pos.term'}}">
+                    <i class="fa fa-circle-o"></i> <span>Term</span>
+                </a>
+            </li>
+          </ul>
+      </li>
     {{/if}}
 </template>
