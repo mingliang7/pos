@@ -1,0 +1,57 @@
+<template name="Pos_sidebarMenu">
+    <li class="{{isActiveRoute name='pos.home'}}">
+        <a href="{{pathFor 'pos.home'}}">
+            <i class="fa fa-home"></i> <span>{{_ "pos.sidebarMenu.home"}}</span>
+        </a>
+    </li>
+
+    <!--Data-->
+    {{#if isInRole 'data-insert,data-update,data-remove' 'Pos'}}
+        <li class="header"><i class="fa fa-database"></i> DATA</li>
+        <li class="{{isActiveRoute name='pos.customer'}}">
+            <a href="{{pathFor 'pos.customer'}}">
+                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.customer"}}</span>
+            </a>
+        </li>
+        <li class="{{isActiveRoute name='pos.order'}}">
+            <a href="{{pathFor 'pos.order'}}">
+                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.order"}}</span>
+            </a>
+        </li>
+    {{/if}}
+
+    <!--Report-->
+    {{#if isInRole 'reporter' 'Pos'}}
+        <li class="header"><i class="fa fa-file-o"></i> REPORT</li>
+        <li class="{{isActiveRoute name='pos.customerReport'}}">
+            <a href="{{pathFor 'pos.customerReport'}}">
+                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.customer"}}</span>
+            </a>
+        </li>
+        <li class="{{isActiveRoute name='pos.orderReport'}}">
+            <a href="{{pathFor 'pos.orderReport'}}">
+                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.order"}}</span>
+            </a>
+        </li>
+    {{/if}}
+
+    <!--Settings-->
+    {{#if isInRole 'setting' 'Pos'}}
+        <li class="header"><i class="fa fa-cogs"></i> SETTING</li>
+        <li class="{{isActiveRoute name='core.exchange'}}">
+            <a href="{{pathFor 'core.exchange'}}">
+                <i class="fa fa-circle-o"></i> <span>{{_ "core.sidebarMenu.exchange"}}</span>
+            </a>
+        </li>
+        <li class="{{isActiveRoute name='pos.item'}}">
+            <a href="{{pathFor 'pos.item'}}">
+                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.item"}}</span>
+            </a>
+        </li>
+        <li class="{{isActiveRoute name='pos.unit'}}">
+            <a href="{{pathFor 'pos.unit'}}">
+                <i class="fa fa-circle-o"></i> <span>Unit</span>
+            </a>
+        </li>
+    {{/if}}
+</template>
