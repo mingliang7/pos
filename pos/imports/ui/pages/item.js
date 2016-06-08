@@ -52,7 +52,7 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        alertify.item(fa('plus', TAPi18n.__('pos.item.title')), renderTemplate(newTmpl));
+        alertify.item(fa('plus', TAPi18n.__('pos.item.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
         alertify.item(fa('pencil', TAPi18n.__('pos.item.title')), renderTemplate(editTmpl, this));
@@ -78,7 +78,22 @@ newTmpl.helpers({
 newTmpl.events({
   'click [name="unitId"]'(event, instance){
       alertify.addOn(fa('plus', 'Add Unit'), renderTemplate(Template.Pos_unitNew));
+  },
+  'change .toggle-scheme'(event, instance){
+    if($(event.currentTarget).prop('checked')){
+      $('.scheme').removeClass('hidden')
+    }else{
+      $('.scheme').addClass('hidden');
+    }
+  },
+  'change .toggle-selling-unit'(event, instance){
+    if($(event.currentTarget).prop('checked')){
+      $('.selling-unit').removeClass('hidden')
+    }else{
+      $('.selling-unit').addClass('hidden');
+    }
   }
+
 })
 
 // Edit

@@ -30,7 +30,10 @@
 
         </div>
         <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-selling-unit"><span  class="label label-primary"> Add Selling-Unit </span></label></div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 selling-unit hidden">
             {{> afArrayField name="sellingUnit" id="sellingUnit" template="customArrayFieldSellingUnit" subtemplate="customObjectFieldSellingUnit"}}
           </div>
         </div>
@@ -39,6 +42,15 @@
           </div>
           <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
           <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
+          <div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-scheme"><span  class="label label-primary"> Add Scheme </span></label></div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 scheme hidden">
+            {{> afArrayField name="scheme" id="scheme" template="customArrayFieldScheme" subtemplate="customObjectFieldScheme"}}
+          </div>
         </div>
         <div class="row">
           <div class="col-md-3">{{> afQuickField name='price'}}
@@ -181,6 +193,82 @@
         </div>
         <div class="col-sm-5">
             <label>Converter:</label>
+        </div>
+
+    </div>
+</template>
+
+<!--  Custom Scheme -->
+
+<template name="afArrayField_customArrayFieldScheme">
+    <div class="panel panel-default">
+        <div class="panel-heading">{{fa "fa fa-shopping-cart"}} {{afFieldLabelText name=this.atts.name}}</div>
+        <div class="panel-body">
+
+            {{#if afFieldIsInvalid name=this.atts.name}}
+                <div class="has-error">
+                    <span class="help-block">{{{afFieldMessage name=this.atts.name}}}</span>
+                </div>
+            {{/if}}
+            {{> schemeHeader}}
+            {{#afEachArrayItem name=this.atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+                <div class="row array-item">
+
+                    {{> UI.dynamic template=../atts.subtemplate}}
+
+                    <div class="col-sm-1">
+                        {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount maxCount=../atts.maxCount}}
+                            <button type="button" class="btn btn-sm btn-danger autoform-remove-item btnRemove">
+                                <span class="glyphicon glyphicon-minus"></span>
+                            </button>
+                        {{/if}}
+                    </div>
+                </div>
+            {{/afEachArrayItem}}
+
+            {{#if afArrayFieldHasLessThanMaximum name=this.atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+                <div class="row">
+                    <div class="col-sm-11"></div>
+                    <!--Add more-->
+                    <div class="col-sm-1">
+                        <button type="button" class="btn btn-primary autoform-add-item btn-sm btnAdd"
+                                data-autoform-field="{{this.atts.name}}" data-autoform-minCount="{{this.atts.minCount}}"
+                                data-autoform-maxCount="{{this.atts.maxCount}}">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                    </div>
+                </div>
+
+            {{/if}}
+
+        </div>
+    </div>
+</template>
+
+<!--Custom object field-->
+<template name="customObjectFieldScheme">
+    <div class="col-sm-4">
+        {{> afQuickField name=current.itemId template="bootstrap3" label=false class="input-sm item" id="ice-item"}}
+    </div>
+    <div class="col-sm-3">
+      {{> afQuickField name=current.quantity template="bootstrap3" label=false class="input-sm item" id="ice-item"}}
+    </div>
+    <div class="col-sm-4">
+        {{> afQuickField name=current.price template="bootstrap3" label=false class="input-sm price"}}
+    </div>
+</template>
+
+<template name="schemeHeader">
+    <div class="row">
+        <div class="col-sm-4">
+            <label>Item:</label>
+
+        </div>
+        <div class="col-sm-3">
+          <label>Quantity:</label>
+        </div>
+        <div class="col-sm-4">
+            <label>Price:</label>
         </div>
 
     </div>

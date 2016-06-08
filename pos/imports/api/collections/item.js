@@ -43,7 +43,13 @@ Item.schema = new SimpleSchema({
     unitId: {
         type: String,
         autoform: {
-          type: 'select',
+          type: 'universe-select',
+          afFieldInput: {
+              label: {
+                class: 'label label-success'
+              },
+              uniPlaceholder: 'Select One',
+          },
           options(){
             let list = [];
             try {
@@ -67,14 +73,12 @@ Item.schema = new SimpleSchema({
     'sellingUnit.$.unitId': {
         type: String,
         autoform: {
-          type: 'select',
+          type: 'universe-select',
+          afFieldInput: {
+              uniPlaceholder: 'Select One',
+          },
           options(){
             let list=[];
-            try {
-              Meteor.subscribe('pos.unit');
-            } catch (e) {
-
-            }
             let units = Units.find() || 0;
             if(units.count() > 0){
               units.forEach((unit)=>{
@@ -86,6 +90,21 @@ Item.schema = new SimpleSchema({
         }
     },
     'sellingUnit.$.converter':{
+      type: Number,
+      decimal: true
+    },
+    scheme:{
+      type: [Object],
+      optional: true
+    },
+    'scheme.$.itemId':{
+      type: String
+    },
+    'scheme.$.price':{
+      type: Number,
+      decimal: true
+    },
+    'scheme.$.quantity':{
       type: Number,
       decimal: true
     },
