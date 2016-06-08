@@ -67,8 +67,7 @@
 
 <!--Update-->
 <template name="Pos_itemEdit">
-    {{#if Template.subscriptionsReady}}
-        {{#autoForm collection=collection id="Pos_itemEdit" doc=data type="update"}}
+        {{#autoForm collection=collection id="Pos_itemEdit" doc=this type="update"}}
         <div class="row">
             <div class="col-md-6">
                 {{> afQuickField name='name'}}
@@ -79,7 +78,14 @@
 
         </div>
         <div class="row">
-          <div class="col-md-12">
+          {{#if checkSellingUnit}}
+            <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-selling-unit" checked><span  class="label label-primary"> Add Selling-Unit </span></label></div>
+          {{else}}
+            <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-selling-unit"><span  class="label label-primary"> Add Selling-Unit </span></label></div>
+          {{/if}}
+        </div>
+        <div class="row">
+          <div class="col-md-12 selling-unit {{toggleSellingUnit}}">
             {{> afArrayField name="sellingUnit" id="sellingUnit" template="customArrayFieldSellingUnit" subtemplate="customObjectFieldSellingUnit"}}
           </div>
         </div>
@@ -88,6 +94,19 @@
           </div>
           <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
           <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
+          <div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>
+        </div>
+        <div class="row">
+          {{#if checkScheme}}
+            <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-scheme" checked><span  class="label label-primary"> Add Scheme </span></label></div>
+          {{else}}
+            <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-scheme"><span  class="label label-primary"> Add Scheme </span></label></div>
+          {{/if}}
+        </div>
+        <div class="row">
+          <div class="col-md-12 scheme {{toggleScheme}}">
+            {{> afArrayField name="scheme" id="scheme" template="customArrayFieldScheme" subtemplate="customObjectFieldScheme"}}
+          </div>
         </div>
         <div class="row">
           <div class="col-md-3">{{> afQuickField name='price'}}
@@ -100,11 +119,8 @@
 
         {{> formFooterWithButton}}
 
-            {{> formFooterWithButton}}
         {{/autoForm}}
-    {{else}}
-        {{> loading}}
-    {{/if}}
+
 </template>
 
 <!--Show-->
@@ -118,6 +134,8 @@
                 <dd>{{name}}</dd>
                 <dt>{{i18nLabel "price"}}</dt>
                 <dd>{{price}}</dd>
+                <dt>Selling Unit</dt>
+                <dd>{{sellingUnit}}</dd>
                 <dt>{{i18nLabel "photo"}}</dt>
                 <dd>{{lightbox url=photoUrl title=name}}</dd>
             </dl>

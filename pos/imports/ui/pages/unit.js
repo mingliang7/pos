@@ -77,7 +77,8 @@ editTmpl.helpers({
 // actionTmpl
 actionTmpl.events({
     'click .js-update'(event,instance){
-       alertify.unit(fa('pencil', 'Edit Unit'), renderTemplate(editTmpl, this));
+      let data = Template.currentData();
+       alertify.unit(fa('pencil', 'Edit Unit'), renderTemplate(editTmpl, data));
     },
     'click .js-display'(event, instance){
       alertify.unit(fa('pencil', 'Display'), renderTemplate(showTmpl, this));

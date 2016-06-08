@@ -68,7 +68,8 @@ Item.schema = new SimpleSchema({
         }
     },
     sellingUnit: {
-        type: [Object]
+        type: [Object],
+        optional: true
     },
     'sellingUnit.$.unitId': {
         type: String,
@@ -116,9 +117,11 @@ Item.schema = new SimpleSchema({
     },
     status: {
         type: String,
+        optional: true
     },
     accountId: {
-        type: String
+        type: String,
+        optional: true
     }
 });
 
