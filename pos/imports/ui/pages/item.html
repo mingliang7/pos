@@ -25,7 +25,7 @@
                 {{> afQuickField name='name'}}
             </div>
             <div class="col-md-6">
-              {{> afQuickField name='unitId' label="+Unit"}}
+              {{> afQuickField name='unitId' label="+Base Unit"}}
             </div>
 
         </div>
@@ -35,8 +35,15 @@
           </div>
         </div>
         <div class="row">
+          <div class="col-md-3">{{> afQuickField name='categoryId' label="Category"}}
+          </div>
+          <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
+          <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
+        </div>
+        <div class="row">
           <div class="col-md-3">{{> afQuickField name='price'}}
           </div>
+
         </div>
         <div class="row">
           <div class="col-md-6">{{> afQuickField name='photo'}}</div>
@@ -50,13 +57,36 @@
 <template name="Pos_itemEdit">
     {{#if Template.subscriptionsReady}}
         {{#autoForm collection=collection id="Pos_itemEdit" doc=data type="update"}}
-            <div class="row">
-                <div class="col-md-12">
-                    {{> afQuickField name='name'}}
-                    {{> afQuickField name='price'}}
-                    {{> afQuickField name='photo'}}
-                </div>
+        <div class="row">
+            <div class="col-md-6">
+                {{> afQuickField name='name'}}
             </div>
+            <div class="col-md-6">
+              {{> afQuickField name='unitId' label="+Base Unit"}}
+            </div>
+
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            {{> afArrayField name="sellingUnit" id="sellingUnit" template="customArrayFieldSellingUnit" subtemplate="customObjectFieldSellingUnit"}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">{{> afQuickField name='categoryId' label="Category"}}
+          </div>
+          <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
+          <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">{{> afQuickField name='price'}}
+          </div>
+
+        </div>
+        <div class="row">
+          <div class="col-md-6">{{> afQuickField name='photo'}}</div>
+        </div>
+
+        {{> formFooterWithButton}}
 
             {{> formFooterWithButton}}
         {{/autoForm}}
@@ -114,13 +144,6 @@
 
             {{#if afArrayFieldHasLessThanMaximum name=this.atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
                 <div class="row">
-                    <!--Sub Total-->
-                    <!-- <div class="col-sm-9 text-right">
-                        <strong>Sub Total :</strong>
-                    </div>
-                    <div class="col-sm-2">
-                        {{> afQuickField name='subtotal' readonly="true" label=false template="bootstrap3" class="input-sm"}}
-                    </div> -->
                     <div class="col-sm-11"></div>
                     <!--Add more-->
                     <div class="col-sm-1">
@@ -131,31 +154,6 @@
                         </button>
                     </div>
                 </div>
-
-                <!--Deposit Amount-->
-                <!-- <div class="row">
-                    <div class="col-sm-9 text-right">
-                        <strong>Deposit:</strong>
-                    </div>
-                    <div class="col-sm-2">
-                        {{> afQuickField name='deposit' value=register.deposit readonly="true" label=false template="bootstrap3" class="input-sm"}}
-                    </div>
-                    <div class="col-sm-1">
-                    </div>
-                </div> -->
-
-                <!--Total-->
-                <!-- <div class="row">
-                    <div class="col-sm-9 text-right">
-                        <strong>Total :</strong>
-                    </div>
-                    <div class="col-sm-2">
-                        {{> afQuickField name='total' readonly="true" label=false template="bootstrap3" class="input-sm"}} -->
-                <!--<p class="bg-primary"><strong class="total">0</strong></p>-->
-                <!-- </div>
-                <div class="col-sm-1">
-                </div>
-            </div> -->
 
             {{/if}}
 

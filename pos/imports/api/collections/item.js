@@ -37,14 +37,15 @@ Item.schema = new SimpleSchema({
         }
     },
     barcode: {
-        type: String
+        type: String,
+        optional: true
     },
     unitId: {
         type: String,
         autoform: {
-          type: 'universe-select',
+          type: 'select',
           options(){
-            let list = [{label: '(Select One)', value: ''}];
+            let list = [];
             try {
               Meteor.subscribe('pos.unit');
             } catch (e) {
@@ -66,9 +67,9 @@ Item.schema = new SimpleSchema({
     'sellingUnit.$.unitId': {
         type: String,
         autoform: {
-          type: 'universe-select',
+          type: 'select',
           options(){
-            let list = [{label: '(Select One)', value: ''}];
+            let list=[];
             try {
               Meteor.subscribe('pos.unit');
             } catch (e) {
@@ -89,7 +90,7 @@ Item.schema = new SimpleSchema({
       decimal: true
     },
     categoryId: {
-        type: String
+        type: String,
     },
     itemType: {
         type: String,
