@@ -6,7 +6,9 @@ import {sAlert} from 'meteor/juliancwirko:s-alert';
 import {fa} from 'meteor/theara:fa-helpers';
 import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {TAPi18n} from 'meteor/tap:i18n';
-
+import { ReactiveVar } from 'meteor/reactive-var'
+import {Mongo} from 'meteor/mongo';
+import {Meteor} from 'meteor/meteor';
 // Lib
 import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
 import {renderTemplate} from '../../../../core/client/libs/render-template.js';
@@ -19,14 +21,25 @@ import '../../../../core/client/components/loading.js';
 import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
+//methods
+import {getUnitName} from '../../../common/methods/item-info.js';
 // Collection
 import {Item} from '../../api/collections/item.js';
 
+
+import {Units} from '../../api/collections/units.js'
+//localCollection
+import {tmpCollection} from '../../api/collections/tmpCollection.js';
+
+//schema
+import {ItemsSchema} from '../../api/collections/order-items.js'
 // Tabular
 import {ItemTabular} from '../../../common/tabulars/item.js';
+import {reactiveTableSettings} from '../../../../core/client/libs/reactive-table-settings.js';
 
 // Page
 import './item.html';
+import './unit.js'
 
 // Declare template
 let indexTmpl = Template.Pos_item,
@@ -39,7 +52,9 @@ let indexTmpl = Template.Pos_item,
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    createNewAlertify('item');
+    createNewAlertify('item', {size: 'lg'});
+    createNewAlertify('addOn');
+    createNewAlertify('tmpItem')
 });
 
 indexTmpl.helpers({
@@ -50,10 +65,10 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        alertify.item(fa('plus', TAPi18n.__('pos.item.title')), renderTemplate(newTmpl));
+        alertify.item(fa('plus', TAPi18n.__('pos.item.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        alertify.item(fa('pencil', TAPi18n.__('pos.item.title')), renderTemplate(editTmpl, this));
+        alertify.item(fa('pencil', TAPi18n.__('pos.item.title')), renderTemplate(editTmpl, this)).maximize();
     },
     'click .js-destroy' (event, instance) {
         destroyAction(
@@ -68,33 +83,102 @@ indexTmpl.events({
 });
 
 // New
+newTmpl.onCreated(function(){
+
+})
 newTmpl.helpers({
     collection(){
         return Item;
     }
 });
+newTmpl.onDestroyed(()=>{
+  tmpCollection.remove({});
+});
+newTmpl.events({
+  'click [name="unitId"]'(event, instance){
+      alertify.addOn(fa('plus', 'Add Unit'), renderTemplate(Template.Pos_unitNew));
+  },
+  'change .toggle-scheme'(event, instance){
+    tmpCollection.remove({})
+    if($(event.currentTarget).prop('checked')){
+      $('.scheme').removeClass('hidden')
+    }else{
+      $('.scheme').addClass('hidden');
+    }
+  },
+  'change .toggle-selling-unit'(event, instance){
+    if($(event.currentTarget).prop('checked')){
+      $('.selling-unit').removeClass('hidden')
+    }else{
+      $('.selling-unit').addClass('hidden');
+    }
+  },
+})
 
 // Edit
-editTmpl.onCreated(function () {
-    this.autorun(()=> {
-        this.subscribe('pos.item', {_id: this.data._id});
-    });
-});
+editTmpl.onCreated(function(){
+  if(this.data.scheme){
+    this.data.scheme.forEach((scheme)=>{
+      Meteor.call('getItem', scheme.itemId, function(err, result){
+        scheme.name = result.name;
+        tmpCollection.insert(scheme);
+      })
+    })
+  }
+})
+//on Destroyed
+editTmpl.onDestroyed(function(){
+  tmpCollection.remove({});
+})
 
 editTmpl.helpers({
     collection(){
         return Item;
     },
-    data () {
-        let data = Item.findOne(this._id);
-        return data;
+    toggleSellingUnit(){
+      return this.sellingUnit ? '' : 'hidden';
+    },
+    checkSellingUnit(){
+      return this.sellingUnit ? true : false;
+    },
+    toggleScheme(){
+      return this.scheme ? '' : 'hidden';
+    },
+    checkScheme(){
+      return this.scheme ? true : false;
     }
 });
-
+editTmpl.events({
+  'change .toggle-scheme'(event, instance){
+    tmpCollection.remove({});
+    if($(event.currentTarget).prop('checked')){
+      $('.scheme').removeClass('hidden')
+    }else{
+      $('.scheme').addClass('hidden');
+    }
+  },
+  'change .toggle-selling-unit'(event, instance){
+    if($(event.currentTarget).prop('checked')){
+      $('.selling-unit').removeClass('hidden')
+    }else{
+      $('.selling-unit').addClass('hidden');
+    }
+  }
+});
 // Show
 showTmpl.onCreated(function () {
+    this.dict = new ReactiveVar();
+    let self = this.data;
+    let tmpVar = this.dict;
     this.autorun(()=> {
-        this.subscribe('pos.item', {_id: this.data._id});
+        this.subscribe('pos.item', {_id: self._id});
+        getUnitName.callPromise({sellingUnit: self.sellingUnit})
+              .then( (result) => {
+                  this.dict.set(result);
+              }).catch(function (err) {
+                  console.log(err.message);
+              }
+          );
     });
 });
 
@@ -106,6 +190,7 @@ showTmpl.helpers({
     data () {
         let data = Item.findOne(this._id);
         data.photoUrl = null;
+        data.sellingUnit = Template.instance().dict.get();
         if (data.photo) {
             let img = Files.findOne(data.photo);
             if (img) {
@@ -116,13 +201,120 @@ showTmpl.helpers({
         return data;
     }
 });
+//custom Object
+Template.schemeItem.helpers({
+  schema() {
+    return ItemsSchema;
+  },
+  tableSettings: function () {
+      reactiveTableSettings.showFilter = false;
+      reactiveTableSettings.showNavigation = 'never';
+      reactiveTableSettings.showColumnToggles = false;
+      reactiveTableSettings.collection = tmpCollection;
+      reactiveTableSettings.fields = [
+          {key: 'itemId', label: 'Item'},
+          {key: 'name', label: 'Name'},
+          {key: 'quantity', label:'Quantity'},
+          {
+              key: 'price',
+              label: 'Price',
+              fn (value, object, key) {
+                  return numeral(value).format('0,0.00');
+              }
+          },
+          {
+              key: '_id',
+              label(){
+                  return fa('bars', '', true);
+              },
+              headerClass: function () {
+                  let css = 'text-center col-action-order-item';
+                  return css;
+              },
+              tmpl: Template.Pos_schemeItemsAction, sortable: false
+          }
+      ];
+
+      return reactiveTableSettings;
+  }
+})
+Template.schemeItem.events({
+    'change [name="itemId"]': function (event, instance) {
+        instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
+        instance.$('[name="qty"]').val('');
+        instance.$('[name="price"]').val('');
+        instance.$('[name="amount"]').val('');
+    },
+    'keyup [name="qty"],[name="price"]': function (event, instance) {
+        let qty = instance.$('[name="qty"]').val();
+        let price = instance.$('[name="price"]').val();
+        qty = _.isEmpty(qty) ? 0 : parseInt(qty);
+        price = _.isEmpty(price) ? 0 : parseFloat(price);
+        let amount = qty * price;
+
+        instance.state('amount', amount);
+    },
+    'click .js-add-item': function (event, instance) {
+        let itemId = instance.$('[name="itemId"]').val();
+        let qty = parseInt(instance.$('[name="qty"]').val() == '' ? 1 : instance.$('[name="qty"]').val());
+        let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
+        let amount = math.round(qty * price, 2);
+        // Check exist
+        let exist = tmpCollection.findOne({itemId: itemId});
+        if (exist) {
+            qty += parseInt(exist.quantity);
+            amount = math.round(qty * price, 2);
+            tmpCollection.update(
+                {_id: exist._id},
+                {$set: {quantity: qty, price: price, amount: amount}}
+            );
+        } else {
+            tmpCollection.insert({
+                itemId: itemId,
+                quantity: qty,
+                price: price,
+                name: instance.name
+            });
+        }
+    },
+    // Reactive table for item
+    'click .js-update-item': function (event, instance) {
+        alertify.tmpItem(fa('pencil', TAPi18n.__('pos.order.schema.itemId.label')), renderTemplate(Template.Pos_schemeItemsEdit, this));
+    },
+    'click .js-destroy-item': function (event, instance) {
+        destroyAction(
+            tmpCollection,
+            {_id: this._id},
+            {title: TAPi18n.__('pos.order.schema.itemId.label'), itemTitle: this.itemId}
+        );
+    }
+});
+//edit custom object
+// Edit
+
+
 
 // Hook
 let hooksObject = {
+    before: {
+      insert(doc){
+        let getScheme = tmpCollection.find({},{fields: {itemId: 1, price: 1, quantity: 1}}).fetch();
+        if(getScheme.length > 0){
+          doc.scheme = getScheme;
+        }
+        return doc;
+      },
+      update(doc){
+        doc.$set.scheme = tmpCollection.find({}, {fields: {_id: 0, name: 0}}).fetch();
+        delete doc.$unset;
+        return doc;
+      }
+    },
     onSuccess (formType, result) {
         if (formType == 'update') {
             alertify.item().close();
         }
+        tmpCollection.remove({});
         displaySuccess();
     },
     onError (formType, error) {

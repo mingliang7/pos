@@ -21,11 +21,44 @@
 <template name="Pos_itemNew">
     {{#autoForm collection=collection id="Pos_itemNew" type="insert"}}
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 {{> afQuickField name='name'}}
-                {{> afQuickField name='price'}}
-                {{> afQuickField name='photo'}}
             </div>
+            <div class="col-md-6">
+              {{> afQuickField name='unitId' label="+Base Unit"}}
+            </div>
+
+        </div>
+        <div class="row">
+          <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-selling-unit"><span  class="label label-primary"> Add Selling-Unit </span></label></div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 selling-unit hidden">
+            {{> afArrayField name="sellingUnit" id="sellingUnit" template="customArrayFieldSellingUnit" subtemplate="customObjectFieldSellingUnit"}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">{{> afQuickField name='categoryId' label="Category"}}
+          </div>
+          <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
+          <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
+          <div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-scheme"><span  class="label label-primary"> Add Scheme </span></label></div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 scheme hidden">
+            {{>schemeItem}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">{{> afQuickField name='price'}}
+          </div>
+
+        </div>
+        <div class="row">
+          <div class="col-md-6">{{> afQuickField name='photo'}}</div>
         </div>
 
         {{> formFooterWithButton}}
@@ -34,21 +67,59 @@
 
 <!--Update-->
 <template name="Pos_itemEdit">
-    {{#if Template.subscriptionsReady}}
-        {{#autoForm collection=collection id="Pos_itemEdit" doc=data type="update"}}
-            <div class="row">
-                <div class="col-md-12">
-                    {{> afQuickField name='name'}}
-                    {{> afQuickField name='price'}}
-                    {{> afQuickField name='photo'}}
-                </div>
+        {{#autoForm collection=collection id="Pos_itemEdit" doc=this type="update"}}
+        <div class="row">
+            <div class="col-md-6">
+                {{> afQuickField name='name'}}
+            </div>
+            <div class="col-md-6">
+              {{> afQuickField name='unitId' label="+Base Unit"}}
             </div>
 
-            {{> formFooterWithButton}}
+        </div>
+        <div class="row">
+          {{#if checkSellingUnit}}
+            <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-selling-unit" checked><span  class="label label-primary"> Add Selling-Unit </span></label></div>
+          {{else}}
+            <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-selling-unit"><span  class="label label-primary"> Add Selling-Unit </span></label></div>
+          {{/if}}
+        </div>
+        <div class="row">
+          <div class="col-md-12 selling-unit {{toggleSellingUnit}}">
+            {{> afArrayField name="sellingUnit" id="sellingUnit" template="customArrayFieldSellingUnit" subtemplate="customObjectFieldSellingUnit"}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">{{> afQuickField name='categoryId' label="Category"}}</div>
+          <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
+          <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
+          <div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>
+        </div>
+        <div class="row">
+          {{#if checkScheme}}
+            <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-scheme" checked><span  class="label label-primary"> Add Scheme </span></label></div>
+          {{else}}
+            <div class="col-md-3 checkbox" ><label for=""><input type="checkbox" class="toggle-scheme"><span  class="label label-primary"> Add Scheme </span></label></div>
+          {{/if}}
+        </div>
+        <div class="row">
+          <div class="col-md-12 scheme {{toggleScheme}}">
+            {{> schemeItem}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">{{> afQuickField name='price'}}
+          </div>
+
+        </div>
+        <div class="row">
+          <div class="col-md-6">{{> afQuickField name='photo'}}</div>
+        </div>
+
+        {{> formFooterWithButton}}
+
         {{/autoForm}}
-    {{else}}
-        {{> loading}}
-    {{/if}}
+
 </template>
 
 <!--Show-->
@@ -62,6 +133,8 @@
                 <dd>{{name}}</dd>
                 <dt>{{i18nLabel "price"}}</dt>
                 <dd>{{price}}</dd>
+                <dt>Selling Unit</dt>
+                <dd>{{sellingUnit}}</dd>
                 <dt>{{i18nLabel "photo"}}</dt>
                 <dd>{{lightbox url=photoUrl title=name}}</dd>
             </dl>
@@ -69,4 +142,105 @@
     {{else}}
         {{> loading}}
     {{/if}}
+</template>
+
+<!--Custom array field-->
+<template name="afArrayField_customArrayFieldSellingUnit">
+    <div class="panel panel-default">
+        <div class="panel-heading">{{fa "fa fa-shopping-cart"}} {{afFieldLabelText name=this.atts.name}}</div>
+        <div class="panel-body">
+
+            {{#if afFieldIsInvalid name=this.atts.name}}
+                <div class="has-error">
+                    <span class="help-block">{{{afFieldMessage name=this.atts.name}}}</span>
+                </div>
+            {{/if}}
+            {{> sellingUnitHeader}}
+            {{#afEachArrayItem name=this.atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+                <div class="row array-item">
+
+                    {{> UI.dynamic template=../atts.subtemplate}}
+
+                    <div class="col-sm-1">
+                        {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount maxCount=../atts.maxCount}}
+                            <button type="button" class="btn btn-sm btn-danger autoform-remove-item btnRemove">
+                                <span class="glyphicon glyphicon-minus"></span>
+                            </button>
+                        {{/if}}
+                    </div>
+                </div>
+            {{/afEachArrayItem}}
+
+            {{#if afArrayFieldHasLessThanMaximum name=this.atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+                <div class="row">
+                    <div class="col-sm-11"></div>
+                    <!--Add more-->
+                    <div class="col-sm-1">
+                        <button type="button" class="btn btn-primary autoform-add-item btn-sm btnAdd"
+                                data-autoform-field="{{this.atts.name}}" data-autoform-minCount="{{this.atts.minCount}}"
+                                data-autoform-maxCount="{{this.atts.maxCount}}">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                    </div>
+                </div>
+
+            {{/if}}
+
+        </div>
+    </div>
+</template>
+
+<!--Custom object field-->
+<template name="customObjectFieldSellingUnit">
+    <div class="col-sm-6">
+        {{> afQuickField name=current.unitId template="bootstrap3" label=false class="input-sm item" id="ice-item"}}
+    </div>
+    <div class="col-sm-5">
+        {{> afQuickField name=current.converter template="bootstrap3" label=false class="input-sm price"}}
+    </div>
+
+
+</template>
+
+<template name="sellingUnitHeader">
+    <div class="row">
+        <div class="col-sm-6">
+            <label>Unit:</label>
+
+        </div>
+        <div class="col-sm-5">
+            <label>Converter:</label>
+        </div>
+
+    </div>
+</template>
+
+<template name="schemeItem">
+  {{#autoForm schema=schema id="Pos_schemeItem"}}
+      <div class="row">
+          <div class="col-sm-4">
+              {{> afQuickField name="itemId" label=false}}
+          </div>
+          <div class="col-sm-2">
+              {{> afQuickField name="qty" label=false}}
+          </div>
+          <div class="col-sm-2">
+              {{> afQuickField name="price" label=false}}
+          </div>
+          <div class="col-sm-1">
+              <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
+          </div>
+      </div>
+  {{/autoForm}}
+  <!--Reactive table-->
+  <div class="well">
+    {{> reactiveTable settings=tableSettings}}
+  </div>
+</template>
+
+
+<template name="Pos_schemeItemsAction">
+    <ul class="list-inline">
+        <li><a href="#" class="js-destroy-item"><i class="fa fa-remove"></i></a></li>
+    </ul>
 </template>
