@@ -101,11 +101,7 @@ indexTmpl.events({
     },
     'click .js-destroy' (event, instance) {
         var id = this._id;
-        var arr = [
-         //   {collection: 'Products', selector: {categoryId: id}},
-            {collection: 'Categories', selector: {parentId: id}}
-        ];
-        Meteor.call('isRelationExist', arr, function (error, result) {
+        Meteor.call('isCategoryHasRelation', id, function (error, result) {
             if (error) {
                 alertify.error(error.message);
             } else {

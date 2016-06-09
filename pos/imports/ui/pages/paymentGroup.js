@@ -7,7 +7,7 @@ import {fa} from 'meteor/theara:fa-helpers';
 import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {TAPi18n} from 'meteor/tap:i18n';
 import {ReactiveTable} from 'meteor/aslagle:reactive-table';
-import {moment} from 'meteor/momentjs:moment';
+
 
 // Lib
 import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
@@ -23,51 +23,46 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {Customers} from '../../api/collections/customer.js';
+import {PaymentGroups} from '../../api/collections/paymentGroup.js';
 
 // Tabular
-import {CustomerTabular} from '../../../common/tabulars/customer.js';
+import {PaymentGroupTabular} from '../../../common/tabulars/paymentGroup.js';
 
 // Page
-import './customer.html';
+import './paymentGroup.html';
 
 // Declare template
-let indexTmpl = Template.Pos_customer,
-    actionTmpl = Template.Pos_customerAction,
-    newTmpl = Template.Pos_customerNew,
-    editTmpl = Template.Pos_customerEdit,
-    showTmpl = Template.Pos_customerShow;
+let indexTmpl = Template.Pos_paymentGroup,
+    actionTmpl = Template.Pos_paymentGroupAction,
+    newTmpl = Template.Pos_paymentGroupNew,
+    editTmpl = Template.Pos_paymentGroupEdit,
+    showTmpl = Template.Pos_paymentGroupShow;
 
 
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    createNewAlertify('customer', {size: 'lg'});
-    createNewAlertify('customerShow',);
+    createNewAlertify('paymentGroup', {size: 'lg'});
+    createNewAlertify('paymentGroupShow');
 
     // Reactive table filter
-    this.filter = new ReactiveTable.Filter('pos.customerByBranchFilter', ['branchId']);
+    this.filter = new ReactiveTable.Filter('pos.paymentGroupByBranchFilter', ['branchId']);
     this.autorun(()=> {
         this.filter.set(Session.get('currentBranch'));
     });
 });
 
-indexTmpl.onDestroyed(()=>{
-  ReactiveTable.clearFilters(['pos.customerByBranchFilter']);
-})
-
 indexTmpl.helpers({
     tabularTable(){
-        return CustomerTabular;
+        return PaymentGroupTabular;
     },
     selector() {
         return {branchId: Session.get('currentBranch')};
     },
     tableSettings(){
-        let i18nPrefix = 'pos.customer.schema';
+        let i18nPrefix = 'pos.paymentGroup.schema';
 
-        reactiveTableSettings.collection = 'pos.reactiveTable.customer';
-        reactiveTableSettings.filters = ['pos.customerByBranchFilter'];
+        reactiveTableSettings.collection = 'pos.reactiveTable.paymentGroup';
         reactiveTableSettings.fields = [
             {
                 key: '_id',
@@ -76,8 +71,8 @@ indexTmpl.helpers({
                 sortDirection: 'asc'
             },
             {key: 'name', label: __(`${i18nPrefix}.name.label`)},
-            {key: 'gender', label: __(`${i18nPrefix}.gender.label`)},
-            {key: 'telephone', label: __(`${i18nPrefix}.telephone.label`)},
+            {key: 'numberOfDay', label: __(`${i18nPrefix}.numberOfDay.label`)},
+            {key: 'description', label: __(`${i18nPrefix}.description.label`)},
             {
                 key: '_id',
                 label(){
@@ -97,59 +92,56 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        alertify.customer(fa('plus', TAPi18n.__('pos.customer.title')), renderTemplate(newTmpl));
+        alertify.paymentGroup(fa('plus', TAPi18n.__('pos.paymentGroup.title')), renderTemplate(newTmpl));
     },
     'click .js-update' (event, instance) {
-        alertify.customer(fa('pencil', TAPi18n.__('pos.customer.title')), renderTemplate(editTmpl, this));
+        alertify.paymentGroup(fa('pencil', TAPi18n.__('pos.paymentGroup.title')), renderTemplate(editTmpl, this));
     },
     'click .js-destroy' (event, instance) {
-        destroyAction(
-            Customers,
-            {_id: this._id},
-            {title: TAPi18n.__('pos.customer.title'), itemTitle: this._id}
-        );
+        var id = this._id;
+        Meteor.call('isPaymentGroupHasRelation',id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    alertify.warning("Data has been used. Can't remove.");
+                } else {
+                    destroyAction(
+                        PaymentGroups,
+                        {_id: id},
+                        {title: TAPi18n.__('pos.paymentGroup.title'), itemTitle: id}
+                    );
+                }
+            }
+        });
+
+
     },
     'click .js-display' (event, instance) {
-        alertify.customerShow(fa('eye', TAPi18n.__('pos.customer.title')), renderTemplate(showTmpl, this));
+        alertify.paymentGroupShow(fa('eye', TAPi18n.__('pos.paymentGroup.title')), renderTemplate(showTmpl, this));
     }
-});
-
-newTmpl.onCreated(function () {
-    this.paymentType = new ReactiveVar();
 });
 
 // New
 newTmpl.helpers({
     collection(){
-        return Customers;
-    },
-    isTerm(){
-        return Template.instance().paymentType.get()=="Term";
-    },
-    isGroup(){
-        debugger;
-        return Template.instance().paymentType.get()=="Group";
-    }
-});
-newTmpl.events({
-    'change [name="paymentType"]'(event,instance){
-        instance.paymentType.set($(event.currentTarget).val());
+        return PaymentGroups;
     }
 });
 
 // Edit
 editTmpl.onCreated(function () {
     this.autorun(()=> {
-        this.subscribe('pos.customer', {_id: this.data._id});
+        this.subscribe('pos.paymentGroup', {_id: this.data._id});
     });
 });
 
 editTmpl.helpers({
     collection(){
-        return Customers;
+        return PaymentGroups;
     },
     data () {
-        let data = Customers.findOne(this._id);
+        let data = PaymentGroups.findOne(this._id);
         return data;
     }
 });
@@ -157,17 +149,17 @@ editTmpl.helpers({
 // Show
 showTmpl.onCreated(function () {
     this.autorun(()=> {
-        this.subscribe('pos.customer', {_id: this.data._id});
+        this.subscribe('pos.paymentGroup', {_id: this.data._id});
     });
 });
 
 showTmpl.helpers({
     i18nLabel(label){
-        let i18nLabel = `pos.customer.schema.${label}.label`;
+        let i18nLabel = `pos.paymentGroup.schema.${label}.label`;
         return i18nLabel;
     },
     data () {
-        let data = Customers.findOne(this._id);
+        let data = PaymentGroups.findOne(this._id);
         return data;
     }
 });
@@ -176,7 +168,7 @@ showTmpl.helpers({
 let hooksObject = {
     onSuccess (formType, result) {
         if (formType == 'update') {
-            alertify.customer().close();
+            alertify.paymentGroup().close();
         }
         displaySuccess();
     },
@@ -186,6 +178,6 @@ let hooksObject = {
 };
 
 AutoForm.addHooks([
-    'Pos_customerNew',
-    'Pos_customerEdit'
+    'Pos_paymentGroupNew',
+    'Pos_paymentGroupEdit'
 ], hooksObject);

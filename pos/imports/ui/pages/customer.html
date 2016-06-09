@@ -15,9 +15,9 @@
 <!--Action-->
 <template name="Pos_customerAction">
     {{#columnAction align="right"}}
-        <li><a href="#" class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
-        <li><a href="#" class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
-        <li><a href="#" class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
+        <li><a class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
+        <li><a class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
+        <li><a class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
     {{/columnAction}}
 </template>
 
@@ -28,12 +28,18 @@
             <div class="col-md-6">
                 {{> afQuickField name='name'}}
                 {{> afQuickField name='gender'}}
-                {{> afQuickField name='dob'}}
-                {{> afQuickField name='address' rows=3}}
+                {{> afQuickField name='paymentType'}}
+                {{#if isTerm}}
+                    {{> afQuickField name='termId'}}
+                {{/if}}
+                {{#if isGroup}}
+                    {{> afQuickField name='paymentGroupId'}}
+                {{/if}}
             </div>
             <div class="col-md-6">
                 {{> afQuickField name='telephone'}}
                 {{> afQuickField name='email'}}
+                {{> afQuickField name='address' rows=3}}
                 {{> afQuickField type="hidden" name='branchId' value=currentBranch}}
             </div>
         </div>
@@ -50,12 +56,18 @@
                 <div class="col-md-6">
                     {{> afQuickField name='name'}}
                     {{> afQuickField name='gender'}}
-                    {{> afQuickField name='dob'}}
-                    {{> afQuickField name='address' rows=3}}
+                    {{> afQuickField name='paymentType'}}
+                    {{#if isTerm}}
+                        {{> afQuickField name='termId'}}
+                    {{/if}}
+                    {{#if isGroup}}
+                        {{> afQuickField name='paymentGroupId'}}
+                    {{/if}}
                 </div>
                 <div class="col-md-6">
                     {{> afQuickField name='telephone'}}
                     {{> afQuickField name='email'}}
+                    {{> afQuickField name='address' rows=3}}
                     {{> afQuickField type="hidden" name='branchId' value=currentBranch}}
                 </div>
             </div>
@@ -78,14 +90,12 @@
                 <dd>{{name}}</dd>
                 <dt>{{_ (i18nLabel "gender")}}</dt>
                 <dd>{{gender}}</dd>
-                <dt>{{_ (i18nLabel "dob")}}</dt>
-                <dd>{{moFormat dob "DD/MM/YYYY"}}</dd>
-                <dt>{{_ (i18nLabel "address")}}</dt>
-                <dd>{{address}}</dd>
                 <dt>{{_ (i18nLabel "telephone")}}</dt>
                 <dd>{{telephone}}</dd>
                 <dt>{{_ (i18nLabel "email")}}</dt>
                 <dd>{{email}}</dd>
+                <dt>{{_ (i18nLabel "address")}}</dt>
+                <dd>{{address}}</dd>
             </dl>
         {{/with}}
     {{else}}

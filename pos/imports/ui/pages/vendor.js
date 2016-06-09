@@ -23,51 +23,50 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {Customers} from '../../api/collections/customer.js';
+import {Vendors} from '../../api/collections/vendor.js';
 
 // Tabular
-import {CustomerTabular} from '../../../common/tabulars/customer.js';
+import {VendorTabular} from '../../../common/tabulars/vendor.js';
 
 // Page
-import './customer.html';
+import './vendor.html';
 
 // Declare template
-let indexTmpl = Template.Pos_customer,
-    actionTmpl = Template.Pos_customerAction,
-    newTmpl = Template.Pos_customerNew,
-    editTmpl = Template.Pos_customerEdit,
-    showTmpl = Template.Pos_customerShow;
+let indexTmpl = Template.Pos_vendor,
+    actionTmpl = Template.Pos_vendorAction,
+    newTmpl = Template.Pos_vendorNew,
+    editTmpl = Template.Pos_vendorEdit,
+    showTmpl = Template.Pos_vendorShow;
 
 
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    createNewAlertify('customer', {size: 'lg'});
-    createNewAlertify('customerShow',);
+    createNewAlertify('vendor', {size: 'lg'});
+    createNewAlertify('vendorShow',);
 
     // Reactive table filter
-    this.filter = new ReactiveTable.Filter('pos.customerByBranchFilter', ['branchId']);
+    this.filter = new ReactiveTable.Filter('pos.vendorByBranchFilter', ['branchId']);
     this.autorun(()=> {
         this.filter.set(Session.get('currentBranch'));
     });
 });
 
 indexTmpl.onDestroyed(()=>{
-  ReactiveTable.clearFilters(['pos.customerByBranchFilter']);
+  ReactiveTable.clearFilters(['pos.vendorByBranchFilter']);
 })
 
 indexTmpl.helpers({
     tabularTable(){
-        return CustomerTabular;
+        return VendorTabular;
     },
     selector() {
-        return {branchId: Session.get('currentBranch')};
+        return {};
     },
     tableSettings(){
-        let i18nPrefix = 'pos.customer.schema';
+        let i18nPrefix = 'pos.vendor.schema';
 
-        reactiveTableSettings.collection = 'pos.reactiveTable.customer';
-        reactiveTableSettings.filters = ['pos.customerByBranchFilter'];
+        reactiveTableSettings.collection = 'pos.reactiveTable.vendor';
         reactiveTableSettings.fields = [
             {
                 key: '_id',
@@ -97,59 +96,43 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        alertify.customer(fa('plus', TAPi18n.__('pos.customer.title')), renderTemplate(newTmpl));
+        alertify.vendor(fa('plus', TAPi18n.__('pos.vendor.title')), renderTemplate(newTmpl));
     },
     'click .js-update' (event, instance) {
-        alertify.customer(fa('pencil', TAPi18n.__('pos.customer.title')), renderTemplate(editTmpl, this));
+        alertify.vendor(fa('pencil', TAPi18n.__('pos.vendor.title')), renderTemplate(editTmpl, this));
     },
     'click .js-destroy' (event, instance) {
         destroyAction(
-            Customers,
+            Vendors,
             {_id: this._id},
-            {title: TAPi18n.__('pos.customer.title'), itemTitle: this._id}
+            {title: TAPi18n.__('pos.vendor.title'), itemTitle: this._id}
         );
     },
     'click .js-display' (event, instance) {
-        alertify.customerShow(fa('eye', TAPi18n.__('pos.customer.title')), renderTemplate(showTmpl, this));
+        alertify.vendorShow(fa('eye', TAPi18n.__('pos.vendor.title')), renderTemplate(showTmpl, this));
     }
-});
-
-newTmpl.onCreated(function () {
-    this.paymentType = new ReactiveVar();
 });
 
 // New
 newTmpl.helpers({
     collection(){
-        return Customers;
-    },
-    isTerm(){
-        return Template.instance().paymentType.get()=="Term";
-    },
-    isGroup(){
-        debugger;
-        return Template.instance().paymentType.get()=="Group";
-    }
-});
-newTmpl.events({
-    'change [name="paymentType"]'(event,instance){
-        instance.paymentType.set($(event.currentTarget).val());
+        return Vendors;
     }
 });
 
 // Edit
 editTmpl.onCreated(function () {
     this.autorun(()=> {
-        this.subscribe('pos.customer', {_id: this.data._id});
+        this.subscribe('pos.vendor', {_id: this.data._id});
     });
 });
 
 editTmpl.helpers({
     collection(){
-        return Customers;
+        return Vendors;
     },
     data () {
-        let data = Customers.findOne(this._id);
+        let data = Vendors.findOne(this._id);
         return data;
     }
 });
@@ -157,17 +140,17 @@ editTmpl.helpers({
 // Show
 showTmpl.onCreated(function () {
     this.autorun(()=> {
-        this.subscribe('pos.customer', {_id: this.data._id});
+        this.subscribe('pos.vendor', {_id: this.data._id});
     });
 });
 
 showTmpl.helpers({
     i18nLabel(label){
-        let i18nLabel = `pos.customer.schema.${label}.label`;
+        let i18nLabel = `pos.vendor.schema.${label}.label`;
         return i18nLabel;
     },
     data () {
-        let data = Customers.findOne(this._id);
+        let data = Vendors.findOne(this._id);
         return data;
     }
 });
@@ -176,7 +159,7 @@ showTmpl.helpers({
 let hooksObject = {
     onSuccess (formType, result) {
         if (formType == 'update') {
-            alertify.customer().close();
+            alertify.vendor().close();
         }
         displaySuccess();
     },
@@ -186,6 +169,6 @@ let hooksObject = {
 };
 
 AutoForm.addHooks([
-    'Pos_customerNew',
-    'Pos_customerEdit'
+    'Pos_vendorNew',
+    'Pos_vendorEdit'
 ], hooksObject);

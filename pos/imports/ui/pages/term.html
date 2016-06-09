@@ -17,6 +17,7 @@
   {{#autoForm collection=collection id="Pos_termNew" type="insert"}}
       <div class="row">
         <div class="col-md-12">
+            {{> afQuickField name='name'}}
             {{> afQuickField name='netDueIn'}}
             {{> afQuickField name='discountPercentages'}}
             {{> afQuickField name='discountIfPaidWithin'}}
@@ -31,6 +32,7 @@
   {{#autoForm collection=collection doc=this id="Pos_termEdit" type="update"}}
       <div class="row">
           <div class="col-md-12">
+              {{> afQuickField name='name'}}
               {{> afQuickField name='netDueIn'}}
               {{> afQuickField name='discountPercentages'}}
               {{> afQuickField name='discountIfPaidWithin'}}

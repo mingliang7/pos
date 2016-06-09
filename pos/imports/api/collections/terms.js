@@ -1,5 +1,9 @@
-export const Terms = new Mongo.Collection('terms')
+export const Terms = new Mongo.Collection('terms');
 Terms.schema = new SimpleSchema({
+  name:{
+    type:String,
+    label:"Name"
+  },
   netDueIn:{
     type: Number
   },
@@ -10,7 +14,6 @@ Terms.schema = new SimpleSchema({
   discountIfPaidWithin: {
     type: Number
   }
-})
-
+});
 
 Terms.attachSchema(Terms.schema);

@@ -3,9 +3,9 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {ReactiveTable} from 'meteor/aslagle:reactive-table';
 
 // Collection
-import {Customer} from '../../imports/api/collections/customer.js';
+import {Customers} from '../../imports/api/collections/customer.js';
 
-Meteor.publish('pos.customer', function simpleCustomer(selector = {}, options = {}) {
+Meteor.publish('pos.customer', function posCustomer(selector = {}, options = {}) {
     this.unblock();
 
     new SimpleSchema({
@@ -14,7 +14,7 @@ Meteor.publish('pos.customer', function simpleCustomer(selector = {}, options = 
     }).validate({selector, options});
 
     if (this.userId) {
-        let data = Customer.find(selector, options);
+        let data = Customers.find(selector, options);
 
         return data;
     }
@@ -23,4 +23,4 @@ Meteor.publish('pos.customer', function simpleCustomer(selector = {}, options = 
 });
 
 // Reactive Table
-ReactiveTable.publish("pos.reactiveTable.customer", Customer);
+ReactiveTable.publish("pos.reactiveTable.customer", Customers);
