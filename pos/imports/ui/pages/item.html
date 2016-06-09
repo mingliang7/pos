@@ -49,7 +49,7 @@
         </div>
         <div class="row">
           <div class="col-md-12 scheme hidden">
-            {{> afArrayField name="scheme" id="scheme" template="customArrayFieldScheme" subtemplate="customObjectFieldScheme"}}
+            {{>schemeItem}}
           </div>
         </div>
         <div class="row">
@@ -90,8 +90,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-md-3">{{> afQuickField name='categoryId' label="Category"}}
-          </div>
+          <div class="col-md-3">{{> afQuickField name='categoryId' label="Category"}}</div>
           <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
           <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
           <div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>
@@ -105,7 +104,7 @@
         </div>
         <div class="row">
           <div class="col-md-12 scheme {{toggleScheme}}">
-            {{> afArrayField name="scheme" id="scheme" template="customArrayFieldScheme" subtemplate="customObjectFieldScheme"}}
+            {{> schemeItem}}
           </div>
         </div>
         <div class="row">
@@ -216,78 +215,32 @@
     </div>
 </template>
 
-<!--  Custom Scheme -->
-
-<template name="afArrayField_customArrayFieldScheme">
-    <div class="panel panel-default">
-        <div class="panel-heading">{{fa "fa fa-shopping-cart"}} {{afFieldLabelText name=this.atts.name}}</div>
-        <div class="panel-body">
-
-            {{#if afFieldIsInvalid name=this.atts.name}}
-                <div class="has-error">
-                    <span class="help-block">{{{afFieldMessage name=this.atts.name}}}</span>
-                </div>
-            {{/if}}
-            {{> schemeHeader}}
-            {{#afEachArrayItem name=this.atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
-                <div class="row array-item">
-
-                    {{> UI.dynamic template=../atts.subtemplate}}
-
-                    <div class="col-sm-1">
-                        {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount maxCount=../atts.maxCount}}
-                            <button type="button" class="btn btn-sm btn-danger autoform-remove-item btnRemove">
-                                <span class="glyphicon glyphicon-minus"></span>
-                            </button>
-                        {{/if}}
-                    </div>
-                </div>
-            {{/afEachArrayItem}}
-
-            {{#if afArrayFieldHasLessThanMaximum name=this.atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
-                <div class="row">
-                    <div class="col-sm-11"></div>
-                    <!--Add more-->
-                    <div class="col-sm-1">
-                        <button type="button" class="btn btn-primary autoform-add-item btn-sm btnAdd"
-                                data-autoform-field="{{this.atts.name}}" data-autoform-minCount="{{this.atts.minCount}}"
-                                data-autoform-maxCount="{{this.atts.maxCount}}">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </button>
-                    </div>
-                </div>
-
-            {{/if}}
-
-        </div>
-    </div>
+<template name="schemeItem">
+  {{#autoForm schema=schema id="Pos_schemeItem"}}
+      <div class="row">
+          <div class="col-sm-4">
+              {{> afQuickField name="itemId" label=false}}
+          </div>
+          <div class="col-sm-2">
+              {{> afQuickField name="qty" label=false}}
+          </div>
+          <div class="col-sm-2">
+              {{> afQuickField name="price" label=false}}
+          </div>
+          <div class="col-sm-1">
+              <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
+          </div>
+      </div>
+  {{/autoForm}}
+  <!--Reactive table-->
+  <div class="well">
+    {{> reactiveTable settings=tableSettings}}
+  </div>
 </template>
 
-<!--Custom object field-->
-<template name="customObjectFieldScheme">
-    <div class="col-sm-4">
-        {{> afQuickField name=current.itemId template="bootstrap3" label=false class="input-sm item" id="ice-item"}}
-    </div>
-    <div class="col-sm-3">
-      {{> afQuickField name=current.quantity template="bootstrap3" label=false class="input-sm item" id="ice-item"}}
-    </div>
-    <div class="col-sm-4">
-        {{> afQuickField name=current.price template="bootstrap3" label=false class="input-sm price"}}
-    </div>
-</template>
 
-<template name="schemeHeader">
-    <div class="row">
-        <div class="col-sm-4">
-            <label>Item:</label>
-
-        </div>
-        <div class="col-sm-3">
-          <label>Quantity:</label>
-        </div>
-        <div class="col-sm-4">
-            <label>Price:</label>
-        </div>
-
-    </div>
+<template name="Pos_schemeItemsAction">
+    <ul class="list-inline">
+        <li><a href="#" class="js-destroy-item"><i class="fa fa-remove"></i></a></li>
+    </ul>
 </template>

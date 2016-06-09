@@ -29,6 +29,7 @@ export const ItemsSchema = new SimpleSchema({
     qty: {
         type: Number,
         label: 'Qty',
+        optional: true,
         min: 1,
         autoform: {
             type: 'inputmask',
@@ -41,6 +42,7 @@ export const ItemsSchema = new SimpleSchema({
         type: Number,
         label: 'Price',
         decimal: true,
+        optional: true,
         defaultValue: function () {
             let id = AutoForm.getFieldValue('itemId');
 
@@ -62,6 +64,7 @@ export const ItemsSchema = new SimpleSchema({
         },
         autoform: {
             type: 'inputmask',
+            optional: true,
             inputmaskOptions: function () {
                 return inputmaskOptions.currency();
             }
@@ -70,6 +73,7 @@ export const ItemsSchema = new SimpleSchema({
     amount: {
         type: Number,
         label: 'Amount',
+        optional: true,
         decimal: true,
         autoform: {
             type: 'inputmask',

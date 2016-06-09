@@ -5,7 +5,7 @@ import {Units} from './units.js';
 import {Meteor} from 'meteor/meteor';
 // Lib
 import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
-
+import {SelectOpts} from '../../ui/libs/select-opts.js';
 export const Item = new Mongo.Collection("pos_item");
 
 Item.schema = new SimpleSchema({
@@ -99,7 +99,15 @@ Item.schema = new SimpleSchema({
       optional: true
     },
     'scheme.$.itemId':{
-      type: String
+      type: String,
+      optional: true,
+      autoform: {
+          type: 'universe-select',
+          afFieldInput: {
+              uniPlaceholder: 'Select One',
+              optionsMethod: 'pos.selectOptMethods.item'
+          }
+      }
     },
     'scheme.$.price':{
       type: Number,
@@ -111,9 +119,30 @@ Item.schema = new SimpleSchema({
     },
     categoryId: {
         type: String,
+        autoform: {
+          type: 'select2',
+          options(){
+            return SelectOpts.category('Select Parent | No Parent');
+          }
+        }
     },
     itemType: {
         type: String,
+        autoform:{
+          type: 'select2',
+          options(){
+            return [{
+                label: '(Select One)',
+                value: ''
+            }, {
+                label: 'None Stock',
+                value: 'noneStock'
+            }, {
+                label: 'Stock',
+                value: 'stock'
+            }]
+          }
+        }
     },
     status: {
         type: String,
