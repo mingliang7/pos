@@ -4,7 +4,8 @@
       "home": "ទំព័រដើម",
       "item": "មុខទំនិញ",
       "customer": "អតិថិជន",
-      "order": "ទិញ"
+      "order": "ទិញ",
+      "category":"ផ្នែក"
     },
     "home": {
       "title": "ទំព័រដើម",
@@ -97,6 +98,29 @@
     },
     "orderReport": {
       "title": "របាយការណ៍ទិញ"
+    },
+    "category": {
+      "title": "ផ្នែក",
+      "schema": {
+        "_id": {
+          "label": "លេខ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "description": {
+          "label": "បរិយាយ"
+        },
+        "level": {
+          "label": "លំដាប់"
+        },
+        "parent": {
+          "label": "ផ្នែកមេ"
+        },
+        "branchId": {
+          "label": "សាខា"
+        }
+      }
     }
   }
 }

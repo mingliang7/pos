@@ -119,4 +119,21 @@ PosRoutes.route('/term', {
     icon: 'cart-plus',
     parent: 'pos.home'
   }
-})
+});
+
+// Categories
+import '../imports/ui/pages/category.js';
+PosRoutes.route('/category', {
+    name: 'pos.category',
+    title: __('pos.category.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_category');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.category.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
