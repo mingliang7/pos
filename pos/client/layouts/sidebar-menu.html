@@ -49,16 +49,21 @@
                     <i class="fa fa-circle-o"></i> <span>{{_ "core.sidebarMenu.exchange"}}</span>
                 </a>
             </li>
-            <li class="{{isActiveRoute name='pos.item'}}">
-                <a href="{{pathFor 'pos.item'}}">
-                    <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.item"}}</span>
-                </a>
-            </li>
+              <li class="{{isActiveRoute name='pos.categroy'}}">
+                  <a href="{{pathFor 'pos.category'}}">
+                      <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.category"}}</span>
+                  </a>
+              </li>
             <li class="{{isActiveRoute name='pos.unit'}}">
                 <a href="{{pathFor 'pos.unit'}}">
                     <i class="fa fa-circle-o"></i> <span>Unit</span>
                 </a>
             </li>
+              <li class="{{isActiveRoute name='pos.item'}}">
+                  <a href="{{pathFor 'pos.item'}}">
+                      <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.item"}}</span>
+                  </a>
+              </li>
             <li class="{{isActiveRoute name='pos.term'}}">
                 <a href="{{pathFor 'pos.term'}}">
                     <i class="fa fa-circle-o"></i> <span>Term</span>

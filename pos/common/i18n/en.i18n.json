@@ -4,7 +4,8 @@
       "home": "Home",
       "item": "Item",
       "customer": "Customer",
-      "order": "Order"
+      "order": "Order",
+      "category":"Category"
     },
     "home": {
       "title": "Home",
@@ -97,6 +98,29 @@
     },
     "orderReport": {
       "title": "Customer Report"
+    },
+    "category": {
+      "title": "Category",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "description": {
+          "label": "Description"
+        },
+        "level": {
+          "label": "Level"
+        },
+        "parent": {
+          "label": "Parent"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
     }
   }
 }
