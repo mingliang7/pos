@@ -1,5 +1,5 @@
 <!--Index-->
-<template name="Pos_customer">
+<template name="Pos_vendor">
     <p>
         <button type="button" class="btn btn-primary js-create"><i class="fa fa-plus"></i> {{_ "action.addNew"}}
         </button>
@@ -13,7 +13,7 @@
 </template>
 
 <!--Action-->
-<template name="Pos_customerAction">
+<template name="Pos_vendorAction">
     {{#columnAction align="right"}}
         <li><a class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
         <li><a class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
@@ -22,8 +22,8 @@
 </template>
 
 <!--Insert-->
-<template name="Pos_customerNew">
-    {{#autoForm collection=collection id="Pos_customerNew" type="insert"}}
+<template name="Pos_vendorNew">
+    {{#autoForm collection=collection id="Pos_vendorNew" type="insert"}}
         <div class="row">
             <div class="col-md-6">
                 {{> afQuickField name='name'}}
@@ -40,7 +40,6 @@
                 {{> afQuickField name='telephone'}}
                 {{> afQuickField name='email'}}
                 {{> afQuickField name='address' rows=3}}
-                {{> afQuickField type="hidden" name='branchId' value=currentBranch}}
             </div>
         </div>
 
@@ -49,9 +48,9 @@
 </template>
 
 <!--Update-->
-<template name="Pos_customerEdit">
+<template name="Pos_vendorEdit">
     {{#if Template.subscriptionsReady}}
-        {{#autoForm collection=collection id="Pos_customerEdit" doc=data type="update"}}
+        {{#autoForm collection=collection id="Pos_vendorEdit" doc=data type="update"}}
             <div class="row">
                 <div class="col-md-6">
                     {{> afQuickField name='name'}}
@@ -68,7 +67,6 @@
                     {{> afQuickField name='telephone'}}
                     {{> afQuickField name='email'}}
                     {{> afQuickField name='address' rows=3}}
-                    {{> afQuickField type="hidden" name='branchId' value=currentBranch}}
                 </div>
             </div>
 
@@ -80,7 +78,7 @@
 </template>
 
 <!--Show-->
-<template name="Pos_customerShow">
+<template name="Pos_vendorShow">
     {{#if Template.subscriptionsReady}}
         {{#with data}}
             <dl class="dl-horizontal">

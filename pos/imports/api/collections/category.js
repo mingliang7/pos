@@ -23,7 +23,6 @@ Categories.schema = new SimpleSchema({
         type:String,
         label:"Parent",
         optional:true,
-        type: String,
         autoform: {
             type: "select2",
             options: function () {
@@ -38,10 +37,6 @@ Categories.schema = new SimpleSchema({
     _parent:{
         type:Object,
         blackbox:true,
-        optional:true
-    },
-    _productCount:{
-        type:Number,
         optional:true
     }
 });

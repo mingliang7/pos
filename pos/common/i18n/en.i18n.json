@@ -5,7 +5,9 @@
       "item": "Item",
       "customer": "Customer",
       "order": "Order",
-      "category":"Category"
+      "category": "Category",
+      "paymentGroup":"Payment Group",
+      "vendor":"Vendor"
     },
     "home": {
       "title": "Home",
@@ -39,9 +41,6 @@
         },
         "gender": {
           "label": "Gender"
-        },
-        "dob": {
-          "label": "Date of birth"
         },
         "address": {
           "label": "Address"
@@ -119,6 +118,52 @@
         },
         "branchId": {
           "label": "Branch"
+        }
+      }
+    },
+    "paymentGroup": {
+      "title": "Payment Group",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "description": {
+          "label": "Description"
+        },
+        "numberOfDay": {
+          "label": "Number of day"
+        }
+      }
+    },
+    "vendor": {
+      "title": "Vendor",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "gender": {
+          "label": "Gender"
+        },
+        "address": {
+          "label": "Address"
+        },
+        "telephone": {
+          "label": "Telephone"
+        },
+        "email": {
+          "label": "Email"
+        },
+        "term": {
+          "label": "Term"
+        },
+        "paymentGroup": {
+          "label": "Payment Group"
         }
       }
     }

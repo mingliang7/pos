@@ -1,14 +1,14 @@
-import {Customers} from '../../imports/api/collections/customer.js';
+import {Vendors} from '../../imports/api/collections/vendor.js';
 
 // Lib
 import './_init.js';
 
-Customers.permit(['insert'])
+Vendors.permit(['insert'])
     .Pos_ifDataInsert()
     .allowInClientCode();
-Customers.permit(['update'])
+Vendors.permit(['update'])
     .Pos_ifDataUpdate()
     .allowInClientCode();
-Customers.permit(['remove'])
+Vendors.permit(['remove'])
     .Pos_ifDataRemove()
     .allowInClientCode();

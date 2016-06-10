@@ -23,30 +23,30 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {Categories} from '../../api/collections/category.js';
+import {PaymentGroups} from '../../api/collections/paymentGroup.js';
 
 // Tabular
-import {CategoryTabular} from '../../../common/tabulars/category.js';
+import {PaymentGroupTabular} from '../../../common/tabulars/paymentGroup.js';
 
 // Page
-import './category.html';
+import './paymentGroup.html';
 
 // Declare template
-let indexTmpl = Template.Pos_category,
-    actionTmpl = Template.Pos_categoryAction,
-    newTmpl = Template.Pos_categoryNew,
-    editTmpl = Template.Pos_categoryEdit,
-    showTmpl = Template.Pos_categoryShow;
+let indexTmpl = Template.Pos_paymentGroup,
+    actionTmpl = Template.Pos_paymentGroupAction,
+    newTmpl = Template.Pos_paymentGroupNew,
+    editTmpl = Template.Pos_paymentGroupEdit,
+    showTmpl = Template.Pos_paymentGroupShow;
 
 
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    createNewAlertify('category', {size: 'lg'});
-    createNewAlertify('categoryShow');
+    createNewAlertify('paymentGroup', {size: 'lg'});
+    createNewAlertify('paymentGroupShow');
 
     // Reactive table filter
-    this.filter = new ReactiveTable.Filter('pos.categoryByBranchFilter', ['branchId']);
+    this.filter = new ReactiveTable.Filter('pos.paymentGroupByBranchFilter', ['branchId']);
     this.autorun(()=> {
         this.filter.set(Session.get('currentBranch'));
     });
@@ -54,15 +54,15 @@ indexTmpl.onCreated(function () {
 
 indexTmpl.helpers({
     tabularTable(){
-        return CategoryTabular;
+        return PaymentGroupTabular;
     },
     selector() {
         return {branchId: Session.get('currentBranch')};
     },
     tableSettings(){
-        let i18nPrefix = 'pos.category.schema';
+        let i18nPrefix = 'pos.paymentGroup.schema';
 
-        reactiveTableSettings.collection = 'pos.reactiveTable.category';
+        reactiveTableSettings.collection = 'pos.reactiveTable.paymentGroup';
         reactiveTableSettings.fields = [
             {
                 key: '_id',
@@ -71,8 +71,8 @@ indexTmpl.helpers({
                 sortDirection: 'asc'
             },
             {key: 'name', label: __(`${i18nPrefix}.name.label`)},
+            {key: 'numberOfDay', label: __(`${i18nPrefix}.numberOfDay.label`)},
             {key: 'description', label: __(`${i18nPrefix}.description.label`)},
-            {key: '_parent.name', label: __(`${i18nPrefix}.parent.label`)},
             {
                 key: '_id',
                 label(){
@@ -92,16 +92,14 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        Session.set('CategoryIdSession', null);
-        alertify.category(fa('plus', TAPi18n.__('pos.category.title')), renderTemplate(newTmpl));
+        alertify.paymentGroup(fa('plus', TAPi18n.__('pos.paymentGroup.title')), renderTemplate(newTmpl));
     },
     'click .js-update' (event, instance) {
-        Session.set('CategoryIdSession', this._id);
-        alertify.category(fa('pencil', TAPi18n.__('pos.category.title')), renderTemplate(editTmpl, this));
+        alertify.paymentGroup(fa('pencil', TAPi18n.__('pos.paymentGroup.title')), renderTemplate(editTmpl, this));
     },
     'click .js-destroy' (event, instance) {
         var id = this._id;
-        Meteor.call('isCategoryHasRelation', id, function (error, result) {
+        Meteor.call('isPaymentGroupHasRelation',id, function (error, result) {
             if (error) {
                 alertify.error(error.message);
             } else {
@@ -109,9 +107,9 @@ indexTmpl.events({
                     alertify.warning("Data has been used. Can't remove.");
                 } else {
                     destroyAction(
-                        Categories,
+                        PaymentGroups,
                         {_id: id},
-                        {title: TAPi18n.__('pos.category.title'), itemTitle: id}
+                        {title: TAPi18n.__('pos.paymentGroup.title'), itemTitle: id}
                     );
                 }
             }
@@ -120,30 +118,30 @@ indexTmpl.events({
 
     },
     'click .js-display' (event, instance) {
-        alertify.categoryShow(fa('eye', TAPi18n.__('pos.category.title')), renderTemplate(showTmpl, this));
+        alertify.paymentGroupShow(fa('eye', TAPi18n.__('pos.paymentGroup.title')), renderTemplate(showTmpl, this));
     }
 });
 
 // New
 newTmpl.helpers({
     collection(){
-        return Categories;
+        return PaymentGroups;
     }
 });
 
 // Edit
 editTmpl.onCreated(function () {
     this.autorun(()=> {
-        this.subscribe('pos.category', {_id: this.data._id});
+        this.subscribe('pos.paymentGroup', {_id: this.data._id});
     });
 });
 
 editTmpl.helpers({
     collection(){
-        return Categories;
+        return PaymentGroups;
     },
     data () {
-        let data = Categories.findOne(this._id);
+        let data = PaymentGroups.findOne(this._id);
         return data;
     }
 });
@@ -151,17 +149,17 @@ editTmpl.helpers({
 // Show
 showTmpl.onCreated(function () {
     this.autorun(()=> {
-        this.subscribe('pos.category', {_id: this.data._id});
+        this.subscribe('pos.paymentGroup', {_id: this.data._id});
     });
 });
 
 showTmpl.helpers({
     i18nLabel(label){
-        let i18nLabel = `pos.category.schema.${label}.label`;
+        let i18nLabel = `pos.paymentGroup.schema.${label}.label`;
         return i18nLabel;
     },
     data () {
-        let data = Categories.findOne(this._id);
+        let data = PaymentGroups.findOne(this._id);
         return data;
     }
 });
@@ -170,7 +168,7 @@ showTmpl.helpers({
 let hooksObject = {
     onSuccess (formType, result) {
         if (formType == 'update') {
-            alertify.category().close();
+            alertify.paymentGroup().close();
         }
         displaySuccess();
     },
@@ -180,6 +178,6 @@ let hooksObject = {
 };
 
 AutoForm.addHooks([
-    'Pos_categoryNew',
-    'Pos_categoryEdit'
+    'Pos_paymentGroupNew',
+    'Pos_paymentGroupEdit'
 ], hooksObject);

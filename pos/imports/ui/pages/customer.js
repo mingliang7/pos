@@ -23,7 +23,7 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {Customer} from '../../api/collections/customer.js';
+import {Customers} from '../../api/collections/customer.js';
 
 // Tabular
 import {CustomerTabular} from '../../../common/tabulars/customer.js';
@@ -77,14 +77,9 @@ indexTmpl.helpers({
             },
             {key: 'name', label: __(`${i18nPrefix}.name.label`)},
             {key: 'gender', label: __(`${i18nPrefix}.gender.label`)},
-            {
-                key: 'dob',
-                label: __(`${i18nPrefix}.dob.label`),
-                fn (value, object, key) {
-                    return moment(value).format('YYYY-MM-DD');
-                }
-            },
             {key: 'telephone', label: __(`${i18nPrefix}.telephone.label`)},
+            {key: '_term.name', label: __(`${i18nPrefix}.term.label`)},
+            {key: '_paymentGroup.name', label: __(`${i18nPrefix}.paymentGroup.label`)},
             {
                 key: '_id',
                 label(){
@@ -111,7 +106,7 @@ indexTmpl.events({
     },
     'click .js-destroy' (event, instance) {
         destroyAction(
-            Customer,
+            Customers,
             {_id: this._id},
             {title: TAPi18n.__('pos.customer.title'), itemTitle: this._id}
         );
@@ -121,27 +116,54 @@ indexTmpl.events({
     }
 });
 
+newTmpl.onCreated(function () {
+    this.paymentType = new ReactiveVar();
+});
+
 // New
 newTmpl.helpers({
     collection(){
-        return Customer;
+        return Customers;
+    },
+    isTerm(){
+        return Template.instance().paymentType.get()=="Term";
+    },
+    isGroup(){
+        return Template.instance().paymentType.get()=="Group";
+    }
+});
+newTmpl.events({
+    'change [name="paymentType"]'(event,instance){
+        instance.paymentType.set($(event.currentTarget).val());
     }
 });
 
 // Edit
 editTmpl.onCreated(function () {
+    this.paymentType = new ReactiveVar(this.data.paymentType);
     this.autorun(()=> {
         this.subscribe('pos.customer', {_id: this.data._id});
     });
 });
+editTmpl.events({
+    'change [name="paymentType"]'(event,instance){
+        instance.paymentType.set($(event.currentTarget).val());
+    }
+});
 
 editTmpl.helpers({
     collection(){
-        return Customer;
+        return Customers;
     },
     data () {
-        let data = Customer.findOne(this._id);
+        let data = Customers.findOne(this._id);
         return data;
+    },
+    isTerm(){
+        return Template.instance().paymentType.get()=="Term";
+    },
+    isGroup(){
+        return Template.instance().paymentType.get()=="Group";
     }
 });
 
@@ -158,7 +180,7 @@ showTmpl.helpers({
         return i18nLabel;
     },
     data () {
-        let data = Customer.findOne(this._id);
+        let data = Customers.findOne(this._id);
         return data;
     }
 });

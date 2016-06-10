@@ -7,9 +7,9 @@ import {moment} from 'meteor/momentjs:moment';
 import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 import {SelectOpts} from '../../ui/libs/select-opts.js';
 
-export const Customers = new Mongo.Collection("pos_customers");
+export const Vendors = new Mongo.Collection("pos_vendors");
 
-Customers.schema = new SimpleSchema({
+Vendors.schema = new SimpleSchema({
     name: {
         type: String
     },
@@ -32,9 +32,6 @@ Customers.schema = new SimpleSchema({
         type: String,
         regEx: SimpleSchema.RegEx.Email,
         optional: true
-    },
-    branchId: {
-        type: String
     },
     paymentType: {
         type: String,
@@ -82,6 +79,6 @@ Customers.schema = new SimpleSchema({
 });
 
 Meteor.startup(function () {
-    Customers.schema.i18n("pos.customer.schema");
-    Customers.attachSchema(Customers.schema);
+    Vendors.schema.i18n("pos.vendor.schema");
+    Vendors.attachSchema(Vendors.schema);
 });

@@ -137,3 +137,35 @@ PosRoutes.route('/category', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/vendor.js';
+PosRoutes.route('/vendor', {
+    name: 'pos.vendor',
+    title: __('pos.vendor.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_vendor');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.vendor.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
+
+import '../imports/ui/pages/paymentGroup.js';
+PosRoutes.route('/payment-group', {
+    name: 'pos.paymentGroup',
+    title: __('pos.paymentGroup.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_paymentGroup');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.paymentGroup.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});

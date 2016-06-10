@@ -4,7 +4,8 @@ import {_} from 'meteor/erasaur:meteor-lodash';
 // Collection
 import {Branch} from '../../../../core/imports/api/collections/branch.js';
 import {Categories} from '../../api/collections/category.js'
-
+import {Terms} from '../../api/collections/terms.js'
+import {PaymentGroups} from '../../api/collections/paymentGroup.js'
 let getCategoryIdsForExclusion = function (array, categories) {
     if (categories != null) {
         categories.forEach(function (c) {
@@ -68,10 +69,38 @@ export const SelectOpts = {
     gender: function () {
         let list = [
             {label: "(Select One)", value: ""},
-            {label: "Male", value: "M"},
-            {label: "Female", value: "F"}
+            {label: "Male", value: "Male"},
+            {label: "Female", value: "Female"},
+            {label: "Unlimited", value: "Unlimited"}
         ];
 
+        return list;
+    },
+    paymentType: function () {
+        let list = [
+            {label: "(Select One)", value: ""},
+            {label: "Term", value: "Term"},
+            {label: "Group", value: "Group"}
+        ];
+
+        return list;
+    },
+    term: function () {
+        Meteor.subscribe('pos.term');
+        let list = [{label: "(Select One)", value: ""}];
+        Terms.find()
+            .forEach(function (obj) {
+                list.push({label: obj.name, value: obj._id});
+            });
+        return list;
+    },
+    paymentGroup: function () {
+        Meteor.subscribe('pos.paymentGroup');
+        let list = [{label: "(Select One)", value: ""}];
+        PaymentGroups.find()
+            .forEach(function (obj) {
+                list.push({label: obj.name, value: obj._id});
+            });
         return list;
     },
     category: function (param) {

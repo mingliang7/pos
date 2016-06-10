@@ -42,6 +42,7 @@ indexTmpl.helpers({
               sortOrder: 0,
               sortDirection: 'asc'
           },
+          {key: 'name', label:'Name'},
           {key: 'netDueIn', label:'Net Due In'},
           {key: 'discountPercentages', label: 'Discount Percentages'},
           {key: 'discountIfPaidWithin', label: 'Discount Within'},

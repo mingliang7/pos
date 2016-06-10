@@ -5,7 +5,9 @@
       "item": "មុខទំនិញ",
       "customer": "អតិថិជន",
       "order": "ទិញ",
-      "category":"ផ្នែក"
+      "category": "ផ្នែក",
+      "paymentGroup":"ក្រុម",
+      "vendor":"អ្នកផ្គត់ផ្គង់"
     },
     "home": {
       "title": "ទំព័រដើម",
@@ -39,9 +41,6 @@
         },
         "gender": {
           "label": "ភេទ"
-        },
-        "dob": {
-          "label": "ថ្ងៃខែឆ្នាំកំណើត"
         },
         "address": {
           "label": "អាសយដ្ឋាន"
@@ -119,6 +118,52 @@
         },
         "branchId": {
           "label": "សាខា"
+        }
+      }
+    },
+    "paymentGroup": {
+      "title":"ក្រុម",
+      "schema": {
+        "_id": {
+          "label": "លេខ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "description": {
+          "label": "បរិយាយ"
+        },
+        "numberOfDay": {
+          "label": "ចំនួនថ្ងៃ"
+        }
+      }
+    },
+    "vendor": {
+      "title": "អ្នកផ្គត់ផ្គង់",
+      "schema": {
+        "_id": {
+          "label": "លេខកូដ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "gender": {
+          "label": "ភេទ"
+        },
+        "address": {
+          "label": "អាសយដ្ឋាន"
+        },
+        "telephone": {
+          "label": "ទូរស័ព្ទ"
+        },
+        "email": {
+          "label": "អ៊ីម៉ែល"
+        },
+        "term": {
+          "label": "Term"
+        },
+        "paymentGroup": {
+          "label": "Payment Group"
         }
       }
     }
