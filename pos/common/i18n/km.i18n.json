@@ -159,8 +159,11 @@
         "email": {
           "label": "អ៊ីម៉ែល"
         },
-        "branchId": {
-          "label": "សាខា"
+        "term": {
+          "label": "Term"
+        },
+        "paymentGroup": {
+          "label": "Payment Group"
         }
       }
     }

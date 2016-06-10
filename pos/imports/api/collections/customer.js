@@ -47,8 +47,12 @@ Customers.schema = new SimpleSchema({
     },
     termId: {
         type: String,
-        optional: function () {
-            return this.paymentType == "Term";
+        optional: true,
+        custom: function () {
+            // let paymentType = AutoForm.getFieldValue('paymentType');
+            if (this.paymentType == "Term" && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                return "required";
+            }
         },
         label: "Payment Term",
         autoform: {
@@ -60,9 +64,12 @@ Customers.schema = new SimpleSchema({
     },
     paymentGroupId: {
         type: String,
-        optional: function () {
-            debugger;
-            return this.paymentType == "Group";
+        optional:true,
+        custom: function () {
+            // let paymentType = AutoForm.getFieldValue('paymentType');
+            if (this.paymentType == "Group" && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                return "required";
+            }
         },
         label: "Payment Group",
         autoform: {

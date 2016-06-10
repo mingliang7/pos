@@ -33,9 +33,6 @@ Vendors.schema = new SimpleSchema({
         regEx: SimpleSchema.RegEx.Email,
         optional: true
     },
-    branchId: {
-        type: String
-    },
     paymentType: {
         type: String,
         autoform: {
@@ -45,10 +42,16 @@ Vendors.schema = new SimpleSchema({
             }
         }
     },
-    termId:{
-        type:String,
-        optional:true,
-        label:"Payment Term",
+    termId: {
+        type: String,
+        optional: true,
+        custom: function () {
+            // let paymentType = AutoForm.getFieldValue('paymentType');
+            if (this.paymentType == "Term" && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                return "required";
+            }
+        },
+        label: "Payment Term",
         autoform: {
             type: "select2",
             options: function () {
@@ -56,10 +59,16 @@ Vendors.schema = new SimpleSchema({
             }
         }
     },
-    paymentGroupId:{
-        type:String,
-        label:"Payment Group",
+    paymentGroupId: {
+        type: String,
         optional:true,
+        custom: function () {
+            // let paymentType = AutoForm.getFieldValue('paymentType');
+            if (this.paymentType == "Group" && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                return "required";
+            }
+        },
+        label: "Payment Group",
         autoform: {
             type: "select2",
             options: function () {

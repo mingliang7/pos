@@ -29,8 +29,12 @@
                 {{> afQuickField name='name'}}
                 {{> afQuickField name='gender'}}
                 {{> afQuickField name='paymentType'}}
-                {{> afQuickField name='termId'}}
-                {{> afQuickField name='paymentGroupId'}}
+                {{#if isTerm}}
+                    {{> afQuickField name='termId'}}
+                {{/if}}
+                {{#if isGroup}}
+                    {{> afQuickField name='paymentGroupId'}}
+                {{/if}}
             </div>
             <div class="col-md-6">
                 {{> afQuickField name='telephone'}}
@@ -52,8 +56,12 @@
                     {{> afQuickField name='name'}}
                     {{> afQuickField name='gender'}}
                     {{> afQuickField name='paymentType'}}
-                    {{> afQuickField name='termId'}}
-                    {{> afQuickField name='paymentGroupId'}}
+                    {{#if isTerm}}
+                        {{> afQuickField name='termId'}}
+                    {{/if}}
+                    {{#if isGroup}}
+                        {{> afQuickField name='paymentGroupId'}}
+                    {{/if}}
                 </div>
                 <div class="col-md-6">
                     {{> afQuickField name='telephone'}}
@@ -80,6 +88,10 @@
                 <dd>{{name}}</dd>
                 <dt>{{_ (i18nLabel "gender")}}</dt>
                 <dd>{{gender}}</dd>
+                <dt>{{_ (i18nLabel "term")}}</dt>
+                <dd>{{_term.name}}</dd>
+                <dt>{{_ (i18nLabel "paymentGroup")}}</dt>
+                <dd>{{_paymentGroup.name}}</dd>
                 <dt>{{_ (i18nLabel "telephone")}}</dt>
                 <dd>{{telephone}}</dd>
                 <dt>{{_ (i18nLabel "email")}}</dt>

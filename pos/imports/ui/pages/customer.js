@@ -78,6 +78,8 @@ indexTmpl.helpers({
             {key: 'name', label: __(`${i18nPrefix}.name.label`)},
             {key: 'gender', label: __(`${i18nPrefix}.gender.label`)},
             {key: 'telephone', label: __(`${i18nPrefix}.telephone.label`)},
+            {key: '_term.name', label: __(`${i18nPrefix}.term.label`)},
+            {key: '_paymentGroup.name', label: __(`${i18nPrefix}.paymentGroup.label`)},
             {
                 key: '_id',
                 label(){
@@ -127,7 +129,6 @@ newTmpl.helpers({
         return Template.instance().paymentType.get()=="Term";
     },
     isGroup(){
-        debugger;
         return Template.instance().paymentType.get()=="Group";
     }
 });
@@ -139,9 +140,15 @@ newTmpl.events({
 
 // Edit
 editTmpl.onCreated(function () {
+    this.paymentType = new ReactiveVar(this.data.paymentType);
     this.autorun(()=> {
         this.subscribe('pos.customer', {_id: this.data._id});
     });
+});
+editTmpl.events({
+    'change [name="paymentType"]'(event,instance){
+        instance.paymentType.set($(event.currentTarget).val());
+    }
 });
 
 editTmpl.helpers({
@@ -151,6 +158,12 @@ editTmpl.helpers({
     data () {
         let data = Customers.findOne(this._id);
         return data;
+    },
+    isTerm(){
+        return Template.instance().paymentType.get()=="Term";
+    },
+    isGroup(){
+        return Template.instance().paymentType.get()=="Group";
     }
 });
 
