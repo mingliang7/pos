@@ -53,6 +53,12 @@
         },
         "branchId": {
           "label": "Branch"
+        },
+        "term": {
+          "label": "Term"
+        },
+        "paymentGroup": {
+          "label": "Payment Group"
         }
       }
     },
