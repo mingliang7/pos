@@ -14,10 +14,9 @@ export const itemInfo = new ValidatedMethod({
     validate: new SimpleSchema({
         _id: {type: String}
     }).validator(),
-    run(_id) {
+    run({_id}) {
         if (!this.isSimulation) {
             let data = Item.findOne(_id);
-
             return data;
         }
     }

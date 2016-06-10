@@ -241,9 +241,9 @@ Template.schemeItem.helpers({
 Template.schemeItem.events({
     'change [name="itemId"]': function (event, instance) {
         instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
-        instance.$('[name="qty"]').val('');
-        instance.$('[name="price"]').val('');
-        instance.$('[name="amount"]').val('');
+        // instance.$('[name="qty"]').val('');
+        // instance.$('[name="price"]').val('');
+        // instance.$('[name="amount"]').val('');
     },
     'keyup [name="qty"],[name="price"]': function (event, instance) {
         let qty = instance.$('[name="qty"]').val();
