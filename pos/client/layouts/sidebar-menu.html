@@ -13,6 +13,11 @@
                 <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.customer"}}</span>
             </a>
         </li>
+        <li class="{{isActiveRoute name='pos.vendor'}}">
+            <a href="{{pathFor 'pos.vendor'}}">
+                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.vendor"}}</span>
+            </a>
+        </li>
         <li class="{{isActiveRoute name='pos.order'}}">
             <a href="{{pathFor 'pos.order'}}">
                 <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.order"}}</span>
@@ -67,6 +72,11 @@
             <li class="{{isActiveRoute name='pos.term'}}">
                 <a href="{{pathFor 'pos.term'}}">
                     <i class="fa fa-circle-o"></i> <span>Term</span>
+                </a>
+            </li>
+            <li class="{{isActiveRoute name='pos.paymentGroup'}}">
+                <a href="{{pathFor 'pos.paymentGroup'}}">
+                    <i class="fa fa-circle-o"></i> <span>Payment Group</span>
                 </a>
             </li>
           </ul>

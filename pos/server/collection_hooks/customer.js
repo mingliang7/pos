@@ -8,3 +8,19 @@ Customers.before.insert(function (userId, doc) {
     let prefix = doc.branchId + '-';
     doc._id = idGenerator.genWithPrefix(Customers, prefix, 6);
 });
+
+Customers.after.update(function(userId, doc){
+  Meteor.defer(function(){
+    Meteor._sleepForMs(200);
+    let customer = Customers.findOne(doc._id);
+    if(doc.paymentType == 'Group'){
+      if(customer.termId){
+        Customers.direct.update(doc._id, {$unset: {termId: '', _term: ''}});
+      }
+    }else{
+      if(customer.paymentGroupId){
+        Customers.direct.update(doc._id, {$unset: {paymentGroupId: '', _paymentGroup: ''}});
+      }
+    }
+  })
+});
