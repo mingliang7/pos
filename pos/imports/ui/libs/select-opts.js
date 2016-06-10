@@ -67,23 +67,33 @@ export const SelectOpts = {
         return list;
     },
     gender: function () {
-        let list = [
+        return [
             {label: "(Select One)", value: ""},
             {label: "Male", value: "Male"},
             {label: "Female", value: "Female"},
             {label: "Unlimited", value: "Unlimited"}
         ];
-
-        return list;
+    },
+    status: function () {
+        return [
+            {label: "(Select One)", value: ""},
+            {label: "Enable", value: "Enable"},
+            {label: "Disable", value: "Disable"}
+        ];
+    },
+    position: function () {
+        return [
+            {label: "(Select One)", value: ""},
+            {label: "Seller", value: "Seller"},
+            {label: "Manager", value: "Manager"}
+        ];
     },
     paymentType: function () {
-        let list = [
+        return [
             {label: "(Select One)", value: ""},
             {label: "Term", value: "Term"},
             {label: "Group", value: "Group"}
         ];
-
-        return list;
     },
     term: function () {
         Meteor.subscribe('pos.term');

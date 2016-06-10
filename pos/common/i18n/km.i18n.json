@@ -7,7 +7,9 @@
       "order": "ទិញ",
       "category": "ផ្នែក",
       "paymentGroup":"ក្រុម",
-      "vendor":"អ្នកផ្គត់ផ្គង់"
+      "vendor":"អ្នកផ្គត់ផ្គង់",
+      "staff":"បុគ្គលិក",
+      "stockLocation":"ទីតាំងស្តុក"
     },
     "home": {
       "title": "ទំព័រដើម",

@@ -7,7 +7,9 @@
       "order": "Order",
       "category": "Category",
       "paymentGroup":"Payment Group",
-      "vendor":"Vendor"
+      "vendor":"Vendor",
+      "staff":"Staff",
+      "stockLocation":"Stock Location"
     },
     "home": {
       "title": "Home",
