@@ -12,7 +12,6 @@ export const Staffs = new Mongo.Collection("pos_staffs");
 Staffs.schema = new SimpleSchema({
     name: {
         type: String,
-        label: "Name"
     },
     gender: {
         type: String,
@@ -25,7 +24,6 @@ Staffs.schema = new SimpleSchema({
     },
     startDate: {
         type: Date,
-        label: "Start Date",
         defaultValue: moment().toDate(),
         autoform: {
             afFieldInput: {
@@ -39,7 +37,6 @@ Staffs.schema = new SimpleSchema({
     },
     position: {
         type: String,
-        label: "Position",
         autoform: {
             type: "select2",
             options: function () {
@@ -49,14 +46,12 @@ Staffs.schema = new SimpleSchema({
     },
     salary: {
         type: Number,
-        label: "Salary",
         decimal: true,
         optional: true
         //regEx: /^[a-z0-9A-Z_]{3,15}$/
     },
     status: {
         type: String,
-        label: "Status",
         autoform: {
             type: "select2",
             options: function () {

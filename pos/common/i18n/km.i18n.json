@@ -6,10 +6,10 @@
       "customer": "អតិថិជន",
       "order": "ទិញ",
       "category": "ផ្នែក",
-      "paymentGroup":"ក្រុម",
-      "vendor":"អ្នកផ្គត់ផ្គង់",
-      "staff":"បុគ្គលិក",
-      "stockLocation":"ទីតាំងស្តុក"
+      "paymentGroup": "ក្រុម",
+      "vendor": "អ្នកផ្គត់ផ្គង់",
+      "staff": "បុគ្គលិក",
+      "stockLocation": "ទីតាំងស្តុក"
     },
     "home": {
       "title": "ទំព័រដើម",
@@ -56,11 +56,23 @@
         "branchId": {
           "label": "សាខា"
         },
+        "paymentType":{
+          "label":"ប្រភេទនៃការបង់ប្រាក់"
+        },
         "term": {
-          "label": "Term"
+          "label": "លក្ខណៈបង់ប្រាក់"
         },
         "paymentGroup": {
-          "label": "Payment Group"
+          "label": "ក្រុមនៃការបង់ប្រាក់"
+        },
+        "termId": {
+          "label": "លក្ខណៈបង់ប្រាក់"
+        },
+        "paymentGroupId": {
+          "label": "ក្រុមនៃការបង់ប្រាក់"
+        },
+        "creditLimit":{
+          "label":"ដែនកំណត់ឥណទាន"
         }
       }
     },
@@ -124,13 +136,16 @@
         "parent": {
           "label": "ផ្នែកមេ"
         },
+        "parentId": {
+          "label": "ផ្នែកមេ"
+        },
         "branchId": {
           "label": "សាខា"
         }
       }
     },
     "paymentGroup": {
-      "title":"ក្រុម",
+      "title": "ក្រុម",
       "schema": {
         "_id": {
           "label": "លេខ"
@@ -167,11 +182,20 @@
         "email": {
           "label": "អ៊ីម៉ែល"
         },
+        "paymentType":{
+          "label":"ប្រភេទនៃការបង់ប្រាក់"
+        },
         "term": {
-          "label": "Term"
+          "label": "លក្ខណៈបង់ប្រាក់"
         },
         "paymentGroup": {
-          "label": "Payment Group"
+          "label": "ក្រុមនៃការបង់ប្រាក់"
+        },
+        "termId": {
+          "label": "លក្ខណៈបង់ប្រាក់"
+        },
+        "paymentGroupId": {
+          "label": "ក្រុមនៃការបង់ប្រាក់"
         }
       }
     },

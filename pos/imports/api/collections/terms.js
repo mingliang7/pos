@@ -1,8 +1,7 @@
 export const Terms = new Mongo.Collection('terms');
 Terms.schema = new SimpleSchema({
   name:{
-    type:String,
-    label:"Name"
+    type:String
   },
   netDueIn:{
     type: Number

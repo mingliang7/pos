@@ -6,10 +6,10 @@
       "customer": "Customer",
       "order": "Order",
       "category": "Category",
-      "paymentGroup":"Payment Group",
-      "vendor":"Vendor",
-      "staff":"Staff",
-      "stockLocation":"Stock Location"
+      "paymentGroup": "Payment Group",
+      "vendor": "Vendor",
+      "staff": "Staff",
+      "stockLocation": "Stock Location"
     },
     "home": {
       "title": "Home",
@@ -56,11 +56,23 @@
         "branchId": {
           "label": "Branch"
         },
+        "termId": {
+          "label": "Term"
+        },
+        "paymentType":{
+          "label":"Payment Type"
+        },
         "term": {
           "label": "Term"
         },
+        "paymentGroupId": {
+          "label": "Payment Group"
+        },
         "paymentGroup": {
           "label": "Payment Group"
+        },
+        "creditLimit": {
+          "label": "Credit Limit"
         }
       }
     },
@@ -124,6 +136,9 @@
         "parent": {
           "label": "Parent"
         },
+        "parentId": {
+          "label": "Parent"
+        },
         "branchId": {
           "label": "Branch"
         }
@@ -167,8 +182,17 @@
         "email": {
           "label": "Email"
         },
+        "termId": {
+          "label": "Term"
+        },
+        "paymentType":{
+          "label":"Payment Type"
+        },
         "term": {
           "label": "Term"
+        },
+        "paymentGroupId": {
+          "label": "Payment Group"
         },
         "paymentGroup": {
           "label": "Payment Group"
@@ -208,8 +232,8 @@
         "salary": {
           "label": "Salary"
         },
-        "status":{
-          "label":"Status"
+        "status": {
+          "label": "Status"
         }
       }
     },

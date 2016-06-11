@@ -56,7 +56,6 @@ Customers.schema = new SimpleSchema({
                 return "required";
             }
         },
-        label: "Payment Term",
         autoform: {
             type: "select2",
             options: function () {
@@ -73,7 +72,6 @@ Customers.schema = new SimpleSchema({
                 return "required";
             }
         },
-        label: "Payment Group",
         autoform: {
             type: "select2",
             options: function () {
