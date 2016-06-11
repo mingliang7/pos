@@ -78,6 +78,17 @@ Customers.schema = new SimpleSchema({
                 return SelectOpts.paymentGroup();
             }
         }
+    },
+    creditLimit: {
+      type: Number,
+      decimal: true,
+      optional: true,
+      autoform: {
+          type: 'inputmask',
+          inputmaskOptions: function () {
+              return inputmaskOptions.currency();
+          }
+      }
     }
 });
 
