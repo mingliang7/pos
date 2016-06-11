@@ -10,18 +10,15 @@ export const Categories = new Mongo.Collection("pos_categories");
 Categories.schema = new SimpleSchema({
     name: {
         type: String,
-        label: "Name",
         //unique: true,
         max: 200
     },
     description:{
         type:String,
-        label:"Description",
         optional:true
     },
     parentId:{
         type:String,
-        label:"Parent",
         optional:true,
         autoform: {
             type: "select2",

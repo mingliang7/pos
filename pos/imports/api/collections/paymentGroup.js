@@ -10,17 +10,14 @@ export const PaymentGroups = new Mongo.Collection("pos_paymentGroups");
 PaymentGroups.schema = new SimpleSchema({
     name: {
         type: String,
-        label: "Name",
         //unique: true,
         max: 200
     },
     numberOfDay:{
-        type:Number,
-        label:"Number of day"
+        type:Number
     },
     description:{
         type:String,
-        label:"Description",
         optional:true
     }
 });
