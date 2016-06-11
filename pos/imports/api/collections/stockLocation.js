@@ -7,81 +7,22 @@ import {moment} from 'meteor/momentjs:moment';
 import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 import {SelectOpts} from '../../ui/libs/select-opts.js';
 
-export const Customers = new Mongo.Collection("pos_customers");
+export const StockLocations = new Mongo.Collection("pos_stockLocations");
 
-Customers.schema = new SimpleSchema({
+StockLocations.schema = new SimpleSchema({
     name: {
         type: String
     },
-    gender: {
+    description: {
         type: String,
-        autoform: {
-            type: "select2",
-            options: function () {
-                return SelectOpts.gender();
-            }
-        }
-    },
-    address: {
-        type: String
-    },
-    telephone: {
-        type: String
-    },
-    email: {
-        type: String,
-        regEx: SimpleSchema.RegEx.Email,
-        optional: true
+        optional:true
     },
     branchId: {
         type: String
-    },
-    paymentType: {
-        type: String,
-        autoform: {
-            type: "select2",
-            options: function () {
-                return SelectOpts.paymentType();
-            }
-        }
-    },
-    termId: {
-        type: String,
-        optional: true,
-        custom: function () {
-            // let paymentType = AutoForm.getFieldValue('paymentType');
-            if (this.paymentType == "Term" && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                return "required";
-            }
-        },
-        label: "Payment Term",
-        autoform: {
-            type: "select2",
-            options: function () {
-                return SelectOpts.term();
-            }
-        }
-    },
-    paymentGroupId: {
-        type: String,
-        optional:true,
-        custom: function () {
-            // let paymentType = AutoForm.getFieldValue('paymentType');
-            if (this.paymentType == "Group" && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
-                return "required";
-            }
-        },
-        label: "Payment Group",
-        autoform: {
-            type: "select2",
-            options: function () {
-                return SelectOpts.paymentGroup();
-            }
-        }
     }
 });
 
 Meteor.startup(function () {
-    Customers.schema.i18n("pos.customer.schema");
-    Customers.attachSchema(Customers.schema);
+    StockLocations.schema.i18n("pos.stockLocation.schema");
+    StockLocations.attachSchema(StockLocations.schema);
 });

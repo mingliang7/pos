@@ -47,11 +47,11 @@ Staffs.schema = new SimpleSchema({
             }
         }
     },
-   salary: {
+    salary: {
         type: Number,
         label: "Salary",
         decimal: true,
-        optional:true
+        optional: true
         //regEx: /^[a-z0-9A-Z_]{3,15}$/
     },
     status: {
@@ -66,11 +66,11 @@ Staffs.schema = new SimpleSchema({
     },
     address: {
         type: String,
-        optional:true
+        optional: true
     },
     telephone: {
         type: String,
-        optional:true
+        optional: true
     },
     email: {
         type: String,
