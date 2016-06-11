@@ -4,7 +4,7 @@
       "home": "ទំព័រដើម",
       "item": "មុខទំនិញ",
       "customer": "អតិថិជន",
-      "order": "ទិញ",
+      "order": "កម្ម៉ង់ទិញ",
       "category": "ផ្នែក",
       "paymentGroup":"ក្រុម",
       "vendor":"អ្នកផ្គត់ផ្គង់",
@@ -65,7 +65,7 @@
       }
     },
     "order": {
-      "title": "ទិញ",
+      "title": "កម្ម៉ង់ទិញ",
       "invoiceAction": "វិក្កយប័ត្រ",
       "schema": {
         "_id": {

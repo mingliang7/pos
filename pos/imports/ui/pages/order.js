@@ -32,7 +32,18 @@ import {OrderTabular} from '../../../common/tabulars/order.js';
 // Page
 import './order.html';
 import './order-items.js';
-
+import './info-tab.html';
+//methods
+import {customerInfo} from '../../../common/methods/customer.js';
+//Tracker
+Tracker.autorun(function(){
+  if(Session.get('customerId')){
+    customerInfo.callPromise({_id: Session.get('customerId')})
+    .then(function(result){
+      Session.set('customerInfo', result);
+    })
+  }
+});
 // Declare template
 let indexTmpl = Template.Pos_order,
     actionTmpl = Template.Pos_orderAction,
@@ -61,7 +72,7 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        alertify.order(fa('plus', TAPi18n.__('pos.order.title')), renderTemplate(newTmpl));
+        alertify.order(fa('plus', TAPi18n.__('pos.order.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
         alertify.order(fa('pencil', TAPi18n.__('pos.order.title')), renderTemplate(editTmpl, this));
@@ -87,21 +98,41 @@ indexTmpl.events({
 });
 
 // New
-newTmpl.helpers({
-    collection(){
-        return Order;
-    },
-    itemsCollection(){
-        return itemsCollection;
-    },
-    disabledSubmitBtn: function () {
-        let cont = itemsCollection.find().count();
-        if (cont == 0) {
-            return {disabled: true};
-        }
-
-        return {};
+newTmpl.events({
+  'change [name=customerId]'(event, instance){
+    if(event.currentTarget.value != ''){
+      Session.set('customerId', event.currentTarget.value);
     }
+  }
+})
+newTmpl.helpers({
+  customerInfo() {
+    let customerInfo = Session.get('customerInfo');
+    if(!customerInfo){
+      return {empty: true, message: 'No data available'}
+    }
+
+    return {
+      fields: `<li>Phone: ${customerInfo.telephone ? customerInfo.telephone : ''}</li>
+              <li>Opening Balance: 0</li>
+              <li>Credit Limit: ${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</li>
+              <li>Sale Oreder to be invoice: 0`
+  };
+  },
+  collection(){
+      return Order;
+  },
+  itemsCollection(){
+      return itemsCollection;
+  },
+  disabledSubmitBtn: function () {
+      let cont = itemsCollection.find().count();
+      if (cont == 0) {
+          return {disabled: true};
+      }
+
+      return {};
+  }
 });
 
 newTmpl.onDestroyed(function () {

@@ -6,7 +6,7 @@ import {_} from 'meteor/erasaur:meteor-lodash';
 import {moment} from  'meteor/momentjs:moment';
 
 // Collection
-import {Customer} from '../../imports/api/collections/customer.js';
+import {Customers} from '../../imports/api/collections/customer.js';
 import {Item} from '../../imports/api/collections/item.js';
 import {Order} from '../../imports/api/collections/order.js';
 
@@ -36,7 +36,8 @@ SelectOptMethods.customer = new ValidatedMethod({
                 selector = {_id: {$in: values}};
             }
 
-            let data = Customer.find(selector, {limit: 10});
+            let data = Customers.find(selector, {limit: 10});
+            console.log(data.fetch())
             data.forEach(function (value) {
                 let label = value._id + ' : ' + value.name;
                 list.push({label: label, value: value._id});
