@@ -26,7 +26,8 @@ Customers.schema = new SimpleSchema({
         type: String
     },
     telephone: {
-        type: String
+        type: String,
+        optional:true
     },
     email: {
         type: String,
@@ -34,7 +35,8 @@ Customers.schema = new SimpleSchema({
         optional: true
     },
     branchId: {
-        type: String
+        type: String,
+        optional:true
     },
     paymentType: {
         type: String,

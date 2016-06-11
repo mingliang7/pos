@@ -18,6 +18,16 @@
                 <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.vendor"}}</span>
             </a>
         </li>
+        <li class="{{isActiveRoute name='pos.stockLocation'}}">
+            <a href="{{pathFor 'pos.stockLocation'}}">
+                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.stockLocation"}}</span>
+            </a>
+        </li>
+        <li class="{{isActiveRoute name='pos.staff'}}">
+            <a href="{{pathFor 'pos.staff'}}">
+                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.staff"}}</span>
+            </a>
+        </li>
         <li class="{{isActiveRoute name='pos.order'}}">
             <a href="{{pathFor 'pos.order'}}">
                 <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.order"}}</span>

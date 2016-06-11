@@ -169,3 +169,34 @@ PosRoutes.route('/payment-group', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/stockLocation.js';
+PosRoutes.route('/stock-location', {
+    name: 'pos.stockLocation',
+    title: __('pos.stockLocation.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_stockLocation');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.stockLocation.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
+import '../imports/ui/pages/staff.js';
+PosRoutes.route('/staff', {
+    name: 'pos.staff',
+    title: __('pos.staff.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_staff');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.staff.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});

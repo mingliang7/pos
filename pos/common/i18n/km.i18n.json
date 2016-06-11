@@ -7,7 +7,9 @@
       "order": "ទិញ",
       "category": "ផ្នែក",
       "paymentGroup":"ក្រុម",
-      "vendor":"អ្នកផ្គត់ផ្គង់"
+      "vendor":"អ្នកផ្គត់ផ្គង់",
+      "staff":"បុគ្គលិក",
+      "stockLocation":"ទីតាំងស្តុក"
     },
     "home": {
       "title": "ទំព័រដើម",
@@ -170,6 +172,61 @@
         },
         "paymentGroup": {
           "label": "Payment Group"
+        }
+      }
+    },
+    "staff": {
+      "title": "បុគ្គលិក",
+      "schema": {
+        "_id": {
+          "label": "លេខ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "gender": {
+          "label": "ភេទ"
+        },
+        "address": {
+          "label": "អាស័យដ្ឋាន"
+        },
+        "telephone": {
+          "label": "ទូរស័ព្ទ"
+        },
+        "email": {
+          "label": "អ៊ីម៉ែល"
+        },
+        "branchId": {
+          "label": "សាខា"
+        },
+        "startDate": {
+          "label": "កាលបរិច្ឆេទចូលធ្វើការ"
+        },
+        "position": {
+          "label": "មុខតំណែង"
+        },
+        "salary": {
+          "label": "ប្រាក់ខែ"
+        },
+        "status": {
+          "label": "ស្ថានភាព"
+        }
+      }
+    },
+    "stockLocation": {
+      "title": "ទីតាំងស្តុក",
+      "schema": {
+        "_id": {
+          "label": "លេខ"
+        },
+        "name": {
+          "label": "ឈ្មោះ"
+        },
+        "description": {
+          "label": "បរិយាយ"
+        },
+        "branchId": {
+          "label": "សាខា"
         }
       }
     }
