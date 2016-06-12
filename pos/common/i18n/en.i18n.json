@@ -4,7 +4,7 @@
       "home": "Home",
       "item": "Item",
       "customer": "Customer",
-      "order": "Order",
+      "order": "Sale Order",
       "category": "Category",
       "paymentGroup": "Payment Group",
       "vendor": "Vendor",
@@ -77,7 +77,7 @@
       }
     },
     "order": {
-      "title": "Order",
+      "title": "Sale Order",
       "invoiceAction": "invoice",
       "schema": {
         "_id": {

@@ -21,6 +21,7 @@ export const ItemsSchema = new SimpleSchema({
         autoform: {
             type: 'universe-select',
             afFieldInput: {
+                create: true,
                 uniPlaceholder: 'Select One',
                 optionsMethod: 'pos.selectOptMethods.item'
             }

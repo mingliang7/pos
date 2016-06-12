@@ -32,7 +32,19 @@ import {OrderTabular} from '../../../common/tabulars/order.js';
 // Page
 import './order.html';
 import './order-items.js';
-
+import './info-tab.html';
+//methods
+import {saleOrderInfo} from '../../../common/methods/sale-order.js'
+import {customerInfo} from '../../../common/methods/customer.js';
+//Tracker for customer infomation
+Tracker.autorun(function(){
+  if(Session.get('customerId')){
+    customerInfo.callPromise({_id: Session.get('customerId')})
+    .then(function(result){
+      Session.set('customerInfo', result);
+    })
+  }
+});
 // Declare template
 let indexTmpl = Template.Pos_order,
     actionTmpl = Template.Pos_orderAction,
@@ -61,7 +73,7 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        alertify.order(fa('plus', TAPi18n.__('pos.order.title')), renderTemplate(newTmpl));
+        alertify.order(fa('plus', TAPi18n.__('pos.order.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
         alertify.order(fa('pencil', TAPi18n.__('pos.order.title')), renderTemplate(editTmpl, this));
@@ -87,26 +99,48 @@ indexTmpl.events({
 });
 
 // New
-newTmpl.helpers({
-    collection(){
-        return Order;
-    },
-    itemsCollection(){
-        return itemsCollection;
-    },
-    disabledSubmitBtn: function () {
-        let cont = itemsCollection.find().count();
-        if (cont == 0) {
-            return {disabled: true};
-        }
-
-        return {};
+newTmpl.events({
+  'change [name=customerId]'(event, instance){
+    if(event.currentTarget.value != ''){
+      Session.set('customerId', event.currentTarget.value);
     }
+  }
+})
+newTmpl.helpers({
+  customerInfo() {
+    let customerInfo = Session.get('customerInfo');
+    if(!customerInfo){
+      return {empty: true, message: 'No data available'}
+    }
+
+    return {
+      fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
+              <li>Opening Balance: <span class="label label-success">0</span></li>
+              <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
+              <li>Sale Order to be invoice: <span class="label label-primary">0</span>`
+  };
+  },
+  collection(){
+      return Order;
+  },
+  itemsCollection(){
+      return itemsCollection;
+  },
+  disabledSubmitBtn: function () {
+      let cont = itemsCollection.find().count();
+      if (cont == 0) {
+          return {disabled: true};
+      }
+
+      return {};
+  }
 });
 
 newTmpl.onDestroyed(function () {
     // Remove items collection
     itemsCollection.remove({});
+    Session.set('customerInfo', undefined);
+    Session.set('customerId', undefined);
 });
 
 // Edit
@@ -125,7 +159,10 @@ editTmpl.helpers({
 
         // Add items to local collection
         _.forEach(data.items, (value)=> {
+          Meteor.call('getItem', value.itemId, function(err, result){
+            value.name = result.name;
             itemsCollection.insert(value);
+          })
         });
 
         return data;
@@ -150,9 +187,16 @@ editTmpl.onDestroyed(function () {
 
 // Show
 showTmpl.onCreated(function () {
-    this.autorun(()=> {
-        this.subscribe('pos.order', {_id: this.data._id});
-    });
+  this.saleOrder = new ReactiveVar();
+  this.autorun(()=> {
+      saleOrderInfo.callPromise({_id: this.data._id})
+            .then( (result) => {
+              this.saleOrder.set(result);
+            }).catch(function (err) {
+                console.log(err.message);
+            }
+        );
+  });
 });
 
 showTmpl.helpers({
@@ -160,13 +204,14 @@ showTmpl.helpers({
         let key = `pos.order.schema.${label}.label`;
         return TAPi18n.__(key);
     },
-    data () {
-        let data = Order.findOne(this._id);
+    saleOrderInfo () {
+
+        let saleOrderInfo = Template.instance().saleOrder.get();
 
         // Use jsonview
-        data.jsonViewOpts = {collapsed: true};
-
-        return data;
+        saleOrderInfo.jsonViewOpts = {collapsed: true};
+        //
+        return saleOrderInfo;
     }
 });
 

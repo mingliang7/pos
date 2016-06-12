@@ -41,7 +41,7 @@ var itemsCollection;
 // Page
 import './order-items.html';
 
-itemsTmpl.onCreated(function () {
+itemsTmpl.onCreated(function() {
     // Create new  alertify
     createNewAlertify('item');
 
@@ -55,64 +55,69 @@ itemsTmpl.onCreated(function () {
 
 });
 
-itemsTmpl.onRendered(function () {
-});
+itemsTmpl.onRendered(function() {});
 
 itemsTmpl.helpers({
-    tableSettings: function () {
+    tableSettings: function() {
         let i18nPrefix = 'pos.order.schema';
 
         reactiveTableSettings.showFilter = false;
         reactiveTableSettings.showNavigation = 'never';
         reactiveTableSettings.showColumnToggles = false;
         reactiveTableSettings.collection = itemsCollection;
-        reactiveTableSettings.fields = [
-            {key: 'itemId', label: __(`${i18nPrefix}.itemId.label`)},
-            {key: 'qty', label: __(`${i18nPrefix}.qty.label`)},
-            {
-                key: 'price',
-                label: __(`${i18nPrefix}.price.label`),
-                fn (value, object, key) {
-                    return numeral(value).format('0,0.00');
-                }
-            },
-            {
-                key: 'amount',
-                label: __(`${i18nPrefix}.amount.label`),
-                fn (value, object, key) {
-                    return numeral(value).format('0,0.00');
-                }
-            },
-            {
-                key: '_id',
-                label(){
-                    return fa('bars', '', true);
-                },
-                headerClass: function () {
-                    let css = 'text-center col-action-order-item';
-                    return css;
-                },
-                tmpl: actionItemsTmpl, sortable: false
+        reactiveTableSettings.fields = [{
+            key: 'itemId',
+            label: __(`${i18nPrefix}.itemId.label`)
+        }, {
+            key: 'name',
+            label: 'Name'
+        }, {
+            key: 'qty',
+            label: __(`${i18nPrefix}.qty.label`)
+        }, {
+            key: 'price',
+            label: __(`${i18nPrefix}.price.label`),
+            fn(value, object, key) {
+                return numeral(value).format('0,0.00');
             }
-        ];
+        }, {
+            key: 'amount',
+            label: __(`${i18nPrefix}.amount.label`),
+            fn(value, object, key) {
+                return numeral(value).format('0,0.00');
+            }
+        }, {
+            key: '_id',
+            label() {
+                return fa('bars', '', true);
+            },
+            headerClass: function() {
+                let css = 'text-center col-action-order-item';
+                return css;
+            },
+            tmpl: actionItemsTmpl,
+            sortable: false
+        }];
 
         return reactiveTableSettings;
     },
-    schema(){
+    schema() {
         return ItemsSchema;
     },
-    disabledAddItemBtn: function () {
+    disabledAddItemBtn: function() {
         const instance = Template.instance();
         if (instance.state('tmpAmount') <= 0) {
-            return {disabled: true};
+            return {
+                disabled: true
+            };
         }
 
         return {};
     },
-    total: function () {
+    total: function() {
         let total = 0;
         let getItems = itemsCollection.find();
-        getItems.forEach((obj)=> {
+        getItems.forEach((obj) => {
             total += obj.amount;
         });
 
@@ -121,12 +126,13 @@ itemsTmpl.helpers({
 });
 
 itemsTmpl.events({
-    'change [name="itemId"]': function (event, instance) {
+    'change [name="itemId"]': function(event, instance) {
+        instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
         instance.$('[name="qty"]').val('');
-        instance.$('[name="price"]').val('');
+        // instance.$('[name="price"]').val('');
         instance.$('[name="amount"]').val('');
     },
-    'keyup [name="qty"],[name="price"]': function (event, instance) {
+    'keyup [name="qty"],[name="price"]': function(event, instance) {
         let qty = instance.$('[name="qty"]').val();
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseInt(qty);
@@ -135,72 +141,83 @@ itemsTmpl.events({
 
         instance.state('amount', amount);
     },
-    'click .js-add-item': function (event, instance) {
+    'click .js-add-item': function(event, instance) {
         let itemId = instance.$('[name="itemId"]').val();
         let qty = parseInt(instance.$('[name="qty"]').val());
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         let amount = math.round(qty * price, 2);
 
         // Check exist
-        let exist = itemsCollection.findOne({itemId: itemId});
+        let exist = itemsCollection.findOne({
+            itemId: itemId
+        });
         if (exist) {
             qty += parseInt(exist.qty);
             amount = math.round(qty * price, 2);
 
-            itemsCollection.update(
-                {_id: _id},
-                {$set: {qty: qty, price: price, amount: amount}}
-            );
+            itemsCollection.update({
+                _id: exist._id
+            }, {
+                $set: {
+                    qty: qty,
+                    price: price,
+                    amount: amount
+                }
+            });
         } else {
             itemsCollection.insert({
                 itemId: itemId,
                 qty: qty,
                 price: price,
-                amount: amount
+                amount: amount,
+                name: instance.name
             });
         }
     },
     // Reactive table for item
-    'click .js-update-item': function (event, instance) {
+    'click .js-update-item': function(event, instance) {
         alertify.item(fa('pencil', TAPi18n.__('pos.order.schema.itemId.label')), renderTemplate(editItemsTmpl, this));
     },
-    'click .js-destroy-item': function (event, instance) {
+    'click .js-destroy-item': function(event, instance) {
         destroyAction(
-            itemsCollection,
-            {_id: this._id},
-            {title: TAPi18n.__('pos.order.schema.itemId.label'), itemTitle: this.itemId}
+            itemsCollection, {
+                _id: this._id
+            }, {
+                title: TAPi18n.__('pos.order.schema.itemId.label'),
+                itemTitle: this.itemId
+            }
         );
     }
 });
 
 
 // Edit
-editItemsTmpl.onCreated(function () {
+editItemsTmpl.onCreated(function() {
     this.state('amount', 0);
 
-    this.autorun(()=> {
+    this.autorun(() => {
         let data = Template.currentData();
         this.state('amount', data.amount);
     });
 });
 
 editItemsTmpl.helpers({
-    schema(){
+    schema() {
         return ItemsSchema;
     },
-    data: function () {
+    data: function() {
         let data = Template.currentData();
         return data;
     }
 });
 
 editItemsTmpl.events({
-    'change [name="itemId"]': function (event, instance) {
+    'change [name="itemId"]': function(event, instance) {
         instance.$('[name="qty"]').val('');
         instance.$('[name="price"]').val('');
         instance.$('[name="amount"]').val('');
     },
-    'keyup [name="qty"],[name="price"]': function (event, instance) {
+    'keyup [name="qty"],[name="price"]': function(event, instance) {
         let qty = instance.$('[name="qty"]').val();
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseInt(qty);
@@ -212,40 +229,50 @@ editItemsTmpl.events({
 });
 
 let hooksObject = {
-    onSubmit: function (insertDoc, updateDoc, currentDoc) {
+    onSubmit: function(insertDoc, updateDoc, currentDoc) {
         this.event.preventDefault();
 
         // Check old item
         if (insertDoc.itemId == currentDoc.itemId) {
-            itemsCollection.update(
-                {_id: currentDoc._id},
+            itemsCollection.update({
+                    _id: currentDoc._id
+                },
                 updateDoc
             );
         } else {
             // Check exist item
-            let exist = itemsCollection.findOne({_id: insertDoc._id});
+            let exist = itemsCollection.findOne({
+                _id: insertDoc._id
+            });
             if (exist) {
                 let newQty = exist.qty + insertDoc.qty;
                 let newPrice = insertDoc.price;
                 let newAmount = math.round(newQty * newPrice, 2);
 
-                itemsCollection.update(
-                    {_id: insertDoc._id},
-                    {$set: {qty: newQty, price: newPrice, amount: newAmount}}
-                );
+                itemsCollection.update({
+                    _id: insertDoc._id
+                }, {
+                    $set: {
+                        qty: newQty,
+                        price: newPrice,
+                        amount: newAmount
+                    }
+                });
             } else {
-                itemsCollection.remove({_id: currentDoc._id});
+                itemsCollection.remove({
+                    _id: currentDoc._id
+                });
                 itemsCollection.insert(insertDoc);
             }
         }
 
         this.done();
     },
-    onSuccess: function (formType, result) {
+    onSuccess: function(formType, result) {
         alertify.item().close();
         displaySuccess();
     },
-    onError: function (formType, error) {
+    onError: function(formType, error) {
         displayError(error.message);
     }
 };
