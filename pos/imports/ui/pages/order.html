@@ -112,30 +112,29 @@
 
 <!--Show-->
 <template name="Pos_orderShow">
-    {{#if Template.subscriptionsReady}}
-        {{#with data}}
-            <dl class="dl-horizontal">
-                <dt>{{i18nLabel "_id"}}</dt>
-                <dd>{{_id}}</dd>
-                <dt>{{i18nLabel "orderDate"}}</dt>
-                <dd>{{moFormat orderDate "DD/MM/YYYY"}}</dd>
-                <dt>{{i18nLabel "customerId"}}</dt>
-                <dd>{{customerId}}</dd>
-                <dt>{{i18nLabel "des"}}</dt>
-                <dd>{{des}}</dd>
-                <dt>{{i18nLabel "itemId"}}</dt>
-                <dd>
-                    <!--json2html-->
-                    <!--{{json2html items}}-->
+      {{#with saleOrderInfo}}
+          <dl class="dl-horizontal">
+            {{#with data}}
+              <dt>{{i18nLabel "_id"}}</dt>
+              <dd>{{_id}}</dd>
+              <dt>{{i18nLabel "orderDate"}}</dt>
+              <dd>{{moFormat orderDate "DD/MM/YYYY"}}</dd>
+              <dt>{{i18nLabel "customerId"}}</dt>
+              <dd>{{customer}}</dd>
+              <dt>{{i18nLabel "des"}}</dt>
+              <dd>{{des}}</dd>
+              <dt>{{i18nLabel "itemId"}}</dt>
+              <dd>
+              </dd>
+            {{/with}}
+                  <!--json2html-->
+                  <!--{{json2html items}}-->
 
-                    <!--jsonview-->
-                    {{> jsonView json=data.items options=data.jsonViewOpts}}
-                </dd>
-                <dt>{{i18nLabel "total"}}</dt>
-                <dd>{{numFormat total "0,0.00"}}</dd>
-            </dl>
-        {{/with}}
-    {{else}}
-        {{> loading}}
-    {{/if}}
+                  <!--jsonview-->
+                  {{> jsonView json=items options=jsonViewOpts}}
+              <dt>{{i18nLabel "total"}}</dt>
+              <dd>{{numFormat data.total "0,0.00"}}</dd>
+          </dl>
+      {{/with}}
+
 </template>

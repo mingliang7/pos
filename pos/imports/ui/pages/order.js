@@ -34,8 +34,9 @@ import './order.html';
 import './order-items.js';
 import './info-tab.html';
 //methods
+import {saleOrderInfo} from '../../../common/methods/sale-order.js'
 import {customerInfo} from '../../../common/methods/customer.js';
-//Tracker
+//Tracker for customer infomation
 Tracker.autorun(function(){
   if(Session.get('customerId')){
     customerInfo.callPromise({_id: Session.get('customerId')})
@@ -113,10 +114,10 @@ newTmpl.helpers({
     }
 
     return {
-      fields: `<li>Phone: ${customerInfo.telephone ? customerInfo.telephone : ''}</li>
-              <li>Opening Balance: 0</li>
-              <li>Credit Limit: ${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</li>
-              <li>Sale Oreder to be invoice: 0`
+      fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
+              <li>Opening Balance: <span class="label label-success">0</span></li>
+              <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
+              <li>Sale Order to be invoice: <span class="label label-primary">0</span>`
   };
   },
   collection(){
@@ -138,6 +139,8 @@ newTmpl.helpers({
 newTmpl.onDestroyed(function () {
     // Remove items collection
     itemsCollection.remove({});
+    Session.set('customerInfo', undefined);
+    Session.set('customerId', undefined);
 });
 
 // Edit
@@ -156,7 +159,10 @@ editTmpl.helpers({
 
         // Add items to local collection
         _.forEach(data.items, (value)=> {
+          Meteor.call('getItem', value.itemId, function(err, result){
+            value.name = result.name;
             itemsCollection.insert(value);
+          })
         });
 
         return data;
@@ -181,9 +187,16 @@ editTmpl.onDestroyed(function () {
 
 // Show
 showTmpl.onCreated(function () {
-    this.autorun(()=> {
-        this.subscribe('pos.order', {_id: this.data._id});
-    });
+  this.saleOrder = new ReactiveVar();
+  this.autorun(()=> {
+      saleOrderInfo.callPromise({_id: this.data._id})
+            .then( (result) => {
+              this.saleOrder.set(result);
+            }).catch(function (err) {
+                console.log(err.message);
+            }
+        );
+  });
 });
 
 showTmpl.helpers({
@@ -191,13 +204,14 @@ showTmpl.helpers({
         let key = `pos.order.schema.${label}.label`;
         return TAPi18n.__(key);
     },
-    data () {
-        let data = Order.findOne(this._id);
+    saleOrderInfo () {
+
+        let saleOrderInfo = Template.instance().saleOrder.get();
 
         // Use jsonview
-        data.jsonViewOpts = {collapsed: true};
-
-        return data;
+        saleOrderInfo.jsonViewOpts = {collapsed: true};
+        //
+        return saleOrderInfo;
     }
 });
 
