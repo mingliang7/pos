@@ -91,6 +91,21 @@ PosRoutes.route('/order', {
         parent: 'pos.home'
     }
 });
+//Purchase Order
+PosRoutes.route('/purchase-order', {
+    name: 'pos.purchaseOrder',
+    title: __('pos.purchaseOrder.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_purchaseOrder');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.purchaseOrder.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
 //unit
 import '../imports/ui/pages/unit';
 PosRoutes.route('/unit', {
@@ -184,7 +199,7 @@ PosRoutes.route('/stock-location', {
         icon: 'cart-plus',
         parent: 'pos.home'
     }
-});
+}); 
 import '../imports/ui/pages/staff.js';
 PosRoutes.route('/staff', {
     name: 'pos.staff',

@@ -17,7 +17,6 @@ export const customerInfo = new ValidatedMethod({
     run({_id}) {
         if (!this.isSimulation) {
             let customer = Customers.findOne(_id);
-            console.log(customer);
             return customer;
         }
     }

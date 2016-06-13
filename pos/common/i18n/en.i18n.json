@@ -5,6 +5,7 @@
       "item": "Item",
       "customer": "Customer",
       "order": "Sale Order",
+      "purchaseOrder": "Purchase Order",
       "category": "Category",
       "paymentGroup": "Payment Group",
       "vendor": "Vendor",
@@ -100,6 +101,42 @@
         },
         "customerId": {
           "label": "Customer"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "purchaseOrder": {
+      "title": "Purchase Order",
+      "invoiceAction": "invoice",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "orderDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
         },
         "des": {
           "label": "Description"

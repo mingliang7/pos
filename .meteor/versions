@@ -178,7 +178,6 @@ sha@1.0.7
 simple:highlight.js@1.0.9
 simple:markdown-templating@1.2.7
 simple:reactive-method@1.0.2
-space:template-controller@0.3.0
 spacebars@1.0.11
 spacebars-compiler@1.0.11
 srp@1.0.8
@@ -201,7 +200,7 @@ theara:fa-helpers@0.0.5
 theara:factory@0.1.1
 theara:fetcher@0.0.2
 theara:flow-router-breadcrumb@0.3.4
-theara:id-generator@0.0.7
+theara:id-generator@0.0.8
 theara:inputmask@3.2.6_7
 theara:jsonview@1.2.3
 theara:lightbox-helpers@0.0.7

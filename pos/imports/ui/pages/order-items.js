@@ -271,6 +271,7 @@ let hooksObject = {
     onSuccess: function(formType, result) {
         alertify.item().close();
         displaySuccess();
+        itemsCollection.remove({});
     },
     onError: function(formType, error) {
         displayError(error.message);
