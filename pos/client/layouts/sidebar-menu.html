@@ -33,6 +33,11 @@
                 <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.order"}}</span>
             </a>
         </li>
+        <li class="{{isActiveRoute name='pos.purchaseOrder'}}">
+            <a href="{{pathFor 'pos.purchaseOrder'}}">
+                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.purchaseOrder"}}</span>
+            </a>
+        </li>
     {{/if}}
 
     <!--Report-->

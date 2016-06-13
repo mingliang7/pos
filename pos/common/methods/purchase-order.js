@@ -5,10 +5,10 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 
 // Collection
-import {Order} from '../../imports/api/collections/order.js';
+import {PurchaseOrder} from '../../imports/api/collections/purchaseOrder.js';
 // Check user password
-export const saleOrderInfo = new ValidatedMethod({
-    name: 'pos.saleOrderInfo',
+export const PurchaseOrderInfo = new ValidatedMethod({
+    name: 'pos.purchaseOrderInfo',
     mixins: [CallPromiseMixin],
     validate: new SimpleSchema({
         _id: {
@@ -19,7 +19,7 @@ export const saleOrderInfo = new ValidatedMethod({
         _id
     }) {
         if (!this.isSimulation) {
-            let order = Order.aggregate([{
+            let purchaseOrder = PurchaseOrder.aggregate([{
                 $unwind: '$items'
             }, {
                 $lookup: {
@@ -36,7 +36,7 @@ export const saleOrderInfo = new ValidatedMethod({
                     data: {
                         $addToSet: {
                             _id: '$_id',
-                            orderDate: '$orderDate',
+                            purchaseOrderDate: '$purchaseOrderDate',
                             des: '$des',
                             customer: '$_customer.name',
                             total: '$total'
@@ -56,7 +56,7 @@ export const saleOrderInfo = new ValidatedMethod({
                 $unwind: '$data'
             }])
 
-            return order[0];
+            return purchaseOrder[0];
         }
     }
 });

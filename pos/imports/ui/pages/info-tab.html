@@ -5,7 +5,7 @@
               <!-- Nav tabs -->
               <div class="card">
                   <ul class="nav nav-tabs" role="tablist">
-                      <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Customer</a></li>
+                      <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">{{info}}</a></li>
                       <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Transaction</a></li>
                   </ul>
 
@@ -18,6 +18,8 @@
                           {{else}}
                             {{{data.fields}}}
                           {{/if}}
+                          <br>
+                          <h4><u>Recent Transaction</u></h4>
                         </ul>
                       </div>
                       <div role="tabpanel" class="tab-pane" id="profile">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type

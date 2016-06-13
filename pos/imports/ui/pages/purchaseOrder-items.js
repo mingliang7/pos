@@ -27,19 +27,19 @@ import '../../../../core/client/components/form-footer.js';
 
 // Collection
 import {ItemsSchema} from '../../api/collections/order-items.js';
-import {Order} from '../../api/collections/order.js';
+import {PurchaseOrder} from '../../api/collections/purchaseOrder.js';
 
 // Declare template
-var itemsTmpl = Template.Pos_orderItems,
-    actionItemsTmpl = Template.Pos_orderItemsAction;
-editItemsTmpl = Template.Pos_orderItemsEdit;
+var itemsTmpl = Template.Pos_purchaseOrderItems,
+    actionItemsTmpl = Template.Pos_purchaseOrderItemsAction;
+editItemsTmpl = Template.Pos_purchaseOrderItemsEdit;
 
 
 // Local collection
 var itemsCollection;
 
 // Page
-import './order-items.html';
+import './purchaseOrder-items.html';
 
 itemsTmpl.onCreated(function() {
     // Create new  alertify
@@ -59,7 +59,7 @@ itemsTmpl.onRendered(function() {});
 
 itemsTmpl.helpers({
     tableSettings: function() {
-        let i18nPrefix = 'pos.order.schema';
+        let i18nPrefix = 'pos.purchaseOrder.schema';
 
         reactiveTableSettings.showFilter = false;
         reactiveTableSettings.showNavigation = 'never';
@@ -92,7 +92,7 @@ itemsTmpl.helpers({
                 return fa('bars', '', true);
             },
             headerClass: function() {
-                let css = 'text-center col-action-order-item';
+                let css = 'text-center col-action-purchaseOrder-item';
                 return css;
             },
             tmpl: actionItemsTmpl,
@@ -176,14 +176,14 @@ itemsTmpl.events({
     },
     // Reactive table for item
     'click .js-update-item': function(event, instance) {
-        alertify.item(fa('pencil', TAPi18n.__('pos.order.schema.itemId.label')), renderTemplate(editItemsTmpl, this));
+        alertify.item(fa('pencil', TAPi18n.__('pos.purchaseOrder.schema.itemId.label')), renderTemplate(editItemsTmpl, this));
     },
     'click .js-destroy-item': function(event, instance) {
         destroyAction(
             itemsCollection, {
                 _id: this._id
             }, {
-                title: TAPi18n.__('pos.order.schema.itemId.label'),
+                title: TAPi18n.__('pos.purchaseOrder.schema.itemId.label'),
                 itemTitle: this.itemId
             }
         );
@@ -277,4 +277,4 @@ let hooksObject = {
         displayError(error.message);
     }
 };
-AutoForm.addHooks(['Pos_orderItemsEdit'], hooksObject);
+AutoForm.addHooks(['Pos_purchaseOrderItemsEdit'], hooksObject);

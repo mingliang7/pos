@@ -11,7 +11,7 @@ import {Item} from '../../imports/api/collections/item.js';
 import {Order} from '../../imports/api/collections/order.js';
 import {Staffs} from '../../imports/api/collections/staff.js';
 import {StockLocations} from '../../imports/api/collections/stockLocation.js';
-
+import {Vendors} from '../../imports/api/collections/vendor';
 export let SelectOptMethods = {};
 
 SelectOptMethods.stockLocation = new ValidatedMethod({
@@ -109,6 +109,40 @@ SelectOptMethods.customer = new ValidatedMethod({
             }
 
             let data = Customers.find(selector, {limit: 10});
+            data.forEach(function (value) {
+                let label = value._id + ' : ' + value.name;
+                list.push({label: label, value: value._id});
+            });
+
+            return list;
+        }
+    }
+});
+SelectOptMethods.vendor = new ValidatedMethod({
+    name: 'pos.selectOptMethods.vendor',
+    validate: null,
+    run(options) {
+        if (!this.isSimulation) {
+            this.unblock();
+
+            let list = [], selector = {};
+            let searchText = options.searchText;
+            let values = options.values;
+            let params = options.params || {};
+
+            if (searchText && params.branchId) {
+                selector = {
+                    $or: [
+                        {_id: {$regex: searchText, $options: 'i'}},
+                        {name: {$regex: searchText, $options: 'i'}}
+                    ],
+                    branchId: params.branchId
+                };
+            } else if (values.length) {
+                selector = {_id: {$in: values}};
+            }
+
+            let data = Vendors.find(selector, {limit: 10});
             console.log(data.fetch())
             data.forEach(function (value) {
                 let label = value._id + ' : ' + value.name;
