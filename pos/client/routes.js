@@ -200,3 +200,20 @@ PosRoutes.route('/staff', {
         parent: 'pos.home'
     }
 });
+
+// Invoice
+import '../imports/ui/pages/invoice.js';
+PosRoutes.route('/invoice', {
+    name: 'pos.invoice',
+    title: __('pos.invoice.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_invoice');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.invoice.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
