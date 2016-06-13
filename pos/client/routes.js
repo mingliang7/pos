@@ -92,6 +92,7 @@ PosRoutes.route('/order', {
     }
 });
 //Purchase Order
+import '../imports/ui/pages/purchaseOrder.js';
 PosRoutes.route('/purchase-order', {
     name: 'pos.purchaseOrder',
     title: __('pos.purchaseOrder.title'),
