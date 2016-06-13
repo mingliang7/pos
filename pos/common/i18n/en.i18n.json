@@ -10,7 +10,8 @@
       "paymentGroup": "Payment Group",
       "vendor": "Vendor",
       "staff": "Staff",
-      "stockLocation": "Stock Location"
+      "stockLocation": "Stock Location",
+      "invoice":"Invoice"
     },
     "home": {
       "title": "Home",
@@ -290,6 +291,50 @@
           "label": "Branch"
         }
       }
+    },
+    "invoice": {
+      "title": "Invoice",
+      "invoiceAction": "invoice",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "invoiceDate": {
+          "label": "Date"
+        },
+        "customerId": {
+          "label": "Customer"
+        },
+        "stockLocationId": {
+          "label": "Stock Location"
+        },
+        "staffId": {
+          "label": "Staff"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
     }
+
+
   }
 }
