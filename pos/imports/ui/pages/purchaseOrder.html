@@ -1,5 +1,5 @@
 <!--Index-->
-<template name="Pos_order">
+<template name="Pos_purchaseOrder">
     <p>
         <button type="button" class="btn btn-primary js-create"><i class="fa fa-plus"></i> {{_ "action.addNew"}}
         </button>
@@ -9,26 +9,26 @@
 </template>
 
 <!--Action-->
-<template name="Pos_orderAction">
+<template name="Pos_purchaseOrderAction">
     {{#columnAction}}
         <li><a href="#" class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
         <li><a href="#" class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
         <li><a href="#" class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
         <li role="separator" class="divider"></li>
-        <li><a href="#" class="js-invoice"><i class="fa fa-print"></i> {{_ "pos.order.invoiceAction"}}</a></li>
+        <li><a href="#" class="js-invoice"><i class="fa fa-print"></i> {{_ "pos.purchaseOrder.invoiceAction"}}</a></li>
     {{/columnAction}}
 </template>
 
 <!--Insert-->
-<template name="Pos_orderNew">
-    {{#autoForm collection=collection id="Pos_orderNew" type="insert"}}
+<template name="Pos_purchaseOrderNew">
+    {{#autoForm collection=collection id="Pos_purchaseOrderNew" type="insert"}}
         <div class="row">
             <div class="col-md-4">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Order</div>
+                    <div class="panel-heading">PurchaseOrder</div>
                     <div class="panel-body">
-                        {{> afQuickField name="customerId"}}
-                        {{> afQuickField name="orderDate"}}
+                        {{> afQuickField name="vendorId"}}
+                        {{> afQuickField name="purchaseOrderDate"}}
                         {{> afQuickField name="des"}}
 
                         {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
@@ -38,7 +38,7 @@
 
             <div class="col-md-8">
                 <!--Item Temporary-->
-                {{> Pos_orderItems itemsCollection=itemsCollection}}
+                {{> Pos_purchaseOrderItems itemsCollection=itemsCollection}}
 
                 <div class="row">
                     <div class="col-sm-12 pull-right">
@@ -57,24 +57,24 @@
             </div>
         </div>
         <div class="row">
-          <div class="col-md-5">
-            {{>infoTab data=customerInfo info="Customer"}}
-          </div>
+            <div class="col-md-5">
+                {{>infoTab data=vendorInfo info='Vendor'}}
+            </div>
         </div>
     {{/autoForm}}
 </template>
 
 <!--Update-->
-<template name="Pos_orderEdit">
+<template name="Pos_purchaseOrderEdit">
     {{#if Template.subscriptionsReady}}
-        {{#autoForm collection=collection id="Pos_orderEdit" doc=data type="update"}}
+        {{#autoForm collection=collection id="Pos_purchaseOrderEdit" doc=data type="update"}}
             <div class="row">
                 <div class="col-md-4">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Order</div>
+                        <div class="panel-heading">PurchaseOrder</div>
                         <div class="panel-body">
-                            {{> afQuickField name="customerId"}}
-                            {{> afQuickField name="orderDate"}}
+                            {{> afQuickField name="vendorId"}}
+                            {{> afQuickField name="purchaseOrderDate"}}
                             {{> afQuickField name="des"}}
 
                             {{> afQuickField type="hidden" name="branchId"}}
@@ -84,7 +84,7 @@
 
                 <div class="col-md-8">
                     <!--Item Temporary-->
-                    {{> Pos_orderItems itemsCollection=itemsCollection}}
+                    {{> Pos_purchaseOrderItems itemsCollection=itemsCollection}}
 
                     <div class="row">
                         <div class="col-sm-12 pull-right">
@@ -111,30 +111,30 @@
 </template>
 
 <!--Show-->
-<template name="Pos_orderShow">
-      {{#with saleOrderInfo}}
-          <dl class="dl-horizontal">
+<template name="Pos_purchaseOrderShow">
+    {{#with purchaseOrderInfo}}
+        <dl class="dl-horizontal">
             {{#with data}}
-              <dt>{{i18nLabel "_id"}}</dt>
-              <dd>{{_id}}</dd>
-              <dt>{{i18nLabel "orderDate"}}</dt>
-              <dd>{{moFormat orderDate "DD/MM/YYYY"}}</dd>
-              <dt>{{i18nLabel "customerId"}}</dt>
-              <dd>{{customer}}</dd>
-              <dt>{{i18nLabel "des"}}</dt>
-              <dd>{{des}}</dd>
-              <dt>{{i18nLabel "itemId"}}</dt>
-              <dd>
-              </dd>
+                <dt>{{i18nLabel "_id"}}</dt>
+                <dd>{{_id}}</dd>
+                <dt>{{i18nLabel "purchaseOrderDate"}}</dt>
+                <dd>{{moFormat purchaseOrderDate "DD/MM/YYYY"}}</dd>
+                <dt>{{i18nLabel "vendorId"}}</dt>
+                <dd>{{vendor}}</dd>
+                <dt>{{i18nLabel "des"}}</dt>
+                <dd>{{des}}</dd>
+                <dt>{{i18nLabel "itemId"}}</dt>
+                <dd>
+                </dd>
             {{/with}}
-                  <!--json2html-->
-                  <!--{{json2html items}}-->
+            <!--json2html-->
+            <!--{{json2html items}}-->
 
-                  <!--jsonview-->
-                  {{> jsonView json=items options=jsonViewOpts}}
-              <dt>{{i18nLabel "total"}}</dt>
-              <dd>{{numFormat data.total "0,0.00"}}</dd>
-          </dl>
-      {{/with}}
+            <!--jsonview-->
+            {{> jsonView json=items options=jsonViewOpts}}
+            <dt>{{i18nLabel "total"}}</dt>
+            <dd>{{numFormat data.total "0,0.00"}}</dd>
+        </dl>
+    {{/with}}
 
 </template>
