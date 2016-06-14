@@ -234,3 +234,21 @@ PosRoutes.route('/invoice', {
     }
 });
 
+
+// Enter Bill
+import '../imports/ui/pages/enterBill.js';
+PosRoutes.route('/enterBill', {
+    name: 'pos.enterBill',
+    title: __('pos.enterBill.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_enterBill');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.enterBill.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
+

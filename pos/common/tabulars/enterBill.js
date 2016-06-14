@@ -11,18 +11,18 @@ import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
-import {PurchaseOrder} from '../../imports/api/collections/purchaseOrder.js';
+import {EnterBills} from '../../imports/api/collections/enterBill.js';
 
 // Page
-Meteor.isClient && require('../../imports/ui/pages/purchaseOrder.html');
+Meteor.isClient && require('../../imports/ui/pages/enterBill.html');
 
-tabularOpts.name = 'pos.purchaseOrder';
-tabularOpts.collection = PurchaseOrder;
+tabularOpts.name = 'pos.enterBill';
+tabularOpts.collection = EnterBills;
 tabularOpts.columns = [
-    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_purchaseOrderAction},
+    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_enterBillAction},
     {data: "_id", title: "ID"},
     {
-        data: "purchaseOrderDate",
+        data: "enterBillDate",
         title: "Date",
         render: function (val, type, doc) {
             return moment(val).format('YYYY-MM-DD');
@@ -31,12 +31,14 @@ tabularOpts.columns = [
     {data: "total", title: "Total"},
     {data: "des", title: "Description"},
     {data: "vendorId", title: "Vendor ID"},
+    {data: "staffId", title: "Staff ID"},
+    {data: "stockLocationId", title: "Stock Location"},
     //{
-    //    data: "_customer",
-    //    title: "Customer Info",
+    //    data: "_vendor",
+    //    title: "Vendor Info",
     //    render: function (val, type, doc) {
     //        return JSON.stringify(val, null, ' ');
     //    }
     //}
 ];
-export const PurchaseOrderTabular = new Tabular.Table(tabularOpts);
+export const EnterBillTabular = new Tabular.Table(tabularOpts);
