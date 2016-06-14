@@ -38,6 +38,11 @@
                 <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.invoice"}}</span>
             </a>
         </li>
+        <li class="{{isActiveRoute name='pos.enterBill'}}">
+            <a href="{{pathFor 'pos.enterBill'}}">
+                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.enterBill"}}</span>
+            </a>
+        </li>
         <li class="{{isActiveRoute name='pos.purchaseOrder'}}">
             <a href="{{pathFor 'pos.purchaseOrder'}}">
                 <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.purchaseOrder"}}</span>
