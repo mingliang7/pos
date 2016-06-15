@@ -20,7 +20,12 @@
         <li><a class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
     {{/columnAction}}
 </template>
-
+<!-- Button Action -->
+<template name="Pos_customerButtonAction">
+  <span>
+    <a class="btn btn-success go-to-receive-payment"><i class="fa fa-check"></i> Receive Payment</a>
+  </span>
+</template>
 <!--Insert-->
 <template name="Pos_customerNew">
     {{#autoForm collection=collection id="Pos_customerNew" type="insert"}}

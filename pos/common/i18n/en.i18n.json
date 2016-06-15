@@ -333,8 +333,9 @@
           "label": "Branch"
         }
       }
+    },
+    "receivePayment":{
+      "title": "Receive Payment"
     }
-
-
   }
 }

@@ -1,0 +1,109 @@
+<template name="Pos_receivePayment">
+  {{#autoForm schema=schema id="Pos_orderNew" doc=doc type="insert" }}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-3">
+                  {{> afQuickField name="customerId"}}
+                </div>
+                <div class="col-xs-3">
+                  {{> afQuickField name="customerBalance" value=customerBalance readonly=true}}
+                </div>
+                <div class="col-xs-3">
+                  {{> afQuickField name="accountReceivable"}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3">
+                  {{> afQuickField name="amount"}}
+                </div>
+                <div class="col-xs-3">
+                  {{> afQuickField name="paymentDate"}}
+                </div>
+                <div class="col-xs-3">
+                  {{> afQuickField name="exchangeRate" readonly=true}}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                  {{> afQuickField name="paymentMethods"}}<br>
+                </div>
+                <div class="col-xs-3">
+                  {{> afQuickField name="referenceId"}}<br>
+                </div>
+                <div class="col-xs-3">
+                  {{> afQuickField name="depositTo"}}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/autoForm}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><strong>Order summary</strong></h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                              {{#if countIsqualSales}}
+                                <td><strong><input type="checkbox" name="select-all" checked class="select-all">All</strong></td>
+                              {{else}}
+                                <td><strong><input type="checkbox" name="select-all" class="select-all">All</strong></td>
+                              {{/if}}
+                                <td class="text-center"><strong>Date</strong></td>
+                                <td class="text-center"><strong>Number</strong></td>
+                                <td class="text-right"><strong>Org.Amount</strong></td>
+                                <td class="text-right"><strong>Amount Due</strong></td>
+                                <td class="text-right"><strong>Payment</strong></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- foreach ($order->lineItems as $line) or some such thing here -->
+                          {{#if orders}}
+                            {{#each orders}}
+                              <tr class='order-parents'>
+                                  <td>
+                                    {{selectedOrder}}
+                                    {{#if hasAmount}}
+                                      <input type="checkbox" name="name" checked class="select-order">
+                                    {{else}}
+                                      <input type="checkbox" name="name" class="select-order">
+                                    {{/if}}
+                                  </td>
+                                  <td class="text-center">{{moFormat orderDate 'YYYY-MM-DD HH:mm'}}</td>
+                                  <td class="text-center">{{_id}}</td>
+                                  <td class="text-right">{{total}}</td>
+                                  <td class="text-right">1000</td>
+                                  <td class="text-right"><input type="text" value="{{#if hasAmount}}{{total}}{{/if}}" class="total"></td>
+                              </tr>
+                            {{/each}}
+                          {{else}}
+                            No data available......
+                          {{/if}}
+                            <tr>
+
+                            </tr>
+                            <tr>
+                                <td class="no-line"></td>
+                                <td class="no-line"></td>
+                                <td class="no-line text-center"><strong>Total</strong></td>
+                                <td class="no-line text-right">$685.99</td>
+                                <td class="no-line text-right">$685.99</td>
+                                <td class="no-line text-right total-paid">{{totalPaid}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-primary"><i class="fa fa-check"></i>Save</button>
+                <button class="btn btn-default">Back</button>
+            </div>
+        </div>
+    </div>
+</div>
+</template>

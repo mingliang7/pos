@@ -108,6 +108,14 @@ Order.schema = new SimpleSchema({
     },
     branchId: {
         type: String
+    },
+    status: {
+      type: String,
+      autoValue: function(){
+        if(this.isInsert){
+          return 'active';
+        }
+      }
     }
 });
 

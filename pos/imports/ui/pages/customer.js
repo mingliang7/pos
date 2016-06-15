@@ -34,6 +34,7 @@ import './customer.html';
 // Declare template
 let indexTmpl = Template.Pos_customer,
     actionTmpl = Template.Pos_customerAction,
+    buttonActionTmpl = Template.Pos_customerButtonAction,
     newTmpl = Template.Pos_customerNew,
     editTmpl = Template.Pos_customerEdit,
     showTmpl = Template.Pos_customerShow;
@@ -69,17 +70,28 @@ indexTmpl.helpers({
         reactiveTableSettings.collection = 'pos.reactiveTable.customer';
         reactiveTableSettings.filters = ['pos.customerByBranchFilter'];
         reactiveTableSettings.fields = [
-            {
-                key: '_id',
-                label: __(`${i18nPrefix}._id.label`),
-                sortOrder: 0,
-                sortDirection: 'asc'
-            },
+            // {
+            //     key: '_id',
+            //     label: __(`${i18nPrefix}._id.label`),
+            //     sortOrder: 0,
+            //     sortDirection: 'asc'
+            // },
             {key: 'name', label: __(`${i18nPrefix}.name.label`)},
             {key: 'gender', label: __(`${i18nPrefix}.gender.label`)},
             {key: 'telephone', label: __(`${i18nPrefix}.telephone.label`)},
             {key: '_term.name', label: __(`${i18nPrefix}.term.label`)},
             {key: '_paymentGroup.name', label: __(`${i18nPrefix}.paymentGroup.label`)},
+            {
+              key: '_id',
+              label(){
+                return ''
+              },
+              headerClass: function () {
+                  let css = 'col-receive-payment cursor-pointer';
+                  return css;
+              },
+              tmpl: buttonActionTmpl, sortable: false
+            },
             {
                 key: '_id',
                 label(){
@@ -113,6 +125,9 @@ indexTmpl.events({
     },
     'click .js-display' (event, instance) {
         alertify.customerShow(fa('eye', TAPi18n.__('pos.customer.title')), renderTemplate(showTmpl, this));
+    },
+    'click .go-to-receive-payment'(event, instance){
+       FlowRouter.go('pos.receivePayment', { customerId: this._id });
     }
 });
 
