@@ -2,27 +2,41 @@ import {Meteor} from 'meteor/meteor';
 import {Accounts} from 'meteor/accounts-base';
 import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
+import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 //collection
 import {Order} from '../../imports/api/collections/order.js'
 import {ReceivePayment} from '../../imports/api/collections/receivePayment.js';
 // Check user password
-export const customerBalance = new ValidatedMethod({
-    name: 'pos.customerBalance',
+export const amountDue = new ValidatedMethod({
+    name: 'pos.amountDue',
+    mixins: [CallPromiseMixin],
     validate: new SimpleSchema({
-        customerId: {
+        orderId: {
             type: String
         }
     }).validator(),
     run({
-        customerId
+        orderId
     }) {
         if (!this.isSimulation) {
-            let totalBalance = 0;
-            let orders = Order.find({customerId: customerId, status: 'active'});
-            if(orders.count()>0){
-
-            }
-            return totalBalance;
+            let receivePayment = ReceivePayment.aggregate([{
+                $sort: {
+                    _id: 1,
+                    paymentDate: 1
+                }
+            }, {
+                $group: {
+                    _id: '$_id',
+                    lastPaymentDate: {
+                        $last: "$paymentDate"
+                    },
+                    dueAmount: {
+                        $sum: '$balanceAmount'
+                    }
+                }
+            }]);
+            return 11;
         }
+
     }
 });

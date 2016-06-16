@@ -10,7 +10,7 @@ ReceivePayment.schema = new SimpleSchema({
         type: Number,
         decimal: true
     },
-    owedAmount: {
+    dueAmount: {
         type: Number,
         decimal: true
     },

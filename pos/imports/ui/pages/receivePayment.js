@@ -1,21 +1,34 @@
+//components
+
 //collections
 import {Order} from '../../api/collections/order.js';
-
+import {ReceivePayment} from '../../api/collections/receivePayment';
 //schema
 import {receivePaymentSchema} from '../../api/collections/receivePaymentSchema.js';
 //page
 import './receivePayment.html';
+//methods
+import {amountDue} from '../../../common/methods/receivePayment.js';
 
 let indexTmpl = Template.Pos_receivePayment;
-Tracker.autorun(function() {
+Tracker.autorun(function () {
     if (Session.get('customerId')) {
         Meteor.subscribe('pos.activeOrder', {
             customerId: Session.get('customerId'),
             status: 'active'
         });
     }
+    if (Session.get('orders')) {
+        Meteor.subscribe('pos.receivePayment', {
+            orderId: {
+                $in: Session.get('orders')
+            }
+        });
+    }
 });
-indexTmpl.onCreated(function() {
+indexTmpl.onCreated(function () {
+    Session.set('totalAmountDue', 0);
+    Session.set('amountDue', 0);
     Session.set('salesCount', 0);
     Session.set('amount', 0);
     Session.set('sales', {
@@ -23,16 +36,19 @@ indexTmpl.onCreated(function() {
     });
     Session.set('balance', 0)
 });
-indexTmpl.onDestroyed(function() {
+indexTmpl.onDestroyed(function () {
+    Session.set('orders', undefined);
+    Session.set('amountDue', 0);
     Session.set('amount', 0);
+    Session.set('totalAmountDue', 0);
     Session.set('sales', {
         count: 0
     });
     Session.set('balance', 0)
 });
-indexTmpl.rendered = function() {
+indexTmpl.rendered = function () {
     Session.set('customerId', FlowRouter.getParam('customerId'));
-}
+};
 indexTmpl.helpers({
     countIsqualSales() {
         let sales = Session.get('sales');
@@ -46,8 +62,15 @@ indexTmpl.helpers({
             customerId: FlowRouter.getParam('customerId')
         }
     },
-    customerBalance() {
-
+    dueAmount(){
+        let receivePayments = ReceivePayment.find({orderId: this._id}, {sort: {_id: 1, paymentDate: 1}});
+        if(receivePayments.count> 0){
+           let lastPayment =  _.last(receivePayments.fetch());
+            totalAmountDue += lastPayment.balance;
+            return lastPayment.balance;
+        }
+        total
+        return `${numeral(this.total).format('0,0.00')}`;
     },
     schema() {
         return receivePaymentSchema;
@@ -59,6 +82,11 @@ indexTmpl.helpers({
             }
         });
         if (orders.count() > 0) {
+            let arr = [];
+            orders.forEach(function (order) {
+                arr.push(order);
+            });
+            Session.set('orders', arr);
             return orders;
         }
         return false;
@@ -78,17 +106,17 @@ indexTmpl.helpers({
         return false;
     },
     totalPaid(){
-      let totalPaid  = 0;
-      let salesObj = Session.get('sales');
-      delete salesObj.count;
-      if(_.isEmpty(salesObj)){
-        return 0;
-      }else{
-        for(let k in salesObj){
-            totalPaid += salesObj[k].receivedPay
+        let totalPaid = 0;
+        let salesObj = Session.get('sales');
+        delete salesObj.count;
+        if (_.isEmpty(salesObj)) {
+            return 0;
+        } else {
+            for (let k in salesObj) {
+                totalPaid += salesObj[k].receivedPay
+            }
+            return totalPaid;
         }
-        return totalPaid;
-      }
     }
 })
 
@@ -142,7 +170,7 @@ indexTmpl.events({
             })
             saleObj.count = sales.count();
             Session.set('sales', saleObj);
-            $('.select-order').each(function() {
+            $('.select-order').each(function () {
                 $(this).prop('checked', true);
                 $(this).parents('.order-parents').find('.total').val(total[index])
                 index++;
@@ -161,8 +189,8 @@ indexTmpl.events({
                 $(event.currentTarget).parents('.order-parents').find('.select-order').prop('checked', false);
             }
         } else {
-            if(!_.has(selectedOrder, this._id)){
-              selectedOrder.count += 1;
+            if (!_.has(selectedOrder, this._id)) {
+                selectedOrder.count += 1;
             }
             selectedOrder[this._id] = this;
             selectedOrder[this._id].receivedPay = parseFloat(event.currentTarget.value);
@@ -182,7 +210,7 @@ function clearChecbox() {
     Session.set('sales', {
         count: 0
     }); //set obj to empty on keychange
-    $(".select-order").each(function() {
+    $(".select-order").each(function () {
         $(this).prop('checked', false);
         $(this).parents('.order-parents').find('.total').val('');
     })

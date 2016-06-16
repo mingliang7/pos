@@ -79,7 +79,7 @@
                                   <td class="text-center">{{moFormat orderDate 'YYYY-MM-DD HH:mm'}}</td>
                                   <td class="text-center">{{_id}}</td>
                                   <td class="text-right">{{total}}</td>
-                                  <td class="text-right">1000</td>
+                                  <td class="text-right">{{dueAmount}}</td>
                                   <td class="text-right"><input type="text" value="{{#if hasAmount}}{{total}}{{/if}}" class="total"></td>
                               </tr>
                             {{/each}}
@@ -98,6 +98,52 @@
                                 <td class="no-line text-right total-paid">{{totalPaid}}</td>
                             </tr>
                         </tbody>
+                    </table>
+                    <table width='0' border='0' align='right' cellpadding='0' cellspacing='0'>
+                        <tbody>
+                        <tr>
+                            <td width='0' align='left' valign='top' style='color:#404041;font-size:12px;line-height:16px;padding:15px 0px 3px 0px'>
+                                <strong>Amount for Selected invoice</strong>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td width='0' align='left' valign='top' style='color:#404041;font-size:12px;line-height:16px;padding:15px 0px 3px 0px'>
+                                <strong>Sub-total:</strong>
+                                <span style='font-size:11px;color:#666666'>(VAT included)</span>
+                            </td>
+                            <td width='0' align='right' valign='top' style='color:#404041;font-size:12px;line-height:16px;padding:15px 5px 3px 5px'>
+                                $1,234.00
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align='left' valign='top' style='color:#404041;font-size:12px;line-height:16px;padding:5px 0px 3px 0px'>
+                                <strong>Delivery costs:</strong>
+                            </td>
+                            <td width='62' align='right' valign='top' style='color:#404041;font-size:12px;line-height:16px;padding:5px 5px 3px 5px'>
+                                $0.00
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align='left' valign='top' style='color:#404041;font-size:12px;line-height:16px;padding:5px 0px 3px 0px;border-bottom:solid 1px #999999'>
+                                <strong>Order discount:</strong>
+                            </td>
+                            <td width='62' align='right' valign='top' style='color:#404041;font-size:12px;line-height:16px;padding:5px 5px 3px 5px;border-bottom:solid 1px #999999'>
+                                $0.00
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align='left' valign='bottom' style='color:#404041;font-size:13px;line-height:16px;padding:5px 0px 3px 0px'>
+                                <strong>Grand Total:</strong>
+                            </td>
+                            <td width='62' align='right' valign='bottom' style='color:#339933;font-size:13px;line-height:16px;padding:5px 5px 3px 5px'>
+                                <strong>$1,234.00</strong>
+                            </td>
+                        </tr>
+                        </tbody>
+
+
                     </table>
                 </div>
                 <button class="btn btn-primary"><i class="fa fa-check"></i>Save</button>
