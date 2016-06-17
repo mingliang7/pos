@@ -11,7 +11,8 @@
       "vendor": "Vendor",
       "staff": "Staff",
       "stockLocation": "Stock Location",
-      "invoice":"Invoice"
+      "invoice": "Invoice",
+      "enterBill": "Enter Bill"
     },
     "home": {
       "title": "Home",
@@ -61,8 +62,8 @@
         "termId": {
           "label": "Term"
         },
-        "paymentType":{
-          "label":"Payment Type"
+        "paymentType": {
+          "label": "Payment Type"
         },
         "term": {
           "label": "Term"
@@ -223,8 +224,8 @@
         "termId": {
           "label": "Term"
         },
-        "paymentType":{
-          "label":"Payment Type"
+        "paymentType": {
+          "label": "Payment Type"
         },
         "term": {
           "label": "Term"
@@ -334,8 +335,50 @@
         }
       }
     },
-    "receivePayment":{
+    "receivePayment": {
       "title": "Receive Payment"
+    },
+    "enterBill": {
+      "title": "Enter Bill",
+      "invoiceAction": "Enter Bill",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "invoiceDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "stockLocationId": {
+          "label": "Stock Location"
+        },
+        "staffId": {
+          "label": "Staff"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
     }
   }
 }

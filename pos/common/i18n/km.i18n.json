@@ -11,7 +11,8 @@
       "vendor": "អ្នកផ្គត់ផ្គង់",
       "staff": "បុគ្គលិក",
       "stockLocation": "ទីតាំងស្តុក",
-      "invoice":"វិក័យបត្រ"
+      "invoice": "វិក័យបត្រ",
+      "enterBill": "សរសេរវិក័យបត្រ"
     },
     "home": {
       "title": "ទំព័រដើម",
@@ -58,8 +59,8 @@
         "branchId": {
           "label": "សាខា"
         },
-        "paymentType":{
-          "label":"ប្រភេទនៃការបង់ប្រាក់"
+        "paymentType": {
+          "label": "ប្រភេទនៃការបង់ប្រាក់"
         },
         "term": {
           "label": "លក្ខណៈបង់ប្រាក់"
@@ -73,8 +74,8 @@
         "paymentGroupId": {
           "label": "ក្រុមនៃការបង់ប្រាក់"
         },
-        "creditLimit":{
-          "label":"ដែនកំណត់ឥណទាន"
+        "creditLimit": {
+          "label": "ដែនកំណត់ឥណទាន"
         }
       }
     },
@@ -220,8 +221,8 @@
         "email": {
           "label": "អ៊ីម៉ែល"
         },
-        "paymentType":{
-          "label":"ប្រភេទនៃការបង់ប្រាក់"
+        "paymentType": {
+          "label": "ប្រភេទនៃការបង់ប្រាក់"
         },
         "term": {
           "label": "លក្ខណៈបង់ប្រាក់"
@@ -293,8 +294,8 @@
       }
     },
     "invoice": {
-      "title": "វិកយប័ត្រ",
-      "invoiceAction": "វិកយប័ត្រ",
+      "title": "វិក័យបត្រ",
+      "invoiceAction": "វិក័យបត្រ",
       "schema": {
         "_id": {
           "label": "លេខកូដ"
@@ -334,8 +335,50 @@
         }
       }
     },
-    "receivePayment":{
+    "receivePayment": {
       "title": "ការបង់ប្រាក់"
+    },
+    "enterBill": {
+      "title": "សរសេរវិក័យបត្រ",
+      "invoiceAction": "វិក័យបត្រ",
+      "schema": {
+        "_id": {
+          "label": "លេខកូដ"
+        },
+        "itemId": {
+          "label": "ទំនិញ"
+        },
+        "qty": {
+          "label": "បរិមាណ"
+        },
+        "price": {
+          "label": "តម្លៃ"
+        },
+        "amount": {
+          "label": "ចំនួន"
+        },
+        "invoiceDate": {
+          "label": "កាលបរិច្ឆេទ"
+        },
+        "staffId": {
+          "label": "បុគ្គលិក"
+        },
+        "stockLocationId": {
+          "label": "ទីតាំងស្តុក"
+        },
+        "vendorId": {
+          "label": "អ្នកផ្គត់ផ្គង់"
+        },
+        "des": {
+          "label": "បរិយាយ"
+        },
+        "total": {
+          "label": "សរុប"
+        },
+        "branchId": {
+          "label": "សាខា"
+        }
+      }
     }
   }
 }
