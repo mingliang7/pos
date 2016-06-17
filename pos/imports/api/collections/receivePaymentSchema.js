@@ -1,7 +1,6 @@
 export const receivePaymentSchema = new SimpleSchema({
   customerBalance:{
-    type: Number,
-    decimal: true,
+    type: String,
     label: 'Customer Balance',
     optional: true
   },
@@ -35,8 +34,7 @@ export const receivePaymentSchema = new SimpleSchema({
           afFieldInput: {
               type: "bootstrap-datetimepicker",
               dateTimePickerOptions: {
-                  format: 'DD/MM/YYYY',
-                  pickTime: false
+                  format: 'DD/MM/YYYY HH:mm:ss'
               }
           }
       }

@@ -1,47 +1,48 @@
 //components
 
 //collections
-import {Order} from '../../api/collections/order.js';
+import {Invoices} from '../../api/collections/invoice';
 import {ReceivePayment} from '../../api/collections/receivePayment';
 //schema
 import {receivePaymentSchema} from '../../api/collections/receivePaymentSchema.js';
+import {displaySuccess, displayError} from '../../../../core/client/libs/display-alert.js';
+import {AutoForm} from 'meteor/aldeed:autoform';
+import {receivePayment} from '../../../common/methods/receivePayment';
 //page
 import './receivePayment.html';
 //methods
-import {amountDue} from '../../../common/methods/receivePayment.js';
 
 let indexTmpl = Template.Pos_receivePayment;
 Tracker.autorun(function () {
     if (Session.get('customerId')) {
-        Meteor.subscribe('pos.activeOrder', {
+        Meteor.subscribe('pos.activeInvoices', {
             customerId: Session.get('customerId'),
-            status: 'active'
+            status: {$in: ['active', 'partial']}
         });
     }
-    if (Session.get('orders')) {
+    if (Session.get('invoices')) {
         Meteor.subscribe('pos.receivePayment', {
-            orderId: {
-                $in: Session.get('orders')
-            }
+            invoiceId: {
+                $in: Session.get('invoices')
+            },
+            status: {$in: ['active', 'partial']}
         });
     }
 });
 indexTmpl.onCreated(function () {
-    Session.set('totalAmountDue', 0);
     Session.set('amountDue', 0);
-    Session.set('salesCount', 0);
+    Session.set('invoicesObjCount', 0);
     Session.set('amount', 0);
-    Session.set('sales', {
+    Session.set('invoicesObj', {
         count: 0
     });
     Session.set('balance', 0)
 });
 indexTmpl.onDestroyed(function () {
-    Session.set('orders', undefined);
+    Session.set('invoices', undefined);
     Session.set('amountDue', 0);
     Session.set('amount', 0);
-    Session.set('totalAmountDue', 0);
-    Session.set('sales', {
+    Session.set('invoicesObj', {
         count: 0
     });
     Session.set('balance', 0)
@@ -51,8 +52,8 @@ indexTmpl.rendered = function () {
 };
 indexTmpl.helpers({
     countIsqualSales() {
-        let sales = Session.get('sales');
-        if (Order.find().count() != 0 && sales.count == Order.find().count()) {
+        let invoicesObj = Session.get('invoicesObj');
+        if (Invoices.find().count() != 0 && invoicesObj.count == Invoices.find().count()) {
             return true;
         }
         return false;
@@ -63,62 +64,103 @@ indexTmpl.helpers({
         }
     },
     dueAmount(){
-        let receivePayments = ReceivePayment.find({orderId: this._id}, {sort: {_id: 1, paymentDate: 1}});
-        if(receivePayments.count> 0){
-           let lastPayment =  _.last(receivePayments.fetch());
-            totalAmountDue += lastPayment.balance;
-            return lastPayment.balance;
-        }
-        total
-        return `${numeral(this.total).format('0,0.00')}`;
+        let total = this.total || 0;
+        let lastPayment = getLastPayment(this._id);
+        return lastPayment == 0 ? `${numeral(total).format('0,0.00')}` : `${numeral(lastPayment).format('0,0.00')}`;
     },
     schema() {
         return receivePaymentSchema;
-    },
-    orders() {
-        let orders = Order.find({}, {
+    }, 
+    invoices() {
+        let invoices = Invoices.find({}, {
             sort: {
                 _id: 1
             }
         });
-        if (orders.count() > 0) {
+        if (invoices.count() > 0) {
             let arr = [];
-            orders.forEach(function (order) {
-                arr.push(order);
+            invoices.forEach(function (invoice) {
+                let lastPayment =getLastPayment(invoice._id);
+                arr.push(invoice._id);
+                invoice.dueAmount = lastPayment == 0 ? invoice.total : lastPayment;
             });
-            Session.set('orders', arr);
-            return orders;
+            Session.set('invoices', arr);
+            return invoices;
         }
         return false;
     },
     hasAmount() {
         let amount = Session.get('amount');
-        if (this.status == 'partial' || this.status == 'closed' || this.total == amount) {
-            let saleOrder = {
+        var lastPayment = getLastPayment(this._id);
+        if (this.status == 'active' && this.total == amount) { //match due amount with status active
+            let saleInvoices = {
                 count: 0
             };
-            saleOrder.count += 1;
+            saleInvoices.count += 1;
             this.receivedPay = this.total;
-            saleOrder[this._id] = this;
-            Session.set('sales', saleOrder);
+            saleInvoices[this._id] = this;
+            saleInvoices[this._id].dueAmount = lastPayment == 0 ? this.total : lastPayment;
+            Session.set('invoicesObj', saleInvoices);
+            return true;
+        }
+        if(this.status == 'partial' && lastPayment == amount){ //match due amount with status partial
+            let saleInvoices = {
+                count: 0
+            };
+            saleInvoices.count += 1;
+            this.receivedPay = lastPayment;
+            saleInvoices[this._id] = this;
+            saleInvoices[this._id].dueAmount = lastPayment == 0 ? this.total : lastPayment;
+            Session.set('invoicesObj', saleInvoices);
             return true;
         }
         return false;
     },
     totalPaid(){
         let totalPaid = 0;
-        let salesObj = Session.get('sales');
-        delete salesObj.count;
-        if (_.isEmpty(salesObj)) {
+        let invoicesObjObj = Session.get('invoicesObj');
+        delete invoicesObjObj.count;
+        if (_.isEmpty(invoicesObjObj)) {
             return 0;
         } else {
-            for (let k in salesObj) {
-                totalPaid += salesObj[k].receivedPay
+            for (let k in invoicesObjObj) {
+                totalPaid += invoicesObjObj[k].receivedPay
             }
             return totalPaid;
         }
+    },
+    totalAmountDue(){
+        let totalAmountDue = 0;
+        let invoices = Invoices.find({})
+        if (invoices.count() > 0) {
+            invoices.forEach(function (invoices) {
+                let receivePayments = ReceivePayment.find({invoiceId: invoices._id}, {sort: {_id: 1, paymentDate: 1}});
+                if (receivePayments.count() > 0) {
+                    let lastPayment = _.last(receivePayments.fetch());
+                    totalAmountDue += lastPayment.balanceAmount;
+                } else {
+                    totalAmountDue += invoices.total;
+                }
+            });
+        }
+        Session.set('balance', numeral(totalAmountDue).format('0,0.00'));
+        return totalAmountDue;
+    },
+    totalOriginAmount(){
+        let totalOrigin = 0;
+        Invoices.find({}).forEach(function (invoices) {
+            totalOrigin += invoices.total;
+        });
+        return totalOrigin;
+    },
+    customerBalance(){
+        return Session.get('balance');
+    },
+    total(){
+        let lastPayment = getLastPayment(this._id);
+        return lastPayment == 0 ? numeral(this.total).format('0,0.00') : numeral(lastPayment).format('0,0.00');
     }
-})
+});
 
 indexTmpl.events({
     'change [name="customerId"]' (event, instance) {
@@ -127,7 +169,7 @@ indexTmpl.events({
             Session.set('customerId', event.currentTarget.value);
         }
     },
-    'keyup [name="amount"]' (event, instance) {
+    'change [name="amount"]' (event, instance) {
         clearChecbox();
         if (event.currentTarget.value != '') {
             Session.set('amount', parseFloat(event.currentTarget.value))
@@ -137,42 +179,46 @@ indexTmpl.events({
         var charCode = (evt.which) ? evt.which : evt.keyCode;
         return !(charCode > 31 && (charCode < 48 || charCode > 57));
     },
-    'click .select-order' (event, instance) {
-        var selectedOrder = Session.get('sales')
+    'click .select-invoice' (event, instance) {
+        var selectedInvoices = Session.get('invoicesObj')
+        let lastPayment = getLastPayment(this._id);
         if ($(event.currentTarget).prop('checked')) {
-            $(event.currentTarget).parents('.order-parents').find('.total').val(this.total)
-            this.receivedPay = this.total;
-            selectedOrder[this._id] = this;
-            selectedOrder.count += 1;
-            Session.set('sales', selectedOrder)
+            $(event.currentTarget).parents('.invoice-parents').find('.total').val(lastPayment == 0 ? this.total : lastPayment);
+            this.receivedPay = lastPayment == 0 ? this.total : lastPayment;
+            selectedInvoices[this._id] = this;
+            selectedInvoices[this._id].dueAmount = lastPayment == 0 ? this.total : lastPayment;
+            selectedInvoices.count += 1;
+            Session.set('invoicesObj', selectedInvoices)
         } else {
-            delete selectedOrder[this._id];
-            selectedOrder.count -= 1;
-            $(event.currentTarget).parents('.order-parents').find('.total').val('')
-            Session.set('sales', selectedOrder)
+            delete selectedInvoices[this._id];
+            selectedInvoices.count -= 1;
+            $(event.currentTarget).parents('.invoice-parents').find('.total').val('')
+            Session.set('invoicesObj', selectedInvoices)
         }
     },
     'click .select-all' (event, instance) {
         clearChecbox();
         if ($(event.currentTarget).prop('checked')) {
-            let saleObj = Session.get('sales');
+            let saleObj = Session.get('invoicesObj');
             let total = []
             let index = 0;
-            let sales = Order.find({}, {
+            let invoicesObj = Invoices.find({}, {
                 sort: {
                     _id: 1
                 }
             });
-            sales.forEach((sale) => {
-                sale.receivedPay = sale.total; //receive amount of pay
+            invoicesObj.forEach((sale) => {
+                let lastPayment = getLastPayment(sale._id);
+                sale.dueAmount = lastPayment == 0 ? sale.total : lastPayment;
+                sale.receivedPay = lastPayment == 0 ? sale.total : lastPayment; //receive amount of pay
                 saleObj[sale._id] = sale;
-                total.push(sale.total);
+                total.push(sale.dueAmount);
             })
-            saleObj.count = sales.count();
-            Session.set('sales', saleObj);
-            $('.select-order').each(function () {
+            saleObj.count = invoicesObj.count();
+            Session.set('invoicesObj', saleObj);
+            $('.select-invoice').each(function () {
                 $(this).prop('checked', true);
-                $(this).parents('.order-parents').find('.total').val(total[index])
+                $(this).parents('.invoice-parents').find('.total').val(total[index])
                 index++;
             })
         } else {
@@ -180,38 +226,110 @@ indexTmpl.events({
         }
     },
     'change .total' (event, instance) {
-        var selectedOrder = Session.get('sales');
-        if (event.currentTarget.value == '') {
-            if (_.has(selectedOrder, this._id)) {
-                selectedOrder.count -= 1;
-                delete selectedOrder[this._id];
-                Session.set('sales', selectedOrder);
-                $(event.currentTarget).parents('.order-parents').find('.select-order').prop('checked', false);
+        var selectedInvoices = Session.get('invoicesObj');
+        var lastPayment = getLastPayment(this._id);
+        if (event.currentTarget.value == '' || event.currentTarget.value == '') {
+            if (_.has(selectedInvoices, this._id)) {
+                selectedInvoices.count -= 1;
+                delete selectedInvoices[this._id];
+                Session.set('invoicesObj', selectedInvoices);
+                $(event.currentTarget).parents('.invoice-parents').find('.select-invoices').prop('checked', false);
             }
         } else {
-            if (!_.has(selectedOrder, this._id)) {
-                selectedOrder.count += 1;
+            if (!_.has(selectedInvoices, this._id)) {
+                selectedInvoices.count += 1;
             }
-            selectedOrder[this._id] = this;
-            selectedOrder[this._id].receivedPay = parseFloat(event.currentTarget.value);
-            $(event.currentTarget).parents('.order-parents').find('.select-order').prop('checked', true);
-            Session.set('sales', selectedOrder);
+            selectedInvoices[this._id] = this;
+            selectedInvoices[this._id].receivedPay = parseFloat(event.currentTarget.value);
+            selectedInvoices[this._id].dueAmount = lastPayment == 0 ? this.total : lastPayment;
+            $(event.currentTarget).parents('.invoice-parents').find('.select-invoice').prop('checked', true);
+            if(parseFloat(event.currentTarget.value) > selectedInvoices[this._id].dueAmount){ //check if entering payment greater than dueamount
+                selectedInvoices[this._id].receivedPay = selectedInvoices[this._id].dueAmount;
+                $(event.currentTarget).parents('.invoice-parents').find('.total').val(selectedInvoices[this._id].dueAmount);
+            }
+            Session.set('invoicesObj', selectedInvoices);
         }
     },
     "keypress .total" (evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
         return !(charCode > 31 && (charCode < 48 || charCode > 57));
     }
-})
+});
 
 
 function clearChecbox() {
     Session.set('amount', 0); //clear checkbox
-    Session.set('sales', {
+    Session.set('invoicesObj', {
         count: 0
     }); //set obj to empty on keychange
-    $(".select-order").each(function () {
+    $(".select-invoice").each(function () {
         $(this).prop('checked', false);
-        $(this).parents('.order-parents').find('.total').val('');
+        $(this).parents('.invoice-parents').find('.total').val('');
     })
 }
+function getLastPayment(invoiceId){
+    let receivePayments = ReceivePayment.find({invoiceId: invoiceId}, {sort: {_id: 1, paymentDate: 1}});
+    if (receivePayments.count() > 0) {
+        let lastPayment = _.last(receivePayments.fetch());
+        return lastPayment.balanceAmount;
+    }
+    return 0;
+}
+let hooksObject = {
+    onSubmit(){
+        this.event.preventDefault();
+        let invoicesObj = Session.get('invoicesObj');
+        delete invoicesObj.count;
+        if (_.isEmpty(invoicesObj)) {
+            swal({
+                title: "Warning",
+                text: "Your payments can't be blank",
+                type: "error",
+                confirmButtonClass: "btn-danger",
+                showConfirmButton: true,
+                timer: 3000
+            });
+        } else {
+            let paymentDate = this.insertDoc.paymentDate || new Date();
+            swal({
+                title: "Processing Payment..",
+                text: "Click OK to continue!",
+                type: "info",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true,
+            }, function () {
+                receivePayment.callPromise({paymentDate, invoicesObj})
+                    .then(function (result) {
+                        clearChecbox();
+                        console.log(result)
+                        swal({
+                            title: "Receive Payment",
+                            text: "Successfully paid!",
+                            type: "success",
+                            confirmButtonClass: "btn-success",
+                            showConfirmButton: true,
+                            timer: 3000
+                        });
+                    })
+                    .catch(function (err) {
+                        Session.set('invoicesObj', {count: 0});
+                        swal({
+                            title: "[Error]",
+                            text: err.message,
+                            type: "danger",
+                            confirmButtonClass: "btn-danger",
+                            showConfirmButton: true,
+                            timer: 3000
+                        });
+                    })
+            });
+
+        }
+        return false;
+    },
+};
+
+AutoForm.addHooks([
+    'Pos_receivePayment'
+], hooksObject);

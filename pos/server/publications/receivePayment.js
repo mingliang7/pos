@@ -3,16 +3,16 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {ReactiveTable} from 'meteor/aslagle:reactive-table';
 
 // Collection
-import {Order} from '../../imports/api/collections/order.js';
+import {Invoices} from '../../imports/api/collections/invoice.js';
 
-Meteor.publish('pos.activeOrder', function posActiveOrder(selector) {
+Meteor.publish('pos.activeInvoices', function posActiveOrder(selector) {
     this.unblock();
     new SimpleSchema({
         selector: {type: Object, blackbox: true},
         // options: {type: Object, blackbox: true}
     }).validate({selector});
     if (this.userId) {
-        let data = Order.find(selector);
+        let data = Invoices.find(selector);
         return data;
     }
     return this.ready();
