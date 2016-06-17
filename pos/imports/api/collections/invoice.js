@@ -139,6 +139,14 @@ Invoices.schema = new SimpleSchema({
     },
     branchId: {
         type: String
+    },
+    status: {
+        type: String,
+        autoValue(){
+            if(this.isInsert){
+                return 'active';
+            }
+        }
     }
 });
 

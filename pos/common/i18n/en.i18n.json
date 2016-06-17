@@ -11,8 +11,8 @@
       "vendor": "Vendor",
       "staff": "Staff",
       "stockLocation": "Stock Location",
-      "invoice":"Invoice",
-      "enterBill":"Enter Bill"
+      "invoice": "Invoice",
+      "enterBill": "Enter Bill"
     },
     "home": {
       "title": "Home",
@@ -62,8 +62,8 @@
         "termId": {
           "label": "Term"
         },
-        "paymentType":{
-          "label":"Payment Type"
+        "paymentType": {
+          "label": "Payment Type"
         },
         "term": {
           "label": "Term"
@@ -224,8 +224,8 @@
         "termId": {
           "label": "Term"
         },
-        "paymentType":{
-          "label":"Payment Type"
+        "paymentType": {
+          "label": "Payment Type"
         },
         "term": {
           "label": "Term"
@@ -335,6 +335,9 @@
         }
       }
     },
+    "receivePayment": {
+      "title": "Receive Payment"
+    },
     "enterBill": {
       "title": "Enter Bill",
       "invoiceAction": "Enter Bill",
@@ -377,7 +380,5 @@
         }
       }
     }
-
-
   }
 }

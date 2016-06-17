@@ -1,7 +1,8 @@
 /* Column action width for reactive-table
 -----------------------*/
-.reactive-table .col-action-order-item {
-    width: 60px;
+
+.reactive-table .col-receive-payment {
+    width: 70px;
 }
 .cursor-pointer {
   cursor: pointer;

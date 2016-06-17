@@ -74,6 +74,22 @@ PosRoutes.route('/customer', {
         parent: 'pos.home'
     }
 });
+//receive payment
+import '../imports/ui/pages/receivePayment.js';
+PosRoutes.route('/customer/:customerId/receive-payment', {
+    name: 'pos.receivePayment',
+    title: __('pos.receivePayment.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_receivePayment');
+    },
+    breadcrumb: {
+        params: ['customerId'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.receivePayment.title'),
+        icon: 'credit-card',
+        parent: 'pos.customer'
+    }
+});
 
 // Order
 import '../imports/ui/pages/order.js';
@@ -200,7 +216,7 @@ PosRoutes.route('/stock-location', {
         icon: 'cart-plus',
         parent: 'pos.home'
     }
-}); 
+});
 import '../imports/ui/pages/staff.js';
 PosRoutes.route('/staff', {
     name: 'pos.staff',
@@ -234,7 +250,6 @@ PosRoutes.route('/invoice', {
     }
 });
 
-
 // Enter Bill
 import '../imports/ui/pages/enterBill.js';
 PosRoutes.route('/enterBill', {
@@ -251,4 +266,3 @@ PosRoutes.route('/enterBill', {
         parent: 'pos.home'
     }
 });
-
