@@ -1,0 +1,170 @@
+<template name="Pos_payBill">
+    <div class="animated bounceInLeft">
+        {{#autoForm schema=schema id="Pos_payBill" doc=doc }}
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            {{> afQuickField name="vendorId"}}
+                        </div>
+                        <div class="col-xs-3">
+                            {{> afQuickField name="vendorBalance" value=vendorBalance readonly=true}}
+                        </div>
+                        <div class="col-xs-3">
+                            {{> afQuickField name="accountReceivable"}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-3">
+                            {{> afQuickField name="amount"}}
+                        </div>
+                        <div class="col-xs-3">
+                            {{> afQuickField name="paymentDate"}}
+                        </div>
+                        <div class="col-xs-3">
+                            {{> afQuickField name="exchangeRate" readonly=true}}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-3">
+                            {{> afQuickField name="paymentMethods"}}<br>
+                        </div>
+                        <div class="col-xs-3">
+                            {{> afQuickField name="referenceId"}}<br>
+                        </div>
+                        <div class="col-xs-3">
+                            {{> afQuickField name="depositTo"}}<br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><strong>Enter Bills summary</strong></h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-condensed">
+                                    <thead>
+                                    <tr>
+                                        {{#if countIsqualSales}}
+                                            <td><strong><input type="checkbox" name="select-all" checked
+                                                               class="select-all">All</strong></td>
+                                        {{else}}
+                                            <td><strong><input type="checkbox" name="select-all" class="select-all">All</strong>
+                                            </td>
+                                        {{/if}}
+                                        <td class="text-center"><strong>Date</strong></td>
+                                        <td class="text-center"><strong>Number</strong></td>
+                                        <td class="text-right"><strong>Org.Amount</strong></td>
+                                        <td class="text-right"><strong>Amount Due</strong></td>
+                                        <td class="text-right"><strong>Payment</strong></td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!-- foreach ($order->lineItems as $line) or some such thing here -->
+                                    {{#if enterBills}}
+                                        {{#each enterBills}}
+                                            <tr class='bill-parents'>
+                                                <td>
+                                                    {{selectedOrder}}
+                                                    {{#if hasAmount}}
+                                                        <input type="checkbox" name="name" checked class="select-bill">
+                                                    {{else}}
+                                                        <input type="checkbox" name="name" class="select-bill">
+                                                    {{/if}}
+                                                </td>
+                                                <td class="text-center">{{moFormat billDate 'YYYY-MM-DD HH:mm'}}</td>
+                                                <td class="text-center">{{_id}}</td>
+                                                <td class="text-right">{{total}}</td>
+                                                <td class="text-right">{{dueAmount}}</td>
+                                                <td class="text-right"><input type="text"
+                                                                              value="{{#if hasAmount}}{{total}}{{/if}}"
+                                                                              class="total"></td>
+                                            </tr>
+                                        {{/each}}
+                                    {{else}}
+                                        No data available......
+                                    {{/if}}
+                                    <tr>
+
+                                    </tr>
+                                    <tr>
+                                        <td class="no-line"></td>
+                                        <td class="no-line"></td>
+                                        <td class="no-line text-center"><strong>Total</strong></td>
+                                        <td class="no-line text-right">{{numFormat totalOriginAmount '0,0.00'}}</td>
+                                        <td class="no-line text-right">{{numFormat totalAmountDue '0,0.00'}}</td>
+                                        <td class="no-line text-right total-paid">{{numFormat totalPaid '0,0.00'}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <table width='0' border='0' align='right' cellpadding='0' cellspacing='0'>
+                                    <tbody>
+                                    <tr>
+                                        <td width='0' align='left' valign='top'
+                                            style='color:#404041;font-size:12px;line-height:16px;padding:15px 0px 3px 0px'>
+                                            <strong>Amount for Selected bill</strong>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td width='0' align='left' valign='top'
+                                            style='color:#404041;font-size:12px;line-height:16px;padding:15px 0px 3px 0px'>
+                                            <strong>Amount Due:</strong>
+                                            <!--<span style='font-size:11px;color:#666666'>(VAT included)</span>-->
+                                        </td>
+                                        <td width='0' align='right' valign='top'
+                                            style='color:#339933;font-size:12px;line-height:16px;padding:15px 5px 3px 5px'>
+                                            <strong>${{numFormat totalAmountDue '0,0.00'}}</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align='left' valign='top'
+                                            style='color:#404041;font-size:12px;line-height:16px;padding:5px 0px 3px 0px'>
+                                            <strong>Applied:</strong>
+                                        </td>
+                                        <td width='62' align='right' valign='top'
+                                            style='color:#339933;font-size:12px;line-height:16px;padding:5px 5px 3px 5px'>
+                                            <strong>${{numFormat totalPaid '0,0.00'}}</strong>
+                                        </td>
+                                    </tr>
+
+                                    <!--<tr>-->
+                                    <!--<td align='left' valign='top'-->
+                                    <!--style='color:#404041;font-size:12px;line-height:16px;padding:5px 0px 3px 0px;border-bottom:solid 1px #999999'>-->
+                                    <!--<strong>Order discount:</strong>-->
+                                    <!--</td>-->
+                                    <!--<td width='62' align='right' valign='top'-->
+                                    <!--style='color:#404041;font-size:12px;line-height:16px;padding:5px 5px 3px 5px;border-bottom:solid 1px #999999'>-->
+                                    <!--$0.00-->
+                                    <!--</td>-->
+                                    <!--</tr>-->
+                                    <!--<tr>-->
+                                    <!--<td align='left' valign='bottom'-->
+                                    <!--style='color:#404041;font-size:13px;line-height:16px;padding:5px 0px 3px 0px'>-->
+                                    <!--<strong>Grand Total:</strong>-->
+                                    <!--</td>-->
+                                    <!--<td width='62' align='right' valign='bottom'-->
+                                    <!--style='color:#339933;font-size:13px;line-height:16px;padding:5px 5px 3px 5px'>-->
+                                    <!--<strong>$1,234.00</strong>-->
+                                    <!--</td>-->
+                                    <!--</tr>-->
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                            <button class="btn btn-primary"><i class="fa fa-check"></i>Save</button>
+                            <a href="/pos/customer" class="btn btn-default">Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/autoForm}}
+    </div>
+</template>

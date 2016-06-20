@@ -141,16 +141,16 @@ PosRoutes.route('/unit', {
 
 import '../imports/ui/pages/term.js'
 PosRoutes.route('/term', {
-  name: 'pos.term',
-  title: 'term',
-  action: function(params, queryParams){
-    Layout.main('Pos_term');
-  },
-  breadcrumb: {
+    name: 'pos.term',
     title: 'term',
-    icon: 'cart-plus',
-    parent: 'pos.home'
-  }
+    action: function (params, queryParams) {
+        Layout.main('Pos_term');
+    },
+    breadcrumb: {
+        title: 'term',
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
 });
 
 // Categories
@@ -264,5 +264,20 @@ PosRoutes.route('/enterBill', {
         title: __('pos.enterBill.title'),
         icon: 'cart-plus',
         parent: 'pos.home'
+    }
+});
+//Pay Bill
+import '../imports/ui/pages/payBill';
+PosRoutes.route('/:vendorId/payBill', {
+    name: 'pos.payBill',
+    title: __('pos.payBill.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_payBill');
+    },
+    breadcrumb:{
+        params:['vendorId'],
+        title: __('pos.payBill.title'),
+        icon: 'cart-plus',
+        parent: 'pos.vendor'
     }
 });
