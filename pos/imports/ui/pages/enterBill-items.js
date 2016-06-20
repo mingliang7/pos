@@ -125,14 +125,28 @@ itemsTmpl.helpers({
         // return Session.get('subTotal')
     },
     total(){
-        return Session.get('total');
+        let subTotal = 0;
+        let getItems = itemsCollection.find();
+        getItems.forEach((obj) => {
+            subTotal += obj.amount;
+        });
+        let discount = $('#discount').val();
+        discount = discount == "" ? 0 : parseFloat(discount);
+        return subTotal * (1 - discount / 100);
     }
 });
 
 
 itemsTmpl.events({
     'keyup #discount'(){
-        calculateTotal();
+        let subTotal = 0;
+        let getItems = itemsCollection.find();
+        getItems.forEach((obj) => {
+            subTotal += obj.amount;
+        });
+        let discount = $('#discount').val();
+        discount = discount == "" ? 0 : parseFloat(discount);
+        $('#total').val(subTotal * (1 - discount / 100));
     },
     'change [name="itemId"]': function (event, instance) {
         instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
@@ -151,6 +165,10 @@ itemsTmpl.events({
     },
     'click .js-add-item': function (event, instance) {
         let itemId = instance.$('[name="itemId"]').val();
+        if (itemId == "") {
+            sAlert.warning("Please select Item");
+            return;
+        }
         let qty = instance.$('[name="qty"]').val();
         qty = qty == "" ? 1 : parseInt(qty);
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
@@ -181,7 +199,6 @@ itemsTmpl.events({
                 name: instance.name
             });
         }
-        calculateTotal();
     },
     // Reactive table for item
     'click .js-update-item': function (event, instance) {
@@ -289,15 +306,20 @@ AutoForm.addHooks(['Pos_enterBillItemsEdit'], hooksObject);
 
 
 var calculateTotal = function () {
+    debugger;
     let subTotal = 0;
     let getItems = itemsCollection.find();
     getItems.forEach((obj) => {
         subTotal += obj.amount;
     });
     var discount = $('#discount').val();
+    discount = discount == "" ? 0 : parseFloat(discount);
     var total = subTotal * (1 - discount / 100);
     Session.set('total', total);
     // Session.set('subTotal',subTotal);
 
 };
 
+itemsTmpl.onDestroyed(function () {
+    Session.set('total', 0);
+});
