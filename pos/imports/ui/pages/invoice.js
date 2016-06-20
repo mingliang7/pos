@@ -37,13 +37,13 @@ import './info-tab.html';
 import {invoiceInfo} from '../../../common/methods/invoice.js'
 import {customerInfo} from '../../../common/methods/customer.js';
 //Tracker for customer infomation
-Tracker.autorun(function(){
-  if(Session.get('customerId')){
-    customerInfo.callPromise({_id: Session.get('customerId')})
-    .then(function(result){
-      Session.set('customerInfo', result);
-    })
-  }
+Tracker.autorun(function () {
+    if (Session.get('customerId')) {
+        customerInfo.callPromise({_id: Session.get('customerId')})
+            .then(function (result) {
+                Session.set('customerInfo', result);
+            })
+    }
 });
 // Declare template
 let indexTmpl = Template.Pos_invoice,
@@ -100,40 +100,58 @@ indexTmpl.events({
 
 // New
 newTmpl.events({
-  'change [name=customerId]'(event, instance){
-    if(event.currentTarget.value != ''){
-      Session.set('customerId', event.currentTarget.value);
-    }
-  }
-})
-newTmpl.helpers({
-  customerInfo() {
-    let customerInfo = Session.get('customerInfo');
-    if(!customerInfo){
-      return {empty: true, message: 'No data available'}
-    }
+    'change [name=customerId]'(event, instance){
+        if (event.currentTarget.value != '') {
+            Session.set('customerId', event.currentTarget.value);
+            if (FlowRouter.query.get('customerId')) {
+                FlowRouter.query.set('customerId', event.currentTarget.value);
+            }
+        }
 
-    return {
-      fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
+    },
+    'change .enable-sale-order'(event, instance){
+        let customerId = $('[name="customerId"]').val();
+        if ($(event.currentTarget).prop('checked')) {
+            if (customerId != '') {
+                FlowRouter.query.set('customerId', customerId)
+            } else {
+                displayError('Please select customer');
+                $(event.currentTarget).prop('checked', false);
+            }
+
+        } else {
+            FlowRouter.query.unset();
+        }
+    }
+});
+newTmpl.helpers({
+    customerInfo() {
+        let customerInfo = Session.get('customerInfo');
+        if (!customerInfo) {
+            return {empty: true, message: 'No data available'}
+        }
+
+        return {
+            fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
               <li>Opening Balance: <span class="label label-success">0</span></li>
               <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
               <li>Sale Order to be invoice: <span class="label label-primary">0</span>`
-  };
-  },
-  collection(){
-      return Invoices;
-  },
-  itemsCollection(){
-      return itemsCollection;
-  },
-  disabledSubmitBtn: function () {
-      let cont = itemsCollection.find().count();
-      if (cont == 0) {
-          return {disabled: true};
-      }
+        };
+    },
+    collection(){
+        return Invoices;
+    },
+    itemsCollection(){
+        return itemsCollection;
+    },
+    disabledSubmitBtn: function () {
+        let cont = itemsCollection.find().count();
+        if (cont == 0) {
+            return {disabled: true};
+        }
 
-      return {};
-  }
+        return {};
+    }
 });
 
 newTmpl.onDestroyed(function () {
@@ -141,6 +159,7 @@ newTmpl.onDestroyed(function () {
     itemsCollection.remove({});
     Session.set('customerInfo', undefined);
     Session.set('customerId', undefined);
+    FlowRouter.query.unset();
 });
 
 // Edit
@@ -159,10 +178,10 @@ editTmpl.helpers({
 
         // Add items to local collection
         _.forEach(data.items, (value)=> {
-          Meteor.call('getItem', value.itemId, function(err, result){
-            value.name = result.name;
-            itemsCollection.insert(value);
-          })
+            Meteor.call('getItem', value.itemId, function (err, result) {
+                value.name = result.name;
+                itemsCollection.insert(value);
+            })
         });
 
         return data;
@@ -187,16 +206,16 @@ editTmpl.onDestroyed(function () {
 
 // Show
 showTmpl.onCreated(function () {
-  this.invoice = new ReactiveVar();
-  this.autorun(()=> {
-      invoiceInfo.callPromise({_id: this.data._id})
-            .then( (result) => {
-              this.invoice.set(result);
+    this.invoice = new ReactiveVar();
+    this.autorun(()=> {
+        invoiceInfo.callPromise({_id: this.data._id})
+            .then((result) => {
+                this.invoice.set(result);
             }).catch(function (err) {
                 console.log(err.message);
             }
         );
-  });
+    });
 });
 
 showTmpl.helpers({
