@@ -47,7 +47,13 @@
                         <!--{{> formFooterWithButton}}-->
 
                         {{#formFooter}}
-                            <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
+                            <button type="submit" class="btn btn-success"  id="btn-pay" {{disabledSubmitBtn}}>
+                                <i class="fa fa-money"></i> {{_ "pos.custom.pay"}}
+                            </button>
+                            <button type="submit" class="btn btn-warning" id="btn-save-print" {{disabledSubmitBtn}}>
+                                <i class="fa fa-print"></i> {{_ "pos.custom.saveAndPrint"}}
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="btn-save" {{disabledSubmitBtn}}>
                                 <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
                             </button>
                             <button type="reset" class="btn btn-default">
@@ -95,7 +101,13 @@
                             <!--{{> formFooterWithButton}}-->
 
                             {{#formFooter}}
-                                <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
+                                <button type="submit" class="btn btn-success"  id="btn-pay" {{disabledSubmitBtn}}>
+                                    <i class="fa fa-money"></i> {{_ "pos.custom.pay"}}
+                                </button>
+                                <button type="submit" class="btn btn-warning" id="btn-save-print" {{disabledSubmitBtn}}>
+                                    <i class="fa fa-print"></i> {{_ "pos.custom.saveAndPrint"}}
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="btn-save" {{disabledSubmitBtn}}>
                                     <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
                                 </button>
                                 <button type="reset" class="btn btn-default">

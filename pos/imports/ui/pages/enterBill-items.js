@@ -31,8 +31,8 @@ import {EnterBills} from '../../api/collections/enterBill.js';
 
 // Declare template
 var itemsTmpl = Template.Pos_enterBillItems,
-    actionItemsTmpl = Template.Pos_enterBillItemsAction;
-editItemsTmpl = Template.Pos_enterBillItemsEdit;
+    actionItemsTmpl = Template.Pos_enterBillItemsAction,
+    editItemsTmpl = Template.Pos_enterBillItemsEdit;
 
 
 // Local collection
@@ -41,7 +41,7 @@ var itemsCollection;
 // Page
 import './enterBill-items.html';
 
-itemsTmpl.onCreated(function() {
+itemsTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('item');
 
@@ -49,16 +49,17 @@ itemsTmpl.onCreated(function() {
     let data = Template.currentData();
     itemsCollection = data.itemsCollection;
 
-
     // State
     this.state('amount', 0);
 
+
 });
 
-itemsTmpl.onRendered(function() {});
+itemsTmpl.onRendered(function () {
+});
 
 itemsTmpl.helpers({
-    tableSettings: function() {
+    tableSettings: function () {
         let i18nPrefix = 'pos.enterBill.schema';
 
         reactiveTableSettings.showFilter = false;
@@ -91,7 +92,7 @@ itemsTmpl.helpers({
             label() {
                 return fa('bars', '', true);
             },
-            headerClass: function() {
+            headerClass: function () {
                 let css = 'text-center col-action-enterBill-item';
                 return css;
             },
@@ -104,7 +105,7 @@ itemsTmpl.helpers({
     schema() {
         return ItemsSchema;
     },
-    disabledAddItemBtn: function() {
+    disabledAddItemBtn: function () {
         const instance = Template.instance();
         if (instance.state('tmpAmount') <= 0) {
             return {
@@ -114,25 +115,32 @@ itemsTmpl.helpers({
 
         return {};
     },
-    total: function() {
-        let total = 0;
+    subTotal: function () {
+        let subTotal = 0;
         let getItems = itemsCollection.find();
         getItems.forEach((obj) => {
-            total += obj.amount;
+            subTotal += obj.amount;
         });
-
-        return total;
+        return subTotal;
+        // return Session.get('subTotal')
+    },
+    total(){
+        return Session.get('total');
     }
 });
 
+
 itemsTmpl.events({
-    'change [name="itemId"]': function(event, instance) {
+    'keyup #discount'(){
+        calculateTotal();
+    },
+    'change [name="itemId"]': function (event, instance) {
         instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
         instance.$('[name="qty"]').val('');
         // instance.$('[name="price"]').val('');
         instance.$('[name="amount"]').val('');
     },
-    'keyup [name="qty"],[name="price"]': function(event, instance) {
+    'keyup [name="qty"],[name="price"]': function (event, instance) {
         let qty = instance.$('[name="qty"]').val();
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseInt(qty);
@@ -141,12 +149,12 @@ itemsTmpl.events({
 
         instance.state('amount', amount);
     },
-    'click .js-add-item': function(event, instance) {
+    'click .js-add-item': function (event, instance) {
         let itemId = instance.$('[name="itemId"]').val();
-        let qty = parseInt(instance.$('[name="qty"]').val());
+        let qty = instance.$('[name="qty"]').val();
+        qty = qty == "" ? 1 : parseInt(qty);
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         let amount = math.round(qty * price, 2);
-
         // Check exist
         let exist = itemsCollection.findOne({
             itemId: itemId
@@ -173,12 +181,13 @@ itemsTmpl.events({
                 name: instance.name
             });
         }
+        calculateTotal();
     },
     // Reactive table for item
-    'click .js-update-item': function(event, instance) {
+    'click .js-update-item': function (event, instance) {
         alertify.item(fa('pencil', TAPi18n.__('pos.enterBill.schema.itemId.label')), renderTemplate(editItemsTmpl, this));
     },
-    'click .js-destroy-item': function(event, instance) {
+    'click .js-destroy-item': function (event, instance) {
         destroyAction(
             itemsCollection, {
                 _id: this._id
@@ -192,7 +201,7 @@ itemsTmpl.events({
 
 
 // Edit
-editItemsTmpl.onCreated(function() {
+editItemsTmpl.onCreated(function () {
     this.state('amount', 0);
 
     this.autorun(() => {
@@ -205,19 +214,19 @@ editItemsTmpl.helpers({
     schema() {
         return ItemsSchema;
     },
-    data: function() {
+    data: function () {
         let data = Template.currentData();
         return data;
     }
 });
 
 editItemsTmpl.events({
-    'change [name="itemId"]': function(event, instance) {
+    'change [name="itemId"]': function (event, instance) {
         instance.$('[name="qty"]').val('');
         instance.$('[name="price"]').val('');
         instance.$('[name="amount"]').val('');
     },
-    'keyup [name="qty"],[name="price"]': function(event, instance) {
+    'keyup [name="qty"],[name="price"]': function (event, instance) {
         let qty = instance.$('[name="qty"]').val();
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseInt(qty);
@@ -229,7 +238,7 @@ editItemsTmpl.events({
 });
 
 let hooksObject = {
-    onSubmit: function(insertDoc, updateDoc, currentDoc) {
+    onSubmit: function (insertDoc, updateDoc, currentDoc) {
         this.event.preventDefault();
 
         // Check old item
@@ -268,12 +277,27 @@ let hooksObject = {
 
         this.done();
     },
-    onSuccess: function(formType, result) {
+    onSuccess: function (formType, result) {
         alertify.item().close();
         displaySuccess();
     },
-    onError: function(formType, error) {
+    onError: function (formType, error) {
         displayError(error.message);
     }
 };
 AutoForm.addHooks(['Pos_enterBillItemsEdit'], hooksObject);
+
+
+var calculateTotal = function () {
+    let subTotal = 0;
+    let getItems = itemsCollection.find();
+    getItems.forEach((obj) => {
+        subTotal += obj.amount;
+    });
+    var discount = $('#discount').val();
+    var total = subTotal * (1 - discount / 100);
+    Session.set('total', total);
+    // Session.set('subTotal',subTotal);
+
+};
+
