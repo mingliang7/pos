@@ -3,6 +3,11 @@ ReceivePayment.schema = new SimpleSchema({
     invoiceId: {
         type: String
     },
+    discount: {
+        type: Number,
+        decimal: true,
+        optional: true
+    },
     paymentDate: {
         type: Date
     },

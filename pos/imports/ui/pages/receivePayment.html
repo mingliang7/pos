@@ -6,6 +6,12 @@
                     <div class="row">
                         <div class="col-xs-3">
                             {{> afQuickField name="customerId"}}
+                            {{#if term}}
+                                <label class="label label-success">{{term}}</label>
+                                    <span><input type="checkbox" class="disable-term">Disable Term</span>
+                            <!--{{else}}-->
+                                <!--<small><i class="fa fa-spinner fa-spin fa-1x fa-fw"></i>Loading...</small>-->
+                            {{/if}}
                         </div>
                         <div class="col-xs-3">
                             {{> afQuickField name="customerBalance" value=customerBalance readonly=true}}
@@ -44,7 +50,7 @@
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><strong>Invoice summary</strong></h3>
+                            <h3 class="panel-title"><strong>Invoice List</strong></h3>
                         </div>
                         <div class="panel-body">
                             <div class="table-responsive">
@@ -62,30 +68,41 @@
                                         <td class="text-center"><strong>Number</strong></td>
                                         <td class="text-right"><strong>Org.Amount</strong></td>
                                         <td class="text-right"><strong>Amount Due</strong></td>
-                                        <td class="text-right"><strong>Payment</strong></td>
+                                        <td class="text-right"><strong>Discount(%)</strong></td>
+                                        <td class="text-right"><strong>Actual Pay</strong></td>
+                                        <td class="text-right"><strong>Paid</strong></td>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <!-- foreach ($order->lineItems as $line) or some such thing here -->
                                     {{#if invoices}}
                                         {{#each invoices}}
-                                            <tr class='invoice-parents'>
-                                                <td>
-                                                    {{selectedOrder}}
-                                                    {{#if hasAmount}}
-                                                        <input type="checkbox" name="name" checked class="select-invoice">
-                                                    {{else}}
-                                                        <input type="checkbox" name="name" class="select-invoice">
-                                                    {{/if}}
-                                                </td>
-                                                <td class="text-center">{{moFormat invoiceDate 'YYYY-MM-DD HH:mm'}}</td>
-                                                <td class="text-center">{{_id}}</td>
-                                                <td class="text-right">{{total}}</td>
-                                                <td class="text-right">{{dueAmount}}</td>
-                                                <td class="text-right"><input type="text"
-                                                                              value="{{#if hasAmount}}{{total}}{{/if}}"
-                                                                              class="total"></td>
-                                            </tr>
+                                            {{#if _id}}
+                                                <tr class='invoice-parents'>
+                                                    <td>
+                                                        {{selectedOrder}}
+                                                        {{#if hasAmount}}
+                                                            <input type="checkbox" name="name" checked
+                                                                   class="select-invoice">
+                                                        {{else}}
+                                                            <input type="checkbox" name="name" class="select-invoice">
+                                                        {{/if}}
+                                                    </td>
+                                                    <td class="text-center">{{moFormat invoiceDate 'YYYY-MM-DD HH:mm'}}</td>
+                                                    <td class="text-center">{{_id}}</td>
+                                                    <td class="text-right">{{originAmount}}</td>
+                                                    <td class="text-right">{{dueAmount}}</td>
+                                                    <td class="text-right"><input type="text" class="discount"
+                                                                                           value="{{discount}}"></td>
+                                                    <td class="text-right"><span class="actual-pay">{{total}}</span></td>
+                                                    <td class="text-right"><input type="text"
+                                                                                  value="{{#if hasAmount}}{{total}}{{/if}}"
+                                                                                  class="total"></td>
+                                                </tr>
+                                            {{else}}
+                                                <small><i class="fa fa-spinner fa-spin fa-1x fa-fw"></i>Loading...
+                                                </small>
+                                            {{/if}}
                                         {{/each}}
                                     {{else}}
                                         No data available......
@@ -99,6 +116,8 @@
                                         <td class="no-line text-center"><strong>Total</strong></td>
                                         <td class="no-line text-right">{{numFormat totalOriginAmount '0,0.00'}}</td>
                                         <td class="no-line text-right">{{numFormat totalAmountDue '0,0.00'}}</td>
+                                        <td class="no-line text-right"></td>
+                                        <td class="no-line text-right">{{numFormat totalActualPay '0,0.00'}}</td>
                                         <td class="no-line text-right total-paid">{{numFormat totalPaid '0,0.00'}}</td>
                                     </tr>
                                     </tbody>
@@ -120,7 +139,7 @@
                                         </td>
                                         <td width='0' align='right' valign='top'
                                             style='color:#339933;font-size:12px;line-height:16px;padding:15px 5px 3px 5px'>
-                                            <strong>${{numFormat totalAmountDue '0,0.00'}}</strong>
+                                            <strong>${{numFormat totalActualPay '0,0.00'}}</strong>
                                         </td>
                                     </tr>
                                     <tr>
@@ -135,24 +154,24 @@
                                     </tr>
 
                                     <!--<tr>-->
-                                        <!--<td align='left' valign='top'-->
-                                            <!--style='color:#404041;font-size:12px;line-height:16px;padding:5px 0px 3px 0px;border-bottom:solid 1px #999999'>-->
-                                            <!--<strong>Order discount:</strong>-->
-                                        <!--</td>-->
-                                        <!--<td width='62' align='right' valign='top'-->
-                                            <!--style='color:#404041;font-size:12px;line-height:16px;padding:5px 5px 3px 5px;border-bottom:solid 1px #999999'>-->
-                                            <!--$0.00-->
-                                        <!--</td>-->
+                                    <!--<td align='left' valign='top'-->
+                                    <!--style='color:#404041;font-size:12px;line-height:16px;padding:5px 0px 3px 0px;border-bottom:solid 1px #999999'>-->
+                                    <!--<strong>Order discount:</strong>-->
+                                    <!--</td>-->
+                                    <!--<td width='62' align='right' valign='top'-->
+                                    <!--style='color:#404041;font-size:12px;line-height:16px;padding:5px 5px 3px 5px;border-bottom:solid 1px #999999'>-->
+                                    <!--$0.00-->
+                                    <!--</td>-->
                                     <!--</tr>-->
                                     <!--<tr>-->
-                                        <!--<td align='left' valign='bottom'-->
-                                            <!--style='color:#404041;font-size:13px;line-height:16px;padding:5px 0px 3px 0px'>-->
-                                            <!--<strong>Grand Total:</strong>-->
-                                        <!--</td>-->
-                                        <!--<td width='62' align='right' valign='bottom'-->
-                                            <!--style='color:#339933;font-size:13px;line-height:16px;padding:5px 5px 3px 5px'>-->
-                                            <!--<strong>$1,234.00</strong>-->
-                                        <!--</td>-->
+                                    <!--<td align='left' valign='bottom'-->
+                                    <!--style='color:#404041;font-size:13px;line-height:16px;padding:5px 0px 3px 0px'>-->
+                                    <!--<strong>Grand Total:</strong>-->
+                                    <!--</td>-->
+                                    <!--<td width='62' align='right' valign='bottom'-->
+                                    <!--style='color:#339933;font-size:13px;line-height:16px;padding:5px 5px 3px 5px'>-->
+                                    <!--<strong>$1,234.00</strong>-->
+                                    <!--</td>-->
                                     <!--</tr>-->
                                     </tbody>
 

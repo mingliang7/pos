@@ -26,6 +26,7 @@ export const receivePayment = new ValidatedMethod({
                     invoiceId: k,
                     paymentDate: paymentDate,
                     paidAmount: invoicesObj[k].receivedPay,
+                    discount: invoicesObj[k].discount || 0,
                     dueAmount: invoicesObj[k].dueAmount,
                     balanceAmount: invoicesObj[k].dueAmount - invoicesObj[k].receivedPay,
                     customerId: invoicesObj[k].customerId,
