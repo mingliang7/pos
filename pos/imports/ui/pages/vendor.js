@@ -36,7 +36,8 @@ let indexTmpl = Template.Pos_vendor,
     actionTmpl = Template.Pos_vendorAction,
     newTmpl = Template.Pos_vendorNew,
     editTmpl = Template.Pos_vendorEdit,
-    showTmpl = Template.Pos_vendorShow;
+    showTmpl = Template.Pos_vendorShow,
+    buttonActiomTmpl = Template.Pos_vendorButtonAction;
 
 
 // Index
@@ -52,8 +53,8 @@ indexTmpl.onCreated(function () {
     });
 });
 
-indexTmpl.onDestroyed(()=>{
-  ReactiveTable.clearFilters(['pos.vendorByBranchFilter']);
+indexTmpl.onDestroyed(()=> {
+    ReactiveTable.clearFilters(['pos.vendorByBranchFilter']);
 })
 
 indexTmpl.helpers({
@@ -79,6 +80,17 @@ indexTmpl.helpers({
             {key: 'telephone', label: __(`${i18nPrefix}.telephone.label`)},
             {key: '_term.name', label: __(`${i18nPrefix}.term.label`)},
             {key: '_paymentGroup.name', label: __(`${i18nPrefix}.paymentGroup.label`)},
+            {
+                key: '_id',
+                label(){
+                    return ''
+                },
+                headerClass: function () {
+                    let css = 'col-receive-payment cursor-pointer';
+                    return css;
+                },
+                tmpl: buttonActiomTmpl, sortable: false
+            },
             {
                 key: '_id',
                 label(){
@@ -112,6 +124,9 @@ indexTmpl.events({
     },
     'click .js-display' (event, instance) {
         alertify.vendorShow(fa('eye', TAPi18n.__('pos.vendor.title')), renderTemplate(showTmpl, this));
+    },
+    'click .go-to-pay-bill'(event, instance){
+        FlowRouter.go('pos.payBill', { vendorId: this._id });
     }
 });
 
@@ -126,14 +141,14 @@ newTmpl.helpers({
         return Vendors;
     },
     isTerm(){
-        return Template.instance().paymentType.get()=="Term";
+        return Template.instance().paymentType.get() == "Term";
     },
     isGroup(){
-        return Template.instance().paymentType.get()=="Group";
+        return Template.instance().paymentType.get() == "Group";
     }
 });
 newTmpl.events({
-    'change [name="paymentType"]'(event,instance){
+    'change [name="paymentType"]'(event, instance){
         instance.paymentType.set($(event.currentTarget).val());
     }
 });
@@ -146,7 +161,7 @@ editTmpl.onCreated(function () {
     });
 });
 editTmpl.events({
-    'change [name="paymentType"]'(event,instance){
+    'change [name="paymentType"]'(event, instance){
         instance.paymentType.set($(event.currentTarget).val());
     }
 });
@@ -160,10 +175,10 @@ editTmpl.helpers({
         return data;
     },
     isTerm(){
-        return Template.instance().paymentType.get()=="Term";
+        return Template.instance().paymentType.get() == "Term";
     },
     isGroup(){
-        return Template.instance().paymentType.get()=="Group";
+        return Template.instance().paymentType.get() == "Group";
     }
 });
 

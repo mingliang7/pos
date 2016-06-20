@@ -19,3 +19,15 @@ Meteor.publish('pos.enterBill', function posEnterBill(selector = {}, options = {
 
     return this.ready();
 });
+Meteor.publish('pos.activeEnterBills', function activeEnterBills(selector) {
+    this.unblock();
+    new SimpleSchema({
+        selector: {type: Object, blackbox: true}
+    }).validate({selector});
+    if (this.userId) {
+        Meteor._sleepForMs(200);
+        let data = EnterBills.find(selector);
+        return data;
+    }
+    return this.ready();
+});

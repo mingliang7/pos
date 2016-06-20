@@ -1,6 +1,6 @@
-export const ReceivePayment = new Mongo.Collection('pos_receivePayment');
-ReceivePayment.schema = new SimpleSchema({
-    invoiceId: {
+export const PayBills = new Mongo.Collection('pos_payBill');
+PayBills.schema = new SimpleSchema({
+    billId: {
         type: String
     },
     paymentDate: {
@@ -18,7 +18,7 @@ ReceivePayment.schema = new SimpleSchema({
         type: Number,
         decimal: true
     },
-    customerId: {
+    vendorId: {
         type: String
     },
     status: {
@@ -28,4 +28,4 @@ ReceivePayment.schema = new SimpleSchema({
         type: String
     }
 });
-ReceivePayment.attachSchema(ReceivePayment.schema);
+PayBills.attachSchema(PayBills.schema);
