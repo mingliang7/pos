@@ -48,7 +48,7 @@ indexTmpl.onCreated(function () {
     Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, invoiceId: ''});
     Session.get('disableTerm', false);
     Session.set('invoicesObjCount', 0);
-    Session.set('amount', 0);
+    Session.set('invoiceId', 0);
     Session.set('invoicesObj', {
         count: 0
     });
@@ -60,7 +60,7 @@ indexTmpl.onDestroyed(function () {
     Session.get('disableTerm', false);
     Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, invoiceId: ''});
     Session.set('amountDue', 0);
-    Session.set('amount', 0);
+    Session.set('invoiceId', 0);
     Session.set('invoicesObj', {
         count: 0
     });
@@ -122,10 +122,10 @@ indexTmpl.helpers({
         return false;
     },
     hasAmount() {
-        let amount = Session.get('amount');
+        let _id = Session.get('invoiceId');
         let discount = this.status == 'active' ? checkTerm(this) : 0;
         var lastPayment = getLastPayment(this._id);
-        if (this.status == 'active' && this.total == amount) { //match due amount with status active
+        if (this.status == 'active' && this._id == _id) { //match _id with status active
             let saleInvoices = {
                 count: 0
             };
@@ -138,7 +138,7 @@ indexTmpl.helpers({
             Session.set('invoicesObj', saleInvoices);
             return true;
         }
-        if (this.status == 'partial' && lastPayment == amount) { //match due amount with status partial
+        if (this.status == 'partial' && this._id == _id) { //match _id with status partial
             let saleInvoices = {
                 count: 0
             };
@@ -238,15 +238,11 @@ indexTmpl.events({
             Session.set('customerId', event.currentTarget.value);
         }
     },
-    'change [name="amount"]' (event, instance) {
+    'change [name="invoiceId"]' (event, instance) {
         clearChecbox();
         if (event.currentTarget.value != '') {
-            Session.set('amount', parseFloat(event.currentTarget.value))
+            Session.set('invoiceId', event.currentTarget.value)
         }
-    },
-    "keypress [name='amount']" (evt) {
-        var charCode = (evt.which) ? evt.which : evt.keyCode;
-        return !(charCode > 31 && (charCode < 48 || charCode > 57));
     },
     'click .select-invoice' (event, instance) {
         var selectedInvoices = Session.get('invoicesObj');
@@ -348,8 +344,9 @@ indexTmpl.events({
 
 //functions
 function clearChecbox() {
-    Session.set('amount', 0); //clear checkbox
-    Session.get('disableTerm', false);
+    Session.set('invoiceId', 0); //clear checkbox
+    Session.set('disableTerm', false);
+    Session.set('invoiceId', '');
     Session.set('invoicesObj', {
         count: 0
     }); //set obj to empty on keychange
