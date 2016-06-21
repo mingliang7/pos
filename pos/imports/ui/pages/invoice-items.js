@@ -47,7 +47,9 @@ Tracker.autorun(function () {
                 text: "Getting Order....", showConfirmButton: false
             });
         } else {
-            swal.close();
+            setTimeout(function () {
+                swal.close();
+            }, 500);
         }
 
     }

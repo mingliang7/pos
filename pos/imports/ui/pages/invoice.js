@@ -38,8 +38,8 @@ import {invoiceInfo} from '../../../common/methods/invoice.js'
 import {customerInfo} from '../../../common/methods/customer.js';
 //Tracker for customer infomation
 Tracker.autorun(function () {
-    if (Session.get('customerId')) {
-        customerInfo.callPromise({_id: Session.get('customerId')})
+    if (Session.get("getCustomerId")) {
+        customerInfo.callPromise({_id: Session.get("getCustomerId")})
             .then(function (result) {
                 Session.set('customerInfo', result);
             })
@@ -102,7 +102,7 @@ indexTmpl.events({
 newTmpl.events({
     'change [name=customerId]'(event, instance){
         if (event.currentTarget.value != '') {
-            Session.set('customerId', event.currentTarget.value);
+            Session.set('getCustomerId', event.currentTarget.value);
             if (FlowRouter.query.get('customerId')) {
                 FlowRouter.query.set('customerId', event.currentTarget.value);
             }
@@ -158,7 +158,7 @@ newTmpl.onDestroyed(function () {
     // Remove items collection
     itemsCollection.remove({});
     Session.set('customerInfo', undefined);
-    Session.set('customerId', undefined);
+    Session.set('getCustomerId', undefined);
     FlowRouter.query.unset();
 });
 
