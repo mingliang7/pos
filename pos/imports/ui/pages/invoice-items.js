@@ -40,7 +40,7 @@ var itemsCollection;
 
 Tracker.autorun(function () {
     if (FlowRouter.query.get('customerId')) {
-        let sub = Meteor.subscribe('pos.activeSaleOrder', {customerId: FlowRouter.query.get('customerId')});
+        let sub = Meteor.subscribe('pos.activeSaleOrder', {customerId: FlowRouter.query.get('customerId'), status: 'active'});
         if (!sub.ready()) {
             swal({
                 title: "Pleas Wait",

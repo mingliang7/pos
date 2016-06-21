@@ -222,6 +222,7 @@ let hooksObject = {
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
+                obj.remainQty = obj.qty
                 items.push(obj);
             });
             doc.items = items;
@@ -232,6 +233,7 @@ let hooksObject = {
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
+                obj.remainQty = obj.qty
                 items.push(obj);
             });
             doc.$set.items = items;

@@ -38,6 +38,10 @@ Order.itemsSchema = new SimpleSchema({
                 return inputmaskOptions.currency();
             }
         }
+    },
+    remainQty: {
+        type: Number,
+        decimal: true
     }
 });
 

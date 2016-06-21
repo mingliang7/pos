@@ -25,6 +25,7 @@ import '../../../../core/client/components/form-footer.js';
 
 // Collection
 import {Invoices} from '../../api/collections/invoice.js';
+import {Order} from '../../api/collections/order';
 
 // Tabular
 import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
@@ -33,6 +34,7 @@ import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
 import './invoice.html';
 import './invoice-items.js';
 import './info-tab.html';
+
 //methods
 import {invoiceInfo} from '../../../common/methods/invoice.js'
 import {customerInfo} from '../../../common/methods/customer.js';
@@ -50,8 +52,8 @@ let indexTmpl = Template.Pos_invoice,
     actionTmpl = Template.Pos_invoiceAction,
     newTmpl = Template.Pos_invoiceNew,
     editTmpl = Template.Pos_invoiceEdit,
-    showTmpl = Template.Pos_invoiceShow;
-
+    showTmpl = Template.Pos_invoiceShow,
+    listSaleOrder = Template.listSaleOrder;
 // Local collection
 let itemsCollection = new Mongo.Collection(null);
 
@@ -60,6 +62,7 @@ indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('invoice', {size: 'lg'});
     createNewAlertify('invoiceShow',);
+    createNewAlertify('listSaleOrder', {size: 'lg'});
 });
 
 indexTmpl.helpers({
@@ -113,7 +116,9 @@ newTmpl.events({
         let customerId = $('[name="customerId"]').val();
         if ($(event.currentTarget).prop('checked')) {
             if (customerId != '') {
-                FlowRouter.query.set('customerId', customerId)
+                FlowRouter.query.set('customerId', customerId);
+                $('.sale-order').addClass('toggle-list');
+                alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
             } else {
                 displayError('Please select customer');
                 $(event.currentTarget).prop('checked', false);
@@ -121,7 +126,11 @@ newTmpl.events({
 
         } else {
             FlowRouter.query.unset();
+            $('.sale-order').removeClass('toggle-list');
         }
+    },
+    'click .toggle-list'(event, instance){
+        alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
     }
 });
 newTmpl.helpers({
@@ -231,6 +240,28 @@ showTmpl.helpers({
         invoiceInfo.jsonViewOpts = {collapsed: true};
         //
         return invoiceInfo;
+    }
+});
+//listSaleOrder
+listSaleOrder.helpers({
+    saleOrders(){
+        return Order.find({status: 'active', customerId: FlowRouter.query.get('customerId')});
+    },
+    hasSaleOrders(){
+        let count = Order.find({status: 'active', customerId: FlowRouter.query.get('customerId')}).count();
+        return count > 0;
+    }
+});
+listSaleOrder.events({
+    'click .sale-doc'(event,instance){
+        itemsCollection.remove({});
+        this.items.forEach(function (item) {
+            Meteor.call('getItem', item.itemId, function (err, result) {
+                item.name = result.name;
+                itemsCollection.insert(item);
+            });
+        });
+        alertify.listSaleOrder().close();
     }
 });
 
