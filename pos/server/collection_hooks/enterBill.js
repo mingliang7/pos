@@ -3,9 +3,78 @@ import {idGenerator} from 'meteor/theara:id-generator';
 
 // Collection
 import {EnterBills} from '../../imports/api/collections/enterBill.js';
+import {AverageInventories} from '../../imports/api/collections/inventory.js';
 
 EnterBills.before.insert(function (userId, doc) {
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
     doc._id = idGenerator.genWithPrefix(EnterBills, prefix, 4);
 });
+
+EnterBills.after.insert(function (userId, doc) {
+    console.log('-------from enter bill after insert----');
+    /*Meteor.defer(function () {
+        if (doc.status = "active") {
+
+        } else {
+            console.log('-------from enter bill after insert----');
+            console.log(doc);
+            doc.items.forEach(function (item) {
+                averageInventoryInsert(doc.branchId, item, doc.locationId);
+            });
+        }
+    });*/
+});
+
+function averageInventoryInsert(branchId, item, locationId) {
+    let inventory = AverageInventories.findOne({
+        branchId: branchId,
+        itemId: item.itemId,
+        locationId: locationId
+    }, {sort: {createdAt: -1}});
+    if (inventory == null) {
+        let inventoryObj = {};
+        inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+        inventoryObj.branchId = branchId;
+        inventoryObj.locationId = locationId;
+        inventoryObj.itemId = item.itemId;
+        inventoryObj.qty = item.qty;
+        inventoryObj.price = item.price;
+        inventoryObj.remainQty = item.qty;
+        AverageInventories.insert(inventoryObj);
+    }
+    else if (inventory.price == item.price) {
+        let inventoryObj = {};
+        inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+        inventoryObj.branchId = branchId;
+        inventoryObj.locationId = locationId;
+        inventoryObj.itemId = item.itemId;
+        inventoryObj.qty = item.qty + inventory.qty;
+        inventoryObj.price = item.price;
+        inventoryObj.remainQty = item.qty + inventory.qty;
+        AverageInventories.insert(inventoryObj);
+
+        /* var inventorySet = {};
+         inventorySet.qty = item.qty + inventory.qty;
+         inventorySet.remainQty = inventory.remainQty + item.qty;
+         AverageInventories.update(inventory._id, {$set: inventorySet});*/
+    }
+    else {
+        let totalQty = inventory.remainQty + item.qty;
+        let price = ((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty;
+        let nextInventory = {};
+        nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+        nextInventory.branchId = branchId;
+        nextInventory.locationId = locationId;
+        nextInventory.itemId = item.itemId;
+        nextInventory.qty = item.qty;
+        nextInventory.price = price;
+        nextInventory.remainQty = totalQty;
+        AverageInventories.insert(nextInventory);
+    }
+}
+/*
+ function payBillInsert(doc){
+ let payObj={};
+ payObj._id=idGenerator.genWithPrefix()
+ }*/

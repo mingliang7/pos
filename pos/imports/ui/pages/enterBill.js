@@ -247,9 +247,17 @@ let hooksObject = {
             debugger;
             var btnType = Session.get('btnType');
             if (btnType == "save" || btnType == "save-print") {
-                doc.status = "partial";
+                doc.status = "active";
+                doc.paidAmount = 0;
+                doc.dueAmount = math.round(doc.total, 2);
             } else if (btnType == "pay") {
-                doc.status = "close";
+                doc.dueAmount = math.round((doc.total - doc.paidAmount),2);
+                if (doc.dueAmount <= 0) {
+                    doc.status = "close";
+                } else {
+                    doc.status = "partial";
+                }
+
             }
             doc.items = items;
             return doc;
@@ -263,9 +271,16 @@ let hooksObject = {
             doc.$set.items = items;
             var btnType = Session.get('btnType');
             if (btnType == "save" || btnType == "save-print") {
-                doc.$set.status = "partial";
+                doc.$set.status = "active";
+                doc.$set.paidAmount = 0;
+                doc.$set.dueAmount = math.round(doc.total,2);
             } else if (btnType == "pay") {
-                doc.$set.status = "close";
+                doc.$set.dueAmount = math.round((doc.$set.total - doc.$set.paidAmount),2);
+                if (doc.$set.dueAmount <= 0) {
+                    doc.$set.status = "close";
+                } else {
+                    doc.$set.status = "partial";
+                }
             }
             delete doc.$unset;
             return doc;

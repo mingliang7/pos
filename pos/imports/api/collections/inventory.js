@@ -12,7 +12,7 @@ export const AverageInventories = new Mongo.Collection("pos_averageInventories")
 
 // AverageInventories schema
 AverageInventories.schema = new SimpleSchema({
-    productId: {
+    itemId: {
         type: String
     },
     locationId: {
@@ -31,13 +31,13 @@ AverageInventories.schema = new SimpleSchema({
     branchId: {
         type: String
     },
-    type:{
-        type:Number
-    }
+    /*type: {
+        type: Number
+    }*/
 });
 
 Meteor.startup(function () {
-    AverageInventories.itemsSchema.i18n("pos.averageInventory.schema");
-    AverageInventories.schema.i18n("pos.averageInventory.schema");
+    //AverageInventories.itemsSchema.i18n("pos.averageInventory.schema");
+    //AverageInventories.schema.i18n("pos.averageInventory.schema");
     AverageInventories.attachSchema(AverageInventories.schema);
 });

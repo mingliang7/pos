@@ -50,7 +50,7 @@ EnterBills.schema = new SimpleSchema({
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY'
+                    format: 'DD/MM/YYYY HH:mm:ss'
                 }
             }
         }
@@ -132,6 +132,7 @@ EnterBills.schema = new SimpleSchema({
     discount: {
         type: Number,
         decimal: true,
+        defaultValue:0,
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
@@ -170,7 +171,7 @@ EnterBills.schema = new SimpleSchema({
             }
         }
     },
-    remainQty: {
+    dueAmount: {
         type: Number,
         decimal: true,
         optional: true
