@@ -17,13 +17,22 @@ import './receivePayment.html';
 let indexTmpl = Template.Pos_receivePayment;
 Tracker.autorun(function () {
     if (Session.get('customerId')) {
+        swal({
+            title: "Pleas Wait",
+            text: "Getting Invoices....", showConfirmButton: false
+        });
         Meteor.subscribe('pos.customer', {
             _id: Session.get('customerId')
         });
-        Meteor.subscribe('pos.activeInvoices', {
+        let invoiceSub = Meteor.subscribe('pos.activeInvoices', {
             customerId: Session.get('customerId'),
             status: {$in: ['active', 'partial']}
         });
+        if (invoiceSub.ready()) {
+            setTimeout(function () {
+                swal.close()
+            }, 500);
+        }
     }
     if (Session.get('invoices')) {
         Meteor.subscribe('pos.receivePayment', {
@@ -46,6 +55,7 @@ indexTmpl.onCreated(function () {
     Session.set('balance', 0)
 });
 indexTmpl.onDestroyed(function () {
+    Session.set('customerId', undefined);
     Session.set('invoices', undefined);
     Session.get('disableTerm', false);
     Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, invoiceId: ''});
