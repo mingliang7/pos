@@ -12,31 +12,43 @@ EnterBills.before.insert(function (userId, doc) {
 });
 
 EnterBills.after.insert(function (userId, doc) {
-    console.log('-------from enter bill after insert----');
-    /*Meteor.defer(function () {
-        if (doc.status = "active") {
-
+    Meteor.defer(function () {
+        Meteor._sleepForMs(200);
+        if (doc.status == "active") {
         } else {
-            console.log('-------from enter bill after insert----');
-            console.log(doc);
             doc.items.forEach(function (item) {
-                averageInventoryInsert(doc.branchId, item, doc.locationId);
+                averageInventoryInsert(doc.branchId, item, doc.stockLocationId);
             });
         }
-    });*/
+    })
 });
 
-function averageInventoryInsert(branchId, item, locationId) {
+
+EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
+    Meteor.defer(function () {
+        Meteor._sleepForMs(200);
+        if (doc.status == "active") {
+        } else {
+            doc.items.forEach(function (item) {
+                averageInventoryInsert(doc.branchId, item, doc.stockLocationId);
+            });
+        }
+    });
+});
+
+
+function averageInventoryInsert(branchId, item, stockLocationId) {
+    let prefix = stockLocationId + '-';
     let inventory = AverageInventories.findOne({
         branchId: branchId,
         itemId: item.itemId,
-        locationId: locationId
+        stockLocationId: stockLocationId
     }, {sort: {createdAt: -1}});
     if (inventory == null) {
         let inventoryObj = {};
         inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
         inventoryObj.branchId = branchId;
-        inventoryObj.locationId = locationId;
+        inventoryObj.stockLocationId = stockLocationId;
         inventoryObj.itemId = item.itemId;
         inventoryObj.qty = item.qty;
         inventoryObj.price = item.price;
@@ -47,11 +59,11 @@ function averageInventoryInsert(branchId, item, locationId) {
         let inventoryObj = {};
         inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
         inventoryObj.branchId = branchId;
-        inventoryObj.locationId = locationId;
+        inventoryObj.stockLocationId = stockLocationId;
         inventoryObj.itemId = item.itemId;
-        inventoryObj.qty = item.qty + inventory.qty;
+        inventoryObj.qty = item.qty;
         inventoryObj.price = item.price;
-        inventoryObj.remainQty = item.qty + inventory.qty;
+        inventoryObj.remainQty = item.qty + inventory.remainQty;
         AverageInventories.insert(inventoryObj);
 
         /* var inventorySet = {};
@@ -65,10 +77,10 @@ function averageInventoryInsert(branchId, item, locationId) {
         let nextInventory = {};
         nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
         nextInventory.branchId = branchId;
-        nextInventory.locationId = locationId;
+        nextInventory.stockLocationId = stockLocationId;
         nextInventory.itemId = item.itemId;
         nextInventory.qty = item.qty;
-        nextInventory.price = price;
+        nextInventory.price = math.round(price);
         nextInventory.remainQty = totalQty;
         AverageInventories.insert(nextInventory);
     }

@@ -15,7 +15,7 @@ AverageInventories.schema = new SimpleSchema({
     itemId: {
         type: String
     },
-    locationId: {
+    stockLocationId: {
         type: String
     },
     price: {
