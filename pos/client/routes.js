@@ -76,21 +76,36 @@ PosRoutes.route('/customer', {
 });
 //receive payment
 import '../imports/ui/pages/receivePayment.js';
-PosRoutes.route('/customer/:customerId/receive-payment', {
+PosRoutes.route('/customer/:customerId/receive-payment/:invoiceId?', {
     name: 'pos.receivePayment',
     title: __('pos.receivePayment.title'),
     action: function (params, queryParams) {
         Layout.main('Pos_receivePayment');
     },
     breadcrumb: {
-        params: ['customerId'],
+        params: ['customerId', 'invoiceId'],
         //queryParams: ['show', 'color'],
         title: __('pos.receivePayment.title'),
         icon: 'credit-card',
         parent: 'pos.customer'
     }
 });
-
+/*// receive payment with invoice id link
+import '../imports/ui/pages/receivePayment.js';
+PosRoutes.route('/customer/:customerId/receive-payment/:invoiceId', {
+    name: 'pos.receivePaymentWithInvoiceId',
+    title: __('pos.receivePayment.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_receivePayment');
+    },
+    breadcrumb: {
+        params: ['customerId', 'invoiceId'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.receivePayment.title'),
+        icon: 'credit-card',
+        parent: 'pos.customer'
+    }
+});*/
 // Order
 import '../imports/ui/pages/order.js';
 PosRoutes.route('/order', {

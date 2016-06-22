@@ -40,7 +40,10 @@ var itemsCollection;
 
 Tracker.autorun(function () {
     if (FlowRouter.query.get('customerId')) {
-        let sub = Meteor.subscribe('pos.activeSaleOrder', {customerId: FlowRouter.query.get('customerId'), status: 'active'});
+        let sub = Meteor.subscribe('pos.activeSaleOrder', {
+            customerId: FlowRouter.query.get('customerId'),
+            status: 'active'
+        });
         if (!sub.ready()) {
             swal({
                 title: "Pleas Wait",
@@ -76,6 +79,13 @@ itemsTmpl.onRendered(function () {
 });
 
 itemsTmpl.helpers({
+    notActivatedSaleOrder(){
+        console.log('inside not activated');
+        if (FlowRouter.query.get('customerId')) {
+            return false;
+        }
+        return true;
+    },
     tableSettings: function () {
         let i18nPrefix = 'pos.invoice.schema';
 
@@ -136,9 +146,9 @@ itemsTmpl.helpers({
         let total = 0;
         let getItems = itemsCollection.find();
         getItems.forEach((obj) => {
-            total += obj.amount;
+                total += obj.amount;
         });
-
+        total = FlowRouter.query.get('customerId') ? 0 : total;
         return total;
     }
 });
@@ -197,6 +207,7 @@ itemsTmpl.events({
         alertify.item(fa('pencil', TAPi18n.__('pos.invoice.schema.itemId.label')), renderTemplate(editItemsTmpl, this));
     },
     'click .js-destroy-item': function (event, instance) {
+        event.preventDefault();
         destroyAction(
             itemsCollection, {
                 _id: this._id

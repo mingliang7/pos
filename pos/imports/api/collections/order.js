@@ -120,6 +120,11 @@ Order.schema = new SimpleSchema({
           return 'active';
         }
       }
+    },
+    sumRemainQty:{
+        type: Number,
+        decimal: true,
+        optional: true
     }
 });
 

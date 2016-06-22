@@ -38,8 +38,8 @@ import {saleOrderInfo} from '../../../common/methods/sale-order.js'
 import {customerInfo} from '../../../common/methods/customer.js';
 //Tracker for customer infomation
 Tracker.autorun(function(){
-  if(Session.get('customerId')){
-    customerInfo.callPromise({_id: Session.get('customerId')})
+  if(Session.get("saleOrderCustomerId")){
+    customerInfo.callPromise({_id: Session.get("saleOrderCustomerId")})
     .then(function(result){
       Session.set('customerInfo', result);
     })
@@ -102,7 +102,7 @@ indexTmpl.events({
 newTmpl.events({
   'change [name=customerId]'(event, instance){
     if(event.currentTarget.value != ''){
-      Session.set('customerId', event.currentTarget.value);
+      Session.set('saleOrderCustomerId', event.currentTarget.value);
     }
   }
 })
@@ -140,7 +140,7 @@ newTmpl.onDestroyed(function () {
     // Remove items collection
     itemsCollection.remove({});
     Session.set('customerInfo', undefined);
-    Session.set('customerId', undefined);
+    Session.set('saleOrderCustomerId', undefined);
 });
 
 // Edit
