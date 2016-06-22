@@ -147,6 +147,10 @@ Invoices.schema = new SimpleSchema({
                 return 'active';
             }
         }
+    },
+    saleId: {
+        type: String,
+        optional: true
     }
 });
 

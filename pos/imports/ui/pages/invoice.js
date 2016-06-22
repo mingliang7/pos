@@ -25,7 +25,8 @@ import '../../../../core/client/components/form-footer.js';
 
 // Collection
 import {Invoices} from '../../api/collections/invoice.js';
-
+import {Order} from '../../api/collections/order';
+import {Item} from '../../api/collections/item';
 // Tabular
 import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
 
@@ -33,25 +34,33 @@ import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
 import './invoice.html';
 import './invoice-items.js';
 import './info-tab.html';
+
 //methods
 import {invoiceInfo} from '../../../common/methods/invoice.js'
 import {customerInfo} from '../../../common/methods/customer.js';
+
+
+
 //Tracker for customer infomation
-Tracker.autorun(function(){
-  if(Session.get('customerId')){
-    customerInfo.callPromise({_id: Session.get('customerId')})
-    .then(function(result){
-      Session.set('customerInfo', result);
-    })
-  }
+Tracker.autorun(function () {
+    if (Session.get("getCustomerId")) {
+        customerInfo.callPromise({_id: Session.get("getCustomerId")})
+            .then(function (result) {
+                Session.set('customerInfo', result);
+            })
+    }
+    if (Session.get('saleOrderItems')) {
+        Meteor.subscribe('pos.item', {_id: {$in: Session.get('saleOrderItems')}});
+    }
 });
+
 // Declare template
 let indexTmpl = Template.Pos_invoice,
     actionTmpl = Template.Pos_invoiceAction,
     newTmpl = Template.Pos_invoiceNew,
     editTmpl = Template.Pos_invoiceEdit,
-    showTmpl = Template.Pos_invoiceShow;
-
+    showTmpl = Template.Pos_invoiceShow,
+    listSaleOrder = Template.listSaleOrder;
 // Local collection
 let itemsCollection = new Mongo.Collection(null);
 
@@ -60,6 +69,7 @@ indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('invoice', {size: 'lg'});
     createNewAlertify('invoiceShow',);
+    createNewAlertify('listSaleOrder', {size: 'lg'});
 });
 
 indexTmpl.helpers({
@@ -100,47 +110,91 @@ indexTmpl.events({
 
 // New
 newTmpl.events({
-  'change [name=customerId]'(event, instance){
-    if(event.currentTarget.value != ''){
-      Session.set('customerId', event.currentTarget.value);
-    }
-  }
-})
-newTmpl.helpers({
-  customerInfo() {
-    let customerInfo = Session.get('customerInfo');
-    if(!customerInfo){
-      return {empty: true, message: 'No data available'}
-    }
+    'click .go-to-receive-payment'(event,instance){
+        alertify.invoice().close();
+    },
+    'change [name=customerId]'(event, instance){
+        if (event.currentTarget.value != '') {
+            Session.set('getCustomerId', event.currentTarget.value);
+            if (FlowRouter.query.get('customerId')) {
+                FlowRouter.query.set('customerId', event.currentTarget.value);
+            }
+        }
 
-    return {
-      fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
+    },
+    'change .enable-sale-order'(event, instance){
+        itemsCollection.remove({});
+        let customerId = $('[name="customerId"]').val();
+        if ($(event.currentTarget).prop('checked')) {
+            if (customerId != '') {
+                FlowRouter.query.set('customerId', customerId);
+                $('.sale-order').addClass('toggle-list');
+                setTimeout(function () {
+                    alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
+                }, 700)
+            } else {
+                displayError('Please select customer');
+                $(event.currentTarget).prop('checked', false);
+            }
+
+        } else {
+            FlowRouter.query.unset();
+            $('.sale-order').removeClass('toggle-list');
+        }
+    },
+    'click .toggle-list'(event, instance){
+        alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
+    }
+});
+newTmpl.helpers({
+    totalOrder(){
+        let total = 0 ;
+        itemsCollection.find().forEach(function (item) {
+            total += item.amount;
+        });
+        if(Session.get('totalOrder')){
+            let totalOrder = Session.get('totalOrder');
+            return totalOrder;
+        }
+        return {total};
+    },
+    customerInfo() {
+        let customerInfo = Session.get('customerInfo');
+        if (!customerInfo) {
+            return {empty: true, message: 'No data available'}
+        }
+
+        return {
+            fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
               <li>Opening Balance: <span class="label label-success">0</span></li>
               <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
               <li>Sale Order to be invoice: <span class="label label-primary">0</span>`
-  };
-  },
-  collection(){
-      return Invoices;
-  },
-  itemsCollection(){
-      return itemsCollection;
-  },
-  disabledSubmitBtn: function () {
-      let cont = itemsCollection.find().count();
-      if (cont == 0) {
-          return {disabled: true};
-      }
+        };
+    },
+    collection(){
+        return Invoices;
+    },
+    itemsCollection(){
+        return itemsCollection;
+    },
+    disabledSubmitBtn: function () {
+        let cont = itemsCollection.find().count();
+        if (cont == 0) {
+            return {disabled: true};
+        }
 
-      return {};
-  }
+        return {};
+    }
 });
 
 newTmpl.onDestroyed(function () {
     // Remove items collection
     itemsCollection.remove({});
     Session.set('customerInfo', undefined);
-    Session.set('customerId', undefined);
+    Session.set('getCustomerId', undefined);
+    FlowRouter.query.unset();
+    Session.set('saleOrderItems', undefined);
+    Session.set('totalOrder', undefined);
 });
 
 // Edit
@@ -159,10 +213,10 @@ editTmpl.helpers({
 
         // Add items to local collection
         _.forEach(data.items, (value)=> {
-          Meteor.call('getItem', value.itemId, function(err, result){
-            value.name = result.name;
-            itemsCollection.insert(value);
-          })
+            Meteor.call('getItem', value.itemId, function (err, result) {
+                value.name = result.name;
+                itemsCollection.insert(value);
+            })
         });
 
         return data;
@@ -187,16 +241,16 @@ editTmpl.onDestroyed(function () {
 
 // Show
 showTmpl.onCreated(function () {
-  this.invoice = new ReactiveVar();
-  this.autorun(()=> {
-      invoiceInfo.callPromise({_id: this.data._id})
-            .then( (result) => {
-              this.invoice.set(result);
+    this.invoice = new ReactiveVar();
+    this.autorun(()=> {
+        invoiceInfo.callPromise({_id: this.data._id})
+            .then((result) => {
+                this.invoice.set(result);
             }).catch(function (err) {
                 console.log(err.message);
             }
         );
-  });
+    });
 });
 
 showTmpl.helpers({
@@ -214,14 +268,148 @@ showTmpl.helpers({
         return invoiceInfo;
     }
 });
+//listSaleOrder
+listSaleOrder.helpers({
+    saleOrders(){
+        let item = [];
+        let saleOrders = Order.find({status: 'active', customerId: FlowRouter.query.get('customerId')});
+        saleOrders.forEach(function (saleOrder) {
+            saleOrder.items.forEach(function (saleItem) {
+                item.push(saleItem.itemId);
+            });
+        });
+        Session.set('saleOrderItems', item);
+        return saleOrders;
+    },
+    hasSaleOrders(){
+        let count = Order.find({status: 'active', customerId: FlowRouter.query.get('customerId')}).count();
+        return count > 0;
+    },
+    getItemName(itemId){
+        try {
+            return Item.findOne(itemId).name;
+        } catch (e) {
 
+        }
+
+    }
+});
+listSaleOrder.events({
+    'click .add-item'(event, instance){
+        event.preventDefault();
+        let remainQty = $(event.currentTarget).parents('.sale-item-parents').find('.remain-qty').val();
+        let saleId = $(event.currentTarget).parents('.sale-item-parents').find('.saleId').text().trim()
+        let tmpCollection = itemsCollection.find().fetch();
+        if (remainQty != '' && remainQty != '0') {
+            if (this.remainQty > 0) {
+                if (tmpCollection.length > 0) {
+                    let saleIdExist = _.find(tmpCollection, function (o) {
+                        return o.saleId == saleId;
+                    });
+                    if (saleIdExist) {
+                        insertSaleOrderItem({
+                            self: this,
+                            remainQty: parseFloat(remainQty),
+                            saleItem: saleIdExist,
+                            saleId: saleId
+                        });
+                    } else {
+                        swal("Retry!", "Item Must be in the same saleId", "warning")
+                    }
+                } else {
+                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                        this.saleId = saleId;
+                        this.qty = parseFloat(remainQty)
+                        this.name = result.name;
+                        itemsCollection.insert(this);
+                    });
+                    displaySuccess('Added!')
+                }
+            }else{
+                swal("ប្រកាស!", "មុខទំនិញនេះត្រូវបានកាត់កងរួចរាល់", "info");
+            }
+        } else {
+            swal("Retry!", "ចំនួនមិនអាចអត់មានឬស្មើសូន្យ", "warning");
+        }
+    },
+    'change .remain-qty'(event, instance){
+        event.preventDefault();
+        let remainQty = $(event.currentTarget).val();
+        let saleId = $(event.currentTarget).parents('.sale-item-parents').find('.saleId').text().trim()
+        let tmpCollection = itemsCollection.find().fetch();
+        if (remainQty != '' && remainQty != '0') {
+            if (this.remainQty > 0) {
+                if (parseFloat(remainQty) > this.remainQty) {
+                    remainQty = this.remainQty;
+                    $(event.currentTarget).val(this.remainQty);
+                }
+                if (tmpCollection.length > 0) {
+                    let saleIdExist = _.find(tmpCollection, function (o) {
+                        return o.saleId == saleId;
+                    });
+                    if (saleIdExist) {
+                        insertSaleOrderItem({
+                            self: this,
+                            remainQty: parseFloat(remainQty),
+                            saleItem: saleIdExist,
+                            saleId: saleId
+                        });
+                    } else {
+                        swal("Retry!", "Item Must be in the same saleId", "warning")
+                    }
+                } else {
+                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                        this.saleId = saleId;
+                        this.qty = parseFloat(remainQty);
+                        this.name = result.name;
+                        this.amount = this.qty * this.price;
+                        itemsCollection.insert(this);
+                    });
+                    displaySuccess('Added!')
+                }
+            } else {
+                swal("ប្រកាស!", "មុខទំនិញនេះត្រូវបានកាត់កងរួចរាល់", "info");
+            }
+        } else {
+            swal("Retry!", "ចំនួនមិនអាចអត់មានឬស្មើសូន្យ", "warning");
+        }
+
+    }
+});
+
+
+//insert sale order item to itemsCollection
+let insertSaleOrderItem = ({self, remainQty, saleItem, saleId}) => {
+    Meteor.call('getItem', self.itemId, (err, result)=> {
+        self.saleId = saleId;
+        self.qty = remainQty;
+        self.name = result.name;
+        self.amount = self.qty * self.price;
+        let getItem = itemsCollection.findOne({itemId: self.itemId});
+        if (getItem) {
+            if (getItem.qty + remainQty <= self.remainQty) {
+                itemsCollection.update(getItem._id, {$inc: {qty: self.qty, amount: self.qty * getItem.price}});
+                displaySuccess('Added!')
+            } else {
+                swal("Retry!", `ចំនួនបញ្ចូលចាស់(${getItem.qty}) នឹងបញ្ចូលថ្មី(${remainQty}) លើសពីចំនួនកម្ម៉ង់ទិញចំនួន ${(self.remainQty)}`, "error");
+            }
+        } else {
+            itemsCollection.insert(self);
+            displaySuccess('Added!')
+        }
+    });
+};
 // Hook
 let hooksObject = {
     before: {
         insert: function (doc) {
             let items = [];
+
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
+                if (obj.saleId) {
+                    doc.saleId = obj.saleId;
+                }
                 items.push(obj);
             });
             doc.items = items;
@@ -241,12 +429,18 @@ let hooksObject = {
             return doc;
         }
     },
-    onSuccess (formType, result) {
+    onSuccess (formType, id) {
+        //get invoiceId, total, customerId
+        Meteor.call('getInvoiceId', id, function (err,result) {
+            if(result){
+                Session.set('totalOrder', result);
+            }
+        });
         // if (formType == 'update') {
         // Remove items collection
         itemsCollection.remove({});
 
-        alertify.invoice().close();
+        // alertify.invoice().close();
         // }
         displaySuccess();
     },

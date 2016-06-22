@@ -7,3 +7,7 @@
 .cursor-pointer {
   cursor: pointer;
 }
+tr.cursor-pointer.sale-doc:hover {
+    background: #00aa9a;
+    color: #fff;
+}

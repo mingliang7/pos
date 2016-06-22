@@ -38,6 +38,10 @@ Order.itemsSchema = new SimpleSchema({
                 return inputmaskOptions.currency();
             }
         }
+    },
+    remainQty: {
+        type: Number,
+        decimal: true
     }
 });
 
@@ -116,6 +120,11 @@ Order.schema = new SimpleSchema({
           return 'active';
         }
       }
+    },
+    sumRemainQty:{
+        type: Number,
+        decimal: true,
+        optional: true
     }
 });
 

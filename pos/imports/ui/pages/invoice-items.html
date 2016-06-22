@@ -1,25 +1,27 @@
 <!--Item Temporary-->
 <template name="Pos_invoiceItems">
-    {{#autoForm schema=schema id="Pos_invoiceItems"}}
-        <div class="row">
-            <div class="col-sm-4">
-                {{> afQuickField name="itemId" label=false}}
-            </div>
-            <div class="col-sm-2">
-                {{> afQuickField name="qty" label=false}}
-            </div>
-            <div class="col-sm-2">
-                {{> afQuickField name="price" label=false}}
-            </div>
-            <div class="col-sm-3">
-                {{> afQuickField name="amount" value=amount label=false readonly=true}}
-            </div>
-            <div class="col-sm-1">
-                <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
-            </div>
+    {{#if notActivatedSaleOrder}}
+        {{#autoForm schema=schema id="Pos_invoiceItems"}}
+            <div class="row">
+                <div class="col-sm-4">
+                    {{> afQuickField name="itemId" label=false}}
+                </div>
+                <div class="col-sm-2">
+                    {{> afQuickField name="qty" label=false}}
+                </div>
+                <div class="col-sm-2">
+                    {{> afQuickField name="price" label=false}}
+                </div>
+                <div class="col-sm-3">
+                    {{> afQuickField name="amount" value=amount label=false readonly=true}}
+                </div>
+                <div class="col-sm-1">
+                    <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
+                </div>
 
-        </div>
-    {{/autoForm}}
+            </div>
+        {{/autoForm}}
+    {{/if}}
     <!--<hr>-->
 
     <!--Reactive table-->
@@ -40,7 +42,9 @@
 <!--Action-->
 <template name="Pos_invoiceItemsAction">
     <ul class="list-inline">
-        <li><a href="#" class="js-update-item"><i class="fa fa-pencil"></i></a></li>
+        {{#if notActivatedSaleOrder}}
+            <li><a href="#" class="js-update-item"><i class="fa fa-pencil"></i></a></li>
+        {{/if}}
         <li><a href="#" class="js-destroy-item"><i class="fa fa-remove"></i></a></li>
     </ul>
 </template>

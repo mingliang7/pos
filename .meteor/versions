@@ -56,6 +56,7 @@ coffeescript@1.0.17
 comerc:autoform-typeahead@1.0.6
 comerc:bs-typeahead@1.0.2
 cottz:flow-router-auth@0.1.0
+cottz:flow-router-query@0.0.4
 czbaker:lightbox2@2.7.1_1
 dburles:collection-helpers@1.0.4
 dburles:mongo-collection-instances@0.3.5

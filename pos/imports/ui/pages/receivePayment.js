@@ -48,7 +48,11 @@ indexTmpl.onCreated(function () {
     Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, invoiceId: ''});
     Session.get('disableTerm', false);
     Session.set('invoicesObjCount', 0);
-    Session.set('invoiceId', 0);
+    if(FlowRouter.getParam('invoiceId')){
+        Session.set('invoiceId', FlowRouter.getParam('invoiceId'));
+    }else{
+        Session.set('invoiceId', 0);
+    }
     Session.set('invoicesObj', {
         count: 0
     });
