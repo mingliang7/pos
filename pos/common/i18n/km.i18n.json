@@ -375,10 +375,23 @@
         "total": {
           "label": "សរុប"
         },
+        "subTotal":{
+          "label":"សរុបរង"
+        },
+        "discount":{
+          "label":"បញ្ចុះតម្លៃ"
+        },
+        "status":{
+          "label":"ស្ថានភាព"
+        },
         "branchId": {
           "label": "សាខា"
         }
       }
+    },
+    "custom":{
+      "saveAndPrint":"រក្សាទុក & ​​​បោះពុម្ភ",
+      "pay":"បង់ប្រាក់"
     }
   }
 }

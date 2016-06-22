@@ -50,8 +50,7 @@ EnterBills.schema = new SimpleSchema({
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY',
-                    pickTime: false
+                    format: 'DD/MM/YYYY HH:mm:ss'
                 }
             }
         }
@@ -104,6 +103,9 @@ EnterBills.schema = new SimpleSchema({
             }
         }
     },
+    status: {
+        type: String
+    },
     des: {
         type: String,
         optional: true,
@@ -127,6 +129,27 @@ EnterBills.schema = new SimpleSchema({
     items: {
         type: [EnterBills.itemsSchema],
     },
+    discount: {
+        type: Number,
+        decimal: true,
+        defaultValue:0,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.percentage();
+            }
+        }
+    },
+    subTotal: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
     total: {
         type: Number,
         decimal: true,
@@ -136,6 +159,22 @@ EnterBills.schema = new SimpleSchema({
                 return inputmaskOptions.currency();
             }
         }
+    },
+    paidAmount: {
+        type: Number,
+        decimal: true,
+        optional: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
+    dueAmount: {
+        type: Number,
+        decimal: true,
+        optional: true
     },
     branchId: {
         type: String

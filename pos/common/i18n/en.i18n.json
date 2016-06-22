@@ -375,10 +375,23 @@
         "total": {
           "label": "Total"
         },
+        "subTotal":{
+          "label":"SubTotal"
+        },
+        "discount":{
+          "label":"Discount"
+        },
+        "status":{
+          "label":"Status"
+        },
         "branchId": {
           "label": "Branch"
         }
       }
+    },
+    "custom":{
+      "saveAndPrint":"Save & Print",
+      "pay":"Pay"
     }
   }
 }

@@ -37,13 +37,13 @@ import './info-tab.html';
 import {EnterBillInfo} from '../../../common/methods/enterBill.js'
 import {vendorInfo} from '../../../common/methods/vendor.js';
 //Tracker for vendor infomation
-Tracker.autorun(function(){
-  if(Session.get('vendorId')){
-    vendorInfo.callPromise({_id: Session.get('vendorId')})
-    .then(function(result){
-      Session.set('vendorInfo', result);
-    })
-  }
+Tracker.autorun(function () {
+    if (Session.get('vendorId')) {
+        vendorInfo.callPromise({_id: Session.get('vendorId')})
+            .then(function (result) {
+                Session.set('vendorInfo', result);
+            })
+    }
 });
 // Declare template
 let indexTmpl = Template.Pos_enterBill,
@@ -59,7 +59,7 @@ let itemsCollection = new Mongo.Collection(null);
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('enterBill', {size: 'lg'});
-    createNewAlertify('enterBillShow',);
+    createNewAlertify('enterBillShow');
 });
 
 indexTmpl.helpers({
@@ -100,56 +100,83 @@ indexTmpl.events({
 
 // New
 newTmpl.events({
-  'change [name=vendorId]'(event, instance){
-    if(event.currentTarget.value != ''){
-      Session.set('vendorId', event.currentTarget.value);
+    'change [name=vendorId]'(event, instance){
+        if (event.currentTarget.value != '') {
+            Session.set('vendorId', event.currentTarget.value);
+        }
+    },
+    'click #btn-save-print'(event, instance){
+        Session.set('btnType', 'save-print');
+    },
+    'click #btn-save'(event, instance){
+        Session.set('btnType', 'save');
+    },
+    'click #btn-pay'(event, instance){
+        Session.set('btnType', 'pay');
     }
-  }
-})
+});
 newTmpl.helpers({
-  vendorInfo() {
-    let vendorInfo = Session.get('vendorInfo');
-    if(!vendorInfo){
-      return {empty: true, message: 'No data available'}
-    }
+    vendorInfo() {
+        let vendorInfo = Session.get('vendorInfo');
+        if (!vendorInfo) {
+            return {empty: true, message: 'No data available'}
+        }
 
-    return {
-      fields: `<li>Phone: <b>${vendorInfo.telephone ? vendorInfo.telephone : ''}</b></li>
+        return {
+            fields: `<li>Phone: <b>${vendorInfo.telephone ? vendorInfo.telephone : ''}</b></li>
               <li>Opening Balance: <span class="label label-success">0</span></li>
               <li >Credit Limit: <span class="label label-warning">${vendorInfo.creditLimit ? numeral(vendorInfo.creditLimit).format('0,0.00') : 0}</span></li>
               <li>Sale Order to be enterBill: <span class="label label-primary">0</span>`
-  };
-  },
-  collection(){
-      return EnterBills;
-  },
-  itemsCollection(){
-      return itemsCollection;
-  },
-  disabledSubmitBtn: function () {
-      let cont = itemsCollection.find().count();
-      if (cont == 0) {
-          return {disabled: true};
-      }
+        };
+    },
+    collection(){
+        return EnterBills;
+    },
+    itemsCollection(){
+        return itemsCollection;
+    },
+    disabledSubmitBtn: function () {
+        let cont = itemsCollection.find().count();
+        if (cont == 0) {
+            return {disabled: true};
+        }
 
-      return {};
-  }
+        return {};
+    },
+    disabledPayBtn(){
+        let cont = itemsCollection.find().count();
+        let pay = $('[name="paidAmount"]').val();
+        if (cont == 0 || pay == "") {
+            return {disabled: true};
+        }
+        return {};
+    }
 });
 
 newTmpl.onDestroyed(function () {
+    debugger;
     // Remove items collection
     itemsCollection.remove({});
     Session.set('vendorInfo', undefined);
     Session.set('vendorId', undefined);
 });
-
 // Edit
 editTmpl.onCreated(function () {
     this.autorun(()=> {
         this.subscribe('pos.enterBill', {_id: this.data._id});
     });
 });
-
+editTmpl.events({
+    'click #btn-save-print'(event, instance){
+        Session.set('btnType', 'save-print');
+    },
+    'click #btn-save'(event, instance){
+        Session.set('btnType', 'save');
+    },
+    'click #btn-pay'(event, instance){
+        Session.set('btnType', 'pay');
+    }
+});
 editTmpl.helpers({
     collection(){
         return EnterBills;
@@ -159,10 +186,10 @@ editTmpl.helpers({
 
         // Add items to local collection
         _.forEach(data.items, (value)=> {
-          Meteor.call('getItem', value.itemId, function(err, result){
-            value.name = result.name;
-            itemsCollection.insert(value);
-          })
+            Meteor.call('getItem', value.itemId, function (err, result) {
+                value.name = result.name;
+                itemsCollection.insert(value);
+            })
         });
 
         return data;
@@ -181,22 +208,23 @@ editTmpl.helpers({
 });
 
 editTmpl.onDestroyed(function () {
+    debugger;
     // Remove items collection
     itemsCollection.remove({});
 });
 
 // Show
 showTmpl.onCreated(function () {
-  this.enterBill = new ReactiveVar();
-  this.autorun(()=> {
-      EnterBillInfo.callPromise({_id: this.data._id})
-            .then( (result) => {
-              this.enterBill.set(result);
+    this.enterBill = new ReactiveVar();
+    this.autorun(()=> {
+        EnterBillInfo.callPromise({_id: this.data._id})
+            .then((result) => {
+                this.enterBill.set(result);
             }).catch(function (err) {
                 console.log(err.message);
             }
         );
-  });
+    });
 });
 
 showTmpl.helpers({
@@ -224,8 +252,22 @@ let hooksObject = {
                 delete obj._id;
                 items.push(obj);
             });
-            doc.items = items;
+            debugger;
+            var btnType = Session.get('btnType');
+            if (btnType == "save" || btnType == "save-print") {
+                doc.status = "active";
+                doc.paidAmount = 0;
+                doc.dueAmount = math.round(doc.total, 2);
+            } else if (btnType == "pay") {
+                doc.dueAmount = math.round((doc.total - doc.paidAmount), 2);
+                if (doc.dueAmount <= 0) {
+                    doc.status = "close";
+                } else {
+                    doc.status = "partial";
+                }
 
+            }
+            doc.items = items;
             return doc;
         },
         update: function (doc) {
@@ -235,9 +277,20 @@ let hooksObject = {
                 items.push(obj);
             });
             doc.$set.items = items;
-
+            var btnType = Session.get('btnType');
+            if (btnType == "save" || btnType == "save-print") {
+                doc.$set.status = "active";
+                doc.$set.paidAmount = 0;
+                doc.$set.dueAmount = math.round(doc.total, 2);
+            } else if (btnType == "pay") {
+                doc.$set.dueAmount = math.round((doc.$set.total - doc.$set.paidAmount), 2);
+                if (doc.$set.dueAmount <= 0) {
+                    doc.$set.status = "close";
+                } else {
+                    doc.$set.status = "partial";
+                }
+            }
             delete doc.$unset;
-
             return doc;
         }
     },
@@ -245,7 +298,6 @@ let hooksObject = {
         // if (formType == 'update') {
         // Remove items collection
         itemsCollection.remove({});
-
         alertify.enterBill().close();
         // }
         displaySuccess();
