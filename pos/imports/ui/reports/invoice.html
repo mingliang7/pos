@@ -1,0 +1,61 @@
+<template name="Pos_invoiceReport">
+    <div class="inbox-head">
+        <div class="col-md-6">
+            <div class="wrap">
+                <a class="btn-0" href="#">Swipe</a>
+            </div>
+        </div>
+    <!--{{#autoForm schema=schema id='mainReport'}}-->
+        <!--<div class="col-md-4">-->
+        <!--<div class="input-append">-->
+        <!--{{>afQuickField name="goToReport"}}-->
+        <!--</div>-->
+        <!--</div>-->
+            <!--{{/autoForm}}-->
+
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <address>
+                            <strong>Payment Method:</strong><br>
+                            Visa ending **** 4242<br>
+                            jsmith@email.com
+                        </address>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <address>
+                            <strong>Order Date:</strong><br>
+                            March 7, 2014<br><br>
+                        </address>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>No.</th>
+                <th>#ID</th>
+                <th>Date</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#with data}}
+                {{#each content}}
+                    <tr>
+                        <td></td>
+                        <td>{{_id}}</td>
+                        <td>{{moFormat invoiceDate 'YYYY-MM-DD HH:mm:ss'}}</td>
+                        <td>{{total}}</td>
+                    </tr>
+                {{/each}}
+            {{/with}}
+            </tbody>
+        </table>
+    </div>
+</template>

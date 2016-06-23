@@ -27,5 +27,8 @@ export const Layout = {
     },
     render (layout, regions) {
         _renderLayout(layout, regions);
+    },
+    customReportLayout(regions){
+        _renderLayout('CustomReportLayout', regions);
     }
 };
