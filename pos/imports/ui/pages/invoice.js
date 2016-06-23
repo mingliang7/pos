@@ -34,11 +34,10 @@ import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
 import './invoice.html';
 import './invoice-items.js';
 import './info-tab.html';
-
+import './customer.html';
 //methods
 import {invoiceInfo} from '../../../common/methods/invoice.js'
 import {customerInfo} from '../../../common/methods/customer.js';
-
 
 
 //Tracker for customer infomation
@@ -70,6 +69,7 @@ indexTmpl.onCreated(function () {
     createNewAlertify('invoice', {size: 'lg'});
     createNewAlertify('invoiceShow',);
     createNewAlertify('listSaleOrder', {size: 'lg'});
+    createNewAlertify('customer');
 });
 
 indexTmpl.helpers({
@@ -83,7 +83,7 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        alertify.invoice(fa('plus', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl)).maximize();
+        alertify.invoice(fa('plus', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl));
     },
     'click .js-update' (event, instance) {
         alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editTmpl, this));
@@ -110,7 +110,10 @@ indexTmpl.events({
 
 // New
 newTmpl.events({
-    'click .go-to-receive-payment'(event,instance){
+    'click .add-new-customer'(event, instance){
+        alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
+    },
+    'click .go-to-receive-payment'(event, instance){
         alertify.invoice().close();
     },
     'change [name=customerId]'(event, instance){
@@ -148,11 +151,13 @@ newTmpl.events({
 });
 newTmpl.helpers({
     totalOrder(){
-        let total = 0 ;
-        itemsCollection.find().forEach(function (item) {
-            total += item.amount;
-        });
-        if(Session.get('totalOrder')){
+        let total = 0;
+        if (!FlowRouter.query.get('customerId')) {
+            itemsCollection.find().forEach(function (item) {
+                total += item.amount;
+            });
+        }
+        if (Session.get('totalOrder')) {
             let totalOrder = Session.get('totalOrder');
             return totalOrder;
         }
@@ -325,7 +330,7 @@ listSaleOrder.events({
                     });
                     displaySuccess('Added!')
                 }
-            }else{
+            } else {
                 swal("ប្រកាស!", "មុខទំនិញនេះត្រូវបានកាត់កងរួចរាល់", "info");
             }
         } else {
@@ -431,16 +436,20 @@ let hooksObject = {
     },
     onSuccess (formType, id) {
         //get invoiceId, total, customerId
-        Meteor.call('getInvoiceId', id, function (err,result) {
-            if(result){
-                Session.set('totalOrder', result);
-            }
-        });
+        if (!FlowRouter.query.get('customerId')) {
+            Meteor.call('getInvoiceId', id, function (err, result) {
+                if (result) {
+
+                    Session.set('totalOrder', result);
+                }
+            });
+        } else {
+            alertify.invoice().close();
+        }
         // if (formType == 'update') {
         // Remove items collection
         itemsCollection.remove({});
 
-        // alertify.invoice().close();
         // }
         displaySuccess();
     },
