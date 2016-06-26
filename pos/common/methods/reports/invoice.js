@@ -31,6 +31,7 @@ export const invoiceReport = new ValidatedMethod({
                 let dateAsArray = params.date.split(',')
                 let fromDate = moment(dateAsArray[0]).toDate();
                 let toDate = moment(dateAsArray[1]).toDate();
+                data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' +  moment(toDate).format('YYYY-MMM-DD hh:mm a');
                 selector.invoiceDate = {$gte: fromDate, $lte: toDate};
             }
             if (params.customer && params.customer != '') {
@@ -62,7 +63,7 @@ export const invoiceReport = new ValidatedMethod({
             }
 
             /****** Title *****/
-            data.title = Company.findOne();
+            data.title.company = Company.findOne();
 
             /****** Content *****/
             let invoices = Invoices.aggregate([
