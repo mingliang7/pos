@@ -28,9 +28,10 @@ export const invoiceReport = new ValidatedMethod({
 
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             if (params.date) {
-                let fromDate = moment(params.date).toDate();
-                let toDate = moment(params.date).add(1, 'days').toDate();
-                selector.invoiceDate = {$gte: fromDate, $lt: toDate};
+                let dateAsArray = params.date.split(',')
+                let fromDate = moment(dateAsArray[0]).toDate();
+                let toDate = moment(dateAsArray[1]).toDate();
+                selector.invoiceDate = {$gte: fromDate, $lte: toDate};
             }
             if (params.customer && params.customer != '') {
                 selector.customerId = params.customer;
@@ -84,7 +85,6 @@ export const invoiceReport = new ValidatedMethod({
                 invoices[0].data = sortData
                 data.content = invoices;
             }
-            console.log(data);
             return data
         }
     }

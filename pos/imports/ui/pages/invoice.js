@@ -123,6 +123,7 @@ newTmpl.events({
                 FlowRouter.query.set('customerId', event.currentTarget.value);
             }
         }
+        Session.set('totalOrder', undefined);
 
     },
     'change .enable-sale-order'(event, instance){

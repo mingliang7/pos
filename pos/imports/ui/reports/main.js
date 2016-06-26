@@ -31,7 +31,7 @@ function getDefaultReportParams(reportName) {
     let params = '';
     switch(reportName){
         case 'invoiceReport':
-            params = `/pos/report/invoice?date=${moment().format('YYYY-MM-DD')}`
+            params = `/pos/report/invoice?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 11:59:59')}`
     }
     return params;
 }

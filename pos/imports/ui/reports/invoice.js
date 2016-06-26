@@ -1,6 +1,12 @@
+//component
+import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
+import {reactiveTableSettings} from '../../../../core/client/libs/reactive-table-settings.js';
+import {renderTemplate} from '../../../../core/client/libs/render-template.js';
+//page
 import './invoice.html';
 //import DI
 import 'meteor/theara:autoprint';
+import PHE from "print-html-element";
 //import collection
 import {invoiceSchema} from '../../api/collections/reports/invoice';
 
@@ -10,7 +16,8 @@ import {invoiceReport} from '../../../common/methods/reports/invoice';
 let paramsState = new ReactiveVar();
 let invoiceData = new ReactiveVar();
 //declare template
-let indexTmpl = Template.Pos_invoiceReport;
+let indexTmpl = Template.Pos_invoiceReport,
+    invoiceDataTmpl = Template.invoiceReportData;
 Tracker.autorun(function () {
     if (paramsState.get()) {
         swal({
@@ -27,11 +34,21 @@ Tracker.autorun(function () {
 });
 
 indexTmpl.onCreated(function () {
+    createNewAlertify('invoiceReport');
     paramsState.set(FlowRouter.query.params());
 });
-
-
 indexTmpl.helpers({
+    schema(){
+        return invoiceSchema;
+    }
+});
+indexTmpl.events({
+    'click .print'(event,instance){
+        PHE.printElement( document.getElementById('to-print'));
+    }
+});
+invoiceDataTmpl.helpers({
+
     data(){
         if (invoiceData.get()) {
             setTimeout(function () {
@@ -40,11 +57,8 @@ indexTmpl.helpers({
             return invoiceData.get();
         }
     },
-    schema(){
-        return invoiceSchema;
-    },
+
     display(col){
-        debugger
         let data = '';
         this.displayFields.forEach(function (obj) {
             if (obj.field == 'invoiceDate') {
@@ -60,20 +74,29 @@ indexTmpl.helpers({
         });
 
         return data;
+    },
+    getTotal(total){
+        let string = '';
+        let fieldLength = this.displayFields.length - 2;
+        for(let i = 0 ; i < fieldLength; i++) {
+            string += '<td></td>'
+        }
+        string += `<td><b>Total:</td></b><td><b>${numeral(total).format('0,0.00')}</b></td>`;
+        return string;
     }
 });
 
-function cb(start, end) {
-    $('[name="date"]').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-}
 
 AutoForm.hooks({
     invoiceReport: {
         onSubmit(doc){
             this.event.preventDefault();
+            FlowRouter.query.unset();
             let params = {};
-            if (doc.date) {
-                params.date = moment(doc.date).format('YYYY-MM-DD HH:mm:ss')
+            if (doc.fromDate && doc.toDate) {
+                let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
+                let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
+                params.date = `${fromDate},${toDate}`;
             }
             if (doc.customer) {
                 params.customer = doc.customer
