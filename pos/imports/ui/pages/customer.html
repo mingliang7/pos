@@ -6,10 +6,10 @@
     </p>
 
     <!--Tabular-->
-    <!--{{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}-->
+    {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
 
     <!--Reactive Table-->
-    {{> reactiveTable settings=tableSettings}}
+    <!--{{> reactiveTable settings=tableSettings}}-->
 </template>
 
 <!--Action-->
@@ -22,6 +22,7 @@
 </template>
 <!-- Button Action -->
 <template name="Pos_customerButtonAction">
+    {{checkIfInvoiced}}
   <span>
     <a class="btn btn-success go-to-receive-payment"><i class="fa fa-check"></i> Receive Payment</a>
   </span>

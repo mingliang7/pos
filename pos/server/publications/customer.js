@@ -23,4 +23,4 @@ Meteor.publish('pos.customer', function posCustomer(selector = {}) {
 });
 
 // Reactive Table
-ReactiveTable.publish("pos.reactiveTable.customer", Customers);
+// ReactiveTable.publish("pos.reactiveTable.customer", Customers);

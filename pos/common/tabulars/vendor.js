@@ -25,6 +25,7 @@ tabularOpts.columns = [
     {data: "name", title: "Name"},
     {data: "gender", title: "Gender"},
     {data: "telephone", title: "Telephone"},
-    {data: "email", title: "Email"}
+    {data: "email", title: "Email"},
+    {title: '', tmpl: Meteor.isClient && Template.Pos_vendorButtonAction}
 ];
 export const VendorTabular = new Tabular.Table(tabularOpts);
