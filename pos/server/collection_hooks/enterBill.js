@@ -20,9 +20,8 @@ EnterBills.after.insert(function (userId, doc) {
                 averageInventoryInsert(doc.branchId, item, doc.stockLocationId);
             });
         }
-    })
+    });
 });
-
 
 EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
     Meteor.defer(function () {
@@ -35,7 +34,6 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
         }
     });
 });
-
 
 function averageInventoryInsert(branchId, item, stockLocationId) {
     let prefix = stockLocationId + '-';
@@ -73,7 +71,15 @@ function averageInventoryInsert(branchId, item, stockLocationId) {
     }
     else {
         let totalQty = inventory.remainQty + item.qty;
-        let price = ((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty;
+        let price = 0;
+        //should check totalQty or inventory.remainQty
+        if (totalQty <= 0) {
+            price = inventory.price;
+        } else if (inventory.remainQty <= 0) {
+            price = item.price;
+        } else {
+            price = ((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty;
+        }
         let nextInventory = {};
         nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
         nextInventory.branchId = branchId;

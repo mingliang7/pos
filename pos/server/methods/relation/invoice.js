@@ -1,4 +1,4 @@
-import {invoiceState} from '../../common/globalState/invoice';
+import {invoiceState} from '../../../common/globalState/invoice';
 Meteor.methods({
     getInvoiceId(tmpId){
         Meteor._sleepForMs(1000);

@@ -1,4 +1,4 @@
-import {Customers} from '../../imports/api/collections/customer.js';
+import {Customers} from '../../../imports/api/collections/customer.js';
 
 Meteor.methods({
     isPaymentGroupHasRelation: function (id) {
