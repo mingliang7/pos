@@ -43,28 +43,28 @@ Item.schema = new SimpleSchema({
     unitId: {
         type: String,
         autoform: {
-          type: 'universe-select',
-          afFieldInput: {
-              label: {
-                class: 'label label-success'
-              },
-              uniPlaceholder: 'Select One',
-          },
-          options(){
-            let list = [];
-            try {
-              Meteor.subscribe('pos.unit');
-            } catch (e) {
+            type: 'universe-select',
+            afFieldInput: {
+                label: {
+                    class: 'label label-success'
+                },
+                uniPlaceholder: 'Select One',
+            },
+            options(){
+                let list = [];
+                try {
+                    Meteor.subscribe('pos.unit');
+                } catch (e) {
 
+                }
+                let units = Units.find() || 0;
+                if (units.count() > 0) {
+                    units.forEach((unit)=> {
+                        list.push({label: `${unit._id}: ${unit.name}`, value: unit._id})
+                    })
+                }
+                return list;
             }
-            let units = Units.find() || 0;
-            if(units.count() > 0){
-              units.forEach((unit)=>{
-                list.push({label: `${unit._id}: ${unit.name}`, value: unit._id})
-              })
-            }
-            return list;
-          }
         }
     },
     sellingUnit: {
@@ -74,74 +74,74 @@ Item.schema = new SimpleSchema({
     'sellingUnit.$.unitId': {
         type: String,
         autoform: {
-          type: 'universe-select',
-          afFieldInput: {
-              uniPlaceholder: 'Select One',
-          },
-          options(){
-            let list=[];
-            let units = Units.find() || 0;
-            if(units.count() > 0){
-              units.forEach((unit)=>{
-                list.push({label: `${unit._id}: ${unit.name}`, value: unit._id})
-              })
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
+            options(){
+                let list = [];
+                let units = Units.find() || 0;
+                if (units.count() > 0) {
+                    units.forEach((unit)=> {
+                        list.push({label: `${unit._id}: ${unit.name}`, value: unit._id})
+                    })
+                }
+                return list;
             }
-            return list;
-          }
         }
     },
-    'sellingUnit.$.converter':{
-      type: Number,
-      decimal: true
+    'sellingUnit.$.converter': {
+        type: Number,
+        decimal: true
     },
-    scheme:{
-      type: [Object],
-      optional: true
+    scheme: {
+        type: [Object],
+        optional: true
     },
-    'scheme.$.itemId':{
-      type: String,
-      optional: true,
-      autoform: {
-          type: 'universe-select',
-          afFieldInput: {
-              uniPlaceholder: 'Select One',
-              optionsMethod: 'pos.selectOptMethods.item'
-          }
-      }
+    'scheme.$.itemId': {
+        type: String,
+        optional: true,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+                optionsMethod: 'pos.selectOptMethods.item'
+            }
+        }
     },
-    'scheme.$.price':{
-      type: Number,
-      decimal: true
+    'scheme.$.price': {
+        type: Number,
+        decimal: true
     },
-    'scheme.$.quantity':{
-      type: Number,
-      decimal: true
+    'scheme.$.quantity': {
+        type: Number,
+        decimal: true
     },
     categoryId: {
         type: String,
         autoform: {
-          type: 'select2',
-          options(){
-            return SelectOpts.category('Select Parent | No Parent');
-          }
+            type: 'select2',
+            options(){
+                return SelectOpts.category('Select Parent | No Parent');
+            }
         }
     },
     itemType: {
         type: String,
-        autoform:{
-          type: 'select2',
-          options(){
-            return [{
-                label: '(Select One)',
-                value: ''
-            }, {
-                label: 'None Stock',
-                value: 'noneStock'
-            }, {
-                label: 'Stock',
-                value: 'stock'
-            }]
-          }
+        autoform: {
+            type: 'universe-select',
+            options(){
+                return [{
+                    label: '(Select One)',
+                    value: ''
+                }, {
+                    label: 'None Stock',
+                    value: 'noneStock'
+                }, {
+                    label: 'Stock',
+                    value: 'stock'
+                }]
+            }
         }
     },
     status: {

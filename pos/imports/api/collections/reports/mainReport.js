@@ -6,7 +6,7 @@ export const selectReport = new SimpleSchema({
     goToReport: {
         type: String,
         autoform: {
-            type: 'select2',
+            type: 'universe-select',
             label: false,
             placeholder: "Select a state"
 

@@ -16,7 +16,10 @@ Staffs.schema = new SimpleSchema({
     gender: {
         type: String,
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.gender();
             }
@@ -38,7 +41,10 @@ Staffs.schema = new SimpleSchema({
     position: {
         type: String,
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.position();
             }
@@ -53,7 +59,10 @@ Staffs.schema = new SimpleSchema({
     status: {
         type: String,
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.status();
             }
