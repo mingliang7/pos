@@ -76,7 +76,7 @@ PosRoutes.route('/customer', {
 });
 //receive payment
 import '../imports/ui/pages/receivePayment.js';
-PosRoutes.route('/customer/:customerId/receive-payment/:invoiceId?', {
+PosRoutes.route('/customer/:customerId?/receive-payment/:invoiceId?', {
     name: 'pos.receivePayment',
     title: __('pos.receivePayment.title'),
     action: function (params, queryParams) {
@@ -232,17 +232,17 @@ PosRoutes.route('/stock-location', {
         parent: 'pos.home'
     }
 });
-import '../imports/ui/pages/staff.js';
-PosRoutes.route('/staff', {
-    name: 'pos.staff',
-    title: __('pos.staff.title'),
+import '../imports/ui/pages/rep.js';
+PosRoutes.route('/rep', {
+    name: 'pos.rep',
+    title: __('pos.rep.title'),
     action: function (params, queryParams) {
-        Layout.main('Pos_staff');
+        Layout.main('Pos_rep');
     },
     breadcrumb: {
         //params: ['id'],
         //queryParams: ['show', 'color'],
-        title: __('pos.staff.title'),
+        title: __('pos.rep.title'),
         icon: 'cart-plus',
         parent: 'pos.home'
     }

@@ -48,14 +48,20 @@
         </div>
         <div class="row">
             <div class="col-md-2">
+                {{> afQuickField name="termId" options=termOption value=termId}}
+            </div>
+            <div class="col-md-2">
                 {{> afQuickField name="invoiceDate"}}
+            </div>
+            <div class="col-md-2">
+                {{> afQuickField name="dueDate" value=dueDate}}
             </div>
             <div class="col-md-2">
                 {{> afQuickField name="stockLocationId"}}
                 {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
             </div>
             <div class="col-md-2">
-
+                {{> afQuickField name="repId" options=options value=repId label="Rep"}}
             </div>
 
         </div>

@@ -28,6 +28,10 @@
                     <a href="{{pathFor 'pos.invoice'}}">
                         <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.invoice"}}</span>
                     </a>
+                </li><li class="{{isActiveRoute name='pos.receivePayment'}}">
+                    <a href="{{pathFor 'pos.receivePayment'}}">
+                        <i class="fa fa-circle-o"></i> <span>Receive Payment</span>
+                    </a>
                 </li>
             </ul>
         </li>
@@ -101,9 +105,9 @@
                 <i class="fa fa-angle-left pull-right"></i>
             </a>
             <ul class="treeview-menu" style="display: none;">
-                <li class="{{isActiveRoute name='pos.staff'}}">
-                    <a href="{{pathFor 'pos.staff'}}">
-                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.staff"}}</span>
+                <li class="{{isActiveRoute name='pos.rep'}}">
+                    <a href="{{pathFor 'pos.rep'}}">
+                        <i class="fa fa-circle-o"></i> <span>Reps</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='core.exchange'}}">

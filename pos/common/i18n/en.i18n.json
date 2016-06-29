@@ -9,7 +9,7 @@
       "category": "Category",
       "paymentGroup": "Payment Group",
       "vendor": "Vendor",
-      "staff": "Staff",
+      "rep": "Representative",
       "stockLocation": "Stock Location",
       "invoice": "Invoice",
       "enterBill": "Enter Bill"
@@ -238,8 +238,8 @@
         }
       }
     },
-    "staff": {
-      "title": "Staff",
+    "rep": {
+      "title": "Representative",
       "schema": {
         "_id": {
           "label": "ID"
@@ -321,7 +321,7 @@
         "stockLocationId": {
           "label": "Stock Location"
         },
-        "staffId": {
+        "repId": {
           "label": "Staff"
         },
         "des": {
@@ -366,7 +366,7 @@
         "stockLocationId": {
           "label": "Stock Location"
         },
-        "staffId": {
+        "repId": {
           "label": "Staff"
         },
         "des": {

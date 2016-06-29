@@ -83,7 +83,7 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        alertify.invoice(fa('plus', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl));
+        alertify.invoice(fa('plus', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
         alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editTmpl, this));
@@ -107,7 +107,13 @@ indexTmpl.events({
         window.open(path, '_blank');
     }
 });
-
+//on rendered
+newTmpl.onCreated(function () {
+    this.repOptions = new ReactiveVar();
+    Meteor.call('getRepList', (err, result) => {
+        this.repOptions.set(result);
+    });
+});
 // New
 newTmpl.events({
     'click .add-new-customer'(event, instance){
@@ -148,9 +154,50 @@ newTmpl.events({
     },
     'click .toggle-list'(event, instance){
         alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
+    },
+    'change [name="termId"]'(event,instance){
+        let customerInfo = Session.get('customerInfo');
+        Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
+            customerInfo._term.netDueIn = result.netDueIn ;
+            Session.set('customerInfo', customerInfo);
+        });
     }
 });
 newTmpl.helpers({
+    repId(){
+        if (Session.get('customerInfo')) {
+            try {
+                return Session.get('customerInfo').repId;
+            } catch (e) {
+
+            }
+        }
+        return '';
+    },
+    termId(){
+        if (Session.get('customerInfo')) {
+            try {
+                return Session.get('customerInfo').termId;
+            } catch (e) {
+
+            }
+        }
+        return '';
+    },
+    options(){
+        let instance = Template.instance();
+        if (instance.repOptions.get().repList) {
+            return instance.repOptions.get().repList
+        }
+        return '';
+    },
+    termOption(){
+        let instance = Template.instance();
+        if (instance.repOptions.get().termList) {
+            return instance.repOptions.get().termList
+        }
+        return '';
+    },
     totalOrder(){
         let total = 0;
         if (!FlowRouter.query.get('customerId')) {
@@ -177,6 +224,9 @@ newTmpl.helpers({
               <li>Sale Order to be invoice: <span class="label label-primary">0</span>`
         };
     },
+    repId(){
+        return Session.get('customerInfo').repId;
+    },
     collection(){
         return Invoices;
     },
@@ -190,6 +240,19 @@ newTmpl.helpers({
         }
 
         return {};
+    },
+    dueDate(){
+        let date = AutoForm.getFieldValue('invoiceDate');
+        if(Session.get('customerInfo')) {
+            if(Session.get('customerInfo')._term) {
+                let term = Session.get('customerInfo')._term;
+
+                let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
+                console.log(dueDate);
+                return dueDate;
+            }
+        }
+        return date;
     }
 });
 

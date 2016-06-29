@@ -12,13 +12,13 @@ import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
-import {Staffs} from '../../imports/api/collections/staff.js';
+import {Reps} from '../../imports/api/collections/rep.js';
 
 // Page
-Meteor.isClient && require('../../imports/ui/pages/staff.html');
+Meteor.isClient && require('../../imports/ui/pages/rep.html');
 
-tabularOpts.name = 'pos.staff';
-tabularOpts.collection = Staffs;
+tabularOpts.name = 'pos.rep';
+tabularOpts.collection = Reps;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_staffAction},
     {data: "_id", title: "ID"},
@@ -27,4 +27,4 @@ tabularOpts.columns = [
     {data: "telephone", title: "Telephone"},
     {data: "email", title: "Email"}
 ];
-export const StaffTabular = new Tabular.Table(tabularOpts);
+export const RepTabular = new Tabular.Table(tabularOpts);

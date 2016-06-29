@@ -9,7 +9,7 @@
       "category": "ផ្នែក",
       "paymentGroup": "ក្រុម",
       "vendor": "អ្នកផ្គត់ផ្គង់",
-      "staff": "បុគ្គលិក",
+      "rep": "អ្នកតំណាង",
       "stockLocation": "ទីតាំងស្តុក",
       "invoice": "វិក័យបត្រ",
       "enterBill": "សរសេរវិក័យបត្រ"
@@ -238,8 +238,8 @@
         }
       }
     },
-    "staff": {
-      "title": "បុគ្គលិក",
+    "rep": {
+      "title": "អ្នកតំណាង",
       "schema": {
         "_id": {
           "label": "លេខ"
@@ -315,7 +315,7 @@
         "invoiceDate": {
           "label": "កាលបរិច្ឆេទ"
         },
-        "staffId": {
+        "repId": {
           "label": "បុគ្គលិក"
         },
         "stockLocationId": {
@@ -360,7 +360,7 @@
         "invoiceDate": {
           "label": "កាលបរិច្ឆេទ"
         },
-        "staffId": {
+        "repId": {
           "label": "បុគ្គលិក"
         },
         "stockLocationId": {

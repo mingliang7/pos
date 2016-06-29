@@ -56,12 +56,25 @@ Invoices.schema = new SimpleSchema({
             }
         }
     },
+    dueDate: {
+        type: Date,
+        defaultValue: moment().toDate(),
+        autoform: {
+            afFieldInput: {
+                type: "bootstrap-datetimepicker",
+                dateTimePickerOptions: {
+                    format: 'DD/MM/YYYY HH:mm:ss',
+                    pickTime: true
+                }
+            }
+        }
+    },
     customerId: {
         type: String,
         autoform: {
             type: 'universe-select',
             afFieldInput: {
-                uniPlaceholder: 'Select One',
+                uniPlaceholder: 'Please search .... (Limit 10)',
                 optionsMethod: 'pos.selectOptMethods.customer',
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
@@ -69,6 +82,25 @@ Invoices.schema = new SimpleSchema({
                         return {branchId: currentBranch};
                     }
                 }
+            }
+        }
+    },
+    termId: {
+        type: String,
+        label: 'Terms',
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One'
+            }
+        }
+    },
+    repId: {
+        type: String,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One'
             }
         }
     },
@@ -111,7 +143,7 @@ Invoices.schema = new SimpleSchema({
             }
         }
     },
-    stockLocationId:{
+    stockLocationId: {
         type: String,
         autoform: {
             type: 'universe-select',
