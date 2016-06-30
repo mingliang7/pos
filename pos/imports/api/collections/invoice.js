@@ -175,6 +175,10 @@ Invoices.schema = new SimpleSchema({
         type: String,
         optional: true
     },
+    invoiceType: {
+        type: String,
+        optional: true
+    },
     saleId: {
         type: String,
         optional: true

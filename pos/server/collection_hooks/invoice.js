@@ -9,7 +9,16 @@ import {Order} from '../../imports/api/collections/order';
 import {invoiceState} from '../../common/globalState/invoice';
 
 Invoices.before.insert(function (userId, doc) {
-    doc.status = doc.total == 0 ? 'closed' : 'active';
+    if (doc.total == 0) {
+        doc.status = 'closed';
+        doc.invoiceType = 'saleOrder'
+    }else if(doc.termId) {
+        doc.status = 'active';
+        doc.invoiceType = 'invoice'
+    }else{
+        doc.status == 'active';
+        doc.invoiceType = 'group';
+    }
     let tmpInvoiceId = doc._id;
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
@@ -39,6 +48,9 @@ Invoices.after.insert(function (userId, doc) {
             if (saleOrder.sumRemainQty == 0) {
                 Order.direct.update(saleOrder._id, {$set: {status: 'closed'}});
             }
+        }
+        if (doc.invoiceType == 'group') {
+            Meteor.call('pos.generateInvoiceGroup', {doc});
         }
     });
 });
