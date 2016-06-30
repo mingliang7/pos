@@ -253,6 +253,15 @@ newTmpl.helpers({
             }
         }
         return date;
+    },
+    isTerm(){
+        if(Session.get('customerInfo')){
+            let customerInfo = Session.get('customerInfo');
+            if(customerInfo._term) {
+                return true;
+            }
+            return false;
+        }
     }
 });
 

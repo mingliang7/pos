@@ -24,7 +24,8 @@
     {{#autoForm collection=collection id="Pos_invoiceNew" type="insert"}}
         <div class="row well" style="background: rgb(227, 234, 243)">
             <div class="col-md-3">
-                <label for="email">Customer:<span style="color: red;">*</span> (<a href="" class="add-new-customer">Add New</a>) </label>
+                <label for="email">Customer:<span style="color: red;">*</span> (<a href="" class="add-new-customer">Add
+                    New</a>) </label>
                 {{> afQuickField name="customerId" label=false}}
             </div>
             <div class="col-md-3">
@@ -48,8 +49,13 @@
         </div>
         <div class="row">
             <div class="col-md-2">
-                {{> afQuickField name="termId" options=termOption value=termId}}
+                {{> afQuickField name="voucherId"}}
             </div>
+            {{#if isTerm}}
+                <div class="col-md-2">
+                    {{> afQuickField name="termId" options=termOption value=termId}}
+                </div>
+            {{/if}}
             <div class="col-md-2">
                 {{> afQuickField name="invoiceDate"}}
             </div>

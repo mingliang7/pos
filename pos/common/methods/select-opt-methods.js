@@ -109,10 +109,10 @@ SelectOptMethods.customer = new ValidatedMethod({
 
             let data = Customers.find(selector, {limit: 10});
             data.forEach(function (value) {
-                let label = value._id + ' : ' + value.name;
+                let termOrGroup = value._term ? ` (Term ${value._term.name})` : ` (Group ${value._paymentGroup.name})`;
+                let label = value._id + ' : ' + value.name + termOrGroup;
                 list.push({label: label, value: value._id});
             });
-
             return list;
         }
     }

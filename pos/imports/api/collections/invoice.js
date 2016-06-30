@@ -43,6 +43,10 @@ Invoices.itemsSchema = new SimpleSchema({
 
 // Invoices schema
 Invoices.schema = new SimpleSchema({
+    voucherId: {
+        type: String,
+        unique: true
+    },
     invoiceDate: {
         type: Date,
         defaultValue: moment().toDate(),
@@ -88,12 +92,17 @@ Invoices.schema = new SimpleSchema({
     termId: {
         type: String,
         label: 'Terms',
+        optional: true,
         autoform: {
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One'
             }
         }
+    },
+    paymentGroupId: {
+        type: String,
+        optional: true
     },
     repId: {
         type: String,
