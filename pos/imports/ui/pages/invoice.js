@@ -186,14 +186,14 @@ newTmpl.helpers({
     },
     options(){
         let instance = Template.instance();
-        if (instance.repOptions.get().repList) {
+        if (instance.repOptions.get() && instance.repOptions.get().repList) {
             return instance.repOptions.get().repList
         }
         return '';
     },
     termOption(){
         let instance = Template.instance();
-        if (instance.repOptions.get().termList) {
+        if (instance.repOptions.get() && instance.repOptions.get().termList) {
             return instance.repOptions.get().termList
         }
         return '';
@@ -225,7 +225,9 @@ newTmpl.helpers({
         };
     },
     repId(){
-        return Session.get('customerInfo').repId;
+        if(Session.get('customerInfo')) {
+            return Session.get('customerInfo').repId;
+        }
     },
     collection(){
         return Invoices;

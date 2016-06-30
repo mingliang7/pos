@@ -14,7 +14,7 @@ Invoices.before.insert(function (userId, doc) {
         doc.invoiceType = 'saleOrder'
     }else if(doc.termId) {
         doc.status = 'active';
-        doc.invoiceType = 'invoice'
+        doc.invoiceType = 'term'
     }else{
         doc.status == 'active';
         doc.invoiceType = 'group';

@@ -45,19 +45,32 @@ Invoices.itemsSchema = new SimpleSchema({
 Invoices.schema = new SimpleSchema({
     voucherId: {
         type: String,
-        unique: true
+        optional: true,
+        custom: function () {
+            // let paymentType = AutoForm.getFieldValue('paymentType');
+            let termId = AutoForm ? AutoForm.getFieldValue('termId') : '';
+            if (termId || (termId != '' && termId != null)) {
+                return "required";
+            }
+        }
     },
     invoiceDate: {
         type: Date,
-        defaultValue: moment().toDate(),
         autoform: {
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
                     format: 'DD/MM/YYYY HH:mm:ss',
                     pickTime: true
+                },
+                value(){
+                    let customerId = AutoForm.getFieldValue('customerId');
+                    if(customerId) {
+                        return moment().toDate();
+                    }
                 }
             }
+
         }
     },
     dueDate: {
