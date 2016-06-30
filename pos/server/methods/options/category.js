@@ -14,12 +14,13 @@ let getCategoryIdsForExclusion = function (array, categories) {
 };
 let pushToList = function (array, obj) {
     let str = "";
+
     for (let i = 0; i < obj.level * 3; i++) {
-        str += "&nbsp;";
+        str += "    *";
     }
     array.push({
-        label: Spacebars.SafeString(str + obj.name),
-        //label: str + obj.name,
+        //label: Spacebars.SafeString(str + obj.name),
+        label: str + obj.name,
         value: obj._id
     });
     return array;
@@ -48,43 +49,54 @@ Meteor.methods({
         let values = options.values;
         let params = options.params || {};
 
-        if (searchText) {
-            if (params.categoryId) {
-                if (params.categoryId != null) {
-                    let arr = [params.categoryId];
-                    let categories = Categories.find({parentId: params.categoryId});
-                    arr = getCategoryIdsForExclusion(arr, categories);
-                    selector = {
-                        $or: [
-                            {_id: {$regex: searchText, $options: 'i'}},
-                            {name: {$regex: searchText, $options: 'i'}}
-                        ],
-                        _id: {$not: {$in: arr}}
-                    };
-                }
-            } else {
-                selector = {
-                    $or: [
-                        {_id: {$regex: searchText, $options: 'i'}},
-                        {name: {$regex: searchText, $options: 'i'}}
-                    ]
-                };
-            }
-        } else if (values.length) {
-            if (params.categoryId) {
+        /* if (searchText) {
+         if (params.categoryId) {
+         if (params.categoryId != null) {
+         let arr = [params.categoryId];
+         let categories = Categories.find({parentId: params.categoryId});
+         arr = getCategoryIdsForExclusion(arr, categories);
+         selector = {
+         $or: [
+         {_id: {$regex: searchText, $options: 'i'}},
+         {name: {$regex: searchText, $options: 'i'}}
+         ],
+         _id: {$not: {$in: arr}}
+         };
+         }
+         } else {
+         selector = {
+         $or: [
+         {_id: {$regex: searchText, $options: 'i'}},
+         {name: {$regex: searchText, $options: 'i'}}
+         ]
+         };
+         }
+         }
+         else if (values.length) {
+         if (params.categoryId) {
+         let arr = [params.categoryId];
+         let categories = Categories.find({parentId: params.categoryId});
+         arr = getCategoryIdsForExclusion(arr, categories);
+         selector = {
+         _id: {$not: {$in: arr}, $in: values}
+         }
+         } else {
+         selector = {_id: {$in: values}};
+         }
+         }
+         */
+        if (params.categoryId) {
+            if (params.categoryId != null) {
                 let arr = [params.categoryId];
                 let categories = Categories.find({parentId: params.categoryId});
                 arr = getCategoryIdsForExclusion(arr, categories);
                 selector = {
-                    _id: {$not: {$in: arr}, $in: values}
-                }
-            } else {
-                selector = {_id: {$in: values}};
+                    _id: {$not: {$in: arr}}
+                };
             }
         }
-
         let alreadyUse = [];
-        Categories.find(selector, {sort: {level: 1}, limit: 10}).forEach(function (obj) {
+        Categories.find(selector, {sort: {level: 1}}).forEach(function (obj) {
             if (alreadyUse.indexOf(obj._id) == -1) {
                 pushToList(list, obj);
                 selector.parentId = obj._id;
@@ -103,6 +115,32 @@ Meteor.methods({
          });
          return list;*/
     },
+    categoryList: function (param, categoryId) {
+        var list = [];
+        if (param != false) {
+            var label = param != null ? param : "(Select One)";
+            list.push({label: label, value: ""});
+        }
+        var selector = {};
+        if (categoryId != null) {
+            var arr = [categoryId];
+            var categories = Categories.find({parentId: categoryId});
+            arr = getCategoryIdsForExclusion(arr, categories);
+            selector._id = {$not: {$in: arr}};
+        }
+
+        var alreadyUse = [];
+        Categories.find(selector, {sort: {level: 1}}).forEach(function (obj) {
+            if (alreadyUse.indexOf(obj._id) == -1) {
+                debugger;
+                pushToList(list, obj);
+                selector.parentId = obj._id;
+                var categories = Categories.find(selector);
+                list = getCategoryList(selector, list, categories, alreadyUse);
+            }
+        });
+        return list;
+    }
     /*getCategoryList: function () {
      Pos.Collection.Categories.aggregate([
      {$match: {_id: "01010101"}},

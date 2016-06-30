@@ -20,7 +20,7 @@ Categories.schema = new SimpleSchema({
     parentId: {
         type: String,
         optional: true,
-        autoform: {
+      /*  autoform: {
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One | No Parent',
@@ -32,14 +32,10 @@ Categories.schema = new SimpleSchema({
                     }
                 }
             }
-        },
-        /*autoform: {
-         type: "select2",
-         options: function () {
-         return SelectOpts.category('Select Parent | No Parent');
-         }
-
-         }*/
+        },*/
+        autoform: {
+            type: "select2"
+        }
     },
     level: {
         type: Number,
