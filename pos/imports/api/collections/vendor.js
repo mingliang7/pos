@@ -87,6 +87,10 @@ Vendors.schema = new SimpleSchema({
                 return SelectOpts.paymentGroup();
             }
         }
+    },
+    branchId: {
+        type: String,
+        optional: true
     }
 });
 
