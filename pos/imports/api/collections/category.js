@@ -13,28 +13,42 @@ Categories.schema = new SimpleSchema({
         //unique: true,
         max: 200
     },
-    description:{
-        type:String,
-        optional:true
+    description: {
+        type: String,
+        optional: true
     },
-    parentId:{
-        type:String,
-        optional:true,
+    parentId: {
+        type: String,
+        optional: true,
         autoform: {
-            type: "select2",
-            options: function () {
-                return SelectOpts.category('Select Parent | No Parent');
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One | No Parent',
+                optionsMethod: 'getCategoryOptions',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let categoryId = Session.get('CategoryIdSession');
+                        return {categoryId: categoryId};
+                    }
+                }
             }
-        }
+        },
+        /*autoform: {
+         type: "select2",
+         options: function () {
+         return SelectOpts.category('Select Parent | No Parent');
+         }
+
+         }*/
     },
-    level:{
-        type:Number,
-        optional:true
+    level: {
+        type: Number,
+        optional: true
     },
-    _parent:{
-        type:Object,
-        blackbox:true,
-        optional:true
+    _parent: {
+        type: Object,
+        blackbox: true,
+        optional: true
     }
 });
 
