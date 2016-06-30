@@ -71,6 +71,7 @@ function insertGroupInvoice({collection,range, doc}) {
             dueDate: doc.dueDate,
             total: doc.total,
             vendorOrCustomerId: doc.customerId,
+            status: 'active',
             invoices: [doc]
         };
         let isInserted = GroupInvoice.insert(obj);

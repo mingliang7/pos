@@ -75,7 +75,7 @@
                                         {{/if}}
                                         <td class="text-center"><strong>ID#</strong></td>
                                         <td class="text-center"><strong>Date</strong></td>
-                                        <td class="text-center"><strong>Number</strong></td>
+                                        <td class="text-center"><strong>Voucher ID</strong></td>
                                         <td class="text-right"><strong>Org.Amount</strong></td>
                                         <td class="text-right"><strong>Amount Due</strong></td>
                                         <td class="text-right"><strong>Discount(%)</strong></td>
@@ -99,8 +99,8 @@
                                                         {{/if}}
                                                     </td>
                                                     <td class="text-center">{{_id}}</td>
-                                                    <td class="text-center">{{moFormat invoiceDate 'YYYY-MM-DD HH:mm'}}</td>
-                                                    <td class="text-center">{{_id}}</td>
+                                                    <td class="text-center">{{isInvoiceDate}}</td>
+                                                    <td class="text-center">{{voucherId}}</td>
                                                     <td class="text-right">{{originAmount}}</td>
                                                     <td class="text-right">{{dueAmount}}</td>
                                                     <td class="text-right"><input type="text" class="discount"

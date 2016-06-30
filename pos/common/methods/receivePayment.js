@@ -5,7 +5,9 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 //collection
 import {Invoices} from '../../imports/api/collections/invoice.js'
+import {GroupInvoice} from '../../imports/api/collections/groupInvoice.js'
 import {ReceivePayment} from '../../imports/api/collections/receivePayment.js';
+import {Customers} from '../../imports/api/collections/customer';
 // Check user password
 export const receivePayment = new ValidatedMethod({
     name: 'pos.receivePayment',
@@ -17,10 +19,10 @@ export const receivePayment = new ValidatedMethod({
         paymentDate: {type: Date}
     }).validator(),
     run({
-        invoicesObj,paymentDate
+        invoicesObj, paymentDate
     }) {
         if (!this.isSimulation) {
-            for(let k in invoicesObj){
+            for (let k in invoicesObj) {
                 let selector = {}
                 let obj = {
                     invoiceId: k,
@@ -29,13 +31,19 @@ export const receivePayment = new ValidatedMethod({
                     discount: invoicesObj[k].discount || 0,
                     dueAmount: invoicesObj[k].dueAmount,
                     balanceAmount: invoicesObj[k].dueAmount - invoicesObj[k].receivedPay,
-                    customerId: invoicesObj[k].customerId,
+                    customerId: invoicesObj[k].customerId || invoicesObj[k].vendorOrCustomerId,
                     status: invoicesObj[k].dueAmount - invoicesObj[k].receivedPay == 0 ? 'closed' : 'partial',
                     staffId: Meteor.userId()
                 };
+                let customer = Customers.findOne(obj.customerId);
+                obj.paymentType = customer.termId ? 'term' : 'group';
                 ReceivePayment.insert(obj);
                 obj.status == 'closed' ? selector.$set = {status: 'closed'} : selector.$set = {status: 'partial'};
-                Invoices.direct.update(k,selector)
+                if(customer.termId) {
+                    Invoices.direct.update(k, selector)
+                }else{
+                    GroupInvoice.direct.update(k, selector);
+                }
             }
             return true;
         }

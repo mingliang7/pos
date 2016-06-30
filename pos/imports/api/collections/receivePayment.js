@@ -31,6 +31,10 @@ ReceivePayment.schema = new SimpleSchema({
     },
     staffId: {
         type: String
+    },
+    paymentType: {
+        type: String,
+        optional: true
     }
 });
 ReceivePayment.attachSchema(ReceivePayment.schema);
