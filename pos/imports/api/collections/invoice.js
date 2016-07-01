@@ -45,14 +45,7 @@ Invoices.itemsSchema = new SimpleSchema({
 Invoices.schema = new SimpleSchema({
     voucherId: {
         type: String,
-        optional: true,
-        custom: function () {
-            // let paymentType = AutoForm.getFieldValue('paymentType');
-            let termId = AutoForm ? AutoForm.getFieldValue('termId') : '';
-            if (termId || (termId != '' && termId != null)) {
-                return "required";
-            }
-        }
+        optional: true
     },
     invoiceDate: {
         type: Date,

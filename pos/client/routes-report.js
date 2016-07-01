@@ -104,3 +104,18 @@ PosRoutes.route('/report/invoice', {
         // parent: 'pos.vendor'
     }
 });
+
+import '../imports/ui/reports/payment';
+PosRoutes.route('/report/payment', {
+    name: 'pos.paymentReport',
+    title: 'Payment Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_paymentReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        // title: __('pos.payBill.title'),
+        // icon: 'cart-plus',
+        // parent: 'pos.vendor'
+    }
+});

@@ -3,30 +3,31 @@ import {createNewAlertify} from '../../../../core/client/libs/create-new-alertif
 import {reactiveTableSettings} from '../../../../core/client/libs/reactive-table-settings.js';
 import {renderTemplate} from '../../../../core/client/libs/render-template.js';
 //page
-import './invoice.html';
+import './payment.html';
 //import DI
 import 'meteor/theara:autoprint';
 import PHE from "print-html-element";
 //import collection
-import {invoiceSchema} from '../../api/collections/reports/invoice';
+import {paymentSchema} from '../../api/collections/reports/payment';
 
 //methods
-import {invoiceReport} from '../../../common/methods/reports/invoice';
+import {receivePaymentReport} from '../../../common/methods/reports/payment';
 //state
 let paramsState = new ReactiveVar();
-let invoiceData = new ReactiveVar();
+let receivePayment = new ReactiveVar();
+let skip = new ReactiveVar(0);
 //declare template
-let indexTmpl = Template.Pos_invoiceReport,
-    invoiceDataTmpl = Template.invoiceReportData;
+let indexTmpl = Template.Pos_paymentReport,
+    receivePaymentTmpl = Template.paymentReportData;
 Tracker.autorun(function () {
     if (paramsState.get()) {
         swal({
             title: "Pleas Wait",
             text: "Fetching Data....", showConfirmButton: false
         });
-        invoiceReport.callPromise(paramsState.get())
+        receivePaymentReport.callPromise(paramsState.get())
             .then(function (result) {
-                invoiceData.set(result);
+                receivePayment.set(result);
                 setTimeout(function () {
                     swal.close()
                 }, 200);
@@ -37,58 +38,90 @@ Tracker.autorun(function () {
 });
 
 indexTmpl.onCreated(function () {
-    createNewAlertify('invoiceReport');
+    createNewAlertify('receivePaymentReport');
     paramsState.set(FlowRouter.query.params());
 });
 indexTmpl.helpers({
     schema(){
-        return invoiceSchema;
+        return paymentSchema;
     }
 });
 indexTmpl.events({
     'click .print'(event,instance){
         PHE.printElement( document.getElementById('to-print'));
+    },
+    'click .next'(event, instance){
+        let currentParams = FlowRouter.query.params();
+        let totalSkip = skip.get() + parseInt($('[name="skip"]').val());
+        skip.set(totalSkip);
+        currentParams.skip = totalSkip;
+        currentParams.limit = parseInt($('[name="limit"]').val());
+        FlowRouter.query.unset();
+        FlowRouter.query.set(currentParams);
+        paramsState.set(FlowRouter.query.params());
+    },
+    'click .previous'(event,instance){
+        let previousSkip = skip.get() - parseInt($('[name="skip"]').val());
+        let currentParams = FlowRouter.query.params();
+        let totalSkip =  previousSkip < 0 ? 0 : previousSkip;
+        skip.set(totalSkip);
+        currentParams.skip = totalSkip;
+        currentParams.limit = parseInt($('[name="limit"]').val());
+        FlowRouter.query.unset();
+        FlowRouter.query.set(currentParams);
+        paramsState.set(FlowRouter.query.params());
+    },
+    'change [name="limit"]'(event,instance){
+        let limit = parseInt(event.currentTarget.value);
+        let currentParams = FlowRouter.query.params();
+        let totalSkip = skip.get();
+        currentParams.skip = totalSkip;
+        currentParams.limit = limit;
+        FlowRouter.query.unset();
+        FlowRouter.query.set(currentParams);
+        paramsState.set(FlowRouter.query.params());
     }
 });
-invoiceDataTmpl.helpers({
-
+receivePaymentTmpl.helpers({
     data(){
-        if (invoiceData.get()) {
-            return invoiceData.get();
+        if (receivePayment.get()) {
+            debugger
+            return receivePayment.get();
         }
     },
 
     display(col){
         let data = '';
         this.displayFields.forEach(function (obj) {
-            if (obj.field == 'invoiceDate') {
+            if (obj.field == 'paymentDate') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
-            } else if (obj.field == 'total') {
+            } else if (obj.field == 'dueAmount' || obj.field == 'paidAmount' ||  obj.field == 'balanceAmount') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
             }
         });
-
         return data;
     },
-    getTotal(total){
+    getTotal(dueAmount, paidAmount, balanceAmount){
         let string = '';
-        let fieldLength = this.displayFields.length - 2;
+        let fieldLength = this.displayFields.length - 4;
         for(let i = 0 ; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(total).format('0,0.00')}</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(dueAmount).format('0,0.00')}</b></td>`;
+        string += `<td><b>${numeral(paidAmount).format('0,0.00')}</b></td>`;
+        string += `<td><b>${numeral(balanceAmount).format('0,0.00')}</b></td>`;
         return string;
     }
 });
 
 
 AutoForm.hooks({
-    invoiceReport: {
+    receivePaymentReport: {
         onSubmit(doc){
             this.event.preventDefault();
             FlowRouter.query.unset();

@@ -8,7 +8,8 @@ import {moment} from  'meteor/momentjs:moment';
 // Collection
 import {Company} from '../../../../core/imports/api/collections/company.js';
 import {Invoices} from '../../../imports/api/collections/invoice';
-
+// lib func
+import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
 export const invoiceReport = new ValidatedMethod({
     name: 'pos.invoiceReport',
     mixins: [CallPromiseMixin],
@@ -27,14 +28,15 @@ export const invoiceReport = new ValidatedMethod({
             };
 
             // let date = _.trim(_.words(params.date, /[^To]+/g));
-            if (params.date) {
-                let dateAsArray = params.date.split(',')
-                let fromDate = moment(dateAsArray[0]).toDate();
-                let toDate = moment(dateAsArray[1]).toDate();
-                data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' +  moment(toDate).format('YYYY-MMM-DD hh:mm a');
-                selector.invoiceDate = {$gte: fromDate, $lte: toDate};
-            }
+            selector.invoiceType = {$ne: 'group'};
             if (params.customer && params.customer != '') {
+                if (params.date) {
+                    let dateAsArray = params.date.split(',')
+                    let fromDate = moment(dateAsArray[0]).toDate();
+                    let toDate = moment(dateAsArray[1]).toDate();
+                    data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
+                    selector.invoiceDate = {$gte: fromDate, $lte: toDate};
+                }
                 selector.customerId = params.customer;
             }
             if (params.filter && params.filter != '') {
@@ -43,14 +45,14 @@ export const invoiceReport = new ValidatedMethod({
                     data.fields.push({field: correctFieldLabel(filters[i])});
                     data.displayFields.push({field: filters[i]});
                     project[filters[i]] = `$${filters[i]}`;
-                    if(filters[i] == 'customerId'){
+                    if (filters[i] == 'customerId') {
                         project['_customer'] = '$_customer'
                     }
                 }
                 data.fields.push({field: 'Total'}); //map total field for default
                 data.displayFields.push({field: 'total'});
                 project['total'] = '$total'; //get total projection for default
-            }else{
+            } else {
                 project = {
                     '_id': '$_id',
                     'invoiceDate': '$invoiceDate',
@@ -71,9 +73,23 @@ export const invoiceReport = new ValidatedMethod({
                     $match: selector
                 },
                 {
+                    $lookup: {
+                        from: 'pos_customers',
+                        localField: 'customerId',
+                        foreignField: '_id',
+                        as: '_customer'
+                    }
+                },
+                {
+                    $unwind: {
+                        preserveNullAndEmptyArrays: true,
+                        path: '$_customer'
+                    }
+                },
+                {
                     $group: {
                         _id: null,
-                        data:{
+                        data: {
                             $addToSet: project
                         },
                         total: {
@@ -81,7 +97,7 @@ export const invoiceReport = new ValidatedMethod({
                         }
                     }
                 }]);
-            if(invoices.length > 0){
+            if (invoices.length > 0) {
                 let sortData = _.sortBy(invoices[0].data, '_id');
                 invoices[0].data = sortData
                 data.content = invoices;
@@ -90,27 +106,3 @@ export const invoiceReport = new ValidatedMethod({
         }
     }
 });
-
-
-function correctFieldLabel(field){
-    let label = '';
-    switch (field) {
-        case '_id':
-            label = '#ID';
-            break;
-        case 'customerId':
-            label = 'Customer';
-            break;
-        case 'invoiceDate':
-            label = 'Date';
-            break;
-        case 'total':
-            label = 'Total';
-            break;
-        case 'status':
-            label = 'Status';
-            break;
-
-    }
-    return label;
-}

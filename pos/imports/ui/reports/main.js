@@ -14,6 +14,9 @@ indexTmpl.helpers({
         return [
             {
                 label: 'Invoice', value: 'invoiceReport'
+            },
+            {
+                label: 'Receive Payment', value: 'paymentReport'
             }
         ]
     }
@@ -32,6 +35,10 @@ function getDefaultReportParams(reportName) {
     switch(reportName){
         case 'invoiceReport':
             params = `/pos/report/invoice?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 11:59:59')}`
+            break;
+        case 'paymentReport':
+            params = `/pos/report/payment?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 11:59:59')}`;
+            break;
     }
     return params;
 }
