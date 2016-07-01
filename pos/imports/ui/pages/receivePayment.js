@@ -446,6 +446,7 @@ let hooksObject = {
     onSubmit(){
         this.event.preventDefault();
         let invoicesObj = Session.get('invoicesObj');
+        let branch = Session.get('currentBranch');
         delete invoicesObj.count;
         if (_.isEmpty(invoicesObj)) {
             swal({
@@ -466,7 +467,7 @@ let hooksObject = {
                 closeOnConfirm: false,
                 showLoaderOnConfirm: true,
             }, function () {
-                receivePayment.callPromise({paymentDate, invoicesObj})
+                receivePayment.callPromise({paymentDate, invoicesObj, branch})
                     .then(function (result) {
                         clearChecbox();
                         console.log(result)

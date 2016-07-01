@@ -16,10 +16,11 @@ export const receivePayment = new ValidatedMethod({
         invoicesObj: {
             type: Object, blackbox: true
         },
-        paymentDate: {type: Date}
+        paymentDate: {type: Date},
+        branch: {type: String}
     }).validator(),
     run({
-        invoicesObj, paymentDate
+        invoicesObj, paymentDate, branch
     }) {
         if (!this.isSimulation) {
             for (let k in invoicesObj) {
@@ -33,7 +34,8 @@ export const receivePayment = new ValidatedMethod({
                     balanceAmount: invoicesObj[k].dueAmount - invoicesObj[k].receivedPay,
                     customerId: invoicesObj[k].customerId || invoicesObj[k].vendorOrCustomerId,
                     status: invoicesObj[k].dueAmount - invoicesObj[k].receivedPay == 0 ? 'closed' : 'partial',
-                    staffId: Meteor.userId()
+                    staffId: Meteor.userId(),
+                    branchId: branch
                 };
                 let customer = Customers.findOne(obj.customerId);
                 obj.paymentType = customer.termId ? 'term' : 'group';
