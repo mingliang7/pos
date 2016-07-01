@@ -1,8 +1,11 @@
 /*
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {EnterBills} from '../../imports/api/collections/enterBill.js'
+import {Invoices} from '../../imports/api/collections/invoice.js'
+import {idGenerator} from 'meteor/theara:id-generator';
+
 Meteor.methods({
-    purchaseManageStock: function (enterBillId, branchId,stockLocationId) {
+    purchaseManageStock: function (enterBillId) {
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
@@ -10,87 +13,51 @@ Meteor.methods({
             //---Open Inventory type block "Average Inventory"---
             var enterBill = EnterBills.findOne(enterBillId);
             enterBill.items.forEach(function (item) {
-                averageInventoryInsert(doc.branchId, item, doc.stockLocationId);
+                averageInventoryInsert(enterBill.branchId, item, enterBill.stockLocationId);
             });
-            //--- End Inventory type block "FIFO Inventory"---
-            //Pos.Collection.PurchaseDetails.direct.update({purchaseId: purchaseId}, {$set: {status: "Saved"}}, {multi: true});
+            //--- End Inventory type block "Average Inventory"---
         });
     },
-    saleManageStock: function (saleId, branchId) {
+    invoiceManageStock: function (invoiceId) {
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
         Meteor.defer(function () {
             //---Open Inventory type block "FIFO Inventory"---
-            var saleTotalCost = 0;
-            var saleDetails = Pos.Collection.SaleDetails.find({saleId: saleId});
-            var prefix = branchId + "-";
-            saleDetails.forEach(function (sd) {
-                    var transaction = [];
-                    var inventories = AverageInventories.find({
-                        branchId: branchId,
-                        productId: sd.productId,
-                        locationId: sd.locationId,
-                        isSale: false
-                    }, {sort: {_id: 1}}).fetch();
-                    var enoughQuantity = sd.quantity;
-                    for (var i = 0; i < inventories.length; i++) {
-                        //or if(enoughQuantity==0){ return false; //to stop the loop.}
-                        var inventorySet = {};
-                        var remainQty = (inventories[i].remainQty - sd.quantity);
-                        var quantityOfThisPrice = 0;
-                        if (remainQty <= 0) {
-                            inventorySet.remainQty = 0;
-                            inventorySet.isSale = true;
-                            if ((inventories[i].remainQty - inventories[i].quantity) >= 0) {
-                                quantityOfThisPrice = inventories[i].quantity - 0;
-                            } else {
-                                quantityOfThisPrice = inventories[i].remainQty - 0;
-                            }
-                        } else {
-                            inventorySet.remainQty = remainQty;
-                            inventorySet.isSale = false;
-                            if ((inventories[i].remainQty - inventories[i].quantity) >= 0) {
-                                quantityOfThisPrice = inventories[i].quantity - remainQty;
-                            } else {
-                                quantityOfThisPrice = inventories[i].remainQty - remainQty;
-                            }
-                        }
-                        if (enoughQuantity != 0) {
-                            if (quantityOfThisPrice > 0) {
-                                transaction.push({quantity: quantityOfThisPrice, price: inventories[i].price})
-                            }
-                            enoughQuantity -= quantityOfThisPrice;
-                        }
+            let totalCost = 0;
+            let invoice = Invoices.findOne(invoiceId);
+            let prefix = invoice.stockLocationId + "-";
+            let newItems = [];
+            invoice.items.forEach(function (item) {
+                let inventory = AverageInventories.findOne({
+                    branchId: invoice.branchId,
+                    itemId: item.itemId,
+                    stockLocationId: invoice.locationId
+                }, {sort: {_id: 1}}).fetch();
+                item.cost = inventory.price;
+                item.amountCost = inventory.price * item.qty;
+                item.profit = item.amount - item.amountCost;
+                totalCost += item.amountCost;
+                newItems.push(item);
 
-                        if (i == inventories.length - 1) {
-                            inventorySet.imei = subtractImeiArray(inventories[i].imei, sd.imei);
-                        }
-                        AverageInventories.update(inventories[i]._id, {$set: inventorySet});
-                        // var quantityOfThisPrice = inventories[i].quantity - remainQty;
-
-                    }
-                    var setObj = {};
-                    setObj.transaction = transaction;
-                    setObj.totalCost = 0;
-                    setObj.status = "Saved";
-                    if (transaction.count() > 0) {
-                        transaction.forEach(function (t) {
-                            setObj.totalCost += parseFloat(t.price) * parseFloat(t.quantity);
-                            setObj.totalCost = math.round(setObj.totalCost, 2);
-                        });
-                    }
-                    saleTotalCost += setObj.totalCost;
-                    Pos.Collection.SaleDetails.direct.update(
-                        sd._id,
-                        {$set: setObj}
-                    );
-                    //inventories=sortArrayByKey()
-                }
-            );
-            Pos.Collection.Sales.direct.update(
-                saleId,
-                {$set: {totalCost: saleTotalCost}}
+                let newInventory = {
+                    _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                    branchId: invoice.branchId,
+                    stockLocationId: invoice.stockLocationId,
+                    itemId: item.itemId,
+                    qty: item.qty,
+                    price: inventory.price,
+                    remainQty: inventory.remainQty - item.qty,
+                    coefficient: -1,
+                    type: 'invoice',
+                    refId: invoiceId
+                };
+                AverageInventories.insert(newInventory);
+            });
+            let totalProfit = invoice.total - totalCost;
+            Invoices.direct.update(
+                invoiceId,
+                {$set: {items: newItems, totalCost: totalCost, profit: invoice.total - totalCost}}
             );
             //--- End Invenetory type block "FIFO Inventory"---
         });
@@ -291,7 +258,7 @@ Meteor.methods({
         });
     }
 });
-function averageInventoryInsert(branchId, item, stockLocationId) {
+function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
     let prefix = stockLocationId + '-';
     let inventory = AverageInventories.findOne({
         branchId: branchId,
@@ -307,6 +274,9 @@ function averageInventoryInsert(branchId, item, stockLocationId) {
         inventoryObj.qty = item.qty;
         inventoryObj.price = item.price;
         inventoryObj.remainQty = item.qty;
+        inventoryObj.type = type;
+        inventoryObj.coefficient = -1;
+        inventoryObj.refId = refId;
         AverageInventories.insert(inventoryObj);
     }
     else if (inventory.price == item.price) {
@@ -320,10 +290,12 @@ function averageInventoryInsert(branchId, item, stockLocationId) {
         inventoryObj.remainQty = item.qty + inventory.remainQty;
         AverageInventories.insert(inventoryObj);
 
-        /!* var inventorySet = {};
+        /!*
+         var inventorySet = {};
          inventorySet.qty = item.qty + inventory.qty;
          inventorySet.remainQty = inventory.remainQty + item.qty;
-         AverageInventories.update(inventory._id, {$set: inventorySet});*!/
+         AverageInventories.update(inventory._id, {$set: inventorySet});
+         *!/
     }
     else {
         let totalQty = inventory.remainQty + item.qty;
@@ -346,4 +318,5 @@ function averageInventoryInsert(branchId, item, stockLocationId) {
         nextInventory.remainQty = totalQty;
         AverageInventories.insert(nextInventory);
     }
-}*/
+}
+*/
