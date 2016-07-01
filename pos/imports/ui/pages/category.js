@@ -126,11 +126,8 @@ indexTmpl.events({
 
 newTmpl.onCreated(function () {
     this.categoryList = new ReactiveVar();
-});
-newTmpl.onRendered(function () {
-    let self = this;
     let categoryId = Session.get('CategoryIdSession');
-    Meteor.call('categoryList','Select One | No Parent', categoryId, (err, result) => {
+    Meteor.call('categoryList', 'Select One | No Parent', categoryId, (err, result) => {
         this.categoryList.set(result);
     });
 });
@@ -143,7 +140,15 @@ newTmpl.helpers({
     categoryList(){
         //let categoryId = Session.get('CategoryIdSession');
         //return ReactiveMethod.call('categoryList', 'Select One | No Parent',categoryId);
-        return Template.instance().categoryList.get();
+        let list = [];
+        let categories = Template.instance().categoryList.get();
+        categories.forEach(function (category) {
+            list.push({
+                label: Spacebars.SafeString(category.label),
+                value: category.value
+            });
+        });
+        return list;
     }
 });
 
@@ -151,6 +156,11 @@ newTmpl.helpers({
 editTmpl.onCreated(function () {
     this.autorun(()=> {
         this.subscribe('pos.category', {_id: this.data._id});
+    });
+    this.categoryList = new ReactiveVar();
+    let categoryId = Session.get('CategoryIdSession');
+    Meteor.call('categoryList', 'Select One | No Parent', categoryId, (err, result) => {
+        this.categoryList.set(result);
     });
 });
 
@@ -164,8 +174,17 @@ editTmpl.helpers({
         return data;
     },
     categoryList(){
-        let categoryId = Session.get('CategoryIdSession');
-        return ReactiveMethod.call('categoryList', 'Select One | No Parent', categoryId);
+        let list = [];
+        let categories = Template.instance().categoryList.get();
+        categories.forEach(function (category) {
+            list.push({
+                label: Spacebars.SafeString(category.label),
+                value: category.value
+            });
+        });
+        return list;
+        // let categoryId = Session.get('CategoryIdSession');
+        //  return ReactiveMethod.call('categoryList', 'Select One | No Parent', categoryId);
     }
 });
 

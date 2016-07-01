@@ -1,3 +1,4 @@
+import {Meteor} from 'meteor/meteor';
 import {Categories} from '../../../imports/api/collections/category.js';
 
 let getCategoryIdsForExclusion = function (array, categories) {
@@ -14,12 +15,41 @@ let getCategoryIdsForExclusion = function (array, categories) {
 };
 let pushToList = function (array, obj) {
     let str = "";
+    /*switch (obj.level) {
+        case 0:
+            str = "&#9829; ";
+            break;
+        case 1:
+            str = "&nbsp;&nbsp;&nbsp;&#9830; ";
+            break;
+        case 2:
+            str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9827; ";
+            break;
+        case 3:
+            str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9824; ";
+            break;
+        case 4:
+            str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# ";
+            break;
+        case 5:
+            str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* ";
+            break;
+        case 6:
+            str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$ ";
+            break;
+        case 7:
+            str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;& ";
+            break;
+        case 8:
+            str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;% ";
+            break;
+        default:
+            str = "&#9829; ";
 
-    for (let i = 0; i < obj.level * 3; i++) {
-        str += "    *";
-    }
+    }*/
+    for (let i = 0; i < obj.level * 3; i++) str += "&nbsp;";
     array.push({
-        //label: Spacebars.SafeString(str + obj.name),
+        // label: Spacebars.SafeString(str + obj.name),
         label: str + obj.name,
         value: obj._id
     });
