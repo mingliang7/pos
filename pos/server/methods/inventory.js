@@ -4,6 +4,7 @@ import {EnterBills} from '../../imports/api/collections/enterBill.js'
 import {Invoices} from '../../imports/api/collections/invoice.js'
 import {LocationTransfers} from '../../imports/api/collections/locationTransfer.js'
 import {idGenerator} from 'meteor/theara:id-generator';
+import 'meteor/matb33:collection-hooks';
 
 Meteor.methods({
     purchaseManageStock: function (enterBillId) {
@@ -75,45 +76,45 @@ Meteor.methods({
             let locationTransferTotalCost = 0;
             let locationTransfer = LocationTransfers.findOne(locationTransferId);
             let prefix = locationTransfer.fromStockLocationId + "-";
+            let ///////////////
             locationTransfer.items.forEach(function (item) {
-                    let transaction = [];
-                    let inventory = AverageInventories.findOne({
-                        branchId: locationTransfer.branchId,
-                        itemId: item.itemId,
-                        stockLocationId: locationTransfer.fromStockLocationId
-                    }, {sort: {_id: 1}}).fetch();
+                let transaction = [];
+                let inventory = AverageInventories.findOne({
+                    branchId: locationTransfer.branchId,
+                    itemId: item.itemId,
+                    stockLocationId: locationTransfer.fromStockLocationId
+                }, {sort: {_id: 1}}).fetch();
 
-                    let newInventory = {
-                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                        branchId: locationTransfer.branchId,
-                        stockLocationId: locationTransfer.fromStockLocationId,
-                        itemId: item.itemId,
-                        qty: item.qty,
-                        price: inventory.price,
-                        remainQty: inventory.remainQty - item.qty,
-                        coefficient: -1,
-                        type: 'transfer-from',
-                        refId: locationTransferId
-                    };
+                let newInventory = {
+                    _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                    branchId: locationTransfer.branchId,
+                    stockLocationId: locationTransfer.fromStockLocationId,
+                    itemId: item.itemId,
+                    qty: item.qty,
+                    price: inventory.price,
+                    remainQty: inventory.remainQty - item.qty,
+                    coefficient: -1,
+                    type: 'transfer-from',
+                    refId: locationTransferId
+                };
 
-                    AverageInventories.insert(newInventory);
-                    item.price = inventory.price;
-                    averageInventoryInsert(
-                        locationTransfer.branchId,
-                        item,
-                        locationTransfer.toStockLocationId,
-                        'transfer-to',
-                        locationTransferId
-                    );
-                    let setObj = {};
-                    setObj.transaction = transaction;
-                    setObj.status = "Saved";
-                    Pos.Collection.LocationTransferDetails.direct.update(
-                        item._id,
-                        {$set: setObj}
-                    );
-                    //inventories=sortArrayByKey()
-                }
+                AverageInventories.insert(newInventory);
+                item.price = inventory.price;
+                averageInventoryInsert(
+                    locationTransfer.branchId,
+                    item,
+                    locationTransfer.toStockLocationId,
+                    'transfer-to',
+                    locationTransferId
+                );
+                //inventories=sortArrayByKey()
+            });
+            let setObj = {};
+            setObj.transaction = transaction;
+            setObj.status = "Saved";
+            Pos.Collection.LocationTransferDetails.direct.update(
+                item._id,
+                {$set: setObj}
             );
             //--- End Inventory type block "FIFO Inventory"---
         });
@@ -275,7 +276,8 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         inventoryObj.refId = refId;
         AverageInventories.insert(inventoryObj);
         /!*
-         let inventorySet = {};
+         let
+         inventorySet = {};
          inventorySet.qty = item.qty + inventory.qty;
          inventorySet.remainQty = inventory.remainQty + item.qty;
          AverageInventories.update(inventory._id, {$set: inventorySet});
@@ -301,7 +303,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         nextInventory.price = math.round(price);
         nextInventory.remainQty = totalQty;
         nextInventory.type = type;
-        nextInventory.coefficient = -1;
+        nextInventory.coefficient = 1;
         nextInventory.refId = refId;
         AverageInventories.insert(nextInventory);
     }
