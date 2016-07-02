@@ -5,5 +5,5 @@ import {idGenerator} from 'meteor/theara:id-generator';
 import {Item} from '../../imports/api/collections/item.js';
 
 Item.before.insert(function (userId, doc) {
-    doc._id = idGenerator.gen(Item, 3);
+    doc._id = idGenerator.gen(Item, 7);
 });

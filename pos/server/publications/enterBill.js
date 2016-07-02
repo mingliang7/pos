@@ -4,7 +4,7 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 // Collection
 import {EnterBills} from '../../imports/api/collections/enterBill.js';
 
-Meteor.publish('pos.enterBill', function posEnterBill(selector = {}, options = {}) {
+Meteor.publish('pos.enterBill', function posEnterBill(selector, options) {
     this.unblock();
 
     new SimpleSchema({

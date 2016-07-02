@@ -20,7 +20,7 @@ Meteor.isClient && require('../../imports/ui/pages/rep.html');
 tabularOpts.name = 'pos.rep';
 tabularOpts.collection = Reps;
 tabularOpts.columns = [
-    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_staffAction},
+    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_repAction},
     {data: "_id", title: "ID"},
     {data: "name", title: "Name"},
     {data: "gender", title: "Gender"},

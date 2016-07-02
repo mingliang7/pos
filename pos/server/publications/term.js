@@ -5,7 +5,7 @@ import {ReactiveTable} from 'meteor/aslagle:reactive-table';
 // Collection
 import {Terms} from '../../imports/api/collections/terms.js';
 
-Meteor.publish('pos.term', function posTerm(selector = {}, options = {}) {
+Meteor.publish('pos.term', function posTerm(selector, options) {
     this.unblock();
 
     new SimpleSchema({
@@ -22,5 +22,3 @@ Meteor.publish('pos.term', function posTerm(selector = {}, options = {}) {
     return this.ready();
 });
 
-// Reactive Table
-ReactiveTable.publish("pos.reactiveTable.term", Terms);

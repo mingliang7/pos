@@ -26,7 +26,7 @@ import '../../../../core/client/components/form-footer.js';
 import {StockLocations} from '../../api/collections/stockLocation.js';
 
 // Tabular
-import {StaffTabular} from '../../../common/tabulars/stockLocation.js';
+import {StockLocationTabular} from '../../../common/tabulars/stockLocation.js';
 
 // Page
 import './stockLocation.html';
@@ -58,39 +58,10 @@ indexTmpl.onDestroyed(()=>{
 
 indexTmpl.helpers({
     tabularTable(){
-        return StaffTabular;
+        return StockLocationTabular;
     },
     selector() {
         return {branchId: Session.get('currentBranch')};
-    },
-    tableSettings(){
-        let i18nPrefix = 'pos.stockLocation.schema';
-
-        reactiveTableSettings.collection = 'pos.reactiveTable.stockLocation';
-        reactiveTableSettings.filters = ['pos.stockLocationByBranchFilter'];
-        reactiveTableSettings.fields = [
-            {
-                key: '_id',
-                label: __(`${i18nPrefix}._id.label`),
-                sortOrder: 0,
-                sortDirection: 'asc'
-            },
-            {key: 'name', label: __(`${i18nPrefix}.name.label`)},
-            {key: 'description', label: __(`${i18nPrefix}.description.label`)},
-            {
-                key: '_id',
-                label(){
-                    return fa('bars', '', true);
-                },
-                headerClass: function () {
-                    let css = 'text-center col-action';
-                    return css;
-                },
-                tmpl: actionTmpl, sortable: false
-            }
-        ];
-
-        return reactiveTableSettings;
     }
 });
 

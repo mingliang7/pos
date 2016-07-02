@@ -5,7 +5,7 @@ import {ReactiveTable} from 'meteor/aslagle:reactive-table';
 // Collection
 import {Reps} from '../../imports/api/collections/rep.js';
 
-Meteor.publish('pos.rep', function posRep(selector = {}, options = {}) {
+Meteor.publish('pos.rep', function posRep(selector, options) {
     this.unblock();
     new SimpleSchema({
         selector: {type: Object, blackbox: true},

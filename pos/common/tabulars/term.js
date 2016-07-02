@@ -12,20 +12,19 @@ import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
-import {Categories} from '../../imports/api/collections/category.js';
+import {Terms} from '../../imports/api/collections/terms.js';
 
 // Page
-Meteor.isClient && require('../../imports/ui/pages/category.html');
+Meteor.isClient && require('../../imports/ui/pages/term.html');
 
-tabularOpts.name = 'pos.category';
-tabularOpts.collection = Categories;
+tabularOpts.name = 'pos.term';
+tabularOpts.collection = Terms;
 tabularOpts.columns = [
-    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_categoryAction},
+    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_termAction},
     {data: "_id", title: "ID"},
     {data: "name", title: "Name"},
-    {data: "parent", title: 'Category'},
-    {data: "description", title: "Description"},
-   // {data: "description", title: "Description"}
+    {data: "netDueIn", title: 'Net Due In'},
+    {data: "discountIfPaidWithin", title: "Paid Within"},
+    {data: "discountPercentages", title: 'Discount'}
 ];
-//tabularOpts.extraFields=['_parent'];
-export const CategoryTabular = new Tabular.Table(tabularOpts);
+export const termTabular = new Tabular.Table(tabularOpts);

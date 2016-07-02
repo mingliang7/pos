@@ -5,7 +5,7 @@ import {ReactiveTable} from 'meteor/aslagle:reactive-table';
 // Collection
 import {StockLocations} from '../../imports/api/collections/stockLocation.js';
 
-Meteor.publish('pos.stockLocation', function posStockLocation(selector = {}, options = {}) {
+Meteor.publish('pos.stockLocation', function posStockLocation(selector, options) {
     this.unblock();
     new SimpleSchema({
         selector: {type: Object, blackbox: true},
@@ -19,4 +19,3 @@ Meteor.publish('pos.stockLocation', function posStockLocation(selector = {}, opt
 });
 
 // Reactive Table
-ReactiveTable.publish("pos.reactiveTable.stockLocation", StockLocations);

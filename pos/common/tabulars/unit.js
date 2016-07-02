@@ -12,20 +12,17 @@ import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
-import {Categories} from '../../imports/api/collections/category.js';
+import {Units} from '../../imports/api/collections/units.js';
 
 // Page
-Meteor.isClient && require('../../imports/ui/pages/category.html');
+Meteor.isClient && require('../../imports/ui/pages/unit.html');
 
-tabularOpts.name = 'pos.category';
-tabularOpts.collection = Categories;
+tabularOpts.name = 'pos.unit';
+tabularOpts.collection = Units;
 tabularOpts.columns = [
-    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_categoryAction},
+    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_unitAction},
     {data: "_id", title: "ID"},
     {data: "name", title: "Name"},
-    {data: "parent", title: 'Category'},
-    {data: "description", title: "Description"},
-   // {data: "description", title: "Description"}
+    {data: "description", title: 'Description'}
 ];
-//tabularOpts.extraFields=['_parent'];
-export const CategoryTabular = new Tabular.Table(tabularOpts);
+export const UnitTabular = new Tabular.Table(tabularOpts);

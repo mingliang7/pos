@@ -4,7 +4,7 @@ import {ReactiveTable} from 'meteor/aslagle:reactive-table';
 
 import {PaymentGroups} from '../../imports/api/collections/paymentGroup.js';
 
-Meteor.publish('pos.paymentGroup', function posPaymentGroup(selector = {}, options = {}) {
+Meteor.publish('pos.paymentGroup', function posPaymentGroup(selector, options) {
     this.unblock();
 
     new SimpleSchema({
@@ -20,6 +20,3 @@ Meteor.publish('pos.paymentGroup', function posPaymentGroup(selector = {}, optio
 
     return this.ready();
 });
-
-// Reactive Table
-ReactiveTable.publish("pos.reactiveTable.paymentGroup", PaymentGroups);

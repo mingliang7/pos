@@ -1,5 +1,3 @@
-
-import {reactiveTableSettings} from '../../../../core/client/libs/reactive-table-settings.js';
 import {alertify} from 'meteor/ovcharik:alertifyjs';
 import {sAlert} from 'meteor/juliancwirko:s-alert';
 import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
@@ -11,6 +9,8 @@ import {displaySuccess, displayError} from '../../../../core/client/libs/display
 import {destroyAction} from '../../../../core/client/libs/destroy-action.js';
 
 import {Terms} from '../../api/collections/terms.js';
+//import tabular 
+import  {termTabular} from '../../../common/tabulars/term';
 import './term.html';
 let indexTmpl = Template.Pos_term,
     insertTmpl = Template.Pos_termNew,
@@ -31,36 +31,9 @@ indexTmpl.events({
 });
 
 indexTmpl.helpers({
-  tableSettings(){
-      let i18nPrefix = 'Pos.customer.schema';
-
-      reactiveTableSettings.collection = 'pos.reactiveTable.term';
-      reactiveTableSettings.fields = [
-          {
-              key: '_id',
-              label: '_id',
-              sortOrder: 0,
-              sortDirection: 'asc'
-          },
-          {key: 'name', label:'Name'},
-          {key: 'netDueIn', label:'Net Due In'},
-          {key: 'discountPercentages', label: 'Discount Percentages'},
-          {key: 'discountIfPaidWithin', label: 'Discount Within'},
-          {
-              key: '_id',
-              label(){
-                  return fa('bars', '', true);
-              },
-              headerClass: function () {
-                  let css = 'text-center col-action';
-                  return css;
-              },
-              tmpl: actionTmpl, sortable: false
-          }
-      ];
-
-      return reactiveTableSettings;
-  }
+    tabularTable(){
+        return termTabular;
+    }
 });
 
 //insert
@@ -72,17 +45,17 @@ insertTmpl.helpers({
 
 //update
 editTmpl.helpers({
-  collection(){
-    return Terms;
-  }
+    collection(){
+        return Terms;
+    }
 })
 // actionTmpl
 actionTmpl.events({
-    'click .js-update'(event,instance){
-       alertify.term(fa('pencil', 'Edit Unit'), renderTemplate(editTmpl, this));
+    'click .js-update'(event, instance){
+        alertify.term(fa('pencil', 'Edit Unit'), renderTemplate(editTmpl, this));
     },
     'click .js-display'(event, instance){
-      alertify.term(fa('pencil', 'Display'), renderTemplate(showTmpl, this));
+        alertify.term(fa('pencil', 'Display'), renderTemplate(showTmpl, this));
 
     },
     'click .js-destroy'(event, instance) {

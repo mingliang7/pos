@@ -57,37 +57,9 @@ indexTmpl.helpers({
         return CategoryTabular;
     },
     selector() {
-        return {branchId: Session.get('currentBranch')};
-    },
-    tableSettings(){
-        let i18nPrefix = 'pos.category.schema';
-
-        reactiveTableSettings.collection = 'pos.reactiveTable.category';
-        reactiveTableSettings.fields = [
-            {
-                key: '_id',
-                label: __(`${i18nPrefix}._id.label`),
-                sortOrder: 0,
-                sortDirection: 'asc'
-            },
-            {key: 'name', label: __(`${i18nPrefix}.name.label`)},
-            {key: 'description', label: __(`${i18nPrefix}.description.label`)},
-            {key: '_parent.name', label: __(`${i18nPrefix}.parent.label`)},
-            {
-                key: '_id',
-                label(){
-                    return fa('bars', '', true);
-                },
-                headerClass: function () {
-                    let css = 'text-center col-action';
-                    return css;
-                },
-                tmpl: actionTmpl, sortable: false
-            }
-        ];
-
-        return reactiveTableSettings;
+        return {};
     }
+
 });
 
 indexTmpl.events({

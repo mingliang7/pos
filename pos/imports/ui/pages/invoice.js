@@ -83,7 +83,7 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        alertify.invoice(fa('plus', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl)).maximize();
+        alertify.invoice(fa('cart-arrow-down', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
         alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editTmpl, this));
