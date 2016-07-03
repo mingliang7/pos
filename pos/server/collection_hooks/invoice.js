@@ -7,15 +7,16 @@ import {Order} from '../../imports/api/collections/order';
 
 //import invoice state
 import {invoiceState} from '../../common/globalState/invoice';
-
+//import methods
+import {updateItemInSaleOrder} from '../../common/methods/sale-order';
 Invoices.before.insert(function (userId, doc) {
     if (doc.total == 0) {
         doc.status = 'closed';
         doc.invoiceType = 'saleOrder'
-    }else if(doc.termId) {
+    } else if (doc.termId) {
         doc.status = 'active';
         doc.invoiceType = 'term'
-    }else{
+    } else {
         doc.status == 'active';
         doc.invoiceType = 'group';
     }
@@ -54,3 +55,39 @@ Invoices.after.insert(function (userId, doc) {
         }
     });
 });
+
+//update
+Invoices.after.update(function (userId, doc) {
+    let preDoc = this.previous;
+    if (doc.invoiceType == 'saleOrder') {
+        Meteor.defer(function () {
+            Meteor._sleepForMs(200);
+            recalculateQty({preDoc});
+            console.log(doc);
+
+        });
+    }
+});
+
+
+//update qty
+function updateQtyInSaleOrder({doc}) {
+    Meteor._sleepForMs(200);
+    doc.items.forEach(function (item) {
+        Order.direct.update(
+            {_id: doc.saleId, 'item.itemId': item._id},
+            {$inc: {'item.$.remainQty': -item.qty, sumRemainQty: -item.qty}}
+        )
+    });
+}
+//recalculate qty
+function recalculateQty({preDoc}) {
+    let updatedFlag;
+    preDoc.items.forEach(function (item) {
+        Order.direct.update(
+            {_id: preDoc.saleId, 'item.itemId': item.itemId},
+            {$inc: {'item.$.remainQty': item.qty, sumRemainQty: item.qty}}
+        ); //re sum remain qty
+    });
+    return updatedFlag;
+}

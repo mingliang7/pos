@@ -34,10 +34,11 @@ var itemsTmpl = Template.Pos_invoiceItems,
     actionItemsTmpl = Template.Pos_invoiceItemsAction;
 editItemsTmpl = Template.Pos_invoiceItemsEdit;
 
-
+//methods
+import {removeItemInSaleOrder} from '../../../common/methods/sale-order';
 // Local collection
 var itemsCollection;
-
+export const deletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
 Tracker.autorun(function () {
     if (FlowRouter.query.get('customerId')) {
         let sub = Meteor.subscribe('pos.activeSaleOrder', {
@@ -146,7 +147,7 @@ itemsTmpl.helpers({
         let total = 0;
         let getItems = itemsCollection.find();
         getItems.forEach((obj) => {
-                total += obj.amount;
+            total += obj.amount;
         });
         total = FlowRouter.query.get('customerId') ? 0 : total;
         return total;
@@ -208,14 +209,34 @@ itemsTmpl.events({
     },
     'click .js-destroy-item': function (event, instance) {
         event.preventDefault();
-        destroyAction(
-            itemsCollection, {
-                _id: this._id
-            }, {
-                title: TAPi18n.__('pos.invoice.schema.itemId.label'),
-                itemTitle: this.itemId
-            }
-        );
+        let itemDoc = this;
+        if (AutoForm.getFormId() == "Pos_invoiceUpdate") { //check if update form
+            swal({
+                    title: "Are you sure?",
+                    text: "លុបទំនិញមួយនេះ?",
+                    type: "warning", showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, delete it!",
+                    closeOnConfirm: false
+                },
+                function () {
+                    if(!deletedItem.findOne({itemId: itemDoc.itemId})){
+                        deletedItem.insert(itemDoc);
+                    }
+                    itemsCollection.remove({itemId: itemDoc.itemId});
+                    swal.close();
+                });
+        }else{
+            destroyAction(
+                itemsCollection, {
+                    _id: this._id
+                }, {
+                    title: TAPi18n.__('pos.invoice.schema.itemId.label'),
+                    itemTitle: this.itemId
+                }
+            );
+        }
+
     }
 });
 

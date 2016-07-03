@@ -27,6 +27,8 @@ import '../../../../core/client/components/form-footer.js';
 import {Invoices} from '../../api/collections/invoice.js';
 import {Order} from '../../api/collections/order';
 import {Item} from '../../api/collections/item';
+import {deletedItem} from './invoice-items';
+import {updateItemInSaleOrder} from '../../../common/methods/sale-order';
 // Tabular
 import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
 
@@ -86,7 +88,11 @@ indexTmpl.events({
         alertify.invoice(fa('cart-arrow-down', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editTmpl, this));
+        swal({
+            title: "Pleas Wait",
+            text: "Getting Invoices....", showConfirmButton: false
+        });
+        alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editTmpl, this)).maximize();
     },
     'click .js-destroy' (event, instance) {
         let data = this;
@@ -155,10 +161,10 @@ newTmpl.events({
     'click .toggle-list'(event, instance){
         alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
     },
-    'change [name="termId"]'(event,instance){
+    'change [name="termId"]'(event, instance){
         let customerInfo = Session.get('customerInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
-            customerInfo._term.netDueIn = result.netDueIn ;
+            customerInfo._term.netDueIn = result.netDueIn;
             Session.set('customerInfo', customerInfo);
         });
     }
@@ -225,7 +231,7 @@ newTmpl.helpers({
         };
     },
     repId(){
-        if(Session.get('customerInfo')) {
+        if (Session.get('customerInfo')) {
             return Session.get('customerInfo').repId;
         }
     },
@@ -245,8 +251,8 @@ newTmpl.helpers({
     },
     dueDate(){
         let date = AutoForm.getFieldValue('invoiceDate');
-        if(Session.get('customerInfo')) {
-            if(Session.get('customerInfo')._term) {
+        if (Session.get('customerInfo')) {
+            if (Session.get('customerInfo')._term) {
                 let term = Session.get('customerInfo')._term;
 
                 let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
@@ -257,9 +263,9 @@ newTmpl.helpers({
         return date;
     },
     isTerm(){
-        if(Session.get('customerInfo')){
+        if (Session.get('customerInfo')) {
             let customerInfo = Session.get('customerInfo');
-            if(customerInfo._term) {
+            if (customerInfo._term) {
                 return true;
             }
             return false;
@@ -279,22 +285,65 @@ newTmpl.onDestroyed(function () {
 
 // Edit
 editTmpl.onCreated(function () {
-    this.autorun(()=> {
-        this.subscribe('pos.invoice', {_id: this.data._id});
+    this.repOptions = new ReactiveVar();
+    this.isSaleOrder = new ReactiveVar(false);
+    Meteor.call('getRepList', (err, result) => {
+        this.repOptions.set(result);
     });
+    if (this.data.invoiceType == 'saleOrder') {
+        FlowRouter.query.set('customerId', this.data.customerId);
+        this.isSaleOrder.set(true);
+    }
 });
 
+
+editTmpl.events({
+    'click .add-new-customer'(event, instance){
+        alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
+    },
+    'click .go-to-receive-payment'(event, instance){
+        alertify.invoice().close();
+    },
+    'change [name=customerId]'(event, instance){
+        if (event.currentTarget.value != '') {
+            Session.set('getCustomerId', event.currentTarget.value);
+            if (FlowRouter.query.get('customerId')) {
+                FlowRouter.query.set('customerId', event.currentTarget.value);
+            }
+        }
+        Session.set('totalOrder', undefined);
+
+    },
+    'click .toggle-list'(event, instance){
+        alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
+    },
+    'change [name="termId"]'(event, instance){
+        let customerInfo = Session.get('customerInfo');
+        Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
+            customerInfo._term.netDueIn = result.netDueIn;
+            Session.set('customerInfo', customerInfo);
+        });
+    }
+});
 editTmpl.helpers({
+    closeSwal(){
+        setTimeout(function () {
+            swal.close();
+        }, 500);
+    },
+    isSaleOrder(){
+        return Template.instance().isSaleOrder.get();
+    },
     collection(){
         return Invoices;
     },
     data () {
-        let data = Invoices.findOne(this._id);
-
+        let data = this;
         // Add items to local collection
         _.forEach(data.items, (value)=> {
-            Meteor.call('getItem', value.itemId, function (err, result) {
+            Meteor.call('getItem', value.itemId, (err, result)=> {
                 value.name = result.name;
+                value.saleId = this.saleId;
                 itemsCollection.insert(value);
             })
         });
@@ -311,12 +360,110 @@ editTmpl.helpers({
         }
 
         return {};
+    },
+    repId(){
+        if (Session.get('customerInfo')) {
+            try {
+                return Session.get('customerInfo').repId;
+            } catch (e) {
+
+            }
+        }
+        return '';
+    },
+    termId(){
+        if (Session.get('customerInfo')) {
+            try {
+                return Session.get('customerInfo').termId;
+            } catch (e) {
+
+            }
+        }
+        return '';
+    },
+    options(){
+        let instance = Template.instance();
+        if (instance.repOptions.get() && instance.repOptions.get().repList) {
+            return instance.repOptions.get().repList
+        }
+        return '';
+    },
+    termOption(){
+        let instance = Template.instance();
+        if (instance.repOptions.get() && instance.repOptions.get().termList) {
+            return instance.repOptions.get().termList
+        }
+        return '';
+    },
+    totalOrder(){
+        let total = 0;
+        if (!FlowRouter.query.get('customerId')) {
+            itemsCollection.find().forEach(function (item) {
+                total += item.amount;
+            });
+        }
+        if (Session.get('totalOrder')) {
+            let totalOrder = Session.get('totalOrder');
+            return totalOrder;
+        }
+        return {total};
+    },
+    customerInfo() {
+        let customerInfo = Session.get('customerInfo');
+        if (!customerInfo) {
+            return {empty: true, message: 'No data available'}
+        }
+
+        return {
+            fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
+              <li>Opening Balance: <span class="label label-success">0</span></li>
+              <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
+              <li>Sale Order to be invoice: <span class="label label-primary">0</span>`
+        };
+    },
+    repId(){
+        if (Session.get('customerInfo')) {
+            return Session.get('customerInfo').repId;
+        }
+    },
+    collection(){
+        return Invoices;
+    },
+    itemsCollection(){
+        return itemsCollection;
+    },
+    dueDate(){
+        let date = AutoForm.getFieldValue('invoiceDate');
+        if (Session.get('customerInfo')) {
+            if (Session.get('customerInfo')._term) {
+                let term = Session.get('customerInfo')._term;
+
+                let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
+                console.log(dueDate);
+                return dueDate;
+            }
+        }
+        return date;
+    },
+    isTerm(){
+        if (Session.get('customerInfo')) {
+            let customerInfo = Session.get('customerInfo');
+            if (customerInfo._term) {
+                return true;
+            }
+            return false;
+        }
     }
 });
 
 editTmpl.onDestroyed(function () {
     // Remove items collection
     itemsCollection.remove({});
+    Session.set('customerInfo', undefined);
+    Session.set('getCustomerId', undefined);
+    FlowRouter.query.unset();
+    Session.set('saleOrderItems', undefined);
+    Session.set('totalOrder', undefined);
 });
 
 // Show
@@ -352,7 +499,20 @@ showTmpl.helpers({
 listSaleOrder.helpers({
     saleOrders(){
         let item = [];
-        let saleOrders = Order.find({status: 'active', customerId: FlowRouter.query.get('customerId')});
+        let saleOrders = Order.find({status: 'active', customerId: FlowRouter.query.get('customerId')}).fetch();
+        if (deletedItem.find().count() > 0) {
+            deletedItem.find().forEach(function (item) {
+                console.log(item);
+                saleOrders.forEach(function (saleOrder) {
+                    saleOrder.items.forEach(function (saleItem) {
+                        if (saleItem.itemId == item.itemId) {
+                            saleItem.remainQty += item.qty;
+                            saleOrder.sumRemainQty += item.qty;
+                        }
+                    });
+                });
+            });
+        }
         saleOrders.forEach(function (saleOrder) {
             saleOrder.items.forEach(function (saleItem) {
                 item.push(saleItem.itemId);
@@ -503,9 +663,7 @@ let hooksObject = {
                 items.push(obj);
             });
             doc.$set.items = items;
-
             delete doc.$unset;
-
             return doc;
         }
     },
@@ -524,7 +682,7 @@ let hooksObject = {
         // if (formType == 'update') {
         // Remove items collection
         itemsCollection.remove({});
-
+        deletedItem.remove({});
         // }
         displaySuccess();
     },
@@ -535,5 +693,5 @@ let hooksObject = {
 
 AutoForm.addHooks([
     'Pos_invoiceNew',
-    'Pos_invoiceEdit'
+    'Pos_invoiceUpdate'
 ], hooksObject);
