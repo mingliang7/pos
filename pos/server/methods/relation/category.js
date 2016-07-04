@@ -1,5 +1,5 @@
 //import {Meteor} from 'meteor/meteor';
-import {Categories} from '../../imports/api/collections/category.js';
+import {Categories} from '../../../imports/api/collections/category.js';
 
 Meteor.methods({
     isCategoryHasRelation: function (id) {

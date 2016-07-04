@@ -7,7 +7,7 @@ import {fa} from 'meteor/theara:fa-helpers';
 import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {TAPi18n} from 'meteor/tap:i18n';
 import {ReactiveTable} from 'meteor/aslagle:reactive-table';
-
+import {ReactiveMethod} from 'meteor/simple:reactive-method';
 
 // Lib
 import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
@@ -96,10 +96,31 @@ indexTmpl.events({
     }
 });
 
+newTmpl.onCreated(function () {
+    this.categoryList = new ReactiveVar();
+    let categoryId = Session.get('CategoryIdSession');
+    Meteor.call('categoryList', 'Select One | No Parent', categoryId, (err, result) => {
+        this.categoryList.set(result);
+    });
+});
 // New
 newTmpl.helpers({
+
     collection(){
         return Categories;
+    },
+    categoryList(){
+        //let categoryId = Session.get('CategoryIdSession');
+        //return ReactiveMethod.call('categoryList', 'Select One | No Parent',categoryId);
+        let list = [];
+        let categories = Template.instance().categoryList.get();
+        categories.forEach(function (category) {
+            list.push({
+                label: Spacebars.SafeString(category.label),
+                value: category.value
+            });
+        });
+        return list;
     }
 });
 
@@ -108,15 +129,34 @@ editTmpl.onCreated(function () {
     this.autorun(()=> {
         this.subscribe('pos.category', {_id: this.data._id});
     });
+    this.categoryList = new ReactiveVar();
+    let categoryId = Session.get('CategoryIdSession');
+    Meteor.call('categoryList', 'Select One | No Parent', categoryId, (err, result) => {
+        this.categoryList.set(result);
+    });
 });
 
 editTmpl.helpers({
+
     collection(){
         return Categories;
     },
     data () {
         let data = Categories.findOne(this._id);
         return data;
+    },
+    categoryList(){
+        let list = [];
+        let categories = Template.instance().categoryList.get();
+        categories.forEach(function (category) {
+            list.push({
+                label: Spacebars.SafeString(category.label),
+                value: category.value
+            });
+        });
+        return list;
+        // let categoryId = Session.get('CategoryIdSession');
+        //  return ReactiveMethod.call('categoryList', 'Select One | No Parent', categoryId);
     }
 });
 
