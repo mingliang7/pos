@@ -4,6 +4,7 @@ import {idGenerator} from 'meteor/theara:id-generator';
 // Collection
 import {Invoices} from '../../imports/api/collections/invoice.js';
 import {Order} from '../../imports/api/collections/order';
+import {GroupInvoice} from '../../imports/api/collections/groupInvoice';
 
 //import invoice state
 import {invoiceState} from '../../common/globalState/invoice';
@@ -59,10 +60,21 @@ Invoices.after.insert(function (userId, doc) {
 //update
 Invoices.after.update(function (userId, doc) {
     let preDoc = this.previous;
-    if (doc.invoiceType == 'saleOrder') {
+    let type = {
+        saleOrder: doc.invoiceType == 'saleOrder',
+        term: doc.invoiceType == 'term',
+        group: doc.invoiceType == 'group'
+    };
+    if (type.saleOrder) {
         Meteor.defer(function () {
             recalculateQty(preDoc);
             updateQtyInSaleOrder(doc);
+        });
+    }else if(type.group) {
+        Meteor.defer(function () {
+            removeInvoiceFromGroup(preDoc);
+            pushInvoiceFromGroup(doc);
+            invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
         });
     }
 });
@@ -71,7 +83,20 @@ Invoices.after.update(function (userId, doc) {
 Invoices.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        recalculateQty(doc);
+        let type = {
+            saleOrder: doc.invoiceType == 'saleOrder',
+            term: doc.invoiceType == 'term',
+            group: doc.invoiceType == 'group'
+        };
+        if(type.saleOrder) {
+            recalculateQty(doc);
+        }else if(type.group) {
+            removeInvoiceFromGroup(doc);
+            let groupInvoice = GroupInvoice.findOne(doc.paymentGroupId);
+            if(groupInvoice.invoices.length <= 0){
+                GroupInvoice.direct.remove(doc.paymentGroupId);
+            }
+        }
     });
 });
 
@@ -95,4 +120,15 @@ function recalculateQty(preDoc) {
             {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
         ); //re sum remain qty
     });
+}
+
+// update group invoice
+function removeInvoiceFromGroup(doc) {
+    Meteor._sleepForMs(200);
+    GroupInvoice.update({_id: doc.paymentGroupId}, {$pull: {invoices: {_id: doc._id}}, $inc: {total: -doc.total}});
+}
+
+function pushInvoiceFromGroup(doc) {
+    Meteor._sleepForMs(200);
+    GroupInvoice.update({_id: doc.paymentGroupId}, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
 }
