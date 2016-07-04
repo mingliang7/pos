@@ -61,33 +61,38 @@ Invoices.after.update(function (userId, doc) {
     let preDoc = this.previous;
     if (doc.invoiceType == 'saleOrder') {
         Meteor.defer(function () {
-            Meteor._sleepForMs(200);
-            recalculateQty({preDoc});
-            console.log(doc);
-
+            recalculateQty(preDoc);
+            updateQtyInSaleOrder(doc);
         });
     }
 });
 
+//remove
+Invoices.after.remove(function (userId, doc) {
+    Meteor.defer(function () {
+        Meteor._sleepForMs(200);
+        recalculateQty(doc);
+    });
+});
 
 //update qty
-function updateQtyInSaleOrder({doc}) {
+function updateQtyInSaleOrder(doc) {
     Meteor._sleepForMs(200);
     doc.items.forEach(function (item) {
         Order.direct.update(
-            {_id: doc.saleId, 'item.itemId': item._id},
-            {$inc: {'item.$.remainQty': -item.qty, sumRemainQty: -item.qty}}
+            {_id: doc.saleId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': -item.qty, sumRemainQty: -item.qty}}
         )
     });
 }
 //recalculate qty
-function recalculateQty({preDoc}) {
+function recalculateQty(preDoc) {
+    Meteor._sleepForMs(200);
     let updatedFlag;
     preDoc.items.forEach(function (item) {
         Order.direct.update(
-            {_id: preDoc.saleId, 'item.itemId': item.itemId},
-            {$inc: {'item.$.remainQty': item.qty, sumRemainQty: item.qty}}
+            {_id: preDoc.saleId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
         ); //re sum remain qty
     });
-    return updatedFlag;
 }
