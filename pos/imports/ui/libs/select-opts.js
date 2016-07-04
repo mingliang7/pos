@@ -6,6 +6,8 @@ import {Branch} from '../../../../core/imports/api/collections/branch.js';
 import {Categories} from '../../api/collections/category.js'
 import {Terms} from '../../api/collections/terms.js'
 import {PaymentGroups} from '../../api/collections/paymentGroup.js'
+/*
+
 let getCategoryIdsForExclusion = function (array, categories) {
     if (categories != null) {
         categories.forEach(function (c) {
@@ -33,14 +35,14 @@ let getCategoryList = function (selector, array, categories, alreadyUse) {
     if (categories != null) {
         categories.forEach(function (c) {
             array = pushToList(array, c);
-            /* var str = "";
+            /!* var str = "";
              for (var i = 0; i < c.level * 3; i++) {
              str += "&nbsp;";
              }
              array.push({
              label: Spacebars.SafeString(str + (c.level + 1) + '. ' + c.name),
              value: c._id
-             });*/
+             });*!/
             alreadyUse.push(c._id);
             selector.parentId = c._id;
             let cats = Categories.find(selector);
@@ -51,6 +53,7 @@ let getCategoryList = function (selector, array, categories, alreadyUse) {
     }
     return array;
 };
+*/
 
 export const SelectOpts = {
     branch: function (selectOne = true) {
@@ -113,7 +116,7 @@ export const SelectOpts = {
             });
         return list;
     },
-    category: function (param) {
+   /* category: function (param) {
         Meteor.subscribe('pos.category');
         var list = [];
         if (param != false) {
@@ -139,5 +142,5 @@ export const SelectOpts = {
             }
         });
         return list;
-    }
+    }*/
 };

@@ -6,7 +6,7 @@ import {sAlert} from 'meteor/juliancwirko:s-alert';
 import {fa} from 'meteor/theara:fa-helpers';
 import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {TAPi18n} from 'meteor/tap:i18n';
-import { ReactiveVar } from 'meteor/reactive-var'
+import {ReactiveVar} from 'meteor/reactive-var'
 import {Mongo} from 'meteor/mongo';
 import {Meteor} from 'meteor/meteor';
 // Lib
@@ -83,52 +83,75 @@ indexTmpl.events({
 });
 
 // New
-newTmpl.onCreated(function(){
+newTmpl.onCreated(function () {
+    this.categoryList = new ReactiveVar();
+    //let categoryId = Session.get('CategoryIdSession');
+    Meteor.call('categoryList', 'Select One | No Parent', null, (err, result) => {
+        this.categoryList.set(result);
+    });
+});
 
-})
 newTmpl.helpers({
     collection(){
         return Item;
+    },
+    categoryList(){
+        //let categoryId = Session.get('CategoryIdSession');
+        //return ReactiveMethod.call('categoryList', 'Select One | No Parent',categoryId);
+        let list = [];
+        let categories = Template.instance().categoryList.get();
+        categories.forEach(function (category) {
+            list.push({
+                label: Spacebars.SafeString(category.label),
+                value: category.value
+            });
+        });
+        return list;
     }
 });
-newTmpl.onDestroyed(()=>{
-  tmpCollection.remove({});
+newTmpl.onDestroyed(()=> {
+    tmpCollection.remove({});
 });
 newTmpl.events({
-  'click [name="unitId"]'(event, instance){
-      alertify.addOn(fa('plus', 'Add Unit'), renderTemplate(Template.Pos_unitNew));
-  },
-  'change .toggle-scheme'(event, instance){
-    tmpCollection.remove({})
-    if($(event.currentTarget).prop('checked')){
-      $('.scheme').removeClass('hidden')
-    }else{
-      $('.scheme').addClass('hidden');
-    }
-  },
-  'change .toggle-selling-unit'(event, instance){
-    if($(event.currentTarget).prop('checked')){
-      $('.selling-unit').removeClass('hidden')
-    }else{
-      $('.selling-unit').addClass('hidden');
-    }
-  },
+    'click [name="unitId"]'(event, instance){
+        alertify.addOn(fa('plus', 'Add Unit'), renderTemplate(Template.Pos_unitNew));
+    },
+    'change .toggle-scheme'(event, instance){
+        tmpCollection.remove({})
+        if ($(event.currentTarget).prop('checked')) {
+            $('.scheme').removeClass('hidden')
+        } else {
+            $('.scheme').addClass('hidden');
+        }
+    },
+    'change .toggle-selling-unit'(event, instance){
+        if ($(event.currentTarget).prop('checked')) {
+            $('.selling-unit').removeClass('hidden')
+        } else {
+            $('.selling-unit').addClass('hidden');
+        }
+    },
 })
 
 // Edit
-editTmpl.onCreated(function(){
-  if(this.data.scheme){
-    this.data.scheme.forEach((scheme)=>{
-      Meteor.call('getItem', scheme.itemId, function(err, result){
-        scheme.name = result.name;
-        tmpCollection.insert(scheme);
-      })
-    })
-  }
+editTmpl.onCreated(function () {
+    this.categoryList = new ReactiveVar();
+    //let categoryId = Session.get('CategoryIdSession');
+    Meteor.call('categoryList', 'Select One | No Parent', null, (err, result) => {
+        this.categoryList.set(result);
+    });
+    if (this.data.scheme) {
+        this.data.scheme.forEach((scheme)=> {
+            Meteor.call('getItem', scheme.itemId, function (err, result) {
+                scheme.name = result.name;
+                tmpCollection.insert(scheme);
+            })
+        })
+    }
 })
 //on Destroyed
-editTmpl.onDestroyed(function(){
-  tmpCollection.remove({});
+editTmpl.onDestroyed(function () {
+    tmpCollection.remove({});
 })
 
 editTmpl.helpers({
@@ -136,34 +159,47 @@ editTmpl.helpers({
         return Item;
     },
     toggleSellingUnit(){
-      return this.sellingUnit ? '' : 'hidden';
+        return this.sellingUnit ? '' : 'hidden';
     },
     checkSellingUnit(){
-      return this.sellingUnit ? true : false;
+        return this.sellingUnit ? true : false;
     },
     toggleScheme(){
-      return this.scheme ? '' : 'hidden';
+        return this.scheme ? '' : 'hidden';
     },
     checkScheme(){
-      return this.scheme ? true : false;
+        return this.scheme ? true : false;
+    },
+    categoryList(){
+        //let categoryId = Session.get('CategoryIdSession');
+        //return ReactiveMethod.call('categoryList', 'Select One | No Parent',categoryId);
+        let list = [];
+        let categories = Template.instance().categoryList.get();
+        categories.forEach(function (category) {
+            list.push({
+                label: Spacebars.SafeString(category.label),
+                value: category.value
+            });
+        });
+        return list;
     }
 });
 editTmpl.events({
-  'change .toggle-scheme'(event, instance){
-    tmpCollection.remove({});
-    if($(event.currentTarget).prop('checked')){
-      $('.scheme').removeClass('hidden')
-    }else{
-      $('.scheme').addClass('hidden');
+    'change .toggle-scheme'(event, instance){
+        tmpCollection.remove({});
+        if ($(event.currentTarget).prop('checked')) {
+            $('.scheme').removeClass('hidden')
+        } else {
+            $('.scheme').addClass('hidden');
+        }
+    },
+    'change .toggle-selling-unit'(event, instance){
+        if ($(event.currentTarget).prop('checked')) {
+            $('.selling-unit').removeClass('hidden')
+        } else {
+            $('.selling-unit').addClass('hidden');
+        }
     }
-  },
-  'change .toggle-selling-unit'(event, instance){
-    if($(event.currentTarget).prop('checked')){
-      $('.selling-unit').removeClass('hidden')
-    }else{
-      $('.selling-unit').addClass('hidden');
-    }
-  }
 });
 // Show
 showTmpl.onCreated(function () {
@@ -173,12 +209,12 @@ showTmpl.onCreated(function () {
     this.autorun(()=> {
         this.subscribe('pos.item', {_id: self._id});
         getUnitName.callPromise({sellingUnit: self.sellingUnit})
-              .then( (result) => {
-                  this.dict.set(result);
-              }).catch(function (err) {
-                  console.log(err.message);
-              }
-          );
+            .then((result) => {
+                this.dict.set(result);
+            }).catch(function (err) {
+                console.log(err.message);
+            }
+        );
     });
 });
 
@@ -203,40 +239,40 @@ showTmpl.helpers({
 });
 //custom Object
 Template.schemeItem.helpers({
-  schema() {
-    return ItemsSchema;
-  },
-  tableSettings: function () {
-      reactiveTableSettings.showFilter = false;
-      reactiveTableSettings.showNavigation = 'never';
-      reactiveTableSettings.showColumnToggles = false;
-      reactiveTableSettings.collection = tmpCollection;
-      reactiveTableSettings.fields = [
-          {key: 'itemId', label: 'Item'},
-          {key: 'name', label: 'Name'},
-          {key: 'quantity', label:'Quantity'},
-          {
-              key: 'price',
-              label: 'Price',
-              fn (value, object, key) {
-                  return numeral(value).format('0,0.00');
-              }
-          },
-          {
-              key: '_id',
-              label(){
-                  return fa('bars', '', true);
-              },
-              headerClass: function () {
-                  let css = 'text-center col-action-order-item';
-                  return css;
-              },
-              tmpl: Template.Pos_schemeItemsAction, sortable: false
-          }
-      ];
+    schema() {
+        return ItemsSchema;
+    },
+    tableSettings: function () {
+        reactiveTableSettings.showFilter = false;
+        reactiveTableSettings.showNavigation = 'never';
+        reactiveTableSettings.showColumnToggles = false;
+        reactiveTableSettings.collection = tmpCollection;
+        reactiveTableSettings.fields = [
+            {key: 'itemId', label: 'Item'},
+            {key: 'name', label: 'Name'},
+            {key: 'quantity', label: 'Quantity'},
+            {
+                key: 'price',
+                label: 'Price',
+                fn (value, object, key) {
+                    return numeral(value).format('0,0.00');
+                }
+            },
+            {
+                key: '_id',
+                label(){
+                    return fa('bars', '', true);
+                },
+                headerClass: function () {
+                    let css = 'text-center col-action-order-item';
+                    return css;
+                },
+                tmpl: Template.Pos_schemeItemsAction, sortable: false
+            }
+        ];
 
-      return reactiveTableSettings;
-  }
+        return reactiveTableSettings;
+    }
 })
 Template.schemeItem.events({
     'change [name="itemId"]': function (event, instance) {
@@ -293,22 +329,21 @@ Template.schemeItem.events({
 // Edit
 
 
-
 // Hook
 let hooksObject = {
     before: {
-      insert(doc){
-        let getScheme = tmpCollection.find({},{fields: {itemId: 1, price: 1, quantity: 1}}).fetch();
-        if(getScheme.length > 0){
-          doc.scheme = getScheme;
+        insert(doc){
+            let getScheme = tmpCollection.find({}, {fields: {itemId: 1, price: 1, quantity: 1}}).fetch();
+            if (getScheme.length > 0) {
+                doc.scheme = getScheme;
+            }
+            return doc;
+        },
+        update(doc){
+            doc.$set.scheme = tmpCollection.find({}, {fields: {_id: 0, name: 0}}).fetch();
+            delete doc.$unset;
+            return doc;
         }
-        return doc;
-      },
-      update(doc){
-        doc.$set.scheme = tmpCollection.find({}, {fields: {_id: 0, name: 0}}).fetch();
-        delete doc.$unset;
-        return doc;
-      }
     },
     onSuccess (formType, result) {
         if (formType == 'update') {

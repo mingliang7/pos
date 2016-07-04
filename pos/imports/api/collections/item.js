@@ -121,9 +121,9 @@ Item.schema = new SimpleSchema({
         type: String,
         autoform: {
             type: 'select2',
-            options(){
+            /*options(){
                 return SelectOpts.category('Select Parent | No Parent');
-            }
+            }*/
         }
     },
     itemType: {
