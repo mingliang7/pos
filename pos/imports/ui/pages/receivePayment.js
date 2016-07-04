@@ -389,7 +389,6 @@ function clearChecbox() {
     Session.set('invoiceId', 0); //clear checkbox
     Session.set('disableTerm', false);
     Session.set('invoiceId', '');
-    Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, invoiceId: ''});
     Session.set('invoicesObj', {
         count: 0
     }); //set obj to empty on keychange
@@ -433,6 +432,7 @@ function getCustomerTerm(customerId) {
         });
         return `Term: ${customer._term.name}`;
     } else {
+        Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, invoiceId: ''});
         return 0;
 
     }
