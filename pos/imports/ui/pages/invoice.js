@@ -28,7 +28,6 @@ import {Invoices} from '../../api/collections/invoice.js';
 import {Order} from '../../api/collections/order';
 import {Item} from '../../api/collections/item';
 import {deletedItem} from './invoice-items';
-import {updateItemInSaleOrder} from '../../../common/methods/sale-order';
 // Tabular
 import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
 
@@ -40,7 +39,7 @@ import './customer.html';
 //methods
 import {invoiceInfo} from '../../../common/methods/invoice.js'
 import {customerInfo} from '../../../common/methods/customer.js';
-
+import {isGroupInvoiceClosed} from '../../../common/methods/invoiceGroup';
 
 //Tracker for customer infomation
 Tracker.autorun(function () {
@@ -88,19 +87,46 @@ indexTmpl.events({
         alertify.invoice(fa('cart-arrow-down', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        swal({
-            title: "Pleas Wait",
-            text: "Getting Invoices....", showConfirmButton: false
-        });
-        alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editTmpl, this)).maximize();
+        if (this.saleId || (this.invoiceType == 'term' && this.status != 'closed')) {
+            excuteEditForm(this);
+        }
+        else if (this.invoiceType == 'term' && this.status == 'closed') {
+            swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រលេខ ${this._id} ជាមុនសិន`, "error")
+        }
+        else if (this.paymentGroupId) {
+            Meteor.call('pos.isGroupInvoiceClosed', {_id: this.paymentGroupId}, (err, result)=> {
+                if (result.paid) {
+                    swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រក្រុមលេខ ${this.paymentGroupId} ជាមុនសិន`, "error")
+                } else {
+                    excuteEditForm(this);
+                }
+            });
+        }
     },
     'click .js-destroy' (event, instance) {
         let data = this;
-        destroyAction(
-            Invoices,
-            {_id: data._id},
-            {title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id}
-        );
+        if (this.invoiceType == 'term' && this.status == 'closed') {
+            swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រលេខ ${this._id} ជាមុនសិន`, "error")
+        }
+        else if (this.paymentGroupId) {
+            Meteor.call('pos.isGroupInvoiceClosed', {_id: this.paymentGroupId}, (err, result)=> {
+                if (result.paid) {
+                    swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រក្រុមលេខ ${this.paymentGroupId} ជាមុនសិន`, "error")
+                } else {
+                    destroyAction(
+                        Invoices,
+                        {_id: data._id},
+                        {title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id}
+                    );
+                }
+            });
+        }else{
+            destroyAction(
+                Invoices,
+                {_id: data._id},
+                {title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id}
+            );
+        }
     },
     'click .js-display' (event, instance) {
         alertify.invoiceShow(fa('eye', TAPi18n.__('pos.invoice.title')), renderTemplate(showTmpl, this));
@@ -639,6 +665,13 @@ let insertSaleOrderItem = ({self, remainQty, saleItem, saleId}) => {
         }
     });
 };
+function excuteEditForm(doc) {
+    swal({
+        title: "Pleas Wait",
+        text: "Getting Invoices....", showConfirmButton: false
+    });
+    alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editTmpl, doc)).maximize();
+}
 // Hook
 let hooksObject = {
     before: {
@@ -669,13 +702,16 @@ let hooksObject = {
     },
     onSuccess (formType, id) {
         //get invoiceId, total, customerId
-        if (!FlowRouter.query.get('customerId')) {
-            Meteor.call('getInvoiceId', id, function (err, result) {
-                if (result) {
-
-                    Session.set('totalOrder', result);
-                }
-            });
+        if (formType != 'update') {
+            if (!FlowRouter.query.get('customerId')) {
+                Meteor.call('getInvoiceId', id, function (err, result) {
+                    if (result) {
+                        Session.set('totalOrder', result);
+                    }
+                });
+            } else {
+                alertify.invoice().close();
+            }
         } else {
             alertify.invoice().close();
         }
