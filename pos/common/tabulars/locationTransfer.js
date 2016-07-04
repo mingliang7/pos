@@ -41,4 +41,4 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-export const EnterBillTabular = new Tabular.Table(tabularOpts);
+export const LocationTransferTabular = new Tabular.Table(tabularOpts);
