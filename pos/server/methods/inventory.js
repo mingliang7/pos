@@ -1,4 +1,3 @@
-/*
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {EnterBills} from '../../imports/api/collections/enterBill.js'
 import {Invoices} from '../../imports/api/collections/invoice.js'
@@ -145,67 +144,49 @@ Meteor.methods({
             //--- End Inventory type block "Average Inventory"---
         });
     },
-    isEnoughStock: function (enterBillId, branchId) {
-        let enterBill = enterBill.findOne({enterBillId: enterBillId});
+    isEnoughStock: function (enterBillId) {
+        let enterBill = enterBill.findOne(enterBillId);
         let enough = true;
-        enterBill.items.forEach(function (pd) {
+        enterBill.items.forEach(function (item) {
             let inventory = AverageInventories.findOne({
-                branchId: branchId,
-                itemId: pd.itemId,
-                locationId: pd.locationId,
-                price: pd.price,
-                isSale: false
+                branchId: enterBill.branchId,
+                itemId: item.itemId,
+                locationId: item.locationId,
+                price: item.price
             }, {fields: {_id: 1, remainQty: 1, quantity: 1}});
-            let remainQuantity = 0;
-            inventory.forEach(function (inventory) {
-                if (inventory.remainQty - inventory.quantity < 0) {
-                    remainQuantity += inventory.remainQty;
-                } else {
-                    remainQuantity += inventory.quantity;
-                }
-            });
-            if (remainQuantity < pd.quantity) {
+            if (inventory.remainQty < item.qty) {
                 enough = false;
                 return false;
             }
         });
         return enough;
     },
-    reduceFromInventory: function (enterBillId, branchId) {
+    reduceFromInventory: function (enterBillId) {
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
         Meteor.defer(function () {
-            let enterBillDetails = Pos.Collection.PurchaseDetails.find({enterBillId: enterBillId});
-            enterBillDetails.forEach(function (pd) {
-                let inventories = AverageInventories.find({
-                    branchId: branchId,
-                    itemId: pd.itemId,
-                    locationId: pd.locationId,
-                    isSale: false
-                }, {sort: {_id: -1}}).fetch();
-                let enoughQuantity = pd.quantity;
-                for (let i = 0; i < inventories.length; i++) {
-                    let inventorySet = {};
-                    if (inventories[i].price == pd.price && enoughQuantity != 0) {
-                        let remainQuantity = inventories[i].quantity - enoughQuantity;
-                        if (remainQuantity > 0) {
-                            inventorySet.quantity = remainQuantity;
-                            inventorySet.remainQty = inventories[i].remainQty - enoughQuantity;
-                            inventorySet.imei = subtractImeiArray(inventories[i].imei, pd.imei);
-                            enoughQuantity = 0;
-                            AverageInventories.update(inventories[i]._id, {$set: inventorySet});
-                        } else {
-                            enoughQuantity -= inventories[i].quantity;
-                            AverageInventories.direct.remove(inventories[i]._id);
-                        }
-                    } else {
-                        inventorySet.remainQty = inventories[i].remainQty - enoughQuantity;
-                        inventorySet.imei = subtractImeiArray(inventories[i].imei, pd.imei);
-                        AverageInventories.update(inventories[i]._id, {$set: inventorySet});
-                    }
-                }
-            })
+            let enterBill = EnterBills.findOne(enterBillId);
+            enterBill.items.forEach(function (item) {
+                let inventory = AverageInventories.findOne({
+                    branchId: enterBill.branchId,
+                    itemId: item.itemId,
+                    stockLocationId: enterBill.stockLocationId
+                }, {sort: {_id: 1}}).fetch();
+                let newInventory = {
+                    _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                    branchId: enterBill.branchId,
+                    stockLocationId: enterBill.stockLocationId,
+                    itemId: item.itemId,
+                    qty: item.qty,
+                    price: inventory.price,
+                    remainQty: inventory.remainQty - item.qty,
+                    coefficient: -1,
+                    type: 'enter-return',
+                    refId: enterBillId
+                };
+                AverageInventories.insert(newInventory);
+            });
         });
     }
 });
@@ -246,13 +227,13 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         inventoryObj.refId = refId;
         lastPurchasePrice = item.price;
         AverageInventories.insert(inventoryObj);
-        /!*
+        /*
          let
          inventorySet = {};
          inventorySet.qty = item.qty + inventory.qty;
          inventorySet.remainQty = inventory.remainQty + item.qty;
          AverageInventories.update(inventory._id, {$set: inventorySet});
-         *!/
+         */
     }
     else {
         let totalQty = inventory.remainQty + item.qty;
@@ -282,4 +263,3 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
     Item.direct.update(item.itemId, {$set: {enterBillPrice: lastPurchasePrice}});
 }
 
-*/
