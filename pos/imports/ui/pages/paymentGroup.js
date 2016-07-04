@@ -55,38 +55,6 @@ indexTmpl.onCreated(function () {
 indexTmpl.helpers({
     tabularTable(){
         return PaymentGroupTabular;
-    },
-    selector() {
-        return {branchId: Session.get('currentBranch')};
-    },
-    tableSettings(){
-        let i18nPrefix = 'pos.paymentGroup.schema';
-
-        reactiveTableSettings.collection = 'pos.reactiveTable.paymentGroup';
-        reactiveTableSettings.fields = [
-            {
-                key: '_id',
-                label: __(`${i18nPrefix}._id.label`),
-                sortOrder: 0,
-                sortDirection: 'asc'
-            },
-            {key: 'name', label: __(`${i18nPrefix}.name.label`)},
-            {key: 'numberOfDay', label: __(`${i18nPrefix}.numberOfDay.label`)},
-            {key: 'description', label: __(`${i18nPrefix}.description.label`)},
-            {
-                key: '_id',
-                label(){
-                    return fa('bars', '', true);
-                },
-                headerClass: function () {
-                    let css = 'text-center col-action';
-                    return css;
-                },
-                tmpl: actionTmpl, sortable: false
-            }
-        ];
-
-        return reactiveTableSettings;
     }
 });
 

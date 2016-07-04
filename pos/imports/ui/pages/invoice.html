@@ -1,11 +1,13 @@
 <!--Index-->
 <template name="Pos_invoice">
-    <p>
-        <button type="button" class="btn btn-primary js-create"><i class="fa fa-plus"></i> {{_ "action.addNew"}}
-        </button>
-    </p>
-
-    {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            {{> addNewButton}}
+        </h3>
+    </div>
+    <div class="box-body">
+        {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
+    </div>
 </template>
 
 <!--Action-->
@@ -21,116 +23,249 @@
 
 <!--Insert-->
 <template name="Pos_invoiceNew">
-    {{#autoForm collection=collection id="Pos_invoiceNew" type="insert"}}
-        <div class="row well">
-            <div class="col-md-3">
-                {{> afQuickField name="customerId"}}
-                <span><input type="checkbox" class="enable-sale-order"><a href=""
-                                                                          class="sale-order label label-success">Sale
-                    Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
-            </div>
-            <div class="col-md-9">
-                <p class="pull-right ">
-                <h4 class="text-black">BALANCE DUE</h4>
-                <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
-                {{#if totalOrder.customerId}}
-                    <a class="btn btn-default text-center go-to-receive-payment" href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.invoiceId}}">
-                        Receive Payment
-                    </a>
-                {{/if}}
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Order</div>
-                    <div class="panel-body">
-
-                        {{> afQuickField name="staffId"}}
-                        {{> afQuickField name="stockLocationId"}}
-                        {{> afQuickField name="invoiceDate"}}
-                        {{> afQuickField name="des"}}
-
-                        {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
-                    </div>
+    <div class="box-body">
+        {{#autoForm collection=collection id="Pos_invoiceNew" type="insert"}}
+            <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
+                <div class="col-md-3">
+                    <label for="email">Customer:<span style="color: red;">*</span> (<a href="" class="add-new-customer">Add
+                        New</a>) </label>
+                    {{> afQuickField name="customerId" label=false}}
+                </div>
+                <div class="col-md-3">
+                    <br>
+                   <span><input type="checkbox" class="filled-in enable-sale-order"><a href=""
+                                                                                       class="sale-order btn btn-default">Sale
+                       Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
+                </div>
+                <div class="col-md-6">
+                    <p class="pull-right ">
+                    <h4 class="text-black">BALANCE DUE</h4>
+                    <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
+                    {{#if totalOrder.customerId}}
+                        <a class="btn btn-default text-center go-to-receive-payment"
+                           href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.invoiceId}}">
+                            Receive Payment
+                        </a>
+                    {{/if}}
+                    </p>
                 </div>
             </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-2">
+                    {{> afQuickField name="voucherId"}}
+                </div>
+                {{#if isTerm}}
+                    <div class="col-md-2">
+                        {{> afQuickField name="termId" options=termOption value=termId}}
+                    </div>
+                {{/if}}
+                <div class="col-md-2">
+                    {{> afQuickField name="invoiceDate"}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="dueDate" value=dueDate}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="stockLocationId"}}
+                    {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="repId" options=options value=repId label="Rep"}}
+                </div>
 
-            <div class="col-md-8">
+            </div>
+            <div class="col-md-12 well">
                 <!--Item Temporary-->
                 {{> Pos_invoiceItems itemsCollection=itemsCollection}}
+            </div>
+            <div class="row">
+                <div class="col-sm-12 pull-right">
+                    <!--{{> formFooterWithButton}}-->
+                    {{#formFooter}}
+                        <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
+                            <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
+                        </button>
+                        <button type="reset" class="btn btn-default">
+                            <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
+                        </button>
+                    {{/formFooter}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" id="main">
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingTwo">
+                                <h4 class="panel-title">
+                                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                       href="#customerInfo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Customer Information
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="customerInfo" class="panel-collapse collapse" role="tabpanel"
+                                 aria-labelledby="headingTwo">
+                                <div class="panel-body">
+                                    {{>infoTab data=customerInfo info="Customer"}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <div class="row">
-                    <div class="col-sm-12 pull-right">
-                        <!--{{> formFooterWithButton}}-->
-
-                        {{#formFooter}}
-                            <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
-                                <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
-                            </button>
-                            <button type="reset" class="btn btn-default">
-                                <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
-                            </button>
-                        {{/formFooter}}
+            </div>
+            <div class="row">
+                <div class="col-md-6" id="main">
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingTwo">
+                                <h4 class="panel-title">
+                                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                       href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Memo
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
+                                 aria-labelledby="headingTwo">
+                                <div class="panel-body">
+                                    <!--<div class="col-md-3">-->
+                                    {{> afQuickField name="des"}}
+                                    <!--</div>-->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-5">
-                {{>infoTab data=customerInfo info="Customer"}}
-            </div>
-        </div>
-    {{/autoForm}}
+        {{/autoForm}}
+    </div>
 </template>
 
 <!--Update-->
 <template name="Pos_invoiceEdit">
-    {{#if Template.subscriptionsReady}}
-        {{#autoForm collection=collection id="Pos_invoiceEdit" doc=data type="update"}}
+    <div class="box-body">
+        {{#autoForm collection=collection id="Pos_invoiceUpdate" doc=data type="update"}}
+            <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
+                <div class="col-md-3">
+                    <label for="email">Customer:<span style="color: red;">*</span> (<a href="" class="add-new-customer">Add
+                        New</a>) </label>
+                    {{> afQuickField name="customerId" label=false}}
+                </div>
+                <div class="col-md-3">
+                    <br>
+                    {{#if isSaleOrder}}
+                        <span><a href="" class="toggle-list sale-order btn btn-default">Sale
+                            Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
+                    {{/if}}
+                </div>
+                <div class="col-md-6">
+                    <p class="pull-right ">
+                    <h4 class="text-black">BALANCE DUE</h4>
+                    <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
+                    {{#if totalOrder.customerId}}
+                        <a class="btn btn-default text-center go-to-receive-payment"
+                           href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.invoiceId}}">
+                            Receive Payment
+                        </a>
+                    {{/if}}
+                    </p>
+                </div>
+            </div>
+            <hr>
             <div class="row">
-                <div class="col-md-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Order</div>
-                        <div class="panel-body">
-                            {{> afQuickField name="customerId"}}
-                            {{> afQuickField name="staffId"}}
-                            {{> afQuickField name="stockLocationId"}}
-                            {{> afQuickField name="invoiceDate"}}
-                            {{> afQuickField name="des"}}
-
-                            {{> afQuickField type="hidden" name="branchId"}}
-                        </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="voucherId"}}
+                </div>
+                {{#if isTerm}}
+                    <div class="col-md-2">
+                        {{> afQuickField name="termId" options=termOption value=termId}}
                     </div>
+                {{/if}}
+                <div class="col-md-2">
+                    {{> afQuickField name="invoiceDate"}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="dueDate" value=dueDate}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="stockLocationId"}}
+                    {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="repId" options=options value=repId label="Rep"}}
                 </div>
 
-                <div class="col-md-8">
-                    <!--Item Temporary-->
-                    {{> Pos_invoiceItems itemsCollection=itemsCollection}}
-
-                    <div class="row">
-                        <div class="col-sm-12 pull-right">
-                            <!--{{> formFooterWithButton}}-->
-
-                            {{#formFooter}}
-                                <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
-                                    <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
-                                </button>
-                                <button type="reset" class="btn btn-default">
-                                    <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
-                                </button>
-                            {{/formFooter}}
+            </div>
+            <div class="col-md-12 well">
+                <!--Item Temporary-->
+                {{> Pos_invoiceItems itemsCollection=itemsCollection}}
+            </div>
+            {{closeSwal}}
+            <!-- closing swal -->
+            <div class="row">
+                <div class="col-sm-12 pull-right">
+                    <!--{{> formFooterWithButton}}-->
+                    {{#formFooter}}
+                        <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
+                            <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
+                        </button>
+                        <button type="reset" class="btn btn-default">
+                            <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
+                        </button>
+                    {{/formFooter}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" id="main">
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingTwo">
+                                <h4 class="panel-title">
+                                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                       href="#customerInfo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Customer Information
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="customerInfo" class="panel-collapse collapse" role="tabpanel"
+                                 aria-labelledby="headingTwo">
+                                <div class="panel-body">
+                                    {{>infoTab data=customerInfo info="Customer"}}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
             </div>
-
+            <div class="row">
+                <div class="col-md-6" id="main">
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingTwo">
+                                <h4 class="panel-title">
+                                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+                                       href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Memo
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
+                                 aria-labelledby="headingTwo">
+                                <div class="panel-body">
+                                    <!--<div class="col-md-3">-->
+                                    {{> afQuickField name="des"}}
+                                    <!--</div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         {{/autoForm}}
-    {{else}}
-        {{> loading}}
-    {{/if}}
+    </div>
 </template>
 
 <!--Show-->

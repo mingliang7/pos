@@ -2,6 +2,7 @@
 
 //collections
 import {Invoices} from '../../api/collections/invoice';
+import {GroupInvoice} from '../../api/collections/groupInvoice';
 import {ReceivePayment} from '../../api/collections/receivePayment';
 import {Customers} from '../../api/collections/customer';
 //schema
@@ -24,10 +25,20 @@ Tracker.autorun(function () {
         Meteor.subscribe('pos.customer', {
             _id: Session.get('customerId')
         });
-        let invoiceSub = Meteor.subscribe('pos.activeInvoices', {
-            customerId: Session.get('customerId'),
-            status: {$in: ['active', 'partial']}
-        });
+        let customer = getCustomerInfo(Session.get('customerId'));
+        let invoiceSub;
+        if (customer && customer.termId) {
+            invoiceSub = Meteor.subscribe('pos.activeInvoices', {
+                customerId: Session.get('customerId'),
+                status: {$in: ['active', 'partial']},
+                invoiceType: 'term'
+            });
+        } else {
+            invoiceSub = Meteor.subscribe('pos.activeGroupInvoices', {
+                vendorOrCustomerId: Session.get('customerId'),
+                status: {$in: ['active', 'partial']}
+            });
+        }
         if (invoiceSub.ready()) {
             setTimeout(function () {
                 swal.close()
@@ -48,9 +59,9 @@ indexTmpl.onCreated(function () {
     Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, invoiceId: ''});
     Session.get('disableTerm', false);
     Session.set('invoicesObjCount', 0);
-    if(FlowRouter.getParam('invoiceId')){
+    if (FlowRouter.getParam('invoiceId')) {
         Session.set('invoiceId', FlowRouter.getParam('invoiceId'));
-    }else{
+    } else {
         Session.set('invoiceId', 0);
     }
     Session.set('invoicesObj', {
@@ -89,7 +100,9 @@ indexTmpl.helpers({
     },
     countIsqualSales() {
         let invoicesObj = Session.get('invoicesObj');
-        if (Invoices.find().count() != 0 && invoicesObj.count == Invoices.find().count()) {
+        let customer = Customers.findOne(Session.get('customerId'));
+        let collection = (customer && customer.termId) ? Invoices.find() : GroupInvoice.find();
+        if (collection.count() != 0 && invoicesObj.count == collection.count()) {
             return true;
         }
         return false;
@@ -108,11 +121,17 @@ indexTmpl.helpers({
         return receivePaymentSchema;
     },
     invoices() {
-        let invoices = Invoices.find({}, {
-            sort: {
-                _id: 1
-            }
-        });
+        let invoices;
+        let customer = getCustomerInfo(Session.get('customerId'));
+        if (customer && customer.termId) {
+            invoices = Invoices.find({}, {
+                sort: {
+                    _id: 1
+                }
+            });
+        } else {
+            invoices = GroupInvoice.find({}, {sort: {_id: 1}});
+        }
         if (invoices.count() > 0) {
             let arr = [];
             invoices.forEach(function (invoice) {
@@ -129,7 +148,7 @@ indexTmpl.helpers({
         let _id = Session.get('invoiceId');
         let discount = this.status == 'active' ? checkTerm(this) : 0;
         var lastPayment = getLastPayment(this._id);
-        if (this.status == 'active' && this._id == _id) { //match _id with status active
+        if (this.status == 'active' && (this._id == _id || this.voucherId == _id)) { //match _id with status active
             let saleInvoices = {
                 count: 0
             };
@@ -142,7 +161,7 @@ indexTmpl.helpers({
             Session.set('invoicesObj', saleInvoices);
             return true;
         }
-        if (this.status == 'partial' && this._id == _id) { //match _id with status partial
+        if (this.status == 'partial' && (this._id == _id || this.voucherId == _id)) { //match _id with status partial
             let saleInvoices = {
                 count: 0
             };
@@ -171,7 +190,8 @@ indexTmpl.helpers({
     },
     totalAmountDue(){
         let totalAmountDue = 0;
-        let invoices = Invoices.find({})
+        let customer = getCustomerInfo(Session.get('customerId'));
+        let invoices = (customer && customer.termId) ? Invoices.find({}) : GroupInvoice.find({});
         if (invoices.count() > 0) {
             invoices.forEach(function (invoice) {
                 let receivePayments = ReceivePayment.find({invoiceId: invoice._id}, {sort: {_id: 1, paymentDate: 1}});
@@ -188,7 +208,8 @@ indexTmpl.helpers({
     },
     totalActualPay(){
         let totalAmountDue = 0;
-        let invoices = Invoices.find({})
+        let customer = getCustomerInfo(Session.get('customerId'));
+        let invoices = (customer && customer.termId) ? Invoices.find({}) : GroupInvoice.find({});
         if (invoices.count() > 0) {
             invoices.forEach(function (invoice) {
                 var discount = invoice.status == 'active' ? checkTerm(invoice) : 0;
@@ -206,7 +227,9 @@ indexTmpl.helpers({
     },
     totalOriginAmount(){
         let totalOrigin = 0;
-        Invoices.find({}).forEach(function (invoices) {
+        let customer = getCustomerInfo(Session.get('customerId'));
+        let collection = (customer && customer.termId) ? Invoices.find({}) : GroupInvoice.find({});
+        collection.forEach(function (invoices) {
             totalOrigin += invoices.total;
         });
         return totalOrigin;
@@ -224,6 +247,15 @@ indexTmpl.helpers({
         let lastPayment = getLastPayment(this._id);
         return lastPayment == 0 ? numeral(this.total).format('0,0.00') : numeral(lastPayment).format('0,0.00');
 
+    },
+    isInvoiceDate(){
+        if (this.invoiceDate) {
+            return moment(this.invoiceDate).format('YYYY-MM-DD HH:mm:ss');
+        } else {
+            let startDate = moment(this.startDate).format('YYYY-MM-DD');
+            let endDate = moment(this.endDate).format('YYYY-MM-DD');
+            return `${startDate} to ${endDate}`;
+        }
     }
 });
 
@@ -268,11 +300,17 @@ indexTmpl.events({
             let saleObj = Session.get('invoicesObj');
             let total = [];
             let index = 0;
-            let invoicesObj = Invoices.find({}, {
-                sort: {
-                    _id: 1
-                }
-            });
+            let customer = getCustomerInfo(Session.get('customerId'));
+            let invoicesObj;
+            if (customer.termId) {
+                invoicesObj = Invoices.find({}, {
+                    sort: {
+                        _id: 1
+                    }
+                });
+            } else {
+                invoicesObj = GroupInvoice.find({}, {sort: {_id: 1}});
+            }
             invoicesObj.forEach((sale) => {
                 let lastPayment = getLastPayment(sale._id);
                 sale.dueAmount = lastPayment == 0 ? sale.total : lastPayment;
@@ -386,25 +424,29 @@ function checkTerm(self) {
 
 }
 function getCustomerTerm(customerId) {
-    let customer = Customers.findOne(customerId);
-    if (customer._term) {
+    let customer = getCustomerInfo(customerId);
+    if (customer && customer._term) {
         Session.set('discount', {
             discountIfPaidWithin: customer._term.discountIfPaidWithin,
             discountPercentages: customer._term.discountPercentages
         });
         return `Term: ${customer._term.name}`;
     } else {
+        Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, invoiceId: ''});
         return 0;
 
     }
     return false;
 }
-
+function getCustomerInfo(id) {
+    return Customers.findOne(id);
+}
 //autoform hook
 let hooksObject = {
     onSubmit(){
         this.event.preventDefault();
         let invoicesObj = Session.get('invoicesObj');
+        let branch = Session.get('currentBranch');
         delete invoicesObj.count;
         if (_.isEmpty(invoicesObj)) {
             swal({
@@ -425,7 +467,7 @@ let hooksObject = {
                 closeOnConfirm: false,
                 showLoaderOnConfirm: true,
             }, function () {
-                receivePayment.callPromise({paymentDate, invoicesObj})
+                receivePayment.callPromise({paymentDate, invoicesObj, branch})
                     .then(function (result) {
                         clearChecbox();
                         console.log(result)

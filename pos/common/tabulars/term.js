@@ -12,19 +12,19 @@ import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
-import {Staffs} from '../../imports/api/collections/staff.js';
+import {Terms} from '../../imports/api/collections/terms.js';
 
 // Page
-Meteor.isClient && require('../../imports/ui/pages/staff.html');
+Meteor.isClient && require('../../imports/ui/pages/term.html');
 
-tabularOpts.name = 'pos.staff';
-tabularOpts.collection = Staffs;
+tabularOpts.name = 'pos.term';
+tabularOpts.collection = Terms;
 tabularOpts.columns = [
-    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_staffAction},
+    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_termAction},
     {data: "_id", title: "ID"},
     {data: "name", title: "Name"},
-    {data: "gender", title: "Gender"},
-    {data: "telephone", title: "Telephone"},
-    {data: "email", title: "Email"}
+    {data: "netDueIn", title: 'Net Due In'},
+    {data: "discountIfPaidWithin", title: "Paid Within"},
+    {data: "discountPercentages", title: 'Discount'}
 ];
-export const StaffTabular = new Tabular.Table(tabularOpts);
+export const termTabular = new Tabular.Table(tabularOpts);

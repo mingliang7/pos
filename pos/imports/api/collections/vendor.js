@@ -16,7 +16,10 @@ Vendors.schema = new SimpleSchema({
     gender: {
         type: String,
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.gender();
             }
@@ -38,7 +41,10 @@ Vendors.schema = new SimpleSchema({
     paymentType: {
         type: String,
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.paymentType();
             }
@@ -54,7 +60,10 @@ Vendors.schema = new SimpleSchema({
             }
         },
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.term();
             }
@@ -70,11 +79,18 @@ Vendors.schema = new SimpleSchema({
             }
         },
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.paymentGroup();
             }
         }
+    },
+    branchId: {
+        type: String,
+        optional: true
     }
 });
 

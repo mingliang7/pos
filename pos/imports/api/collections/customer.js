@@ -16,7 +16,10 @@ Customers.schema = new SimpleSchema({
     gender: {
         type: String,
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.gender();
             }
@@ -41,7 +44,10 @@ Customers.schema = new SimpleSchema({
     paymentType: {
         type: String,
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.paymentType();
             }
@@ -57,7 +63,10 @@ Customers.schema = new SimpleSchema({
             }
         },
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.term();
             }
@@ -73,7 +82,10 @@ Customers.schema = new SimpleSchema({
             }
         },
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.paymentGroup();
             }
@@ -89,6 +101,22 @@ Customers.schema = new SimpleSchema({
               return inputmaskOptions.currency();
           }
       }
+    },
+    repId: {
+        type: String,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+                optionsMethod: 'pos.selectOptMethods.rep',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let currentBranch = Session.get('currentBranch');
+                        return {branchId: currentBranch};
+                    }
+                }
+            }
+        }
     }
 });
 

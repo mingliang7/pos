@@ -5,7 +5,7 @@ import {ReactiveTable} from 'meteor/aslagle:reactive-table';
 // Collection
 import {Customers} from '../../imports/api/collections/customer.js';
 
-Meteor.publish('pos.customer', function posCustomer(selector = {}) {
+Meteor.publish('pos.customer', function posCustomer(selector) {
     this.unblock();
     new SimpleSchema({
         selector: {type: Object, blackbox: true}
@@ -23,4 +23,4 @@ Meteor.publish('pos.customer', function posCustomer(selector = {}) {
 });
 
 // Reactive Table
-ReactiveTable.publish("pos.reactiveTable.customer", Customers);
+// ReactiveTable.publish("pos.reactiveTable.customer", Customers);

@@ -7,16 +7,19 @@ import {moment} from 'meteor/momentjs:moment';
 import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 import {SelectOpts} from '../../ui/libs/select-opts.js';
 
-export const Staffs = new Mongo.Collection("pos_staffs");
+export const Reps = new Mongo.Collection("pos_reps");
 
-Staffs.schema = new SimpleSchema({
+Reps.schema = new SimpleSchema({
     name: {
         type: String,
     },
     gender: {
         type: String,
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.gender();
             }
@@ -38,7 +41,10 @@ Staffs.schema = new SimpleSchema({
     position: {
         type: String,
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.position();
             }
@@ -53,7 +59,10 @@ Staffs.schema = new SimpleSchema({
     status: {
         type: String,
         autoform: {
-            type: "select2",
+            type: "universe-select",
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
             options: function () {
                 return SelectOpts.status();
             }
@@ -78,6 +87,6 @@ Staffs.schema = new SimpleSchema({
 });
 
 Meteor.startup(function () {
-    Staffs.schema.i18n("pos.staff.schema");
-    Staffs.attachSchema(Staffs.schema);
+    Reps.schema.i18n("pos.Reps.schema");
+    Reps.attachSchema(Reps.schema);
 });

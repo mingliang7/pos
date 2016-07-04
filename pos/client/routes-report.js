@@ -74,3 +74,48 @@ PosRoutes.route('/order-report-gen', {
         Layout.report('Pos_orderReportGen');
     }
 });
+//main report
+import '../imports/ui/reports/main';
+PosRoutes.route('/report', {
+    name: 'pos.mainReport',
+    title: 'Main Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_mainReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        // title: __('pos.payBill.title'),
+        // icon: 'cart-plus',
+        // parent: 'pos.vendor'
+    }
+});
+
+import '../imports/ui/reports/invoice';
+PosRoutes.route('/report/invoice', {
+    name: 'pos.invoiceReport',
+    title: 'Invoice Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_invoiceReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        // title: __('pos.payBill.title'),
+        // icon: 'cart-plus',
+        // parent: 'pos.vendor'
+    }
+});
+
+import '../imports/ui/reports/payment';
+PosRoutes.route('/report/payment', {
+    name: 'pos.paymentReport',
+    title: 'Payment Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_paymentReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        // title: __('pos.payBill.title'),
+        // icon: 'cart-plus',
+        // parent: 'pos.vendor'
+    }
+});

@@ -7,104 +7,140 @@
 
     <!--Data-->
     {{#if isInRole 'data-insert,data-update,data-remove' 'Pos'}}
-        <li class="header"><i class="fa fa-database"></i> DATA</li>
-        <li class="{{isActiveRoute name='pos.customer'}}">
-            <a href="{{pathFor 'pos.customer'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.customer"}}</span>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-long-arrow-right"></i>
+                <span>CUSTOMER</span>
+                <i class="fa fa-angle-left pull-right"></i>
             </a>
+            <ul class="treeview-menu" style="display: none;">
+                <li class="{{isActiveRoute name='pos.customer'}}">
+                    <a href="{{pathFor 'pos.customer'}}">
+                        <i class="fa fa-male"></i> <span>{{_ "pos.sidebarMenu.customer"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.order'}}">
+                    <a href="{{pathFor 'pos.order'}}">
+                        <i class="fa fa-shopping-cart"></i> <span>{{_ "pos.sidebarMenu.order"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.invoice'}}">
+                    <a href="{{pathFor 'pos.invoice'}}">
+                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.invoice"}}</span>
+                    </a>
+                </li><li class="{{isActiveRoute name='pos.receivePayment'}}">
+                    <a href="{{pathFor 'pos.receivePayment'}}">
+                        <i class="fa fa-circle-o"></i> <span>Receive Payment</span>
+                    </a>
+                </li>
+            </ul>
         </li>
-        <li class="{{isActiveRoute name='pos.vendor'}}">
-            <a href="{{pathFor 'pos.vendor'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.vendor"}}</span>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-long-arrow-right"></i>
+                <span>{{_ "pos.sidebarMenu.vendor"}}</span>
+                <i class="fa fa-angle-left pull-right"></i>
             </a>
+            <ul class="treeview-menu" style="display: none;">
+                <li class="{{isActiveRoute name='pos.vendor'}}">
+                    <a href="{{pathFor 'pos.vendor'}}">
+                        <i class="fa fa-male" aria-hidden="true"></i> <span>{{_ "pos.sidebarMenu.vendor"}}</span>
+                    </a>
+                </li>
+
+
+                <li class="{{isActiveRoute name='pos.enterBill'}}">
+                    <a href="{{pathFor 'pos.enterBill'}}">
+                        <i class="fa fa-money" aria-hidden="true"></i> <span>{{_ "pos.sidebarMenu.enterBill"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.purchaseOrder'}}">
+                    <a href="{{pathFor 'pos.purchaseOrder'}}">
+                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.purchaseOrder"}}</span>
+                    </a>
+                </li>
+            </ul>
         </li>
-        <li class="{{isActiveRoute name='pos.stockLocation'}}">
-            <a href="{{pathFor 'pos.stockLocation'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.stockLocation"}}</span>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-database" aria-hidden="true"></i>
+                <span>Data</span>
+                <i class="fa fa-angle-left pull-right"></i>
             </a>
-        </li>
-        <li class="{{isActiveRoute name='pos.staff'}}">
-            <a href="{{pathFor 'pos.staff'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.staff"}}</span>
-            </a>
-        </li>
-        <li class="{{isActiveRoute name='pos.order'}}">
-            <a href="{{pathFor 'pos.order'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.order"}}</span>
-            </a>
-        </li>
-        <li class="{{isActiveRoute name='pos.invoice'}}">
-            <a href="{{pathFor 'pos.invoice'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.invoice"}}</span>
-            </a>
-        </li>
-        <li class="{{isActiveRoute name='pos.enterBill'}}">
-            <a href="{{pathFor 'pos.enterBill'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.enterBill"}}</span>
-            </a>
-        </li>
-        <li class="{{isActiveRoute name='pos.purchaseOrder'}}">
-            <a href="{{pathFor 'pos.purchaseOrder'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.purchaseOrder"}}</span>
-            </a>
+            <ul class="treeview-menu" style="display: none;">
+                <li class="{{isActiveRoute name='pos.stockLocation'}}">
+                    <a href="{{pathFor 'pos.stockLocation'}}">
+                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <span>{{_ "pos.sidebarMenu.stockLocation"}}</span>
+                    </a>
+                </li>
+            </ul>
         </li>
     {{/if}}
 
     <!--Report-->
     {{#if isInRole 'reporter' 'Pos'}}
-        <li class="header"><i class="fa fa-file-o"></i> REPORT</li>
-        <li class="{{isActiveRoute name='pos.customerReport'}}">
-            <a href="{{pathFor 'pos.customerReport'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.customer"}}</span>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                <span>REPORT</span>
+                <i class="fa fa-angle-left pull-right"></i>
             </a>
-        </li>
-        <li class="{{isActiveRoute name='pos.orderReport'}}">
-            <a href="{{pathFor 'pos.orderReport'}}">
-                <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.order"}}</span>
-            </a>
+            <ul class="treeview-menu" style="display: none;">
+                <li class="header"><a href="{{pathFor 'pos.mainReport'}}">
+                    <i class="fa fa-file-o"></i>
+                    <span>MAIN</span>
+                </a>
+                </li>
+            </ul>
         </li>
     {{/if}}
 
     <!--Settings-->
     {{#if isInRole 'setting' 'Pos'}}
-    <li class="treeview">
-          <a href="#">
-            <i class="fa fa-cogs"></i>
-            <span>SETTING</span>
-            <i class="fa fa-angle-left pull-right"></i>
-          </a>
-          <ul class="treeview-menu" style="display: none;">
-            <li class="{{isActiveRoute name='core.exchange'}}">
-                <a href="{{pathFor 'core.exchange'}}">
-                    <i class="fa fa-circle-o"></i> <span>{{_ "core.sidebarMenu.exchange"}}</span>
-                </a>
-            </li>
-              <li class="{{isActiveRoute name='pos.categroy'}}">
-                  <a href="{{pathFor 'pos.category'}}">
-                      <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.category"}}</span>
-                  </a>
-              </li>
-            <li class="{{isActiveRoute name='pos.unit'}}">
-                <a href="{{pathFor 'pos.unit'}}">
-                    <i class="fa fa-circle-o"></i> <span>Unit</span>
-                </a>
-            </li>
-              <li class="{{isActiveRoute name='pos.item'}}">
-                  <a href="{{pathFor 'pos.item'}}">
-                      <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.item"}}</span>
-                  </a>
-              </li>
-            <li class="{{isActiveRoute name='pos.term'}}">
-                <a href="{{pathFor 'pos.term'}}">
-                    <i class="fa fa-circle-o"></i> <span>Term</span>
-                </a>
-            </li>
-            <li class="{{isActiveRoute name='pos.paymentGroup'}}">
-                <a href="{{pathFor 'pos.paymentGroup'}}">
-                    <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.paymentGroup"}}</span>
-                </a>
-            </li>
-          </ul>
-      </li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-cogs"></i>
+                <span>SETTING</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu" style="display: none;">
+                <li class="{{isActiveRoute name='pos.rep'}}">
+                    <a href="{{pathFor 'pos.rep'}}">
+                        <i class="fa fa-circle-o"></i> <span>Reps</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='core.exchange'}}">
+                    <a href="{{pathFor 'core.exchange'}}">
+                        <i class="fa fa-circle-o"></i> <span>{{_ "core.sidebarMenu.exchange"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.categroy'}}">
+                    <a href="{{pathFor 'pos.category'}}">
+                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.category"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.unit'}}">
+                    <a href="{{pathFor 'pos.unit'}}">
+                        <i class="fa fa-circle-o"></i> <span>Unit</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.item'}}">
+                    <a href="{{pathFor 'pos.item'}}">
+                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.item"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.term'}}">
+                    <a href="{{pathFor 'pos.term'}}">
+                        <i class="fa fa-circle-o"></i> <span>Term</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.paymentGroup'}}">
+                    <a href="{{pathFor 'pos.paymentGroup'}}">
+                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.paymentGroup"}}</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
     {{/if}}
 </template>

@@ -5,7 +5,7 @@ import {ReactiveTable} from 'meteor/aslagle:reactive-table';
 // Collection
 import {Categories} from '../../imports/api/collections/category.js';
 
-Meteor.publish('pos.category', function posCategory(selector = {}, options = {}) {
+Meteor.publish('pos.category', function posCategory(selector, options) {
     this.unblock();
 
     new SimpleSchema({
@@ -21,6 +21,3 @@ Meteor.publish('pos.category', function posCategory(selector = {}, options = {})
 
     return this.ready();
 });
-
-// Reactive Table
-ReactiveTable.publish("pos.reactiveTable.category", Categories);

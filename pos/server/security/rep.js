@@ -1,14 +1,14 @@
-import {Staffs} from '../../imports/api/collections/staff.js';
+import {Reps} from '../../imports/api/collections/rep.js';
 
 // Lib
 import './_init.js';
 
-Staffs.permit(['insert'])
+Reps.permit(['insert'])
     .Pos_ifDataInsert()
     .allowInClientCode();
-Staffs.permit(['update'])
+Reps.permit(['update'])
     .Pos_ifDataUpdate()
     .allowInClientCode();
-Staffs.permit(['remove'])
+Reps.permit(['remove'])
     .Pos_ifDataRemove()
     .allowInClientCode();

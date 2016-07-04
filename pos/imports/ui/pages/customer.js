@@ -199,7 +199,12 @@ showTmpl.helpers({
         return data;
     }
 });
-
+//receive payment
+Template.Pos_customerButtonAction.helpers({
+    checkIfInvoiced(){
+        debugger
+    }
+});
 // Hook
 let hooksObject = {
     onSuccess (formType, result) {

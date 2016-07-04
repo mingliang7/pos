@@ -43,15 +43,38 @@ Invoices.itemsSchema = new SimpleSchema({
 
 // Invoices schema
 Invoices.schema = new SimpleSchema({
+    voucherId: {
+        type: String,
+        optional: true
+    },
     invoiceDate: {
+        type: Date,
+        autoform: {
+            afFieldInput: {
+                type: "bootstrap-datetimepicker",
+                dateTimePickerOptions: {
+                    format: 'DD/MM/YYYY HH:mm:ss',
+                    pickTime: true
+                },
+                value(){
+                    let customerId = AutoForm.getFieldValue('customerId');
+                    if(customerId) {
+                        return moment().toDate();
+                    }
+                }
+            }
+
+        }
+    },
+    dueDate: {
         type: Date,
         defaultValue: moment().toDate(),
         autoform: {
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY',
-                    pickTime: false
+                    format: 'DD/MM/YYYY HH:mm:ss',
+                    pickTime: true
                 }
             }
         }
@@ -61,7 +84,7 @@ Invoices.schema = new SimpleSchema({
         autoform: {
             type: 'universe-select',
             afFieldInput: {
-                uniPlaceholder: 'Select One',
+                uniPlaceholder: 'Please search .... (Limit 10)',
                 optionsMethod: 'pos.selectOptMethods.customer',
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
@@ -72,20 +95,34 @@ Invoices.schema = new SimpleSchema({
             }
         }
     },
-    staffId: {
+    termId: {
+        type: String,
+        label: 'Terms',
+        optional: true,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One'
+            }
+        }
+    },
+    paymentGroupId: {
+        type: String,
+        optional: true
+    },
+    repId: {
         type: String,
         autoform: {
             type: 'universe-select',
             afFieldInput: {
-                uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.staff',
-                optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }
-                }
+                uniPlaceholder: 'Select One'
             }
+        }
+    },
+    staffId: {
+        type: String,
+        autoValue(){
+            return Meteor.userId();
         }
     },
     des: {
@@ -121,7 +158,7 @@ Invoices.schema = new SimpleSchema({
             }
         }
     },
-    stockLocationId:{
+    stockLocationId: {
         type: String,
         autoform: {
             type: 'universe-select',
@@ -142,11 +179,11 @@ Invoices.schema = new SimpleSchema({
     },
     status: {
         type: String,
-        autoValue(){
-            if(this.isInsert){
-                return 'active';
-            }
-        }
+        optional: true
+    },
+    invoiceType: {
+        type: String,
+        optional: true
     },
     saleId: {
         type: String,

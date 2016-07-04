@@ -9,7 +9,7 @@ import {moment} from  'meteor/momentjs:moment';
 import {Customers} from '../../imports/api/collections/customer.js';
 import {Item} from '../../imports/api/collections/item.js';
 import {Order} from '../../imports/api/collections/order.js';
-import {Staffs} from '../../imports/api/collections/staff.js';
+import {Reps} from '../../imports/api/collections/rep.js';
 import {StockLocations} from '../../imports/api/collections/stockLocation.js';
 import {Vendors} from '../../imports/api/collections/vendor';
 export let SelectOptMethods = {};
@@ -49,13 +49,12 @@ SelectOptMethods.stockLocation = new ValidatedMethod({
     }
 });
 
-SelectOptMethods.staff = new ValidatedMethod({
-    name: 'pos.selectOptMethods.staff',
+SelectOptMethods.rep = new ValidatedMethod({
+    name: 'pos.selectOptMethods.rep',
     validate: null,
     run(options) {
         if (!this.isSimulation) {
             this.unblock();
-
             let list = [], selector = {};
             let searchText = options.searchText;
             let values = options.values;
@@ -73,7 +72,7 @@ SelectOptMethods.staff = new ValidatedMethod({
                 selector = {_id: {$in: values}};
             }
 
-            let data = Staffs.find(selector, {limit: 10});
+            let data = Reps.find(selector, {limit: 10});
             data.forEach(function (value) {
                 let label = value._id + ' : ' + value.name;
                 list.push({label: label, value: value._id});
@@ -110,10 +109,10 @@ SelectOptMethods.customer = new ValidatedMethod({
 
             let data = Customers.find(selector, {limit: 10});
             data.forEach(function (value) {
-                let label = value._id + ' : ' + value.name;
+                let termOrGroup = value._term ? ` (Term ${value._term.name})` : ` (Group ${value._paymentGroup.name})`;
+                let label = value._id + ' : ' + value.name + termOrGroup;
                 list.push({label: label, value: value._id});
             });
-
             return list;
         }
     }

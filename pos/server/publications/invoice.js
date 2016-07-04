@@ -4,7 +4,7 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 // Collection
 import {Invoices} from '../../imports/api/collections/invoice.js';
 
-Meteor.publish('pos.invoice', function simpleInvoice(selector = {}, options = {}) {
+Meteor.publish('pos.invoice', function simpleInvoice(selector, options) {
     this.unblock();
     
     new SimpleSchema({
@@ -14,7 +14,6 @@ Meteor.publish('pos.invoice', function simpleInvoice(selector = {}, options = {}
 
     if (this.userId) {
         let data = Invoices.find(selector, options);
-
         return data;
     }
 

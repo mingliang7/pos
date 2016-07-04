@@ -1,5 +1,3 @@
-
-import {reactiveTableSettings} from '../../../../core/client/libs/reactive-table-settings.js';
 import {alertify} from 'meteor/ovcharik:alertifyjs';
 import {sAlert} from 'meteor/juliancwirko:s-alert';
 import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
@@ -9,6 +7,9 @@ import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 import {AutoForm} from 'meteor/aldeed:autoform';
 import {displaySuccess, displayError} from '../../../../core/client/libs/display-alert.js';
 import {destroyAction} from '../../../../core/client/libs/destroy-action.js';
+
+//import tabular
+import  {UnitTabular} from '../../../common/tabulars/unit';
 
 import {Units} from '../../api/collections/units.js';
 import './unit.html';
@@ -31,34 +32,9 @@ indexTmpl.events({
 });
 
 indexTmpl.helpers({
-  tableSettings(){
-      let i18nPrefix = 'Pos.customer.schema';
-
-      reactiveTableSettings.collection = 'pos.reactiveTable.unit';
-      reactiveTableSettings.fields = [
-          {
-              key: '_id',
-              label: '_id',
-              sortOrder: 0,
-              sortDirection: 'asc'
-          },
-          {key: 'name', label:'name'},
-          {key: 'description', label: 'Description'},
-          {
-              key: '_id',
-              label(){
-                  return fa('bars', '', true);
-              },
-              headerClass: function () {
-                  let css = 'text-center col-action';
-                  return css;
-              },
-              tmpl: actionTmpl, sortable: false
-          }
-      ];
-
-      return reactiveTableSettings;
-  }
+    tabularTable(){
+        return UnitTabular;
+    }
 });
 
 //insert
@@ -70,18 +46,18 @@ insertTmpl.helpers({
 
 //update
 editTmpl.helpers({
-  collection(){
-    return Units;
-  }
+    collection(){
+        return Units;
+    }
 })
 // actionTmpl
 actionTmpl.events({
-    'click .js-update'(event,instance){
-      let data = Template.currentData();
-       alertify.unit(fa('pencil', 'Edit Unit'), renderTemplate(editTmpl, data));
+    'click .js-update'(event, instance){
+        let data = Template.currentData();
+        alertify.unit(fa('pencil', 'Edit Unit'), renderTemplate(editTmpl, data));
     },
     'click .js-display'(event, instance){
-      alertify.unit(fa('pencil', 'Display'), renderTemplate(showTmpl, this));
+        alertify.unit(fa('pencil', 'Display'), renderTemplate(showTmpl, this));
 
     },
     'click .js-destroy'(event, instance) {

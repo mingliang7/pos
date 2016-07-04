@@ -1,7 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 //collection
 import {PayBills} from '../../imports/api/collections/payBill';
-Meteor.publish('pos.payBills', function posPayBills(selector = {}) {
+Meteor.publish('pos.payBills', function posPayBills(selector) {
     this.unblock();
 
     new SimpleSchema({

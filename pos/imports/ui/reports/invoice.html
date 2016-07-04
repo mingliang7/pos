@@ -1,0 +1,80 @@
+<template name="Pos_invoiceReport">
+    <div class="inbox-head">
+        {{#autoForm schema=schema id='invoiceReport'}}
+            <div class="row">
+                <div class="col-md-2">
+                    {{> afQuickField name="fromDate" label= 'From Date'}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="toDate" label='To Date'}}
+                </div>
+                <div class="col-md-2">
+                    {{> afQuickField name="customer" label="Customer"}}
+                </div>
+                <div class="col-md-4">
+                    {{> afQuickField name="filter" label="Custom Fields"}}
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <span>
+                        <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+                        <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run</button>
+                    </span>
+                </div>
+            </div>
+        {{/autoForm}}
+    </div>
+    {{>invoiceReportData}}
+</template>
+
+<template name="invoiceReportData">
+    <div class="container-fluid" id="to-print">
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <address>
+                            <strong>Date:</strong><br>
+                            {{data.title.date}}
+                        </address>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                       <!-- <address>
+                            <strong>Order Date:</strong><br>
+                            March 7, 2014<br><br>
+                        </address>-->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <table class="table table-bordered well">
+            <thead >
+            <tr>
+                {{#each data.fields }}
+                    <th>{{field}}</th>
+                {{/each}}
+            </tr>
+            </thead>
+            <tbody>
+            {{#with data}}
+                {{#each col in content}}
+                    {{#each field in col.data}}
+                        <tr>
+                            {{{display field}}}
+                        </tr>
+                    {{/each}}
+                    <tr>
+                        {{{getTotal col.total}}}
+                    </tr>
+                {{/each}}
+
+            {{/with}}
+            </tbody>
+        </table>
+    </div>
+</template>

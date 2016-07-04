@@ -54,9 +54,48 @@ export const saleOrderInfo = new ValidatedMethod({
                 }
             }, {
                 $unwind: '$data'
-            }])
+            }]);
 
             return order[0];
+        }
+    }
+});
+
+export const removeItemInSaleOrder = new ValidatedMethod({
+    name: 'pos.removeItemInSaleOrder',
+    mixins: [CallPromiseMixin],
+    validate: new SimpleSchema({
+        item: {type: Object}
+    }).validator(),
+    run({item}){
+        if (!this.isSimulation) {
+            Order.update({_id: item.saleId, 'items.itemId': item.itemId},
+                {
+                    $pull: {'items.$.itemId': item.itemId},
+                    $inc: {sumRemainQty: item.qty}
+                })
+        }
+    }
+});
+
+
+export const updateItemInSaleOrder = new ValidatedMethod({
+    name: 'pos.updateItemInSaleOrder',
+    mixins: [CallPromiseMixin],
+    validate: new SimpleSchema({
+        doc: {
+            type: Object
+        }
+    }).validator(),
+    run({doc}){
+        if (!this.isSimulation) {
+            Meteor._sleepForMs(200);
+            doc.items.forEach(function (item) {
+                Order.direct.update(
+                    {_id: doc.saleId, 'item.itemId': item._id},
+                    {$inc: {'item.$.remainQty': -item.qty, sumRemainQty: -item.qty}}
+                )
+            });
         }
     }
 });

@@ -15,11 +15,11 @@ Customers.after.update(function(userId, doc){
     let customer = Customers.findOne(doc._id);
     if(doc.paymentType == 'Group'){
       if(customer.termId){
-        Customers.direct.update(doc._id, {$unset: {termId: '', _term: ''}});
+        Meteor.call('unsetTerm', doc._id);
       }
     }else{
       if(customer.paymentGroupId){
-        Customers.direct.update(doc._id, {$unset: {paymentGroupId: '', _paymentGroup: ''}});
+        Meteor.call('unsetGroup', doc._id);
       }
     }
   })

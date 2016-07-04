@@ -23,6 +23,7 @@ tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_categoryAction},
     {data: "_id", title: "ID"},
     {data: "name", title: "Name"},
+    {data: "parent", title: 'Category'},
     {data: "description", title: "Description"},
    // {data: "description", title: "Description"}
 ];
