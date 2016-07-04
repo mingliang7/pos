@@ -1,5 +1,5 @@
-import {invoiceState} from '../../common/globalState/invoice';
-import {Customers} from '../../imports/api/collections/customer';
+import {invoiceState} from '../../../common/globalState/invoice';
+import {Customers} from '../../../imports/api/collections/customer';
 Meteor.methods({
     getInvoiceId(tmpId){
         Meteor._sleepForMs(1000);
