@@ -5,7 +5,8 @@ import {idGenerator} from 'meteor/theara:id-generator';
 import {Invoices} from '../../imports/api/collections/invoice.js';
 import {Order} from '../../imports/api/collections/order';
 import {GroupInvoice} from '../../imports/api/collections/groupInvoice';
-
+import {AverageInventories} from '../../imports/api/collections/inventory.js';
+import {Item} from '../../imports/api/collections/item.js'
 //import invoice state
 import {invoiceState} from '../../common/globalState/invoice';
 //import methods
@@ -50,6 +51,8 @@ Invoices.after.insert(function (userId, doc) {
             if (saleOrder.sumRemainQty == 0) {
                 Order.direct.update(saleOrder._id, {$set: {status: 'closed'}});
             }
+        } else {
+            invoiceManageStock(doc._id);
         }
         if (doc.invoiceType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
@@ -69,10 +72,10 @@ Invoices.after.update(function (userId, doc) {
         Meteor.defer(function () {
             recalculateQty(preDoc);
             updateQtyInSaleOrder(doc);
-            let saleOrder = Order.aggregate([{$match: {_id: doc.saleId}},{$projection: {sumRemainQty: 1}}]);
-            if(saleOrder.sumRemainQty == 0 ){
+            let saleOrder = Order.aggregate([{$match: {_id: doc.saleId}}, {$projection: {sumRemainQty: 1}}]);
+            if (saleOrder.sumRemainQty == 0) {
                 Order.direct.update(doc.saleId, {$set: {status: 'closed'}});
-            }else{
+            } else {
                 Order.direct.update(doc.saleId, {$set: {status: 'active'}});
             }
         });
@@ -138,4 +141,69 @@ function removeInvoiceFromGroup(doc) {
 function pushInvoiceFromGroup(doc) {
     Meteor._sleepForMs(200);
     GroupInvoice.update({_id: doc.paymentGroupId}, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
+}
+
+
+function invoiceManageStock(invoiceId) {
+    Meteor.defer(function () {
+        Meteor._sleepForMs(200);
+        //---Open Inventory type block "FIFO Inventory"---
+        let totalCost = 0;
+        let invoice = Invoices.findOne(invoiceId);
+        let prefix = invoice.stockLocationId + "-";
+        let newItems = [];
+        invoice.items.forEach(function (item) {
+            let inventory = AverageInventories.findOne({
+                branchId: invoice.branchId,
+                itemId: item.itemId,
+                stockLocationId: invoice.stockLocationId
+            }, {sort: {_id: 1}});
+            if (inventory) {
+                item.cost = inventory.price;
+                item.amountCost = inventory.price * item.qty;
+                item.profit = item.amount - item.amountCost;
+                totalCost += item.amountCost;
+                newItems.push(item);
+                let newInventory = {
+                    _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                    branchId: invoice.branchId,
+                    stockLocationId: invoice.stockLocationId,
+                    itemId: item.itemId,
+                    qty: item.qty,
+                    price: inventory.price,
+                    remainQty: inventory.remainQty - item.qty,
+                    coefficient: -1,
+                    type: 'invoice',
+                    refId: invoiceId
+                };
+                AverageInventories.insert(newInventory);
+            } else {
+                var thisItem = Item.findOne(item.itemId);
+                item.cost = thisItem.purchasePrice;
+                item.amountCost = thisItem.purchasePrice * item.qty;
+                item.profit = item.amount - item.amountCost;
+                totalCost += item.amountCost;
+                newItems.push(item);
+                let newInventory = {
+                    _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                    branchId: invoice.branchId,
+                    stockLocationId: invoice.stockLocationId,
+                    itemId: item.itemId,
+                    qty: item.qty,
+                    price: thisItem.purchasePrice,
+                    remainQty: 0 - item.qty,
+                    coefficient: -1,
+                    type: 'invoice',
+                    refId: invoiceId
+                };
+                AverageInventories.insert(newInventory);
+            }
+        });
+        let totalProfit = invoice.total - totalCost;
+        Invoices.direct.update(
+            invoiceId,
+            {$set: {items: newItems, totalCost: totalCost, profit: totalProfit}}
+        );
+        //--- End Invenetory type block "FIFO Inventory"---
+    });
 }

@@ -37,7 +37,7 @@ Meteor.methods({
                     branchId: invoice.branchId,
                     itemId: item.itemId,
                     stockLocationId: invoice.stockLocationId
-                }, {sort: {_id: 1}}).fetch();
+                }, {sort: {_id: 1}});
                 item.cost = inventory.price;
                 item.amountCost = inventory.price * item.qty;
                 item.profit = item.amount - item.amountCost;
@@ -84,7 +84,7 @@ Meteor.methods({
                     branchId: locationTransfer.branchId,
                     itemId: item.itemId,
                     stockLocationId: locationTransfer.fromStockLocationId
-                }, {sort: {_id: 1}}).fetch();
+                }, {sort: {_id: 1}});
 
                 let newInventory = {
                     _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
@@ -172,7 +172,7 @@ Meteor.methods({
                     branchId: enterBill.branchId,
                     itemId: item.itemId,
                     stockLocationId: enterBill.stockLocationId
-                }, {sort: {_id: 1}}).fetch();
+                }, {sort: {_id: 1}});
                 let newInventory = {
                     _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
                     branchId: enterBill.branchId,
