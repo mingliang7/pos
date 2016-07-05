@@ -6,6 +6,7 @@ import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 
 // Collection
 import {Order} from '../../imports/api/collections/order.js';
+import {Invoices} from '../../imports/api/collections/invoice';
 // Check user password
 export const saleOrderInfo = new ValidatedMethod({
     name: 'pos.saleOrderInfo',
@@ -98,4 +99,19 @@ export const updateItemInSaleOrder = new ValidatedMethod({
             });
         }
     }
+});
+
+export const isInvoiceExist = new ValidatedMethod({
+    name: 'pos.isInvoiceExist',
+    mixins: [CallPromiseMixin],
+    validate: new SimpleSchema({
+        _id: {type: String}
+    }).validator(),
+    run({_id}){
+        if(!this.isSimulation) {
+            let invoice = Invoices.findOne({saleId: _id});
+            return {exist: invoice, invoiceId: invoice && invoice._id ? invoice._id : ''};
+        }
+    }
+
 });
