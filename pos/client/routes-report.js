@@ -84,9 +84,9 @@ PosRoutes.route('/report', {
     },
     breadcrumb:{
         // params:['vendorId'],
-        // title: __('pos.payBill.title'),
+        title: 'Main Report',
         // icon: 'cart-plus',
-        // parent: 'pos.vendor'
+        parent: 'pos.home'
     }
 });
 
@@ -99,23 +99,23 @@ PosRoutes.route('/report/invoice', {
     },
     breadcrumb:{
         // params:['vendorId'],
-        // title: __('pos.payBill.title'),
+        title: 'Invoice Report',
         // icon: 'cart-plus',
-        // parent: 'pos.vendor'
+        parent: 'pos.mainReport'
     }
 });
 
 import '../imports/ui/reports/payment';
 PosRoutes.route('/report/payment', {
     name: 'pos.paymentReport',
-    title: 'Payment Report',
+    title: 'Receive Payment Report',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_paymentReport');
     },
     breadcrumb:{
         // params:['vendorId'],
-        // title: __('pos.payBill.title'),
+        title: 'Receive Payment Report',
         // icon: 'cart-plus',
-        // parent: 'pos.vendor'
+        parent: 'pos.mainReport'
     }
 });

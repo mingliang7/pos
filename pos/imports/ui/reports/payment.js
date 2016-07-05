@@ -5,8 +5,7 @@ import {renderTemplate} from '../../../../core/client/libs/render-template.js';
 //page
 import './payment.html';
 //import DI
-import 'meteor/theara:autoprint';
-import PHE from "print-html-element";
+import  'printthis';
 //import collection
 import {paymentSchema} from '../../api/collections/reports/payment';
 
@@ -47,8 +46,8 @@ indexTmpl.helpers({
     }
 });
 indexTmpl.events({
-    'click .print'(event,instance){
-        PHE.printElement( document.getElementById('to-print'));
+    'click .print'(event, instance){
+        $('#to-print').printThis();
     },
     'click .next'(event, instance){
         let currentParams = FlowRouter.query.params();
@@ -60,10 +59,10 @@ indexTmpl.events({
         FlowRouter.query.set(currentParams);
         paramsState.set(FlowRouter.query.params());
     },
-    'click .previous'(event,instance){
+    'click .previous'(event, instance){
         let previousSkip = skip.get() - parseInt($('[name="skip"]').val());
         let currentParams = FlowRouter.query.params();
-        let totalSkip =  previousSkip < 0 ? 0 : previousSkip;
+        let totalSkip = previousSkip < 0 ? 0 : previousSkip;
         skip.set(totalSkip);
         currentParams.skip = totalSkip;
         currentParams.limit = parseInt($('[name="limit"]').val());
@@ -71,7 +70,7 @@ indexTmpl.events({
         FlowRouter.query.set(currentParams);
         paramsState.set(FlowRouter.query.params());
     },
-    'change [name="limit"]'(event,instance){
+    'change [name="limit"]'(event, instance){
         let limit = parseInt(event.currentTarget.value);
         let currentParams = FlowRouter.query.params();
         let totalSkip = skip.get();
@@ -97,7 +96,7 @@ receivePaymentTmpl.helpers({
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
-            } else if (obj.field == 'dueAmount' || obj.field == 'paidAmount' ||  obj.field == 'balanceAmount') {
+            } else if (obj.field == 'dueAmount' || obj.field == 'paidAmount' || obj.field == 'balanceAmount') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
             else {
@@ -109,7 +108,7 @@ receivePaymentTmpl.helpers({
     getTotal(dueAmount, paidAmount, balanceAmount){
         let string = '';
         let fieldLength = this.displayFields.length - 4;
-        for(let i = 0 ; i < fieldLength; i++) {
+        for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
         string += `<td><b>Total:</td></b><td><b>${numeral(dueAmount).format('0,0.00')}</b></td>`;
