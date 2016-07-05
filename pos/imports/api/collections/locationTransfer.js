@@ -54,34 +54,34 @@ LocationTransfers.schema = new SimpleSchema({
             }
         }
     },
-    fromStaffId: {
+    fromUserId: {
         type: String,
         autoform: {
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.staff',
-                optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }
-                }
+                optionsMethod: 'pos.selectOptMethods.user',
+                /*optionsMethodParams: function () {
+                 if (Meteor.isClient) {
+                 let currentBranch = Session.get('currentBranch');
+                 return {branchId: currentBranch};
+                 }
+                 }*/
             }
         }
     },
-    toStaffId: {
+    toUserId: {
         type: String,
         autoform: {
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.staff',
+                optionsMethod: 'pos.selectOptMethods.user',
                 optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }
+                    /*if (Meteor.isClient) {
+                     let currentBranch = Session.get('currentBranch');
+                     return {branchId: currentBranch};
+                     }*/
                 }
             }
         }
@@ -153,6 +153,12 @@ LocationTransfers.schema = new SimpleSchema({
                 return inputmaskOptions.currency();
             }
         }
+    },
+    fromBranchId: {
+        type: String
+    },
+    toBranchId: {
+        type: String
     }
 });
 

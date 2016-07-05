@@ -216,3 +216,38 @@ SelectOptMethods.order = new ValidatedMethod({
         }
     }
 });
+
+SelectOptMethods.user = new ValidatedMethod({
+    name: 'pos.selectOptMethods.user',
+    validate: null,
+    run(options) {
+        if (!this.isSimulation) {
+            this.unblock();
+
+            let list = [], selector = {};
+            let searchText = options.searchText;
+            let values = options.values;
+            let params = options.params || {};
+
+            if (searchText && params.branchId) {
+                selector = {
+                    $or: [
+                        {_id: {$regex: searchText, $options: 'i'}},
+                        {username: {$regex: searchText, $options: 'i'}}
+                    ],
+                    username: {$ne: 'super'}
+                };
+            } else if (values.length) {
+                selector = {_id: {$in: values}, username: {$ne: 'super'}};
+            }
+
+            let data = Meteor.users.find(selector, {limit: 10});
+            data.forEach(function (value) {
+                let label = value.username;
+                list.push({label: label, value: value._id});
+            });
+
+            return list;
+        }
+    }
+});
