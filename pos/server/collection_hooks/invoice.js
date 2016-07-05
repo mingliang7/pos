@@ -69,8 +69,14 @@ Invoices.after.update(function (userId, doc) {
         Meteor.defer(function () {
             recalculateQty(preDoc);
             updateQtyInSaleOrder(doc);
+            let saleOrder = Order.aggregate([{$match: {_id: doc.saleId}},{$projection: {sumRemainQty: 1}}]);
+            if(saleOrder.sumRemainQty == 0 ){
+                Order.direct.update(doc.saleId, {$set: {status: 'closed'}});
+            }else{
+                Order.direct.update(doc.saleId, {$set: {status: 'active'}});
+            }
         });
-    }else if(type.group) {
+    } else if (type.group) {
         Meteor.defer(function () {
             removeInvoiceFromGroup(preDoc);
             pushInvoiceFromGroup(doc);
@@ -88,12 +94,13 @@ Invoices.after.remove(function (userId, doc) {
             term: doc.invoiceType == 'term',
             group: doc.invoiceType == 'group'
         };
-        if(type.saleOrder) {
+        if (type.saleOrder) {
             recalculateQty(doc);
-        }else if(type.group) {
+            Order.direct.update(doc.saleId, {$set: {status: 'active'}});
+        } else if (type.group) {
             removeInvoiceFromGroup(doc);
             let groupInvoice = GroupInvoice.findOne(doc.paymentGroupId);
-            if(groupInvoice.invoices.length <= 0){
+            if (groupInvoice.invoices.length <= 0) {
                 GroupInvoice.direct.remove(doc.paymentGroupId);
             }
         }

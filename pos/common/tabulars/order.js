@@ -29,8 +29,9 @@ tabularOpts.columns = [
         }
     },
     {data: "total", title: "Total"},
+    {data: "sumRemainQty", title: "Remain QTY"},
     {data: "des", title: "Description"},
-    {data: "customerId", title: "Customer ID"},
+    {data: "customerId", title: "Customer ID"}
     //{
     //    data: "_customer",
     //    title: "Customer Info",
@@ -39,4 +40,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
+tabularOpts.extraFields = ['items'];
 export const OrderTabular = new Tabular.Table(tabularOpts);
