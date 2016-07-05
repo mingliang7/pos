@@ -7,3 +7,16 @@
     background: #007da9;
     color: #fff;
 }
+.label-report {
+    background-color: #007da9;
+    color: #fff;
+    padding: 2px;
+    text-align: center;
+}
+
+@media print {
+    .report-body-shadow {
+        box-shadow: none;
+        border: none;
+    }
+}

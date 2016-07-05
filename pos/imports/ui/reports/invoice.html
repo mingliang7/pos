@@ -30,14 +30,14 @@
 </template>
 
 <template name="invoiceReportData">
-    <div class="container-fluid" id="to-print">
+    <div class="container-fluid well report-body-shadow" id="to-print">
         <div class="row">
             <div class="col-xs-12">
                 <hr>
 
                 <div class="row">
-                    <div class="col-xs-6">
-                        <address class="label label-success">
+                    <div class="col-xs-3">
+                        <address class="label-report">
                             <strong>Date:</strong>
                             {{data.title.date}}
                         </address>
@@ -52,7 +52,7 @@
 
             </div>
         </div>
-        <table class="table table-bordered well report-body-shadow">
+        <table class="table table-striped ">
             <thead >
             <tr>
                 {{#each data.fields }}
@@ -76,5 +76,6 @@
             {{/with}}
             </tbody>
         </table>
+        {{> ReportSignFooter}}
     </div>
 </template>
