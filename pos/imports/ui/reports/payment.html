@@ -1,5 +1,5 @@
 <template name="Pos_paymentReport">
-    <div class="inbox-head">
+    <div class="inbox-head report-header">
         {{#autoForm schema=schema id='receivePaymentReport'}}
             <div class="row">
                 <div class="col-md-2">
@@ -35,7 +35,7 @@
 
                 </div>
                 <div class="col-md-2 pull-left">
-                    <label for="" class="text-blue">Limit</label>
+                    <label for="" class="text-gray">Limit</label>
                     <select class="select" name="limit">
                         <option value="500">500</option>
                         <option value="1000">1000</option>
@@ -55,9 +55,9 @@
                 <hr>
 
                 <div class="row">
-                    <div class="col-xs-6">
-                        <address>
-                            <strong>Date:</strong><br>
+                    <div class="col-xs-6 ">
+                        <address class="label label-success">
+                            <strong>Date:</strong>
                             {{data.title.date}}
                         </address>
                     </div>
@@ -71,7 +71,7 @@
 
             </div>
         </div>
-        <table class="table table-bordered well">
+        <table class="table table-striped well report-body-shadow">
             <thead>
             <tr>
                 {{#each data.fields }}
