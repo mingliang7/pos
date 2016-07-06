@@ -91,21 +91,21 @@ PosRoutes.route('/customer/:customerId?/receive-payment/:invoiceId?', {
     }
 });
 /*// receive payment with invoice id link
-import '../imports/ui/pages/receivePayment.js';
-PosRoutes.route('/customer/:customerId/receive-payment/:invoiceId', {
-    name: 'pos.receivePaymentWithInvoiceId',
-    title: __('pos.receivePayment.title'),
-    action: function (params, queryParams) {
-        Layout.main('Pos_receivePayment');
-    },
-    breadcrumb: {
-        params: ['customerId', 'invoiceId'],
-        //queryParams: ['show', 'color'],
-        title: __('pos.receivePayment.title'),
-        icon: 'credit-card',
-        parent: 'pos.customer'
-    }
-});*/
+ import '../imports/ui/pages/receivePayment.js';
+ PosRoutes.route('/customer/:customerId/receive-payment/:invoiceId', {
+ name: 'pos.receivePaymentWithInvoiceId',
+ title: __('pos.receivePayment.title'),
+ action: function (params, queryParams) {
+ Layout.main('Pos_receivePayment');
+ },
+ breadcrumb: {
+ params: ['customerId', 'invoiceId'],
+ //queryParams: ['show', 'color'],
+ title: __('pos.receivePayment.title'),
+ icon: 'credit-card',
+ parent: 'pos.customer'
+ }
+ });*/
 // Order
 import '../imports/ui/pages/order.js';
 PosRoutes.route('/order', {
@@ -289,10 +289,24 @@ PosRoutes.route('/:vendorId/payBill', {
     action: function (params, queryParams) {
         Layout.main('Pos_payBill');
     },
-    breadcrumb:{
-        params:['vendorId'],
+    breadcrumb: {
+        params: ['vendorId'],
         title: __('pos.payBill.title'),
         icon: 'cart-plus',
         parent: 'pos.vendor'
+    }
+});
+
+//confirm transfer location
+import '../imports/ui/pages/confirm-transferlocation';
+PosRoutes.route('/confirm-transferLocation', {
+    name: 'pos.confirmTransferLocation',
+    title: 'Confirm Transfer Location',
+    action: function(params, queryParams) {
+        Layout.main('Pos_confirmTransferLocation');
+    },
+    breadcrumb: {
+        title: 'Confirm Transfer',
+        parent: 'pos.home'
     }
 });
