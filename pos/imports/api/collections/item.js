@@ -25,6 +25,17 @@ Item.schema = new SimpleSchema({
             }
         }
     },
+    purchasePrice: {
+        type: Number,
+        decimal: true,
+        min: 0.01,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
     photo: {
         type: String,
         optional: true,
@@ -122,8 +133,8 @@ Item.schema = new SimpleSchema({
         autoform: {
             type: 'select2',
             /*options(){
-                return SelectOpts.category('Select Parent | No Parent');
-            }*/
+             return SelectOpts.category('Select Parent | No Parent');
+             }*/
         }
     },
     itemType: {

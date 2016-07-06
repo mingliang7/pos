@@ -5,7 +5,8 @@ import {idGenerator} from 'meteor/theara:id-generator';
 import {Invoices} from '../../imports/api/collections/invoice.js';
 import {Order} from '../../imports/api/collections/order';
 import {GroupInvoice} from '../../imports/api/collections/groupInvoice';
-
+import {AverageInventories} from '../../imports/api/collections/inventory.js';
+import {Item} from '../../imports/api/collections/item.js'
 //import invoice state
 import {invoiceState} from '../../common/globalState/invoice';
 //import methods
@@ -50,6 +51,8 @@ Invoices.after.insert(function (userId, doc) {
             if (saleOrder.sumRemainQty == 0) {
                 Order.direct.update(saleOrder._id, {$set: {status: 'closed'}});
             }
+        } else {
+            invoiceManageStock(doc);
         }
         if (doc.invoiceType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
@@ -69,10 +72,10 @@ Invoices.after.update(function (userId, doc) {
         Meteor.defer(function () {
             recalculateQty(preDoc);
             updateQtyInSaleOrder(doc);
-            let saleOrder = Order.aggregate([{$match: {_id: doc.saleId}},{$projection: {sumRemainQty: 1}}]);
-            if(saleOrder.sumRemainQty == 0 ){
+            let saleOrder = Order.aggregate([{$match: {_id: doc.saleId}}, {$projection: {sumRemainQty: 1}}]);
+            if (saleOrder.sumRemainQty == 0) {
                 Order.direct.update(doc.saleId, {$set: {status: 'closed'}});
-            }else{
+            } else {
                 Order.direct.update(doc.saleId, {$set: {status: 'active'}});
             }
         });
@@ -82,7 +85,13 @@ Invoices.after.update(function (userId, doc) {
             pushInvoiceFromGroup(doc);
             invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
         });
+
     }
+    Meteor.defer(function () {
+        Meteor._sleepForMs(200);
+        returnToInventory(preDoc);
+        invoiceManageStock(doc);
+    });
 });
 
 //remove
@@ -104,6 +113,7 @@ Invoices.after.remove(function (userId, doc) {
                 GroupInvoice.direct.remove(doc.paymentGroupId);
             }
         }
+        returnToInventory(doc);
     });
 });
 
@@ -138,4 +148,161 @@ function removeInvoiceFromGroup(doc) {
 function pushInvoiceFromGroup(doc) {
     Meteor._sleepForMs(200);
     GroupInvoice.update({_id: doc.paymentGroupId}, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
+}
+
+function returnToInventory(invoice) {
+    //---Open Inventory type block "Average Inventory"---
+    // let invoice = Invoices.findOne(invoiceId);
+    invoice.items.forEach(function (item) {
+        item.price = item.cost;
+        averageInventoryInsert(
+            invoice.branchId,
+            item,
+            invoice.stockLocationId,
+            'invoice-return',
+            invoice._id
+        );
+    });
+    //--- End Inventory type block "Average Inventory"---
+}
+
+function invoiceManageStock(invoice) {
+    //---Open Inventory type block "Average Inventory"---
+    let totalCost = 0;
+    // let invoice = Invoices.findOne(invoiceId);
+    let prefix = invoice.stockLocationId + "-";
+    let newItems = [];
+    invoice.items.forEach(function (item) {
+        let inventory = AverageInventories.findOne({
+            branchId: invoice.branchId,
+            itemId: item.itemId,
+            stockLocationId: invoice.stockLocationId
+        }, {sort: {_id: 1}});
+        if (inventory) {
+            item.cost = inventory.price;
+            item.amountCost = inventory.price * item.qty;
+            item.profit = item.amount - item.amountCost;
+            totalCost += item.amountCost;
+            newItems.push(item);
+            let newInventory = {
+                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                branchId: invoice.branchId,
+                stockLocationId: invoice.stockLocationId,
+                itemId: item.itemId,
+                qty: item.qty,
+                price: inventory.price,
+                remainQty: inventory.remainQty - item.qty,
+                coefficient: -1,
+                type: 'invoice',
+                refId: invoice._id
+            };
+            AverageInventories.insert(newInventory);
+        } else {
+            var thisItem = Item.findOne(item.itemId);
+            item.cost = thisItem.purchasePrice;
+            item.amountCost = thisItem.purchasePrice * item.qty;
+            item.profit = item.amount - item.amountCost;
+            totalCost += item.amountCost;
+            newItems.push(item);
+            let newInventory = {
+                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                branchId: invoice.branchId,
+                stockLocationId: invoice.stockLocationId,
+                itemId: item.itemId,
+                qty: item.qty,
+                price: thisItem.purchasePrice,
+                remainQty: 0 - item.qty,
+                coefficient: -1,
+                type: 'invoice',
+                refId: invoice._id
+            };
+            AverageInventories.insert(newInventory);
+        }
+    });
+    let totalProfit = invoice.total - totalCost;
+    Invoices.direct.update(
+        invoice._id,
+        {$set: {items: newItems, totalCost: totalCost, profit: totalProfit}}
+    );
+    //--- End Invenetory type block "Average Inventory"---
+}
+
+function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
+    let lastPurchasePrice = 0;
+    let remainQuantity = 0;
+    let prefix = stockLocationId + '-';
+    let inventory = AverageInventories.findOne({
+        branchId: branchId,
+        itemId: item.itemId,
+        stockLocationId: stockLocationId
+    }, {sort: {createdAt: -1}});
+    if (inventory == null) {
+        let inventoryObj = {};
+        inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+        inventoryObj.branchId = branchId;
+        inventoryObj.stockLocationId = stockLocationId;
+        inventoryObj.itemId = item.itemId;
+        inventoryObj.qty = item.qty;
+        inventoryObj.price = item.price;
+        inventoryObj.remainQty = item.qty;
+        inventoryObj.type = type;
+        inventoryObj.coefficient = 1;
+        inventoryObj.refId = refId;
+        lastPurchasePrice = item.price;
+        remainQuantity = inventoryObj.remainQty;
+        AverageInventories.insert(inventoryObj);
+    }
+    else if (inventory.price == item.price) {
+        let inventoryObj = {};
+        inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+        inventoryObj.branchId = branchId;
+        inventoryObj.stockLocationId = stockLocationId;
+        inventoryObj.itemId = item.itemId;
+        inventoryObj.qty = item.qty;
+        inventoryObj.price = item.price;
+        inventoryObj.remainQty = item.qty + inventory.remainQty;
+        inventoryObj.type = type;
+        inventoryObj.coefficient = 1;
+        inventoryObj.refId = refId;
+        lastPurchasePrice = item.price;
+        remainQuantity = inventoryObj.remainQty;
+        AverageInventories.insert(inventoryObj);
+        /*
+         let
+         inventorySet = {};
+         inventorySet.qty = item.qty + inventory.qty;
+         inventorySet.remainQty = inventory.remainQty + item.qty;
+         AverageInventories.update(inventory._id, {$set: inventorySet});
+         */
+    }
+    else {
+        let totalQty = inventory.remainQty + item.qty;
+        let price = 0;
+        //should check totalQty or inventory.remainQty
+        if (totalQty <= 0) {
+            price = inventory.price;
+        } else if (inventory.remainQty <= 0) {
+            price = item.price;
+        } else {
+            price = ((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty;
+        }
+        let nextInventory = {};
+        nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+        nextInventory.branchId = branchId;
+        nextInventory.stockLocationId = stockLocationId;
+        nextInventory.itemId = item.itemId;
+        nextInventory.qty = item.qty;
+        nextInventory.price = math.round(price);
+        nextInventory.remainQty = totalQty;
+        nextInventory.type = type;
+        nextInventory.coefficient = 1;
+        nextInventory.refId = refId;
+        lastPurchasePrice = price;
+        remainQuantity = nextInventory.remainQty;
+        AverageInventories.insert(nextInventory);
+    }
+
+    var setModifier = {$set: {purchasePrice: lastPurchasePrice}};
+    setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
+    Item.direct.update(item.itemId, setModifier);
 }

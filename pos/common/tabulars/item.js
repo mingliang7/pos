@@ -45,5 +45,5 @@ tabularOpts.columns = [
         }
     }
 ];
-tabularOpts.extraFields = ['sellingUnit', 'scheme', 'unitId', 'categoryId', 'itemType'];
+tabularOpts.extraFields = ['sellingUnit', 'scheme', 'unitId', 'categoryId', 'itemType','purchasePrice'];
 export const ItemTabular = new Tabular.Table(tabularOpts);
