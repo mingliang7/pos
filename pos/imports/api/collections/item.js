@@ -53,7 +53,7 @@ Item.schema = new SimpleSchema({
             options(){
                 let list = [];
                 try {
-                    Meteor.subscribe('pos.unit');
+                    Meteor.subscribe('pos.unit', {}, {sort: {_id: 1}});
                 } catch (e) {
 
                 }
