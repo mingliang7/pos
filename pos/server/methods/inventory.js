@@ -38,33 +38,55 @@ Meteor.methods({
                     itemId: item.itemId,
                     stockLocationId: invoice.stockLocationId
                 }, {sort: {_id: 1}});
-                item.cost = inventory.price;
-                item.amountCost = inventory.price * item.qty;
-                item.profit = item.amount - item.amountCost;
-                totalCost += item.amountCost;
-                newItems.push(item);
-
-                let newInventory = {
-                    _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                    branchId: invoice.branchId,
-                    stockLocationId: invoice.stockLocationId,
-                    itemId: item.itemId,
-                    qty: item.qty,
-                    price: inventory.price,
-                    remainQty: inventory.remainQty - item.qty,
-                    coefficient: -1,
-                    type: 'invoice',
-                    refId: invoiceId
-                };
-                AverageInventories.insert(newInventory);
+                if (inventory) {
+                    item.cost = inventory.price;
+                    item.amountCost = inventory.price * item.qty;
+                    item.profit = item.amount - item.amountCost;
+                    totalCost += item.amountCost;
+                    newItems.push(item);
+                    let newInventory = {
+                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                        branchId: invoice.branchId,
+                        stockLocationId: invoice.stockLocationId,
+                        itemId: item.itemId,
+                        qty: item.qty,
+                        price: inventory.price,
+                        remainQty: inventory.remainQty - item.qty,
+                        coefficient: -1,
+                        type: 'invoice',
+                        refId: invoice._id
+                    };
+                    AverageInventories.insert(newInventory);
+                } else {
+                    var thisItem = Item.findOne(item.itemId);
+                    item.cost = thisItem.purchasePrice;
+                    item.amountCost = thisItem.purchasePrice * item.qty;
+                    item.profit = item.amount - item.amountCost;
+                    totalCost += item.amountCost;
+                    newItems.push(item);
+                    let newInventory = {
+                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                        branchId: invoice.branchId,
+                        stockLocationId: invoice.stockLocationId,
+                        itemId: item.itemId,
+                        qty: item.qty,
+                        price: thisItem.purchasePrice,
+                        remainQty: 0 - item.qty,
+                        coefficient: -1,
+                        type: 'invoice',
+                        refId: invoice._id
+                    };
+                    AverageInventories.insert(newInventory);
+                }
             });
             let totalProfit = invoice.total - totalCost;
             Invoices.direct.update(
-                invoiceId,
+                invoice._id,
                 {$set: {items: newItems, totalCost: totalCost, profit: totalProfit}}
             );
             //--- End Invenetory type block "FIFO Inventory"---
         });
+
     },
     locationTransferManageStock: function (locationTransferId) {
         if (!Meteor.userId()) {
@@ -123,11 +145,11 @@ Meteor.methods({
             //--- End Inventory type block "FIFO Inventory"---
         });
     },
-    returnToInventory: function (invoiceId, branchId) {
+    returnToInventory: function (invoiceId) {
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
-        let prefix = branchId + '-';
+
         Meteor.defer(function () {
             //---Open Inventory type block "Average Inventory"---
             let invoice = Invoices.findOne(invoiceId);
@@ -138,7 +160,7 @@ Meteor.methods({
                     item,
                     invoice.stockLocationId,
                     'invoice-return',
-                    invoiceId
+                    invoice._id
                 );
             });
             //--- End Inventory type block "Average Inventory"---
@@ -183,7 +205,7 @@ Meteor.methods({
                     remainQty: inventory.remainQty - item.qty,
                     coefficient: -1,
                     type: 'enter-return',
-                    refId: enterBillId
+                    refId: enterBill._id
                 };
                 AverageInventories.insert(newInventory);
             });
@@ -260,6 +282,11 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         lastPurchasePrice = price;
         AverageInventories.insert(nextInventory);
     }
-    Item.direct.update(item.itemId, {$set: {enterBillPrice: lastPurchasePrice}});
+    Item.direct.update(
+        item.itemId,
+        {
+            $set: {purchasePrice: lastPurchasePrice}
+        }
+    );
 }
 
