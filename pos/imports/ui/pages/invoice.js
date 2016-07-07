@@ -87,46 +87,33 @@ indexTmpl.events({
         alertify.invoice(fa('cart-arrow-down', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        if (this.saleId || (this.invoiceType == 'term' && this.status != 'closed')) {
-            excuteEditForm(this);
-        }
-        else if (this.invoiceType == 'term' && this.status == 'closed') {
-            swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រលេខ ${this._id} ជាមុនសិន`, "error")
-        }
-        else if (this.paymentGroupId) {
-            Meteor.call('pos.isGroupInvoiceClosed', {_id: this.paymentGroupId}, (err, result)=> {
-                if (result.paid) {
-                    swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រក្រុមលេខ ${this.paymentGroupId} ជាមុនសិន`, "error")
-                } else {
-                    excuteEditForm(this);
-                }
-            });
-        }
+        // if (this.saleId || (this.invoiceType == 'term' && this.status != 'closed')) {
+        //     excuteEditForm(this);
+        // }
+        // else if (this.invoiceType == 'term' && this.status == 'closed') {
+        //     // swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រលេខ ${this._id} ជាមុនសិន`, "error")
+        //     excuteEditForm(this);
+        //
+        // }
+        // else if (this.paymentGroupId) {
+        //     Meteor.call('pos.isGroupInvoiceClosed', {_id: this.paymentGroupId}, (err, result)=> {
+        //         if (result.paid) {
+        //             swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រក្រុមលេខ ${this.paymentGroupId} ជាមុនសិន`, "error")
+        //         } else {
+        //             excuteEditForm(this);
+        //         }
+        //     });
+        // }
+        excuteEditForm(this);
     },
     'click .js-destroy' (event, instance) {
         let data = this;
-        if (this.invoiceType == 'term' && this.status == 'closed') {
-            swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រលេខ ${this._id} ជាមុនសិន`, "error")
-        }
-        else if (this.paymentGroupId) {
-            Meteor.call('pos.isGroupInvoiceClosed', {_id: this.paymentGroupId}, (err, result)=> {
-                if (result.paid) {
-                    swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រក្រុមលេខ ${this.paymentGroupId} ជាមុនសិន`, "error")
-                } else {
-                    destroyAction(
-                        Invoices,
-                        {_id: data._id},
-                        {title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id}
-                    );
-                }
-            });
-        }else{
-            destroyAction(
-                Invoices,
-                {_id: data._id},
-                {title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id}
-            );
-        }
+        destroyAction(
+            Invoices,
+            {_id: data._id},
+            {title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id}
+        );
+
     },
     'click .js-display' (event, instance) {
         alertify.invoiceShow(fa('eye', TAPi18n.__('pos.invoice.title')), renderTemplate(showTmpl, this));

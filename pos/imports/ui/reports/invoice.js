@@ -5,8 +5,7 @@ import {renderTemplate} from '../../../../core/client/libs/render-template.js';
 //page
 import './invoice.html';
 //import DI
-import 'meteor/theara:autoprint';
-import PHE from "print-html-element";
+import  'printthis';
 //import collection
 import {invoiceSchema} from '../../api/collections/reports/invoice';
 
@@ -47,7 +46,7 @@ indexTmpl.helpers({
 });
 indexTmpl.events({
     'click .print'(event,instance){
-        PHE.printElement( document.getElementById('to-print'));
+        $('#to-print').printThis();
     }
 });
 invoiceDataTmpl.helpers({

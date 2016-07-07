@@ -16,7 +16,7 @@ export const isGroupInvoiceClosed = new ValidatedMethod({
     run({_id}) {
         if (!this.isSimulation) {
             let groupInvoice = GroupInvoice.findOne(_id);
-            return {paid: groupInvoice.status == 'closed'};
+            return {paid: groupInvoice.status == 'closed' || groupInvoice.status == 'partial'};
         }
     }
 });

@@ -1,5 +1,5 @@
 <template name="Pos_invoiceReport">
-    <div class="inbox-head">
+    <div class="inbox-head report-header">
         {{#autoForm schema=schema id='invoiceReport'}}
             <div class="row">
                 <div class="col-md-2">
@@ -30,15 +30,15 @@
 </template>
 
 <template name="invoiceReportData">
-    <div class="container-fluid" id="to-print">
+    <div class="container-fluid well report-body-shadow" id="to-print">
+        <div class="col-md-12" align="center"><h3>INVOICE REPORT</h3></div>
         <div class="row">
             <div class="col-xs-12">
                 <hr>
-
                 <div class="row">
-                    <div class="col-xs-6">
-                        <address>
-                            <strong>Date:</strong><br>
+                    <div class="col-xs-3">
+                        <address class="label-report">
+                            <strong>Date:</strong>
                             {{data.title.date}}
                         </address>
                     </div>
@@ -52,7 +52,7 @@
 
             </div>
         </div>
-        <table class="table table-bordered well">
+        <table class="table table-striped ">
             <thead >
             <tr>
                 {{#each data.fields }}
@@ -76,5 +76,6 @@
             {{/with}}
             </tbody>
         </table>
+        {{> ReportSignFooter}}
     </div>
 </template>
