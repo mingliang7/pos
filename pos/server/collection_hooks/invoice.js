@@ -3,6 +3,7 @@ import {idGenerator} from 'meteor/theara:id-generator';
 
 // Collection
 import {Invoices} from '../../imports/api/collections/invoice.js';
+import {ReceivePayment} from '../../imports/api/collections/receivePayment.js';
 import {Order} from '../../imports/api/collections/order';
 import {GroupInvoice} from '../../imports/api/collections/groupInvoice';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
@@ -60,7 +61,6 @@ Invoices.after.insert(function (userId, doc) {
     });
 });
 
-//update
 Invoices.after.update(function (userId, doc) {
     let preDoc = this.previous;
     let type = {
@@ -83,9 +83,15 @@ Invoices.after.update(function (userId, doc) {
         Meteor.defer(function () {
             removeInvoiceFromGroup(preDoc);
             pushInvoiceFromGroup(doc);
-            invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
+            recalculatePayment({preDoc, doc});
+            // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
         });
 
+    } else {
+        Meteor.defer(function () {
+            Meteor._sleepForMs(200);
+            recalculatePayment({preDoc, doc});
+        })
     }
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
@@ -111,6 +117,8 @@ Invoices.after.remove(function (userId, doc) {
             let groupInvoice = GroupInvoice.findOne(doc.paymentGroupId);
             if (groupInvoice.invoices.length <= 0) {
                 GroupInvoice.direct.remove(doc.paymentGroupId);
+            }else{
+                recalculatePaymentAfterRemoved({doc});
             }
         }
         returnToInventory(doc);
@@ -150,6 +158,7 @@ function pushInvoiceFromGroup(doc) {
     GroupInvoice.update({_id: doc.paymentGroupId}, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
 }
 
+//update inventory
 function returnToInventory(invoice) {
     //---Open Inventory type block "Average Inventory"---
     // let invoice = Invoices.findOne(invoiceId);
@@ -216,6 +225,7 @@ function invoiceManageStock(invoice) {
                 type: 'invoice',
                 refId: invoice._id
             };
+            console.log(thisItem);
             AverageInventories.insert(newInventory);
         }
     });
@@ -306,3 +316,40 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
     setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
     Item.direct.update(item.itemId, setModifier);
 }
+
+//update payment
+function recalculatePayment({doc,preDoc}) {
+    let totalChanged = doc.total - preDoc.total;
+    if (totalChanged != 0) {
+        let invoiceId = doc.paymentGroupId || doc._id
+        let receivePayment = ReceivePayment.find({invoiceId: invoiceId});
+        if (receivePayment.count() > 0) {
+            ReceivePayment.update({invoiceId: invoiceId}, {
+                $inc: {
+                    dueAmount: totalChanged,
+                    balanceAmount: totalChanged
+                }
+            }, {multi: true});
+            ReceivePayment.direct.remove({invoiceId: invoiceId, dueAmount: {$lte: 0}});
+        }
+    }
+}
+
+//update payment after remove
+function recalculatePaymentAfterRemoved({doc}) {
+    let totalChanged = -doc.total;
+    if (totalChanged != 0) {
+        let invoiceId = doc.paymentGroupId;
+        let receivePayment = ReceivePayment.find({invoiceId: invoiceId});
+        if (receivePayment.count() > 0) {
+            ReceivePayment.update({invoiceId: invoiceId}, {
+                $inc: {
+                    dueAmount: totalChanged,
+                    balanceAmount: totalChanged
+                }
+            }, {multi: true});
+            ReceivePayment.direct.remove({invoiceId: invoiceId, dueAmount: {$lte: 0}});
+        }
+    }
+}
+
