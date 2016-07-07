@@ -91,21 +91,21 @@ PosRoutes.route('/customer/:customerId?/receive-payment/:invoiceId?', {
     }
 });
 /*// receive payment with invoice id link
-import '../imports/ui/pages/receivePayment.js';
-PosRoutes.route('/customer/:customerId/receive-payment/:invoiceId', {
-    name: 'pos.receivePaymentWithInvoiceId',
-    title: __('pos.receivePayment.title'),
-    action: function (params, queryParams) {
-        Layout.main('Pos_receivePayment');
-    },
-    breadcrumb: {
-        params: ['customerId', 'invoiceId'],
-        //queryParams: ['show', 'color'],
-        title: __('pos.receivePayment.title'),
-        icon: 'credit-card',
-        parent: 'pos.customer'
-    }
-});*/
+ import '../imports/ui/pages/receivePayment.js';
+ PosRoutes.route('/customer/:customerId/receive-payment/:invoiceId', {
+ name: 'pos.receivePaymentWithInvoiceId',
+ title: __('pos.receivePayment.title'),
+ action: function (params, queryParams) {
+ Layout.main('Pos_receivePayment');
+ },
+ breadcrumb: {
+ params: ['customerId', 'invoiceId'],
+ //queryParams: ['show', 'color'],
+ title: __('pos.receivePayment.title'),
+ icon: 'credit-card',
+ parent: 'pos.customer'
+ }
+ });*/
 // Order
 import '../imports/ui/pages/order.js';
 PosRoutes.route('/order', {
@@ -289,10 +289,27 @@ PosRoutes.route('/:vendorId/payBill', {
     action: function (params, queryParams) {
         Layout.main('Pos_payBill');
     },
-    breadcrumb:{
-        params:['vendorId'],
+    breadcrumb: {
+        params: ['vendorId'],
         title: __('pos.payBill.title'),
         icon: 'cart-plus',
         parent: 'pos.vendor'
+    }
+});
+
+// Location Transfer
+import '../imports/ui/pages/locationTransfer.js';
+PosRoutes.route('/locationTransfer', {
+    name: 'pos.locationTransfer',
+    title: __('pos.locationTransfer.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_locationTransfer');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.locationTransfer.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
     }
 });

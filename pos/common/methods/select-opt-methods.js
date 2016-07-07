@@ -4,7 +4,7 @@ import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {_} from 'meteor/erasaur:meteor-lodash';
 import {moment} from  'meteor/momentjs:moment';
-
+import {Branch} from '../../../core/imports/api/collections/branch.js'
 // Collection
 import {Customers} from '../../imports/api/collections/customer.js';
 import {Item} from '../../imports/api/collections/item.js';
@@ -209,6 +209,75 @@ SelectOptMethods.order = new ValidatedMethod({
             let data = Order.find(selector, {limit: 10});
             data.forEach(function (value) {
                 let label = value._id + ' | Date: ' + moment(value.orderDate).format('DD/MM/YYYY');
+                list.push({label: label, value: value._id});
+            });
+
+            return list;
+        }
+    }
+});
+
+SelectOptMethods.user = new ValidatedMethod({
+    name: 'pos.selectOptMethods.user',
+    validate: null,
+    run(options) {
+        if (!this.isSimulation) {
+            this.unblock();
+
+            let list = [], selector = {};
+            let searchText = options.searchText;
+            let values = options.values;
+            let params = options.params || {};
+
+            if (searchText && params.branchId) {
+                selector = {
+                    $or: [
+                        {_id: {$regex: searchText, $options: 'i'}},
+                        {username: {$regex: searchText, $options: 'i'}}
+                    ],
+                    username: {$ne: 'super'}
+                };
+            } else if (values.length) {
+                selector = {_id: {$in: values}, username: {$ne: 'super'}};
+            }
+
+            let data = Meteor.users.find(selector, {limit: 10});
+            data.forEach(function (value) {
+                let label = value.username;
+                list.push({label: label, value: value._id});
+            });
+
+            return list;
+        }
+    }
+});
+SelectOptMethods.branch = new ValidatedMethod({
+    name: 'pos.selectOptMethods.branch',
+    validate: null,
+    run(options) {
+        if (!this.isSimulation) {
+            this.unblock();
+
+            let list = [], selector = {};
+            let searchText = options.searchText;
+            let values = options.values;
+            let params = options.params || {};
+
+            if (searchText && params.branchId) {
+                selector = {
+                    $or: [
+                        {_id: {$regex: searchText, $options: 'i'}},
+                        {enName: {$regex: searchText, $options: 'i'}}
+                    ]
+                    // branchId: params.branchId
+                };
+            } else if (values.length) {
+                selector = {_id: {$in: values}};
+            }
+
+            let data = Branch.find(selector, {limit: 10});
+            data.forEach(function (value) {
+                let label = value._id + ' : ' + value.enName;
                 list.push({label: label, value: value._id});
             });
 
