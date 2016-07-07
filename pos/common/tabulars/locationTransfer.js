@@ -32,7 +32,7 @@ tabularOpts.columns = [
     {data: "des", title: "Description"},
     {data: "fromStaffId", title: "From Staff ID"},
     {data: "toStaffId", title: "To Staff ID"},
-    {data: "stockLocationId", title: "Stock Location"},
+    {data: "fromStockLocationId", title: "From Stock Location"},
     //{
     //    data: "_vendor",
     //    title: "Vendor Info",

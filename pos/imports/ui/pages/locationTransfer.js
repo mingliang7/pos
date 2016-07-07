@@ -67,7 +67,7 @@ indexTmpl.helpers({
         return LocationTransferTabular;
     },
     selector() {
-        return {branchId: Session.get('currentBranch')};
+        return {fromBranchId: Session.get('currentBranch')};
     }
 });
 
