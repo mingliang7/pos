@@ -1,0 +1,85 @@
+<template name="Pos_stockBalanceReport">
+    <div class="inbox-head report-header">
+        {{#autoForm schema=schema id='balanceReport'}}
+            <div class="row">
+                <div class="col-md-2">
+                    {{> afQuickField name="asOfDate" label= 'As of Date'}}
+                </div>
+                <div class="col-md-4">
+                    {{> afQuickField name="items" label= 'Item'}}
+                </div>
+                <div class="col-md-4">
+                    {{> afQuickField name="filter" label="Custom Fields"}}
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    {{> afQuickField name="branch" label="Branch"}}
+                </div><div class="col-md-3">
+                    {{> afQuickField name="location" label="Location"}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <span>
+                        <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+                        <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run</button>
+                    </span>
+                </div>
+            </div>
+        {{/autoForm}}
+    </div>
+    {{>stockBalanceReportData}}
+</template>
+
+<template name="stockBalanceReportData">
+    <div class="container-fluid well report-body-shadow" id="to-print">
+        <div class="col-md-12" align="center"><h3>STOCK BALANCE REPORT</h3></div>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-3">
+                        <address class="label-report">
+                            <strong>Date:</strong>
+                            {{data.title.date}}
+                        </address>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <!-- <address>
+                             <strong>Order Date:</strong><br>
+                             March 7, 2014<br><br>
+                         </address>-->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <table class="table table-striped ">
+            <thead >
+            <tr>
+                {{#each data.fields }}
+                    <th>{{field}}</th>
+                {{/each}}
+            </tr>
+            </thead>
+            <tbody>
+            {{#with data}}
+                {{#each col in content}}
+                    {{#each field in col.data}}
+                        <tr>
+                            {{{display field}}}
+                        </tr>
+                    {{/each}}
+                    <tr>
+                        {{{getTotal col.total col.totalRemainQty}}}
+                    </tr>
+                {{/each}}
+
+            {{/with}}
+            </tbody>
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

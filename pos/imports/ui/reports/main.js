@@ -17,6 +17,9 @@ indexTmpl.helpers({
             },
             {
                 label: 'Receive Payment', value: 'paymentReport'
+            },
+            {
+                label: 'Stock Balance', value: 'stockBalance'
             }
         ]
     }
@@ -38,6 +41,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'paymentReport':
             params = `/pos/report/payment?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}`;
+            break;
+        case 'stockBalance':
+            params = `/pos/report/stockBalance?date=${moment().format('YYYY-MM-DD 23:59:59')}`;
             break;
     }
     return params;

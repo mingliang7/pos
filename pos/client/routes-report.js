@@ -119,3 +119,18 @@ PosRoutes.route('/report/payment', {
         parent: 'pos.mainReport'
     }
 });
+
+import '../imports/ui/reports/stockBalance';
+PosRoutes.route('/report/stockBalance', {
+    name: 'pos.paymentReport',
+    title: 'Stock Balance Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_stockBalanceReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Stock Balance Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
