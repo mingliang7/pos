@@ -12,6 +12,8 @@ import {Order} from '../../imports/api/collections/order.js';
 import {Reps} from '../../imports/api/collections/rep.js';
 import {StockLocations} from '../../imports/api/collections/stockLocation.js';
 import {Vendors} from '../../imports/api/collections/vendor';
+import {PaymentGroups} from '../../imports/api/collections/paymentGroup.js';
+import {Terms} from '../../imports/api/collections/terms.js';
 export let SelectOptMethods = {};
 
 SelectOptMethods.stockLocation = new ValidatedMethod({
@@ -278,6 +280,75 @@ SelectOptMethods.branch = new ValidatedMethod({
             let data = Branch.find(selector, {limit: 10});
             data.forEach(function (value) {
                 let label = value._id + ' : ' + value.enName;
+                list.push({label: label, value: value._id});
+            });
+
+            return list;
+        }
+    }
+});
+
+SelectOptMethods.paymentGroup = new ValidatedMethod({
+    name: 'pos.selectOptMethods.paymentGroup',
+    validate: null,
+    run(options) {
+        if (!this.isSimulation) {
+            this.unblock();
+
+            let list = [], selector = {};
+            let searchText = options.searchText;
+            let values = options.values;
+            let params = options.params || {};
+
+            if (searchText && params.branchId) {
+                selector = {
+                    $or: [
+                        {_id: {$regex: searchText, $options: 'i'}},
+                        {name: {$regex: searchText, $options: 'i'}}
+                    ]
+                };
+            } else if (values.length) {
+                selector = {_id: {$in: values}};
+            }
+
+
+            let data = PaymentGroups.find(selector, {limit: 10});
+            data.forEach(function (value) {
+                let label = value._id + ' : ' + value.name;
+                list.push({label: label, value: value._id});
+            });
+
+            return list;
+        }
+    }
+});
+SelectOptMethods.term = new ValidatedMethod({
+    name: 'pos.selectOptMethods.term',
+    validate: null,
+    run(options) {
+        if (!this.isSimulation) {
+            this.unblock();
+
+            let list = [], selector = {};
+            let searchText = options.searchText;
+            let values = options.values;
+            let params = options.params || {};
+
+            if (searchText && params.branchId) {
+                selector = {
+                    $or: [
+                        {_id: {$regex: searchText, $options: 'i'}},
+                        {name: {$regex: searchText, $options: 'i'}}
+                    ]
+                };
+            } else if (values.length) {
+                selector = {_id: {$in: values}};
+            }
+
+
+            let data = Terms.find(selector, {limit: 10});
+            data.forEach(function (value) {
+                let label = value._id + ' : ' + value.name;
                 list.push({label: label, value: value._id});
             });
 

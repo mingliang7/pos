@@ -107,7 +107,7 @@ export const SelectOpts = {
             });
         return list;
     },
-    paymentGroup: function () {
+    /*paymentGroup: function () {
         Meteor.subscribe('pos.paymentGroup');
         let list = [{label: "(Select One)", value: ""}];
         PaymentGroups.find()
@@ -115,7 +115,7 @@ export const SelectOpts = {
                 list.push({label: obj.name, value: obj._id});
             });
         return list;
-    },
+    },*/
    /* category: function (param) {
         Meteor.subscribe('pos.category');
         var list = [];

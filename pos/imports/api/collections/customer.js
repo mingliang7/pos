@@ -63,12 +63,16 @@ Customers.schema = new SimpleSchema({
             }
         },
         autoform: {
-            type: "universe-select",
+            type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-            },
-            options: function () {
-                return SelectOpts.term();
+                optionsMethod: 'pos.selectOptMethods.term',
+                /*optionsMethodParams: function () {
+                 if (Meteor.isClient) {
+                 let currentBranch = Session.get('currentBranch');
+                 return {branchId: currentBranch};
+                 }
+                 }*/
             }
         }
     },
@@ -82,12 +86,16 @@ Customers.schema = new SimpleSchema({
             }
         },
         autoform: {
-            type: "universe-select",
+            type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-            },
-            options: function () {
-                return SelectOpts.paymentGroup();
+                optionsMethod: 'pos.selectOptMethods.paymentGroup',
+                /*optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let currentBranch = Session.get('currentBranch');
+                        return {branchId: currentBranch};
+                    }
+                }*/
             }
         }
     },
