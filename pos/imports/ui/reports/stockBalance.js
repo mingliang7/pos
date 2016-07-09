@@ -25,9 +25,10 @@ Tracker.autorun(function () {
             .then(function (result) {
                 invoiceData.set(result);
                 setTimeout(function () {
-                    swal.close()
+                    swal.close();
                 }, 200);
             }).catch(function (err) {
+            swal.close();
             console.log(err.message);
         })
     }
@@ -43,7 +44,7 @@ indexTmpl.helpers({
     }
 });
 indexTmpl.events({
-    'click .print'(event,instance){
+    'click .print'(event, instance){
         $('#to-print').printThis();
     }
 });
@@ -74,7 +75,7 @@ invoiceDataTmpl.helpers({
     getTotal(total, totalRemainQty){
         let string = '';
         let fieldLength = this.displayFields.length - 3;
-        for(let i = 0 ; i < fieldLength; i++) {
+        for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
         string += `<td><b>Total:</td></b><td><b>${numeral(totalRemainQty).format('0,0')}</b></td><td><b>${numeral(total).format('0,0.00')}</b></td>`;
@@ -96,13 +97,13 @@ AutoForm.hooks({
             if (doc.filter) {
                 params.filter = doc.filter.join(',');
             }
-            if(doc.items) {
+            if (doc.items) {
                 params.items = doc.items.join(',')
             }
-            if(doc.branch) {
+            if (doc.branch) {
                 params.branch = doc.branch;
             }
-            if(doc.location) {
+            if (doc.location) {
                 params.location = doc.location.join(',');
             }
             FlowRouter.query.set(params);

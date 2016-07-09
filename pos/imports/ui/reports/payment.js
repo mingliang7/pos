@@ -31,6 +31,7 @@ Tracker.autorun(function () {
                     swal.close()
                 }, 200);
             }).catch(function (err) {
+            swal.close();
             console.log(err.message);
         })
     }

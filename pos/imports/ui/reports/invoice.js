@@ -30,6 +30,7 @@ Tracker.autorun(function () {
                     swal.close()
                 }, 200);
             }).catch(function (err) {
+            swal.close();
             console.log(err.message);
         })
     }
@@ -45,7 +46,7 @@ indexTmpl.helpers({
     }
 });
 indexTmpl.events({
-    'click .print'(event,instance){
+    'click .print'(event, instance){
         $('#to-print').printThis();
     }
 });
@@ -77,7 +78,7 @@ invoiceDataTmpl.helpers({
     getTotal(total){
         let string = '';
         let fieldLength = this.displayFields.length - 2;
-        for(let i = 0 ; i < fieldLength; i++) {
+        for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
         string += `<td><b>Total:</td></b><td><b>${numeral(total).format('0,0.00')}</b></td>`;
