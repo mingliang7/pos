@@ -9,6 +9,7 @@ import {Customers} from '../../imports/api/collections/customer';
 import {Vendors} from '../../imports/api/collections/vendor';
 import {GroupInvoice} from '../../imports/api/collections/groupInvoice.js';
 import {Invoices} from '../../imports/api/collections/invoice.js';
+import {ReceivePayment} from '../../imports/api/collections/receivePayment.js';
 //lib func
 import {idGenerator} from 'meteor/theara:id-generator';
 import {getRange} from '../../imports/api/libs/generateDateRange';
@@ -59,6 +60,8 @@ function insertGroupInvoice({collection,range, doc}) {
         var isUpdated = GroupInvoice.update(groupInvoice._id, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
         if(isUpdated == 1){
             collection.direct.update(doc._id, {$set: {paymentGroupId: groupInvoice._id}});
+            doc.paymentGroupId = groupInvoice._id;
+            recalculatePaymentAfterInsert({doc});
         }else{
             collection.direct.remove(doc._id);
         }
@@ -82,3 +85,20 @@ function insertGroupInvoice({collection,range, doc}) {
         }
     }
 }
+
+
+//update payment after insert
+function recalculatePaymentAfterInsert({doc}) {
+    let invoiceId = doc.paymentGroupId;
+    let receivePayment = ReceivePayment.find({invoiceId: invoiceId});
+    if (receivePayment.count() > 0) {
+        ReceivePayment.update({invoiceId: invoiceId}, {
+            $inc: {
+                dueAmount: doc.total,
+                balanceAmount: doc.total
+            }
+        }, {multi: true});
+        ReceivePayment.direct.remove({invoiceId: invoiceId, dueAmount: {$lte: 0}});
+    }
+}
+

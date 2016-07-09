@@ -4,6 +4,7 @@ import {idGenerator} from 'meteor/theara:id-generator';
 // Collection
 import {EnterBills} from '../../imports/api/collections/enterBill.js';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
+import {Item} from '../../imports/api/collections/item.js';
 
 EnterBills.before.insert(function (userId, doc) {
     let todayDate = moment().format('YYYYMMDD');
@@ -17,25 +18,39 @@ EnterBills.after.insert(function (userId, doc) {
         if (doc.status == "active") {
         } else {
             doc.items.forEach(function (item) {
-                averageInventoryInsert(doc.branchId, item, doc.stockLocationId);
+                averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
             });
         }
     });
 });
 
 EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
+    let preDoc = this.previous;
+    if (doc.status == "active") {
+    } else {
+
+        Meteor.defer(function () {
+            Meteor._sleepForMs(200);
+            reduceFromInventory(preDoc);
+            doc.items.forEach(function (item) {
+                averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
+            });
+
+        });
+    }
+});
+
+EnterBills.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        if (doc.status == "active") {
-        } else {
-            doc.items.forEach(function (item) {
-                averageInventoryInsert(doc.branchId, item, doc.stockLocationId);
-            });
-        }
+        reduceFromInventory(doc);
     });
 });
 
-function averageInventoryInsert(branchId, item, stockLocationId) {
+
+function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
+    let lastPurchasePrice = 0;
+    let remainQuantity = 0;
     let prefix = stockLocationId + '-';
     let inventory = AverageInventories.findOne({
         branchId: branchId,
@@ -51,6 +66,11 @@ function averageInventoryInsert(branchId, item, stockLocationId) {
         inventoryObj.qty = item.qty;
         inventoryObj.price = item.price;
         inventoryObj.remainQty = item.qty;
+        inventoryObj.type = type;
+        inventoryObj.coefficient = 1;
+        inventoryObj.refId = refId;
+        lastPurchasePrice = item.price;
+        remainQuantity = inventoryObj.remainQty;
         AverageInventories.insert(inventoryObj);
     }
     else if (inventory.price == item.price) {
@@ -62,12 +82,19 @@ function averageInventoryInsert(branchId, item, stockLocationId) {
         inventoryObj.qty = item.qty;
         inventoryObj.price = item.price;
         inventoryObj.remainQty = item.qty + inventory.remainQty;
+        inventoryObj.type = type;
+        inventoryObj.coefficient = 1;
+        inventoryObj.refId = refId;
+        lastPurchasePrice = item.price;
+        remainQuantity = inventoryObj.remainQty;
         AverageInventories.insert(inventoryObj);
-
-        /* var inventorySet = {};
+        /*
+         let
+         inventorySet = {};
          inventorySet.qty = item.qty + inventory.qty;
          inventorySet.remainQty = inventory.remainQty + item.qty;
-         AverageInventories.update(inventory._id, {$set: inventorySet});*/
+         AverageInventories.update(inventory._id, {$set: inventorySet});
+         */
     }
     else {
         let totalQty = inventory.remainQty + item.qty;
@@ -88,8 +115,41 @@ function averageInventoryInsert(branchId, item, stockLocationId) {
         nextInventory.qty = item.qty;
         nextInventory.price = math.round(price);
         nextInventory.remainQty = totalQty;
+        nextInventory.type = type;
+        nextInventory.coefficient = 1;
+        nextInventory.refId = refId;
+        lastPurchasePrice = price;
+        remainQuantity = nextInventory.remainQty;
         AverageInventories.insert(nextInventory);
     }
+
+    var setModifier = {$set: {purchasePrice: lastPurchasePrice}};
+    setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
+    Item.direct.update(item.itemId, setModifier);
+}
+function reduceFromInventory(enterBill) {
+    //let enterBill = EnterBills.findOne(enterBillId);
+    enterBill.items.forEach(function (item) {
+        let inventory = AverageInventories.findOne({
+            branchId: enterBill.branchId,
+            itemId: item.itemId,
+            stockLocationId: enterBill.stockLocationId
+        }, {sort: {_id: 1}});
+        let newInventory = {
+            _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+            branchId: enterBill.branchId,
+            stockLocationId: enterBill.stockLocationId,
+            itemId: item.itemId,
+            qty: item.qty,
+            price: inventory.price,
+            remainQty: inventory.remainQty - item.qty,
+            coefficient: -1,
+            type: 'enter-return',
+            refId: enterBill._id
+        };
+        AverageInventories.insert(newInventory);
+    });
+
 }
 /*
  function payBillInsert(doc){

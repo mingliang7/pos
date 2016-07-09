@@ -73,10 +73,16 @@
                         <i class="fa fa-circle-o" aria-hidden="true"></i>
                         <span>{{_ "pos.sidebarMenu.stockLocation"}}</span>
                     </a>
-                </li> <li class="{{isActiveRoute name='pos.confirmTransferLocation'}}">
+                </li>   <li class="{{isActiveRoute name='pos.locationTransfer'}}">
+                    <a href="{{pathFor 'pos.locationTransfer'}}">
+                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <span>Location Transfer</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.confirmTransferLocation'}}">
                     <a href="{{pathFor 'pos.confirmTransferLocation'}}">
                         <i class="fa fa-circle-o" aria-hidden="true"></i>
-                        <span>Confirm Transfer</span>
+                        <span>Transfers Request</span>
                     </a>
                 </li>
             </ul>

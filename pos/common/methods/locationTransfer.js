@@ -5,10 +5,10 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 
 // Collection
-import {Invoices} from '../../imports/api/collections/invoice.js';
+import {LocationTransfers} from '../../imports/api/collections/locationTransfer.js';
 // Check user password
-export const invoiceInfo = new ValidatedMethod({
-    name: 'pos.invoiceInfo',
+export const LocationTransferInfo = new ValidatedMethod({
+    name: 'pos.locationTransferInfo',
     mixins: [CallPromiseMixin],
     validate: new SimpleSchema({
         _id: {
@@ -19,8 +19,7 @@ export const invoiceInfo = new ValidatedMethod({
         _id
     }) {
         if (!this.isSimulation) {
-            console.log(_id);
-            let invoice = Invoices.aggregate([{$match: {_id: _id}},{
+            let locationTransfer = LocationTransfers.aggregate([{$match: {_id: _id}}, {
                 $unwind: '$items'
             }, {
                 $lookup: {
@@ -37,9 +36,14 @@ export const invoiceInfo = new ValidatedMethod({
                     data: {
                         $addToSet: {
                             _id: '$_id',
-                            invoiceDate: '$invoiceDate',
-                            des: '$des',
-                            customer: '$_customer.name',
+                            _fromStockLocation: '$_fromStockLocation',
+                            _fromUser: '$_fromUser',
+                            _fromBranch: '$_fromBranch',
+                            _toBranch: '$_toBranch',
+                            _toStockLocation: '$_toStockLocation',
+                            locationTransferDate: '$locationTransferDate',
+                            pending: '$pending',
+                            status: '$status',
                             total: '$total'
                         }
                     },
@@ -57,7 +61,7 @@ export const invoiceInfo = new ValidatedMethod({
                 $unwind: '$data'
             }]);
 
-            return invoice[0];
+            return locationTransfer[0];
         }
     }
 });

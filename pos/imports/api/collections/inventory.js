@@ -31,9 +31,15 @@ AverageInventories.schema = new SimpleSchema({
     branchId: {
         type: String
     },
-    /*type: {
+    type: {
+        type: String
+    },
+    coefficient: {
         type: Number
-    }*/
+    },
+    refId: {
+        type: String
+    }
 });
 
 Meteor.startup(function () {

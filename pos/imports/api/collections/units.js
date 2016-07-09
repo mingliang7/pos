@@ -2,7 +2,8 @@ export const Units = new Mongo.Collection('units');
 
 Units.schema = new SimpleSchema({
   name: {
-    type: String
+    type: String,
+    unique: true
   },
   description: {
     type: String,

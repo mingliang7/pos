@@ -244,9 +244,7 @@ indexTmpl.helpers({
         return lastPayment == 0 ? numeral(valueAfterDiscount).format('0,0.00') : numeral(lastPayment).format('0,0.00');
     },
     originAmount(){
-        let lastPayment = getLastPayment(this._id);
-        return lastPayment == 0 ? numeral(this.total).format('0,0.00') : numeral(lastPayment).format('0,0.00');
-
+        return numeral(this.total).format('0,0.00');
     },
     isInvoiceDate(){
         if (this.invoiceDate) {
@@ -265,6 +263,7 @@ indexTmpl.events({
             Session.set('disableTerm', true);
             Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0})
         } else {
+            console.log('in else disable term')
             getCustomerTerm(Session.get('customerId'));
         }
     },
@@ -335,14 +334,14 @@ indexTmpl.events({
         if (event.currentTarget.value == '') {
             //trigger change on total
             $(event.currentTarget).parents('.invoice-parents').find('.total').val(total).change();
-            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').text(numeral(total).format('0,0.00')).change();
+            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(total).format('0,0.00')).change();
             $(event.currentTarget).val('0');
 
         } else {
             //trigger change on total
             let valueAfterDiscount = total * (1 - (parseFloat(event.currentTarget.value) / 100));
             $(event.currentTarget).parents('.invoice-parents').find('.total').val(valueAfterDiscount).change();
-            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').text(numeral(valueAfterDiscount).format('0,0.00')).change();
+            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(valueAfterDiscount).format('0,0.00')).change();
         }
     },
     "keypress .discount" (evt) {
@@ -425,10 +424,13 @@ function checkTerm(self) {
 }
 function getCustomerTerm(customerId) {
     let customer = getCustomerInfo(customerId);
-    if (customer && customer._term) {
-        Session.set('discount', {
-            discountIfPaidWithin: customer._term.discountIfPaidWithin,
-            discountPercentages: customer._term.discountPercentages
+    if (customer && customer.termId) {
+        Meteor.call('getTerm', customer.termId, function (err, result) {
+            Session.set('discount', {
+                termName: result.name,
+                discountIfPaidWithin: result.discountIfPaidWithin,
+                discountPercentages: result.discountPercentages
+            });
         });
         return `Term: ${customer._term.name}`;
     } else {

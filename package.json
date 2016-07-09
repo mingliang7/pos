@@ -11,7 +11,8 @@
     "datatables.net-jqui": "^1.10.12",
     "jquery": "^2.2.4",
     "meteor-node-stubs": "~0.2.0",
-    "moment": "^2.13.0"
+    "moment": "^2.13.0",
+    "printthis": "^0.1.5"
   },
   "devDependencies": {
     "printthis": "^0.1.5"

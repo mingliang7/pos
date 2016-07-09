@@ -7,7 +7,8 @@ import {moment} from 'meteor/momentjs:moment';
 // Lib
 import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 import {SelectOpts} from '../../ui/libs/select-opts.js';
-
+//location
+import {StockLocations} from '../../api/collections/stockLocation';
 export const LocationTransfers = new Mongo.Collection("pos_locationTransfers");
 // Items sub schema
 LocationTransfers.itemsSchema = new SimpleSchema({
@@ -54,67 +55,62 @@ LocationTransfers.schema = new SimpleSchema({
             }
         }
     },
-    fromStaffId: {
+    fromUserId: {
         type: String,
+        autoValue(){
+            return Meteor.userId();
+        },
         autoform: {
             type: 'universe-select',
-            afFieldInput: {
-                uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.staff',
-                optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }
-                }
-            }
         }
     },
-    toStaffId: {
+    toUserId: {
         type: String,
-        autoform: {
-            type: 'universe-select',
-            afFieldInput: {
-                uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.staff',
-                optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }
-                }
-            }
-        }
+        optional: true
     },
     fromStockLocationId: {
         type: String,
+        label: 'From Stock Location',
         autoform: {
             type: 'universe-select',
-            afFieldInput: {
-                uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.stockLocation',
-                optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
+            uniPlaceholder: 'Select One',
+            options(){
+                let list = [];
+                let branchId = AutoForm.getFieldValue('branch') || Meteor.isClient && Session.get('currentBranch');
+                if (branchId) {
+                    var subLocation = Meteor.subscribe('pos.stockLocation', {branchId: branchId}, {});
+                    if (subLocation.ready()) {
+                        let locations = StockLocations.find({branchId: branchId});
+                        locations.forEach(function (location) {
+                            list.push({label: `${location._id}: ${location.name}`, value: location._id});
+                        });
+                        return list;
                     }
                 }
+                return list;
             }
         }
     },
     toStockLocationId: {
         type: String,
+        label: 'To Stock Location',
         autoform: {
             type: 'universe-select',
-            afFieldInput: {
-                uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.stockLocation',
-                optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
+            uniPlaceholder: 'Select One',
+            options(){
+                let list = [];
+                let branchId = AutoForm.getFieldValue('toBranchId');
+                if (branchId) {
+                    var subLocation = Meteor.subscribe('pos.stockLocation', {branchId: branchId}, {});
+                    if (subLocation.ready()) {
+                        let locations = StockLocations.find({branchId: branchId});
+                        locations.forEach(function (location) {
+                            list.push({label: `${location._id}: ${location.name}`, value: location._id});
+                        });
+                        return list;
                     }
                 }
+                return list;
             }
         }
     },
@@ -151,6 +147,38 @@ LocationTransfers.schema = new SimpleSchema({
             type: 'inputmask',
             inputmaskOptions: function () {
                 return inputmaskOptions.currency();
+            }
+        }
+    },
+    fromBranchId: {
+        type: String,
+        autoValue(){
+            var branchId = this.field('fromStockLocationId').value;
+            return branchId.split('-')[0];
+        }
+    },
+    toBranchId: {
+        type: String,
+        label: 'To Branch',
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+                optionsMethod: 'pos.selectOptMethods.branch',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let currentBranch =  Meteor.isClient && Session.get('currentBranch');
+                        return {branchId: currentBranch};
+                    }
+                }
+            }
+        }
+    },
+    pending: {
+        type: Boolean,
+        autoValue(){
+            if (this.isInsert) {
+                return true;
             }
         }
     }
