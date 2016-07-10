@@ -1,31 +1,37 @@
 <!--Item Temporary-->
 <template name="Pos_locationTransferItems">
-    {{#autoForm schema=schema id="Pos_locationTransferItems"}}
+    <div class="container-fluid report-header">
         <div class="row">
-            <div class="col-sm-4">
-                {{> afQuickField name="itemId" label=false}}
-            </div>
-            <div class="col-sm-2">
-                {{> afQuickField name="qty" label=false}}
-            </div>
-            <div class="col-sm-2">
-                {{> afQuickField name="price" label=false}}
-            </div>
-            <div class="col-sm-3">
-                {{> afQuickField name="amount" value=amount label=false readonly=true}}
-            </div>
-            <div class="col-sm-1">
-                <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
-            </div>
-
+            <div class="col-md-4" align="center">PRODUCT</div>
+            <div class="col-md-2" align="center">QTY</div>
+            <div class="col-md-2" align="center">PRICE</div>
+            <div class="col-md-3" align="center">AMOUNT</div>
         </div>
-    {{/autoForm}}
-    <!--<hr>-->
+        {{#autoForm schema=schema id="Pos_locationTransferItems"}}
+            <div class="row">
+                <div class="col-sm-4">
+                    {{> afQuickField name="itemId" label=false}}
+                </div>
+                <div class="col-sm-2">
+                    {{> afQuickField name="qty" label=false}}
+                </div>
+                <div class="col-sm-2">
+                    {{> afQuickField name="price" label=false}}
+                </div>
+                <div class="col-sm-3">
+                    {{> afQuickField name="amount" value=amount label=false readonly=true}}
+                </div>
+                <div class="col-sm-1">
+                    <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
+                </div>
+
+            </div>
+        {{/autoForm}}
+        <!--<hr>-->
+    </div>
 
     <!--Reactive table-->
     {{> reactiveTable settings=tableSettings}}
-
-
     <div class="row">
         <div class="col-sm-8">
             <div class="pull-right">SubTotal:</div>
@@ -52,7 +58,6 @@
             {{> afQuickField name="paidAmount" id="pay-amount" label=false}}
         </div>
     </div>
-
 </template>
 
 <!--Action-->

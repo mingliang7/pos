@@ -262,20 +262,7 @@ SelectOptMethods.branch = new ValidatedMethod({
             let searchText = options.searchText;
             let values = options.values;
             let params = options.params || {};
-
-            if (searchText && params.branchId) {
-                selector = {
-                    $or: [
-                        {_id: {$regex: searchText, $options: 'i'}},
-                        {enName: {$regex: searchText, $options: 'i'}}
-                    ]
-                    // branchId: params.branchId
-                };
-            } else if (values.length) {
-                selector = {_id: {$in: values}};
-            }
-
-            let data = Branch.find(selector, {limit: 10});
+            let data = Branch.find(selector, {limit: 100});
             data.forEach(function (value) {
                 let label = value._id + ' : ' + value.enName;
                 list.push({label: label, value: value._id});

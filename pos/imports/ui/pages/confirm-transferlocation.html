@@ -1,0 +1,166 @@
+<template name="Pos_confirmTransferLocation">
+
+    <div class="box-body">
+        <span class="pending toggler active" data-toggle="pending"><small><i class="fa fa-circle-o"></i> Pending</small></span>
+        <span class="accepted toggler" data-toggle="accepted"><small><i class="fa fa-check-circle"></i> Accepted</small></span>
+        <hr>
+        {{#if isNotEmpty}}
+        <div class="row bounceIn">
+            {{#each transferRequest}}
+                <div class="col-sm-3">
+                <ul class="surveys grid animated fadeIn">
+                    <li class="survey-item">
+            <span class="survey-country list-only">
+              UK
+            </span>
+            <span class="survey-name">
+              Transfered From {{_fromBranch.enName}}({{_fromBranch.khName}})
+            </span>
+            <span class="survey-country grid-only">
+             <a class="text-gray cursor-pointer"><i class="fa fa-eye"></i> Show</a>
+            </span>
+
+                        <div class="pull-right">
+             <span class="survey-progress">
+                 {{#if pending}}
+                     <a class="btn  btn-sm  btn-default"><i class="fa fa-check-circle"></i> Accept</a>
+                <a class="btn  btn-sm  btn-danger"><i class="fa fa-close"></i> Decline</a>
+                 {{else}}
+                     <h5><i class="fa fa-check"></i> Accepted</h5>
+                 {{/if}}
+             </span>
+
+                            <small>
+                                Total: {{numFormat total '0,0.00'}}<br>
+                                Request on: {{moFormat locationTransferDate 'YYYY-MM-DD HH:mm'}} <br>
+                                by: {{_fromUser.username}}
+                            </small>
+            <span class="survey-stage">
+                {{#if pending}}
+                    <div class="pulse" data-status="running">
+                        <div class="status">
+                        </div>
+                    </div>
+                {{else}}
+
+                {{/if}}
+            </span>
+                        </div>
+                    </li>
+
+                </ul>
+                </div>
+            {{/each}}
+        </div>
+        {{else}}
+            <div class="col-md-12 text-center"><h3><i class="fa fa-frown-o"></i> No data available..</h3></div>
+        {{/if}}
+    </div>
+    {{playNotificationSound}}
+</template>
+
+
+<template name="transferInfo">
+    <div class="container-fluid">
+        <div class="col-md-2 pull-left">
+            <br>
+            <a class="printTransfer btn btn-primary"><i class="fa fa-print"></i>Print</a>
+        </div>
+    </div>
+    <div class="container" id="to-print">
+        <div class="row">
+            {{#with data}}
+                <div class="col-xs-12">
+                    <div class="row">
+                        <div class="col-xs-6 pull-left">
+                            <h2>ITEMS TRANSFER</h2>
+                        </div>
+                        <div class="col-xs-6 pull-left">
+                            <h3 class="pull-right">#{{_id}}</h3>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <address>
+                                <strong>Transfered From:</strong><br>
+                                {{_fromBranch.khName}}({{_fromBranch.enName}})<br>
+                                Stock({{_fromStockLocation.name}})<br>
+                                {{capitalize _fromUser.username}}<br>
+                            </address>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <address>
+                                <strong>Transfered To:</strong><br>
+                                {{_toBranch.khName}}({{_toBranch.enName}})<br>
+                                Stock({{_toStockLocation.name}})<br><br>
+                            </address>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <address>
+                                <strong>Status:</strong><br>
+                                {{#if pending}}
+                                    Accepted: <b>Not yet <i class="fa fa-close"></i></b><br>
+                                    Pending: <b>Yes <i class="fa fa-check-circle"></i></b>
+                                {{else}}
+                                    Accepted: <b>Yes <i class="fa fa-check-circle"></i></b><br>
+                                    Pending: <b>No <i class="fa fa-close"></i></b>
+                                {{/if}}
+                            </address>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <address>
+                                <strong>Request on:</strong><br>
+                                {{moFormat locationTransferDate 'YYYY-MM-DD HH:mm'}}<br>
+                            </address>
+                        </div>
+                    </div>
+                </div>
+            {{/with}}
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="">
+                    <div class="">
+                        <h3><strong>Transfer summary</strong></h3>
+                        <hr>
+                    </div>
+                    <div class="">
+                        <div class="table-responsive">
+                            <table class="table table-condensed">
+                                <thead>
+                                <tr>
+                                    <td><strong>Item</strong></td>
+                                    <td class="text-center"><strong>Price</strong></td>
+                                    <td class="text-center"><strong>Quantity</strong></td>
+                                    <td class="text-right"><strong>Amount</strong></td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <!-- foreach ($order->lineItems as $line) or some such thing here -->
+                                {{#each item in items}}
+                                    <tr>
+                                        <td>{{item.name}}</td>
+                                        <td class="text-center">${{numFormat item.price '0,0.00'}}</td>
+                                        <td class="text-center">{{item.qty}}</td>
+                                        <td class="text-right">${{numFormat item.amount '0,0.00'}}</td>
+                                    </tr>
+                                {{/each}}
+                                <tr>
+                                    <td class="no-line"></td>
+                                    <td class="no-line"></td>
+                                    <td class="no-line text-center"><strong>Total</strong></td>
+                                    <td class="no-line text-right">${{numFormat data.total '0,0.00'}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

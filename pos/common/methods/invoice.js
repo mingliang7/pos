@@ -20,7 +20,7 @@ export const invoiceInfo = new ValidatedMethod({
     }) {
         if (!this.isSimulation) {
             console.log(_id);
-            let invoice = Invoices.aggregate([{
+            let invoice = Invoices.aggregate([{$match: {_id: _id}},{
                 $unwind: '$items'
             }, {
                 $lookup: {
