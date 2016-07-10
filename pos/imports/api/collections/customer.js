@@ -66,9 +66,7 @@ Customers.schema = new SimpleSchema({
             type: "universe-select",
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-            },
-            options: function () {
-                return SelectOpts.term();
+                optionsMethod: 'pos.selectOptMethods.term'
             }
         }
     },
@@ -85,9 +83,7 @@ Customers.schema = new SimpleSchema({
             type: "universe-select",
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-            },
-            options: function () {
-                return SelectOpts.paymentGroup();
+                optionsMethod: 'pos.selectOptMethods.paymentGroup'
             }
         }
     },
