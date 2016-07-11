@@ -51,9 +51,6 @@ indexTmpl.helpers({
     playNotificationSound(){
         let count = transferCount.get();
         let locationTransfers = LocationTransfers.find({toBranchId: Session.get('currentBranch')});
-        console.log(locationTransfers.count() > count);
-        console.log(locationTransfers.count());
-        console.log(count);
         if (locationTransfers.count() > count) {
             playNotification.play();
         }
