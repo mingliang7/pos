@@ -43,6 +43,10 @@ EnterBills.itemsSchema = new SimpleSchema({
 
 // EnterBills schema
 EnterBills.schema = new SimpleSchema({
+    voucherId: {
+        type: String,
+        optional: true
+    },
     enterBillDate: {
         type: Date,
         defaultValue: moment().toDate(),
@@ -68,6 +72,30 @@ EnterBills.schema = new SimpleSchema({
                         return {branchId: currentBranch};
                     }
                 }
+            }
+        }
+    },
+    termId: {
+        type: String,
+        label: 'Terms',
+        optional: true,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One'
+            }
+        }
+    },
+    paymentGroupId: {
+        type: String,
+        optional: true
+    },
+    repId: {
+        type: String,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One'
             }
         }
     },
@@ -178,7 +206,12 @@ EnterBills.schema = new SimpleSchema({
     },
     branchId: {
         type: String
+    },
+    billType: {
+        type: String,
+        optional: true
     }
+
 });
 
 Meteor.startup(function () {
