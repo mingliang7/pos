@@ -26,17 +26,22 @@
     <div class="box-body">
         {{#autoForm collection=collection id="Pos_locationTransferNew" type="insert"}}
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Order</div>
+                        <div class="panel-heading">Location Transfer</div>
                         <div class="panel-body">
                             {{> afQuickField name="locationTransferDate"}}
-                            {{> afQuickField name="fromUserId"}}
-                            {{> afQuickField name="toUserId"}}
-                            {{> afQuickField name="fromBranchId"}}
-                            {{> afQuickField name="toBranchId"}}
-                            {{> afQuickField name="fromStockLocationId"}}
-                            {{> afQuickField name="toStockLocationId"}}
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="">From Branch</label>
+                                    <input type="text" readonly="true" value="{{fromBranchId}}" class="form-control">
+                                </div>
+                                <div class="col-md-6"> {{> afQuickField name="toBranchId"}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">{{> afQuickField name="fromStockLocationId"}}</div>
+                                <div class="col-md-6">{{> afQuickField name="toStockLocationId"}}</div>
+                            </div>
                             {{> afQuickField name="des"}}
 
                             <!--{{> afQuickField type="hidden" name="branchId" value=currentBranch}}-->
@@ -44,8 +49,9 @@
                     </div>
                 </div>
 
-                <div class="col-md-8">
+                <div class="col-md-9 invoice-body-shadow">
                     <!--Item Temporary-->
+
                     {{> Pos_locationTransferItems itemsCollection=itemsCollection}}
 
                     <div class="row">
@@ -70,11 +76,11 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-5">
-                    {{>infoTab data=vendorInfo info="Customer"}}
-                </div>
-            </div>
+            <!--<div class="row">-->
+                <!--<div class="col-md-5">-->
+                    <!--{{>infoTab data=vendorInfo info="Customer"}}-->
+                <!--</div>-->
+            <!--</div>-->
         {{/autoForm}}
     </div>
 </template>

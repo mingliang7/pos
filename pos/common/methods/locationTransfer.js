@@ -5,7 +5,7 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 
 // Collection
-import {LocationTransfer} from '../../imports/api/collections/locationTransfer.js';
+import {LocationTransfers} from '../../imports/api/collections/locationTransfer.js';
 // Check user password
 export const LocationTransferInfo = new ValidatedMethod({
     name: 'pos.locationTransferInfo',
@@ -19,7 +19,7 @@ export const LocationTransferInfo = new ValidatedMethod({
         _id
     }) {
         if (!this.isSimulation) {
-            let locationTransfer = LocationTransfer.aggregate([{
+            let locationTransfer = LocationTransfers.aggregate([{$match: {_id: _id}}, {
                 $unwind: '$items'
             }, {
                 $lookup: {
@@ -36,9 +36,14 @@ export const LocationTransferInfo = new ValidatedMethod({
                     data: {
                         $addToSet: {
                             _id: '$_id',
+                            _fromStockLocation: '$_fromStockLocation',
+                            _fromUser: '$_fromUser',
+                            _fromBranch: '$_fromBranch',
+                            _toBranch: '$_toBranch',
+                            _toStockLocation: '$_toStockLocation',
                             locationTransferDate: '$locationTransferDate',
-                            des: '$des',
-                            vendor: '$_vendor.name',
+                            pending: '$pending',
+                            status: '$status',
                             total: '$total'
                         }
                     },
@@ -54,7 +59,7 @@ export const LocationTransferInfo = new ValidatedMethod({
                 }
             }, {
                 $unwind: '$data'
-            }])
+            }]);
 
             return locationTransfer[0];
         }

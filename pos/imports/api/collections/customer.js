@@ -66,13 +66,7 @@ Customers.schema = new SimpleSchema({
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.term',
-                /*optionsMethodParams: function () {
-                 if (Meteor.isClient) {
-                 let currentBranch = Session.get('currentBranch');
-                 return {branchId: currentBranch};
-                 }
-                 }*/
+                optionsMethod: 'pos.selectOptMethods.term'
             }
         }
     },
@@ -89,13 +83,7 @@ Customers.schema = new SimpleSchema({
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.paymentGroup',
-                /*optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }
-                }*/
+                optionsMethod: 'pos.selectOptMethods.paymentGroup'
             }
         }
     },

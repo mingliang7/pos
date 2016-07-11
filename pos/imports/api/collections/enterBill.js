@@ -101,18 +101,9 @@ EnterBills.schema = new SimpleSchema({
     },
     staffId: {
         type: String,
-        autoform: {
-            type: 'universe-select',
-            afFieldInput: {
-                uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.staff',
-                optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }
-                }
-            }
+        optional: true,
+        autoValue(){
+            return Meteor.userId();
         }
     },
     stockLocationId: {
@@ -142,7 +133,7 @@ EnterBills.schema = new SimpleSchema({
                 type: 'summernote',
                 class: 'editor', // optional
                 settings: {
-                    height: 150,                 // set editor height
+                    height: 80,                 // set editor height
                     minHeight: null,             // set minimum height of editor
                     maxHeight: null,             // set maximum height of editor
                     toolbar: [

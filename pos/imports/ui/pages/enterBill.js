@@ -116,6 +116,13 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
+    totalEnterBill(){
+        let total = 0 ;
+        itemsCollection.find().forEach(function (item) {
+            total += item.amount;
+        });
+        return total;
+    },
     vendorInfo() {
         let vendorInfo = Session.get('vendorInfo');
         if (!vendorInfo) {

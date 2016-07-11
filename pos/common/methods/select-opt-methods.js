@@ -12,8 +12,8 @@ import {Order} from '../../imports/api/collections/order.js';
 import {Reps} from '../../imports/api/collections/rep.js';
 import {StockLocations} from '../../imports/api/collections/stockLocation.js';
 import {Vendors} from '../../imports/api/collections/vendor';
-import {PaymentGroups} from '../../imports/api/collections/paymentGroup.js';
-import {Terms} from '../../imports/api/collections/terms.js';
+import {PaymentGroups} from '../../imports/api/collections/paymentGroup';
+import {Terms} from '../../imports/api/collections/terms';
 export let SelectOptMethods = {};
 
 SelectOptMethods.stockLocation = new ValidatedMethod({
@@ -264,20 +264,7 @@ SelectOptMethods.branch = new ValidatedMethod({
             let searchText = options.searchText;
             let values = options.values;
             let params = options.params || {};
-
-            if (searchText && params.branchId) {
-                selector = {
-                    $or: [
-                        {_id: {$regex: searchText, $options: 'i'}},
-                        {enName: {$regex: searchText, $options: 'i'}}
-                    ]
-                    // branchId: params.branchId
-                };
-            } else if (values.length) {
-                selector = {_id: {$in: values}};
-            }
-
-            let data = Branch.find(selector, {limit: 10});
+            let data = Branch.find(selector, {limit: 100});
             data.forEach(function (value) {
                 let label = value._id + ' : ' + value.enName;
                 list.push({label: label, value: value._id});
@@ -308,20 +295,20 @@ SelectOptMethods.paymentGroup = new ValidatedMethod({
                     ]
                 };
             } else if (values.length) {
-                selector = {_id: {$in: values}};
+                selector = {_id: {$in: values}, name: {$ne: 'super'}};
             }
-
 
             let data = PaymentGroups.find(selector, {limit: 10});
             data.forEach(function (value) {
-                let label = value._id + ' : ' + value.name;
+                let label = value.name;
                 list.push({label: label, value: value._id});
             });
-
+            
             return list;
         }
     }
 });
+
 SelectOptMethods.term = new ValidatedMethod({
     name: 'pos.selectOptMethods.term',
     validate: null,
@@ -342,13 +329,12 @@ SelectOptMethods.term = new ValidatedMethod({
                     ]
                 };
             } else if (values.length) {
-                selector = {_id: {$in: values}};
+                selector = {_id: {$in: values}, name: {$ne: 'super'}};
             }
-
 
             let data = Terms.find(selector, {limit: 10});
             data.forEach(function (value) {
-                let label = value._id + ' : ' + value.name;
+                let label = value.name;
                 list.push({label: label, value: value._id});
             });
 
@@ -356,3 +342,4 @@ SelectOptMethods.term = new ValidatedMethod({
         }
     }
 });
+

@@ -99,6 +99,17 @@ indexTmpl.events({
 });
 
 // New
+newTmpl.onCreated(function () {
+    this.branch = new ReactiveVar();
+    Meteor.call('getBranch', Session.get('currentBranch'),(err,result)=> {
+        if(result) {
+            this.branch.set(result);
+        }else{
+            console.log(err);
+        }
+
+    })
+});
 newTmpl.events({
     'change [name=vendorId]'(event, instance){
         if (event.currentTarget.value != '') {
@@ -116,6 +127,13 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
+    fromBranchId(){
+        let instance = Template.instance();
+        if(instance.branch.get()) {
+            return instance.branch.get().enShortName;
+        }
+        return '';
+    },
     vendorInfo() {
         let vendorInfo = Session.get('vendorInfo');
         if (!vendorInfo) {

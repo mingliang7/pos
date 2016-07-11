@@ -27,6 +27,7 @@ Meteor.publish('pos.activeLocationTransfers', function activeLocationTransfers(s
     if (this.userId) {
         Meteor._sleepForMs(200);
         let data = LocationTransfers.find(selector);
+        console.log(selector);
         return data;
     }
     return this.ready();

@@ -297,6 +297,19 @@ PosRoutes.route('/:vendorId/payBill', {
     }
 });
 
+
+//confirm transfer location
+import '../imports/ui/pages/confirm-transferlocation';
+PosRoutes.route('/confirm-transferLocation', {
+    name: 'pos.confirmTransferLocation',
+    title: 'Transfers Request',
+    action: function (params, queryParams) {
+        Layout.main('Pos_confirmTransferLocation');
+    },
+    breadcrumb: {
+        title: 'Transfers Request',
+    }
+});
 // Location Transfer
 import '../imports/ui/pages/locationTransfer.js';
 PosRoutes.route('/locationTransfer', {
@@ -309,7 +322,6 @@ PosRoutes.route('/locationTransfer', {
         //params: ['id'],
         //queryParams: ['show', 'color'],
         title: __('pos.locationTransfer.title'),
-        icon: 'cart-plus',
         parent: 'pos.home'
     }
 });
