@@ -63,7 +63,7 @@ Customers.schema = new SimpleSchema({
             }
         },
         autoform: {
-            type: "universe-select",
+            type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
                 optionsMethod: 'pos.selectOptMethods.term'
@@ -80,7 +80,7 @@ Customers.schema = new SimpleSchema({
             }
         },
         autoform: {
-            type: "universe-select",
+            type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
                 optionsMethod: 'pos.selectOptMethods.paymentGroup'

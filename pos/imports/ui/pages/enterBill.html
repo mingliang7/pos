@@ -25,26 +25,103 @@
 <template name="Pos_enterBillNew">
     <div class="box-body">
         {{#autoForm collection=collection id="Pos_enterBillNew" type="insert"}}
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Order</div>
-                        <div class="panel-body">
-                            {{> afQuickField name="vendorId"}}
-                            {{> afQuickField name="staffId"}}
-                            {{> afQuickField name="stockLocationId"}}
-                            {{> afQuickField name="enterBillDate"}}
-                            {{> afQuickField name="des"}}
-
-                            {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
-                        </div>
-                    </div>
+            <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
+                <div class="col-md-3">
+                    <label for="email">Vendor:<span style="color: red;">*</span> </label>
+                    {{> afQuickField name="vendorId" label=false}}
                 </div>
 
-                <div class="col-md-8">
+                <div class="col-md-9">
+                    <p class="pull-right ">
+                    <h4 class="text-black">BALANCE DUE</h4>
+                    <h2 class="text-blue text-center">${{numFormat  totalEnterBill '0,0.00'}}</h2>
+                    {{#if totalOrder.customerId}}
+                        <a class="btn btn-default text-center go-to-receive-payment"
+                           href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.invoiceId}}">
+                            Receive Payment
+                        </a>
+                    {{/if}}
+                    </p>
+                </div>
+            </div>
+            <hr>
+
+            <div class="col-md-3">
+                {{> afQuickField name="enterBillDate"}}
+            </div>
+            <div class="col-md-3">
+                {{> afQuickField name="stockLocationId"}}
+
+            </div>
+            {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+            <div class="col-md-12">
+                <!--Item Temporary-->
+                {{> Pos_enterBillItems itemsCollection=itemsCollection}}
+                <div class="row">
+                    <div class="col-sm-12 pull-right">
+                        <!--{{> formFooterWithButton}}-->
+
+                        {{#formFooter}}
+                            <button type="submit" class="btn btn-success" id="btn-pay" {{disabledSubmitBtn}}>
+                                <i class="fa fa-money"></i> {{_ "pos.custom.pay"}}
+                            </button>
+                            <button type="submit" class="btn btn-warning" id="btn-save-print" {{disabledSubmitBtn}}>
+                                <i class="fa fa-print"></i> {{_ "pos.custom.saveAndPrint"}}
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="btn-save" {{disabledSubmitBtn}}>
+                                <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
+                            </button>
+                            <button type="reset" class="btn btn-default">
+                                <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
+                            </button>
+                        {{/formFooter}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                {{> afQuickField name="des"}}
+            </div>
+        {{/autoForm}}
+    </div>
+</template>
+
+<!--Update-->
+<template name="Pos_enterBillEdit">
+    <div class="box-body">
+        {{#if Template.subscriptionsReady}}
+            {{#autoForm collection=collection id="Pos_enterBillEdit" doc=data type="update"}}
+                <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
+                    <div class="col-md-3">
+                        <label for="email">Vendor:<span style="color: red;">*</span> </label>
+                        {{> afQuickField name="vendorId" label=false}}
+                    </div>
+
+                    <div class="col-md-9">
+                        <p class="pull-right ">
+                        <h4 class="text-black">BALANCE DUE</h4>
+                        <h2 class="text-blue text-center">${{numFormat  totalEnterBill '0,0.00'}}</h2>
+                        {{#if totalOrder.customerId}}
+                            <a class="btn btn-default text-center go-to-receive-payment"
+                               href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.invoiceId}}">
+                                Receive Payment
+                            </a>
+                        {{/if}}
+                        </p>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="col-md-3">
+                    {{> afQuickField name="enterBillDate"}}
+                </div>
+                <div class="col-md-3">
+                    {{> afQuickField name="stockLocationId"}}
+
+                </div>
+                {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                <div class="col-md-12">
                     <!--Item Temporary-->
                     {{> Pos_enterBillItems itemsCollection=itemsCollection}}
-
                     <div class="row">
                         <div class="col-sm-12 pull-right">
                             <!--{{> formFooterWithButton}}-->
@@ -66,64 +143,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-5">
-                    {{>infoTab data=vendorInfo info="Customer"}}
-                </div>
-            </div>
-        {{/autoForm}}
-    </div>
-</template>
-
-<!--Update-->
-<template name="Pos_enterBillEdit">
-    <div class="box-body">
-        {{#if Template.subscriptionsReady}}
-            {{#autoForm collection=collection id="Pos_enterBillEdit" doc=data type="update"}}
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">Order</div>
-                            <div class="panel-body">
-                                {{> afQuickField name="vendorId"}}
-                                {{> afQuickField name="staffId"}}
-                                {{> afQuickField name="stockLocationId"}}
-                                {{> afQuickField name="enterBillDate"}}
-                                {{> afQuickField name="des"}}
-
-                                {{> afQuickField type="hidden" name="branchId"}}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-8">
-                        <!--Item Temporary-->
-                        {{> Pos_enterBillItems itemsCollection=itemsCollection}}
-
-                        <div class="row">
-                            <div class="col-sm-12 pull-right">
-                                <!--{{> formFooterWithButton}}-->
-
-                                {{#formFooter}}
-                                    <button type="submit" class="btn btn-success" id="btn-pay" {{disabledSubmitBtn}}>
-                                        <i class="fa fa-money"></i> {{_ "pos.custom.pay"}}
-                                    </button>
-                                    <button type="submit" class="btn btn-warning"
-                                            id="btn-save-print" {{disabledSubmitBtn}}>
-                                        <i class="fa fa-print"></i> {{_ "pos.custom.saveAndPrint"}}
-                                    </button>
-                                    <button type="submit" class="btn btn-primary" id="btn-save" {{disabledSubmitBtn}}>
-                                        <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
-                                    </button>
-                                    <button type="reset" class="btn btn-default">
-                                        <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
-                                    </button>
-                                {{/formFooter}}
-                            </div>
-                        </div>
-                    </div>
-
+                <div class="col-md-3">
+                    {{> afQuickField name="des"}}
                 </div>
 
             {{/autoForm}}

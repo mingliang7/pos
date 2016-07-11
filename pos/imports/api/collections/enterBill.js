@@ -43,6 +43,10 @@ EnterBills.itemsSchema = new SimpleSchema({
 
 // EnterBills schema
 EnterBills.schema = new SimpleSchema({
+    voucherId: {
+        type: String,
+        optional: true
+    },
     enterBillDate: {
         type: Date,
         defaultValue: moment().toDate(),
@@ -71,20 +75,35 @@ EnterBills.schema = new SimpleSchema({
             }
         }
     },
-    staffId: {
+    termId: {
+        type: String,
+        label: 'Terms',
+        optional: true,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One'
+            }
+        }
+    },
+    paymentGroupId: {
+        type: String,
+        optional: true
+    },
+    repId: {
         type: String,
         autoform: {
             type: 'universe-select',
             afFieldInput: {
-                uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.staff',
-                optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }
-                }
+                uniPlaceholder: 'Select One'
             }
+        }
+    },
+    staffId: {
+        type: String,
+        optional: true,
+        autoValue(){
+            return Meteor.userId();
         }
     },
     stockLocationId: {
@@ -114,7 +133,7 @@ EnterBills.schema = new SimpleSchema({
                 type: 'summernote',
                 class: 'editor', // optional
                 settings: {
-                    height: 150,                 // set editor height
+                    height: 80,                 // set editor height
                     minHeight: null,             // set minimum height of editor
                     maxHeight: null,             // set maximum height of editor
                     toolbar: [
@@ -178,7 +197,12 @@ EnterBills.schema = new SimpleSchema({
     },
     branchId: {
         type: String
+    },
+    billType: {
+        type: String,
+        optional: true
     }
+
 });
 
 Meteor.startup(function () {
