@@ -58,7 +58,9 @@ LocationTransfers.schema = new SimpleSchema({
     fromUserId: {
         type: String,
         autoValue(){
-            return Meteor.userId();
+            if (this.isInsert) {
+                return Meteor.userId();
+            }
         },
         autoform: {
             type: 'universe-select',
@@ -153,8 +155,10 @@ LocationTransfers.schema = new SimpleSchema({
     fromBranchId: {
         type: String,
         autoValue(){
-            var branchId = this.field('fromStockLocationId').value;
-            return branchId.split('-')[0];
+            if (this.isInsert) {
+                var branchId = this.field('fromStockLocationId').value;
+                return branchId.split('-')[0];
+            }
         }
     },
     toBranchId: {
@@ -167,7 +171,7 @@ LocationTransfers.schema = new SimpleSchema({
                 optionsMethod: 'pos.selectOptMethods.branch',
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
-                        let currentBranch =  Meteor.isClient && Session.get('currentBranch');
+                        let currentBranch = Meteor.isClient && Session.get('currentBranch');
                         return {branchId: currentBranch};
                     }
                 }

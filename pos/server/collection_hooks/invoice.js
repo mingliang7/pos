@@ -234,7 +234,7 @@ function invoiceManageStock(invoice) {
         invoice._id,
         {$set: {items: newItems, totalCost: totalCost, profit: totalProfit}}
     );
-    //--- End Invenetory type block "Average Inventory"---
+    //--- End Inventory type block "Average Inventory"---
 }
 
 function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {

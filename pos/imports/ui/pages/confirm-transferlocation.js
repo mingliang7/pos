@@ -29,8 +29,8 @@ Tracker.autorun(function () {
 });
 indexTmpl.onCreated(function () {
     createNewAlertify('locationTransfer', {size: 'lg'});
-    Meteor.call('countTransferLocation', Session.get('currentBranch'), function(err,result) {
-        if(result) {
+    Meteor.call('countTransferLocation', Session.get('currentBranch'), function (err, result) {
+        if (result) {
             transferCount.set(result);
         }
     })
@@ -74,6 +74,24 @@ indexTmpl.events({
             }
             if (err) {
                 console.log(err);
+            }
+        });
+    },
+    'click .accept'(){
+        Meteor.call('locationTransferManageStock', this._id, function (er, re) {
+            if (er) {
+                alertify.error(er.message);
+            } else {
+                alertify.success('Success');
+            }
+        })
+    },
+    'click .decline'(){
+        Meteor.call('declineTransfer', this._id, function (er, re) {
+            if (er) {
+                alertify.error(er.message);
+            } else {
+                alertify.success('Success');
             }
         });
     }
