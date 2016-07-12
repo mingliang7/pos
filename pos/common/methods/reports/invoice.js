@@ -26,9 +26,12 @@ export const invoiceReport = new ValidatedMethod({
                 content: [{index: 'No Result'}],
                 footer: {}
             };
-
+            let branch = [];
+            let user = Meteor.users.findOne(Meteor.userId());
+            // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.invoiceType = {$ne: 'group'};
+            selector.status = {$in: ['active', 'partial', 'closed']};
             if (params.date) {
                 let dateAsArray = params.date.split(',')
                 let fromDate = moment(dateAsArray[0]).toDate();

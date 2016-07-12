@@ -45,7 +45,9 @@ ReceivePayment.after.update(function (userId, doc) {
     }
 });
 
-
+ReceivePayment.after.remove(function(userId, doc) {
+    Meteor.call('insertRemovedPayment', doc);
+});
 function updateInvoiceOrInvoiceGroup({_id, selector,collection}) {
     collection.direct.update(_id, selector);
 }

@@ -78,7 +78,7 @@ indexTmpl.helpers({
         return InvoiceTabular;
     },
     selector() {
-        return {branchId: Session.get('currentBranch')};
+        return {branchId: Session.get('currentBranch'), status: {$in: ['active', 'partial', 'closed']}};
     }
 });
 

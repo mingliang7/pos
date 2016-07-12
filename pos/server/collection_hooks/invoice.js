@@ -120,6 +120,8 @@ Invoices.after.remove(function (userId, doc) {
             }else{
                 recalculatePaymentAfterRemoved({doc});
             }
+        }else if (type.term) {
+            Meteor.call('insertRemovedInvoice', doc);
         }
         returnToInventory(doc);
     });
