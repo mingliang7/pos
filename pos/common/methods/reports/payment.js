@@ -30,6 +30,9 @@ export const receivePaymentReport = new ValidatedMethod({
             };
 
             // let date = _.trim(_.words(params.date, /[^To]+/g));
+            selector.status = {
+                $in: ['partial', 'closed']
+            }
             if (params.skip) {
                 skip = parseInt(params.skip);
             }
