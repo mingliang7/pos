@@ -46,12 +46,26 @@
             </div>
             <hr>
 
-            <div class="col-md-3">
+            <div class="col-md-2">
+                {{> afQuickField name="voucherId"}}
+            </div>
+            <!--{{#if isTerm}}-->
+                <div class="col-md-2">
+                    {{> afQuickField name="termId" options=termOption value=termId}}
+                </div>
+            <!--{{/if}}-->
+            <div class="col-md-2">
                 {{> afQuickField name="enterBillDate"}}
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
+                {{> afQuickField name="dueDate" value=dueDate}}
+            </div>
+            <div class="col-md-2">
                 {{> afQuickField name="stockLocationId"}}
-
+                <!--{{> afQuickField type="hidden" name="branchId" value=currentBranch}}-->
+            </div>
+            <div class="col-md-2">
+                {{> afQuickField name="repId" options=options value=repId label="Rep"}}
             </div>
             {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
             <div class="col-md-12">
