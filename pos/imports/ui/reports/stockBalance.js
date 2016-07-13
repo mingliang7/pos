@@ -101,7 +101,7 @@ AutoForm.hooks({
                 params.items = doc.items.join(',')
             }
             if (doc.branch) {
-                params.branch = doc.branch;
+                params.branch = doc.branch.join(',');
             }
             if (doc.location) {
                 params.location = doc.location.join(',');

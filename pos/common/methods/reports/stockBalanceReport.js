@@ -34,7 +34,7 @@ export const stockBalanceReport = new ValidatedMethod({
                 selector.createdAt = {$lte: asOfDate};
             }
             if(params.branch){
-                selector.branchId = params.branch;
+                selector.branchId = {$in: params.branch.split(',')};
             }
             if(params.items) {
                 selector.itemId = {
@@ -45,6 +45,13 @@ export const stockBalanceReport = new ValidatedMethod({
                 selector.stockLocationId = {
                     $in: params.location.split(',')
                 }
+            }
+            //check if user has right to view multi branches
+            let user = Meteor.users.findOne({_id: Meteor.userId()});
+            for(let i =0 ; i < selector.branchId.$in.length; i++){
+              if(!_.includes(user.rolesBranch, selector.branchId.$in[i])) {
+                  _.pull(selector.branchId.$in, selector.branchId.$in[i]);
+              }
             }
             if (params.filter && params.filter != '') {
                 let filters = params.filter.split(','); //map specific field

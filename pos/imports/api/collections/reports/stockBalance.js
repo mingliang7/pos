@@ -5,13 +5,14 @@ import {StockLocations} from '../../collections/stockLocation';
 import {SelectOpts} from '../../../../../core/imports/ui/libs/select-opts.js';
 export const stockBalanceSchema = new SimpleSchema({
     branch: {
-        type: String,
+        type: [String],
         optional: true,
         label: function () {
             return TAPi18n.__('core.welcome.branch');
         },
         autoform: {
             type: "universe-select",
+            multiple: true,
             options: function () {
                 return Meteor.isClient && SelectOpts.branchForCurrentUser(false);
             },
@@ -90,9 +91,10 @@ export const stockBalanceSchema = new SimpleSchema({
             multiple: true,
             options(){
                 let list = [];
-                let branchId = AutoForm.getFieldValue('branch') || Meteor.isClient && Session.get('currentBranch') ;
+                let selector = {};
+                let branchId = AutoForm.getFieldValue('branch') || Meteor.isClient && [Session.get('currentBranch')] ;
                 if (branchId) {
-                    var subLocation = Meteor.subscribe('pos.stockLocation', {branchId: branchId}, {});
+                    var subLocation = Meteor.subscribe('pos.stockLocation', {branchId: {$in: branchId}}, {});
                     if(subLocation.ready()) {
                         let locations = StockLocations.find({});
                         locations.forEach(function (location) {
