@@ -283,7 +283,7 @@ PosRoutes.route('/enterBill', {
 });
 //Pay Bill
 import '../imports/ui/pages/payBill';
-PosRoutes.route('/:vendorId/payBill', {
+PosRoutes.route('/:vendorId?/payBill/:billId?', {
     name: 'pos.payBill',
     title: __('pos.payBill.title'),
     action: function (params, queryParams) {
