@@ -26,8 +26,7 @@ Meteor.methods({
             throw new Meteor.Error("not-authorized");
         }
         Meteor.defer(function () {
-            Meteor._sleepForMs(200);
-            //---Open Inventory type block "FIFO Inventory"---
+            //---Open Inventory type block "Average Inventory"---
             let totalCost = 0;
             let invoice = Invoices.findOne(invoiceId);
             let prefix = invoice.stockLocationId + "-";
@@ -57,7 +56,8 @@ Meteor.methods({
                         refId: invoice._id
                     };
                     AverageInventories.insert(newInventory);
-                } else {
+                }
+                else {
                     var thisItem = Item.findOne(item.itemId);
                     item.cost = thisItem.purchasePrice;
                     item.amountCost = thisItem.purchasePrice * item.qty;
@@ -76,6 +76,7 @@ Meteor.methods({
                         type: 'invoice',
                         refId: invoice._id
                     };
+                    console.log(thisItem);
                     AverageInventories.insert(newInventory);
                 }
             });
@@ -84,14 +85,16 @@ Meteor.methods({
                 invoice._id,
                 {$set: {items: newItems, totalCost: totalCost, profit: totalProfit}}
             );
-            //--- End Invenetory type block "FIFO Inventory"---
+            //--- End Inventory type block "Average Inventory"---
         });
 
     },
     locationTransferManageStock: function (locationTransferId) {
+        console.log(Meteor.userId());
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
+        let userId = Meteor.userId();
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
             //---Open Inventory type block "FIFO Inventory"---
@@ -103,31 +106,49 @@ Meteor.methods({
 
             locationTransfer.items.forEach(function (item) {
                 let inventory = AverageInventories.findOne({
-                    branchId: locationTransfer.branchId,
+                    branchId: locationTransfer.fromBranchId,
                     itemId: item.itemId,
                     stockLocationId: locationTransfer.fromStockLocationId
                 }, {sort: {_id: 1}});
 
-                let newInventory = {
-                    _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                    branchId: locationTransfer.branchId,
-                    stockLocationId: locationTransfer.fromStockLocationId,
-                    itemId: item.itemId,
-                    qty: item.qty,
-                    price: inventory.price,
-                    remainQty: inventory.remainQty - item.qty,
-                    coefficient: -1,
-                    type: 'transfer-from',
-                    refId: locationTransferId
-                };
-
-                AverageInventories.insert(newInventory);
-                item.price = inventory.price;
-                item.amount = inventory.price * item.qty;
+                if (inventory) {
+                    let newInventory = {
+                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                        branchId: locationTransfer.fromBranchId,
+                        stockLocationId: locationTransfer.fromStockLocationId,
+                        itemId: item.itemId,
+                        qty: item.qty,
+                        price: inventory.price,
+                        remainQty: inventory.remainQty - item.qty,
+                        coefficient: -1,
+                        type: 'transfer-from',
+                        refId: locationTransferId
+                    };
+                    AverageInventories.insert(newInventory);
+                    item.price = inventory.price;
+                    item.amount = inventory.price * item.qty;
+                } else {
+                    let thisItem = Item.findOne(item.itemId);
+                    let newInventory = {
+                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                        branchId: locationTransfer.fromBranchId,
+                        stockLocationId: locationTransfer.fromStockLocationId,
+                        itemId: item.itemId,
+                        qty: item.qty,
+                        price: thisItem.purchasePrice,
+                        remainQty: 0 - item.qty,
+                        coefficient: -1,
+                        type: 'transfer-from',
+                        refId: locationTransferId
+                    };
+                    AverageInventories.insert(newInventory);
+                    item.price = thisItem.purchasePrice;
+                    item.amount = thisItem.purchasePrice * item.qty;
+                }
                 total += item.amount;
                 newItems.push(item);
                 averageInventoryInsert(
-                    locationTransfer.branchId,
+                    locationTransfer.toBranchId,
                     item,
                     locationTransfer.toStockLocationId,
                     'transfer-to',
@@ -138,11 +159,15 @@ Meteor.methods({
             let setObj = {};
             setObj.items = newItems;
             setObj.total = total;
-            LocationTransfers.direct.update(
+            setObj.pending = false;
+            setObj.status = "closed";
+            setObj.toUserId = userId;
+            LocationTransfers.update(
                 locationTransferId,
                 {$set: setObj}
             );
             //--- End Inventory type block "FIFO Inventory"---
+
         });
     },
     returnToInventory: function (invoiceId) {
@@ -210,10 +235,23 @@ Meteor.methods({
                 AverageInventories.insert(newInventory);
             });
         });
+    },
+    declineTransfer(locationTransferId){
+        let userId = Meteor.userId();
+        let setObj = {};
+        setObj.status = "decline";
+        setObj.toUserId = userId;
+        LocationTransfers.update(
+            locationTransferId,
+            {$set: setObj}
+        );
     }
 });
+
+
 function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
     let lastPurchasePrice = 0;
+    let remainQuantity = 0;
     let prefix = stockLocationId + '-';
     let inventory = AverageInventories.findOne({
         branchId: branchId,
@@ -233,6 +271,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         inventoryObj.coefficient = 1;
         inventoryObj.refId = refId;
         lastPurchasePrice = item.price;
+        remainQuantity = inventoryObj.remainQty;
         AverageInventories.insert(inventoryObj);
     }
     else if (inventory.price == item.price) {
@@ -248,6 +287,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         inventoryObj.coefficient = 1;
         inventoryObj.refId = refId;
         lastPurchasePrice = item.price;
+        remainQuantity = inventoryObj.remainQty;
         AverageInventories.insert(inventoryObj);
         /*
          let
@@ -280,13 +320,11 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         nextInventory.coefficient = 1;
         nextInventory.refId = refId;
         lastPurchasePrice = price;
+        remainQuantity = nextInventory.remainQty;
         AverageInventories.insert(nextInventory);
     }
-    Item.direct.update(
-        item.itemId,
-        {
-            $set: {purchasePrice: lastPurchasePrice}
-        }
-    );
-}
 
+    var setModifier = {$set: {purchasePrice: lastPurchasePrice}};
+    setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
+    Item.direct.update(item.itemId, setModifier);
+}
