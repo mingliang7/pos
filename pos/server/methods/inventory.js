@@ -239,7 +239,8 @@ Meteor.methods({
     declineTransfer(locationTransferId){
         let userId = Meteor.userId();
         let setObj = {};
-        setObj.status = "decline";
+        setObj.status = "declined";
+        setObj.pending = false;
         setObj.toUserId = userId;
         LocationTransfers.update(
             locationTransferId,

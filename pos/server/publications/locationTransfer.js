@@ -19,15 +19,14 @@ Meteor.publish('pos.locationTransfer', function posLocationTransfer(selector, op
 
     return this.ready();
 });
-Meteor.publish('pos.activeLocationTransfers', function activeLocationTransfers(selector) {
+Meteor.publish('pos.activeLocationTransfers', function activeLocationTransfers(selector,options={}) {
     this.unblock();
     new SimpleSchema({
         selector: {type: Object, blackbox: true}
     }).validate({selector});
     if (this.userId) {
         Meteor._sleepForMs(200);
-        let data = LocationTransfers.find(selector);
-        console.log(selector);
+        let data = LocationTransfers.find(selector, options);
         return data;
     }
     return this.ready();

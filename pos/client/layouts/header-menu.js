@@ -11,6 +11,17 @@ indexTmpl.onCreated(function () {
             this.transferCount.set(result);
         }
     });
+    this.autorun(function () {
+        if (Session.get('currentBranch')) {
+            let subscription = Meteor.subscribe('pos.activeLocationTransfers',
+                {
+                    toBranchId: Session.get('currentBranch'),
+                    pending: true,
+                    status: 'active'
+                });
+
+        }
+    });
 });
 
 indexTmpl.helpers({

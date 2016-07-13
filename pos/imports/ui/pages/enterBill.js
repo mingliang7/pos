@@ -37,14 +37,6 @@ import './info-tab.html';
 import {EnterBillInfo} from '../../../common/methods/enterBill.js'
 import {vendorInfo} from '../../../common/methods/vendor.js';
 //Tracker for vendor infomation
-Tracker.autorun(function () {
-    if (Session.get('vendorId')) {
-        vendorInfo.callPromise({_id: Session.get('vendorId')})
-            .then(function (result) {
-                Session.set('vendorInfo', result);
-            })
-    }
-});
 // Declare template
 let indexTmpl = Template.Pos_enterBill,
     actionTmpl = Template.Pos_enterBillAction,
@@ -60,6 +52,14 @@ indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('enterBill', {size: 'lg'});
     createNewAlertify('enterBillShow');
+    this.autorun(function () {
+        if (Session.get('vendorId')) {
+            vendorInfo.callPromise({_id: Session.get('vendorId')})
+                .then(function (result) {
+                    Session.set('vendorInfo', result);
+                })
+        }
+    });
 });
 
 indexTmpl.helpers({

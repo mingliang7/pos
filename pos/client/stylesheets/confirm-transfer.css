@@ -310,3 +310,9 @@
         opacity: 0;
     }
 }
+.success-bg {
+    background: teal;
+}
+.failed-bg{
+    background: #CE4E4E;
+}

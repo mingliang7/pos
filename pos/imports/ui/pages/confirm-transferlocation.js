@@ -9,38 +9,50 @@ import {LocationTransfers} from '../../api/collections/locationTransfer';
 let indexTmpl = Template.Pos_confirmTransferLocation,
     transferInfo = Template.transferInfo;
 let transferState = new ReactiveVar(true);
-let transferCount = new ReactiveVar();
-let playNotification = new buzz.sound('/notification-sounds/unique-notification.mp3');
-Tracker.autorun(function () {
-    if (Session.get('currentBranch')) {
-        let subscription = Meteor.subscribe('pos.activeLocationTransfers', {toBranchId: Session.get('currentBranch')});
-        if (!subscription.ready()) {
-            swal({
-                title: "Please Wait",
-                text: "Fetching Data....", showConfirmButton: false
-            });
-        } else {
-            setTimeout(function () {
-                swal.close()
-            }, 200);
+let statusState = new ReactiveVar('active');
+let loadMore = new ReactiveVar(0);
+let sumLoadMore = new ReactiveVar(10);
 
-        }
-    }
-});
 indexTmpl.onCreated(function () {
     createNewAlertify('locationTransfer', {size: 'lg'});
-    Meteor.call('countTransferLocation', Session.get('currentBranch'), function (err, result) {
-        if (result) {
-            transferCount.set(result);
+    this.autorun(function () {
+        if (Session.get('currentBranch') || transferState.get() || statusState.get()) {
+            let subscription = Meteor.subscribe('pos.activeLocationTransfers',
+                {
+                    toBranchId: Session.get('currentBranch'),
+                    pending: transferState.get() == undefined ? true : transferState.get(),
+                    status: statusState.get() || 'active'
+                }, {limit: sumLoadMore.get()});
+            if (!subscription.ready()) {
+                swal({
+                    title: "Please Wait",
+                    text: "Fetching Data....", showConfirmButton: false
+                });
+            } else {
+                setTimeout(function () {
+                    swal.close()
+                }, 200);
+
+            }
         }
-    })
+        if (sumLoadMore.get() || transferState.get() || statusState.get()) {
+            Meteor.call('loadMoreTransfer', {
+                branchId: Session.get('currentBranch'),
+                pending: transferState.get(),
+                status: statusState.get()
+            }, function (err, result) {
+                loadMore.set(result);
+            });
+        }
+    });
 });
 
 indexTmpl.helpers({
     transferRequest(){
         let locationTransfers = LocationTransfers.find({
             toBranchId: Session.get('currentBranch'),
-            pending: transferState.get()
+            pending: transferState.get(),
+            status: statusState.get()
         });
         return locationTransfers;
     },
@@ -48,12 +60,26 @@ indexTmpl.helpers({
         let locationTransfers = LocationTransfers.find({toBranchId: Session.get('currentBranch')});
         return locationTransfers.count() > 0;
     },
-    playNotificationSound(){
-        let count = transferCount.get();
-        let locationTransfers = LocationTransfers.find({toBranchId: Session.get('currentBranch')});
-        if (locationTransfers.count() > count) {
-            playNotification.play();
+    accepted(){
+        if (!this.pending && this.status == 'closed') {
+            return true;
         }
+    },
+    declined(){
+        if (!this.pending && this.status == 'declined') {
+            return true;
+        }
+    },
+    isHasMore(){
+        let locationTransfers = LocationTransfers.find({
+            toBranchId: Session.get('currentBranch'),
+            pending: transferState.get(),
+            status: statusState.get()
+        }).count();
+        if (locationTransfers < loadMore.get()) {
+            return true;
+        }
+        return false;
     }
 });
 indexTmpl.events({
@@ -63,9 +89,22 @@ indexTmpl.events({
     },
     'click .pending'(event, instance){
         transferState.set(true);
+        statusState.set('active');
+        loadMore.set(0);
+        sumLoadMore.set(10);
+
     },
     'click .accepted'(event, instance){
         transferState.set(false);
+        statusState.set('closed');
+        loadMore.set(0);
+        sumLoadMore.set(10);
+    },
+    'click .declined'(event, instance){
+        transferState.set(false);
+        statusState.set('declined')
+        loadMore.set(0);
+        sumLoadMore.set(10);
     },
     'click .cursor-pointer'(event, instance){
         Meteor.call('pos.locationTransferInfo', {_id: this._id}, function (err, result) {
@@ -78,28 +117,82 @@ indexTmpl.events({
         });
     },
     'click .accept'(){
-        Meteor.call('locationTransferManageStock', this._id, function (er, re) {
-            if (er) {
-                alertify.error(er.message);
-            } else {
-                alertify.success('Success');
-            }
-        })
+        let id = this._id;
+        swal({
+                title: "Are you sure?",
+                text: "",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, accept it!",
+                closeOnConfirm: false
+            },
+            function () {
+                Meteor.call('locationTransferManageStock', id, function (er, re) {
+                    if (er) {
+                        alertify.error(er.message);
+                    } else {
+                        swal({
+                            title: "Accepted!",
+                            text: "Successfully",
+                            type: "success",
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                    }
+                })
+            });
     },
     'click .decline'(){
-        Meteor.call('declineTransfer', this._id, function (er, re) {
-            if (er) {
-                alertify.error(er.message);
-            } else {
-                alertify.success('Success');
-            }
-        });
+        let id = this._id;
+        swal({
+                title: "Are you sure?",
+                text: "",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, decline it!",
+                closeOnConfirm: false
+            },
+            function () {
+                Meteor.call('declineTransfer', id, function (er, re) {
+                    if (er) {
+                        alertify.error(er.message);
+                    } else {
+                        swal({
+                            title: "Declined!",
+                            text: "successfully",
+                            type: "success",
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                    }
+                });
+            });
+    },
+    'click .load-more'(event,instance){
+        let more = sumLoadMore.get();
+        sumLoadMore.set(more + 10);
     }
 });
-
+indexTmpl.onDestroyed(function () {
+    transferState.set(true);
+    statusState.set('active');
+    loadMore.set(0);
+    sumLoadMore.set(10);
+});
 transferInfo.helpers({
     capitalize(name){
         return _.capitalize(name);
+    },
+    accepted(){
+        if (!this.pending && this.status == 'closed') {
+            return true;
+        }
+    },
+    declined(){
+        if (!this.pending && this.status == 'declined') {
+            return true;
+        }
     }
 });
 transferInfo.events({

@@ -1,15 +1,15 @@
 <template name="Pos_confirmTransferLocation">
-
     <div class="box-body">
         <span class="pending toggler active" data-toggle="pending"><small><i class="fa fa-circle-o"></i> Pending</small></span>
         <span class="accepted toggler" data-toggle="accepted"><small><i class="fa fa-check-circle"></i> Accepted</small></span>
+        <span class="declined toggler" data-toggle="declined"><small><i class="fa fa-close"></i> Declined</small></span>
         <hr>
         {{#if isNotEmpty}}
             <div class="row bounceIn">
                 {{#each transferRequest}}
                     <div class="col-sm-3">
                         <ul class="surveys grid animated fadeIn">
-                            <li class="survey-item">
+                            <li class="survey-item {{#if accepted}}success-bg{{/if}} {{#if declined}}failed-bg{{/if}}">
             <span class="survey-country list-only">
               UK
             </span>
@@ -24,9 +24,13 @@
              <span class="survey-progress">
                  {{#if pending}}
                      <a class="btn  btn-sm btn-default accept"><i class="fa fa-check-circle"></i> Accept</a>
-                <a class="btn  btn-sm  btn-danger decline"><i class="fa fa-close"></i> Decline</a>
-                 {{else}}
+                     <a class="btn  btn-sm  btn-danger decline"><i class="fa fa-close"></i> Decline</a>
+                 {{/if}}
+                 {{#if accepted}}
                      <h5><i class="fa fa-check"></i> Accepted</h5>
+                 {{/if}}
+                 {{#if declined}}
+                     <h5><i class="fa fa-close"></i> Declined</h5>
                  {{/if}}
              </span>
 
@@ -41,8 +45,16 @@
                         <div class="status">
                         </div>
                     </div>
-                {{else}}
-
+                {{/if}}
+                {{#if declined}}
+                    <i class="fa fa-ban" aria-hidden="true"></i>
+                    <div class="pulse" data-status="running">
+                    </div>
+                {{/if}}
+                {{#if accepted}}
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    <div class="pulse" data-status="running">
+                    </div>
                 {{/if}}
             </span>
                                 </div>
@@ -55,8 +67,12 @@
         {{else}}
             <div class="col-md-12 text-center"><h3><i class="fa fa-frown-o"></i> No data available..</h3></div>
         {{/if}}
+        <div class="col-md-12 text-center">
+            {{#if isHasMore}}
+                <a class="btn btn-default load-more">Load More <i class="fa fa-arrow-circle-down"></i></a>
+            {{/if}}
+        </div>
     </div>
-    {{playNotificationSound}}
 </template>
 
 
@@ -102,11 +118,19 @@
                             <address>
                                 <strong>Status:</strong><br>
                                 {{#if pending}}
-                                    Accepted: <b>Not yet <i class="fa fa-close"></i></b><br>
-                                    Pending: <b>Yes <i class="fa fa-check-circle"></i></b>
-                                {{else}}
+                                    Accepted: <b>Not <i class="fa fa-close"></i></b><br>
+                                    Pending: <b>Yes <i class="fa fa-check-circle"></i></b><br>
+                                    Declined: <b>No <i class="fa fa-close"></i></b>
+                                {{/if}}
+                                {{#if accepted}}
                                     Accepted: <b>Yes <i class="fa fa-check-circle"></i></b><br>
-                                    Pending: <b>No <i class="fa fa-close"></i></b>
+                                    Pending: <b>No <i class="fa fa-close"></i></b><br>
+                                    Declined: <b>No <i class="fa fa-close"></i></b>
+                                {{/if}}
+                                {{#if declined}}
+                                    Accepted: <b>No <i class="fa fa-close"></i></b><br>
+                                    Pending: <b>No <i class="fa fa-close"></i></b><br>
+                                    Declined: <b>Yes <i class="fa fa-check-circle"></i></b>
                                 {{/if}}
                             </address>
                         </div>
