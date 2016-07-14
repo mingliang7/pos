@@ -37,7 +37,7 @@ import './info-tab.html';
 import {EnterBillInfo} from '../../../common/methods/enterBill.js'
 import {vendorInfo} from '../../../common/methods/vendor.js';
 //Tracker for vendor infomation
-//Tracker for customer infomation
+//Tracker for vendor infomation
 Tracker.autorun(function () {
     if (Session.get("getVendorId")) {
         vendorInfo.callPromise({_id: Session.get("getVendorId")})
@@ -227,9 +227,6 @@ editTmpl.onCreated(function () {
         FlowRouter.query.set('vendorId', this.data.vendorId);
         this.isPrepaidOrder.set(true);
     }
-    this.autorun(()=> {
-        this.subscribe('pos.enterBill', {_id: this.data._id});
-    });
 });
 editTmpl.events({
     'click #btn-save-print'(event, instance){
@@ -242,16 +239,16 @@ editTmpl.events({
         Session.set('btnType', 'pay');
     },
     'click .add-new-vendor'(event, instance){
-        alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
+        alertify.vendor(fa('plus', 'New Vendor'), renderTemplate(Template.Pos_vendorNew));
     },
     'click .go-to-pay-bill'(event, instance){
         alertify.invoice().close();
     },
     'change [name=vendorId]'(event, instance){
         if (event.currentTarget.value != '') {
-            Session.set('getCustomerId', event.currentTarget.value);
-            if (FlowRouter.query.get('customerId')) {
-                FlowRouter.query.set('customerId', event.currentTarget.value);
+            Session.set('getVendorId', event.currentTarget.value);
+            if (FlowRouter.query.get('vendorId')) {
+                FlowRouter.query.set('vendorId', event.currentTarget.value);
             }
         }
         Session.set('totalOrder', undefined);
@@ -261,20 +258,27 @@ editTmpl.events({
         alertify.listSaleOrder(fa('', 'Prepaid Order'), renderTemplate(listSaleOrder));
     },
     'change [name="termId"]'(event, instance){
-        let customerInfo = Session.get('customerInfo');
+        let vendorInfo = Session.get('vendorInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
-            customerInfo._term.netDueIn = result.netDueIn;
-            Session.set('customerInfo', customerInfo);
+            vendorInfo._term.netDueIn = result.netDueIn;
+            Session.set('vendorInfo', vendorInfo);
         });
     }
 });
 editTmpl.helpers({
+    closeSwal(){
+        setTimeout(function () {
+            swal.close();
+        }, 500);
+    },
+    isPrepaidOrder(){
+        return Template.instance().isPrepaidOrder.get();
+    },
     collection(){
         return EnterBills;
     },
     data () {
-        let data = EnterBills.findOne(this._id);
-
+        let data = this;
         // Add items to local collection
         _.forEach(data.items, (value)=> {
             Meteor.call('getItem', value.itemId, function (err, result) {
@@ -295,6 +299,93 @@ editTmpl.helpers({
         }
 
         return {};
+    },
+    repId(){
+        if (Session.get('vendorInfo')) {
+            try {
+                return Session.get('vendorInfo').repId;
+            } catch (e) {
+
+            }
+        }
+        return '';
+    },
+    termId(){
+        if (Session.get('vendorInfo')) {
+            try {
+                return Session.get('vendorInfo').termId;
+            } catch (e) {
+
+            }
+        }
+        return '';
+    },
+    options(){
+        let instance = Template.instance();
+        if (instance.repOptions.get() && instance.repOptions.get().repList) {
+            return instance.repOptions.get().repList
+        }
+        return '';
+    },
+    termOption(){
+        let instance = Template.instance();
+        if (instance.repOptions.get() && instance.repOptions.get().termList) {
+            return instance.repOptions.get().termList
+        }
+        return '';
+    },
+    totalOrder(){
+        let total = 0;
+        if (!FlowRouter.query.get('vendorId')) {
+            itemsCollection.find().forEach(function (item) {
+                total += item.amount;
+            });
+        }
+        if (Session.get('totalOrder')) {
+            let totalOrder = Session.get('totalOrder');
+            return totalOrder;
+        }
+        return {total};
+    },
+    vendorInfo() {
+        let vendorInfo = Session.get('vendorInfo');
+        if (!vendorInfo) {
+            return {empty: true, message: 'No data available'}
+        }
+
+        return {
+            fields: `<li>Phone: <b>${vendorInfo.telephone ? vendorInfo.telephone : ''}</b></li>
+              <li>Opening Balance: <span class="label label-success">0</span></li>
+              <li >Credit Limit: <span class="label label-warning">${vendorInfo.creditLimit ? numeral(vendorInfo.creditLimit).format('0,0.00') : 0}</span></li>
+              <li>Sale Order to be invoice: <span class="label label-primary">0</span>`
+        };
+    },
+    repId(){
+        if (Session.get('vendorInfo')) {
+            return Session.get('vendorInfo').repId;
+        }
+    },
+    dueDate(){
+        let date = AutoForm.getFieldValue('invoiceDate');
+        if (Session.get('vendorInfo')) {
+            if (Session.get('vendorInfo')._term) {
+                let term = Session.get('vendorInfo')._term;
+
+                let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
+                console.log(dueDate);
+                return dueDate;
+            }
+        }
+        return date;
+    },
+    isTerm(){
+        if (Session.get('vendorInfo')) {
+            let vendorInfo = Session.get('vendorInfo');
+            if (vendorInfo._term) {
+                return true;
+            }
+            return false;
+        }
     }
 });
 
@@ -362,6 +453,7 @@ let hooksObject = {
             return doc;
         },
         update: function (doc) {
+            debugger;
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
@@ -372,7 +464,7 @@ let hooksObject = {
             if (btnType == "save" || btnType == "save-print") {
                 doc.$set.status = "active";
                 doc.$set.paidAmount = 0;
-                doc.$set.dueAmount = math.round(doc.total, 2);
+                doc.$set.dueAmount = math.round(doc.$set.total, 2);
             } else if (btnType == "pay") {
                 doc.$set.dueAmount = math.round((doc.$set.total - doc.$set.paidAmount), 2);
                 if (doc.$set.dueAmount <= 0) {
