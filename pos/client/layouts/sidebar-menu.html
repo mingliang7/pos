@@ -7,13 +7,13 @@
 
     <!--Data-->
     {{#if isInRole 'data-insert,data-update,data-remove' 'Pos'}}
-        <li class="treeview">
+        <li class="treeview active">
             <a href="#">
-                <i class="fa fa-long-arrow-right"></i>
+                <i class=""></i>
                 <span>CUSTOMER</span>
                 <i class="fa fa-angle-left pull-right"></i>
             </a>
-            <ul class="treeview-menu" style="display: none;">
+            <ul class="treeview-menu menu-open" style="display: block;">
                 <li class="{{isActiveRoute name='pos.customer'}}">
                     <a href="{{pathFor 'pos.customer'}}">
                         <i class="fa fa-male"></i> <span>{{_ "pos.sidebarMenu.customer"}}</span>
@@ -37,8 +37,8 @@
         </li>
         <li class="treeview">
             <a href="#">
-                <i class="fa fa-long-arrow-right"></i>
-                <span>{{_ "pos.sidebarMenu.vendor"}}</span>
+                <i class=""></i>
+                <span>SUPPLIER</span>
                 <i class="fa fa-angle-left pull-right"></i>
             </a>
             <ul class="treeview-menu" style="display: none;">
