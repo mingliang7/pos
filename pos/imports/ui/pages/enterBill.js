@@ -37,6 +37,18 @@ import './info-tab.html';
 import {EnterBillInfo} from '../../../common/methods/enterBill.js'
 import {vendorInfo} from '../../../common/methods/vendor.js';
 //Tracker for vendor infomation
+//Tracker for customer infomation
+Tracker.autorun(function () {
+    if (Session.get("getVendorId")) {
+        vendorInfo.callPromise({_id: Session.get("getVendorId")})
+            .then(function (result) {
+                Session.set('vendorInfo', result);
+            })
+    }
+    if (Session.get('prepaidOrderItems')) {
+        Meteor.subscribe('pos.item', {_id: {$in: Session.get('prepaidOrderItems')}});
+    }
+});
 // Declare template
 let indexTmpl = Template.Pos_enterBill,
     actionTmpl = Template.Pos_enterBillAction,
@@ -97,7 +109,12 @@ indexTmpl.events({
         window.open(path, '_blank');
     }
 });
-
+newTmpl.onCreated(function () {
+    this.repOptions = new ReactiveVar();
+    Meteor.call('getRepList', (err, result) => {
+        this.repOptions.set(result);
+    });
+});
 // New
 newTmpl.events({
     'change [name=vendorId]'(event, instance){
@@ -116,8 +133,28 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
+    repId(){
+        if (Session.get('vendorInfo')) {
+            try {
+                return Session.get('vendorInfo').repId;
+            } catch (e) {
+
+            }
+        }
+        return '';
+    },
+    termId(){
+        if (Session.get('vendorInfo')) {
+            try {
+                return Session.get('vendorInfo').termId;
+            } catch (e) {
+
+            }
+        }
+        return '';
+    },
     totalEnterBill(){
-        let total = 0 ;
+        let total = 0;
         itemsCollection.find().forEach(function (item) {
             total += item.amount;
         });
@@ -157,6 +194,15 @@ newTmpl.helpers({
             return {disabled: true};
         }
         return {};
+    },
+    isTerm(){
+        if (Session.get('vendorInfo')) {
+            let vendorInfo = Session.get('vendorInfo');
+            if (vendorInfo._term) {
+                return true;
+            }
+            return false;
+        }
     }
 });
 
@@ -166,9 +212,21 @@ newTmpl.onDestroyed(function () {
     itemsCollection.remove({});
     Session.set('vendorInfo', undefined);
     Session.set('vendorId', undefined);
+    FlowRouter.query.unset();
+    Session.set('prepaidOrderItems', undefined);
+    Session.set('totalOrder', undefined);
 });
 // Edit
 editTmpl.onCreated(function () {
+    this.repOptions = new ReactiveVar();
+    this.isPrepaidOrder = new ReactiveVar(false);
+    Meteor.call('getRepList', (err, result) => {
+        this.repOptions.set(result);
+    });
+    if (this.data.billType == 'prepaidOrder') {
+        FlowRouter.query.set('vendorId', this.data.vendorId);
+        this.isPrepaidOrder.set(true);
+    }
     this.autorun(()=> {
         this.subscribe('pos.enterBill', {_id: this.data._id});
     });
@@ -182,6 +240,32 @@ editTmpl.events({
     },
     'click #btn-pay'(event, instance){
         Session.set('btnType', 'pay');
+    },
+    'click .add-new-vendor'(event, instance){
+        alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
+    },
+    'click .go-to-pay-bill'(event, instance){
+        alertify.invoice().close();
+    },
+    'change [name=vendorId]'(event, instance){
+        if (event.currentTarget.value != '') {
+            Session.set('getCustomerId', event.currentTarget.value);
+            if (FlowRouter.query.get('customerId')) {
+                FlowRouter.query.set('customerId', event.currentTarget.value);
+            }
+        }
+        Session.set('totalOrder', undefined);
+
+    },
+    'click .toggle-list'(event, instance){
+        alertify.listSaleOrder(fa('', 'Prepaid Order'), renderTemplate(listSaleOrder));
+    },
+    'change [name="termId"]'(event, instance){
+        let customerInfo = Session.get('customerInfo');
+        Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
+            customerInfo._term.netDueIn = result.netDueIn;
+            Session.set('customerInfo', customerInfo);
+        });
     }
 });
 editTmpl.helpers({

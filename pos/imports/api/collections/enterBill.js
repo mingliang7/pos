@@ -115,7 +115,8 @@ EnterBills.schema = new SimpleSchema({
         type: String,
         optional: true,
         autoValue(){
-            return Meteor.userId();
+            if (this.isInsert)
+                return Meteor.user()._id;
         }
     },
     stockLocationId: {

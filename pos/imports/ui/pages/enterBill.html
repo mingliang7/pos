@@ -30,8 +30,13 @@
                     <label for="email">Vendor:<span style="color: red;">*</span> </label>
                     {{> afQuickField name="vendorId" label=false}}
                 </div>
-
-                <div class="col-md-9">
+                <div class="col-md-3">
+                    <br>
+                   <span><input type="checkbox" class="filled-in enable-sale-order"><a href=""
+                                                                                       class="sale-order btn btn-default">Prepaid
+                       Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
+                </div>
+                <div class="col-md-6">
                     <p class="pull-right ">
                     <h4 class="text-black">BALANCE DUE</h4>
                     <h2 class="text-blue text-center">${{numFormat  totalEnterBill '0,0.00'}}</h2>
@@ -49,11 +54,11 @@
             <div class="col-md-2">
                 {{> afQuickField name="voucherId"}}
             </div>
-            <!--{{#if isTerm}}-->
+            {{#if isTerm}}
                 <div class="col-md-2">
                     {{> afQuickField name="termId" options=termOption value=termId}}
                 </div>
-            <!--{{/if}}-->
+            {{/if}}
             <div class="col-md-2">
                 {{> afQuickField name="enterBillDate"}}
             </div>
