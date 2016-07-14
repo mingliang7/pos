@@ -41,4 +41,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
+tabularOpts.extraFields = ['items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'billType', 'prepaidId', 'paymentGroupId'];
 export const EnterBillTabular = new Tabular.Table(tabularOpts);
