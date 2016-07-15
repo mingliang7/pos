@@ -283,15 +283,15 @@ PosRoutes.route('/enterBill', {
 });
 //Pay Bill
 import '../imports/ui/pages/payBill';
-PosRoutes.route('/:vendorId/payBill', {
+PosRoutes.route('/:vendorId?/payBill/:billId?', {
     name: 'pos.payBill',
-    title: __('pos.payBill.title'),
+    title: 'Pay Bill',
     action: function (params, queryParams) {
         Layout.main('Pos_payBill');
     },
     breadcrumb: {
         params: ['vendorId'],
-        title: __('pos.payBill.title'),
+        title: 'Pay Bill',
         icon: 'cart-plus',
         parent: 'pos.vendor'
     }
@@ -325,7 +325,6 @@ PosRoutes.route('/locationTransfer', {
         parent: 'pos.home'
     }
 });
-
 
 import '../imports/ui/pages/prepaidOrder.js';
 PosRoutes.route('/prepaid-order', {
