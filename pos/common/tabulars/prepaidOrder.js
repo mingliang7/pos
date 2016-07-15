@@ -1,5 +1,5 @@
 import {Meteor} from 'meteor/meteor';
-import {Templet} from 'meteor/templating';
+import {Template} from 'meteor/templating';
 import {Tabular} from 'meteor/aldeed:tabular';
 import {EJSON} from 'meteor/ejson';
 import {moment} from 'meteor/momentjs:moment';
@@ -11,28 +11,27 @@ import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
-import {EnterBills} from '../../imports/api/collections/enterBill.js';
+import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder.js';
 
 // Page
-Meteor.isClient && require('../../imports/ui/pages/enterBill.html');
+Meteor.isClient && require('../../imports/ui/pages/prepaidOrder.html');
 
-tabularOpts.name = 'pos.enterBill';
-tabularOpts.collection = EnterBills;
+tabularOpts.name = 'pos.prepaidOrder';
+tabularOpts.collection = PrepaidOrders;
 tabularOpts.columns = [
-    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_enterBillAction},
+    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_prepaidOrderAction},
     {data: "_id", title: "ID"},
     {
-        data: "enterBillDate",
+        data: "prepaidOrderDate",
         title: "Date",
         render: function (val, type, doc) {
             return moment(val).format('YYYY-MM-DD');
         }
     },
     {data: "total", title: "Total"},
+    {data: "sumRemainQty", title: "Remain QTY"},
     {data: "des", title: "Description"},
-    {data: "vendorId", title: "Vendor ID"},
-    {data: "staffId", title: "Staff ID"},
-    {data: "stockLocationId", title: "Stock Location"},
+    {data: "vendorId", title: "Vendor ID"}
     //{
     //    data: "_vendor",
     //    title: "Vendor Info",
@@ -41,5 +40,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'billType', 'prepaidId', 'paymentGroupId'];
-export const EnterBillTabular = new Tabular.Table(tabularOpts);
+tabularOpts.extraFields = ['items'];
+export const PrepaidOrderTabular = new Tabular.Table(tabularOpts);

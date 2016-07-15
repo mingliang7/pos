@@ -325,3 +325,19 @@ PosRoutes.route('/locationTransfer', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/prepaidOrder.js';
+PosRoutes.route('/prepaid-order', {
+    name: 'pos.prepaidOrder',
+    title: __('pos.prepaidOrder.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_prepaidOrder');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.prepaidOrder.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
