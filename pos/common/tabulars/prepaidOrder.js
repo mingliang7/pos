@@ -11,13 +11,13 @@ import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
-import {PrepaidOrder} from '../../imports/api/collections/prepaidOrder.js';
+import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder.js';
 
 // Page
 Meteor.isClient && require('../../imports/ui/pages/prepaidOrder.html');
 
 tabularOpts.name = 'pos.prepaidOrder';
-tabularOpts.collection = PrepaidOrder;
+tabularOpts.collection = PrepaidOrders;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_prepaidOrderAction},
     {data: "_id", title: "ID"},

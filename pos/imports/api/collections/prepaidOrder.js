@@ -60,18 +60,19 @@ PrepaidOrders.schema = new SimpleSchema({
             }
         }
     },
-    customerId: {
+    vendorId: {
+        type:String,
         autoform: {
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.customer',
+                optionsMethod: 'pos.selectOptMethods.vendor',
                 optionsMethodParams: function () {
-                    if (Meteor.isClient) {
+                   /* if (Meteor.isClient) {
                       debugger
                         let currentBranch = Session.get('currentBranch');
                         return {branchId: currentBranch};
-                    }
+                    }*/
                 }
             }
         }

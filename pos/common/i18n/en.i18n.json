@@ -115,6 +115,42 @@
         }
       }
     },
+    "prepaidOrder": {
+      "title": "Prepaid Order",
+      "invoiceAction": "Bill",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "orderDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
     "purchaseOrder": {
       "title": "Purchase Order",
       "invoiceAction": "invoice",
