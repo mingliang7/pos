@@ -39,11 +39,11 @@
                 <div class="col-md-6">
                     <p class="pull-right ">
                     <h4 class="text-black">BALANCE DUE</h4>
-                    <h2 class="text-blue text-center">${{numFormat  totalEnterBill '0,0.00'}}</h2>
-                    {{#if totalOrder.customerId}}
-                        <a class="btn btn-default text-center go-to-receive-payment"
-                           href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.invoiceId}}">
-                            Receive Payment
+                    <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
+                    {{#if totalOrder.vendorId}}
+                        <a class="btn btn-default text-center go-to-pay-bill"
+                           href="/pos/vendor/{{totalOrder.vendorId}}/payBill/{{totalOrder.billId}}">
+                            Pay Bill
                         </a>
                     {{/if}}
                     </p>
@@ -118,11 +118,11 @@
                     <div class="col-md-9">
                         <p class="pull-right ">
                         <h4 class="text-black">BALANCE DUE</h4>
-                        <h2 class="text-blue text-center">${{numFormat  totalEnterBill '0,0.00'}}</h2>
-                        {{#if totalOrder.customerId}}
-                            <a class="btn btn-default text-center go-to-receive-payment"
-                               href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.invoiceId}}">
-                                Receive Payment
+                        <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
+                        {{#if totalOrder.vendorId}}
+                            <a class="btn btn-default text-center go-to-pay-bill"
+                               href="/pos/vendor/{{totalOrder.vendorId}}/payBill/{{totalOrder.billId}}">
+                                Pay Bill
                             </a>
                         {{/if}}
                         </p>

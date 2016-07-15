@@ -60,18 +60,19 @@ let indexTmpl = Template.Pos_enterBill,
 let itemsCollection = new Mongo.Collection(null);
 
 // Index
+Tracker.autorun(function () {
+    if (Session.get('vendorId')) {
+        vendorInfo.callPromise({_id: Session.get('vendorId')})
+            .then(function (result) {
+                Session.set('vendorInfo', result);
+            })
+    }
+});
+
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('enterBill', {size: 'lg'});
     createNewAlertify('enterBillShow');
-    this.autorun(function () {
-        if (Session.get('vendorId')) {
-            vendorInfo.callPromise({_id: Session.get('vendorId')})
-                .then(function (result) {
-                    Session.set('vendorInfo', result);
-                })
-        }
-    });
 });
 
 indexTmpl.helpers({
@@ -122,6 +123,9 @@ newTmpl.events({
             Session.set('vendorId', event.currentTarget.value);
         }
     },
+    'click .go-to-pay-bill'(event, instance){
+        alertify.enterBill().close();
+    },
     'click #btn-save-print'(event, instance){
         Session.set('btnType', 'save-print');
     },
@@ -133,6 +137,26 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
+    totalOrder(){
+        let total = 0;
+        if (!FlowRouter.query.get('vendorId')) {
+            itemsCollection.find().forEach(function (item) {
+                total += item.amount;
+            });
+        }
+        if (Session.get('totalOrder')) {
+            let totalOrder = Session.get('totalOrder');
+            return totalOrder;
+        }
+        return {total};
+    },
+    options(){
+        let instance = Template.instance();
+        if (instance.repOptions.get() && instance.repOptions.get().repList) {
+            return instance.repOptions.get().repList
+        }
+        return '';
+    },
     repId(){
         if (Session.get('vendorInfo')) {
             try {
@@ -203,6 +227,19 @@ newTmpl.helpers({
             }
             return false;
         }
+    },
+    dueDate(){
+        let date = AutoForm.getFieldValue('enterBillDate');
+        if (Session.get('vendorInfo')) {
+            if (Session.get('vendorInfo')._term) {
+                let term = Session.get('vendorInfo')._term;
+
+                let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
+                console.log(dueDate);
+                return dueDate;
+            }
+        }
+        return date;
     }
 });
 
@@ -366,7 +403,7 @@ editTmpl.helpers({
         }
     },
     dueDate(){
-        let date = AutoForm.getFieldValue('invoiceDate');
+        let date = AutoForm.getFieldValue('enterBillDate');
         if (Session.get('vendorInfo')) {
             if (Session.get('vendorInfo')._term) {
                 let term = Session.get('vendorInfo')._term;
@@ -477,11 +514,23 @@ let hooksObject = {
             return doc;
         }
     },
-    onSuccess (formType, result) {
+    onSuccess (formType, id) {
         // if (formType == 'update') {
         // Remove items collection
         itemsCollection.remove({});
-        alertify.enterBill().close();
+        if (formType != 'update') {
+            if (!FlowRouter.query.get('vendorId')) {
+                Meteor.call('getBillId', id, function (err, result) {
+                    if (result) {
+                        Session.set('totalOrder', result);
+                    }
+                });
+            } else {
+                alertify.enterBill().close();
+            }
+        } else {
+            alertify.enterBill().close();
+        }
         // }
         displaySuccess();
     },

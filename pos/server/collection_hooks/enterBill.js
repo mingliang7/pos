@@ -5,11 +5,16 @@ import {idGenerator} from 'meteor/theara:id-generator';
 import {EnterBills} from '../../imports/api/collections/enterBill.js';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {Item} from '../../imports/api/collections/item.js';
+//import state
+import {billState} from '../../common/globalState/enterBill';
 
 EnterBills.before.insert(function (userId, doc) {
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
+    let tmpBillId = doc._id;
     doc._id = idGenerator.genWithPrefix(EnterBills, prefix, 4);
+    billState.set(tmpBillId, {vendorId: doc.vendorId, billId: doc._id, total: doc.total});
+
 });
 
 EnterBills.after.insert(function (userId, doc) {

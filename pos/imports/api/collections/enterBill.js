@@ -49,14 +49,22 @@ EnterBills.schema = new SimpleSchema({
     },
     enterBillDate: {
         type: Date,
-        defaultValue: moment().toDate(),
+        // defaultValue: moment().toDate(),
         autoform: {
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY HH:mm:ss'
+                    format: 'DD/MM/YYYY HH:mm:ss',
+                    pickTime: true
+                },
+                value(){
+                    let vendorId = AutoForm.getFieldValue('vendorId');
+                    if(vendorId) {
+                        return moment().toDate();
+                    }
                 }
             }
+
         }
     },
     dueDate: {
