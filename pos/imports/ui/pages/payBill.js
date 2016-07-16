@@ -17,25 +17,25 @@ import './payBill.html';
 
 let indexTmpl = Template.Pos_payBill;
 Tracker.autorun(function () {
-    if (Session.get('vendorId')) {
+    if (Session.get('vendorIdState')) {
         swal({
             title: "Pleas Wait",
             text: "Getting Bills....", showConfirmButton: false
         });
         Meteor.subscribe('pos.vendor', {
-            _id: Session.get('vendorId')
-        });
-        let vendor = getVendorInfo(Session.get('vendorId'));
+            _id: Session.get('vendorIdState')
+        }, {});
+        let vendor = getVendorInfo(Session.get('vendorIdState'));
         let billSub;
         if (vendor && vendor.termId) {
             billSub = Meteor.subscribe('pos.activeEnterBills', {
-                vendorId: Session.get('vendorId'),
+                vendorId: Session.get('vendorIdState'),
                 status: {$in: ['active', 'partial']},
                 billType: 'term'
             });
         } else {
             billSub = Meteor.subscribe('pos.activeGroupInvoices', {
-                vendorOrCustomerId: Session.get('vendorId'),
+                vendorOrCustomerId: Session.get('vendorIdState'),
                 status: {$in: ['active', 'partial']}
             });
         }
@@ -58,31 +58,31 @@ indexTmpl.onCreated(function () {
     Session.set('amountDue', 0);
     Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, billId: ''});
     Session.get('disableTerm', false);
-    Session.set('invoicesObjCount', 0);
+    Session.set('enterBillsObjCount', 0);
     if (FlowRouter.getParam('billId')) {
         Session.set('billId', FlowRouter.getParam('billId'));
     } else {
         Session.set('billId', 0);
     }
-    Session.set('invoicesObj', {
+    Session.set('enterBillsObj', {
         count: 0
     });
     Session.set('balance', 0)
 });
 indexTmpl.onDestroyed(function () {
-    Session.set('vendorId', undefined);
+    Session.set('vendorIdState', undefined);
     Session.set('invoices', undefined);
     Session.get('disableTerm', false);
     Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, billId: ''});
     Session.set('amountDue', 0);
     Session.set('billId', 0);
-    Session.set('invoicesObj', {
+    Session.set('enterBillsObj', {
         count: 0
     });
     Session.set('balance', 0)
 });
 indexTmpl.rendered = function () {
-    Session.set('vendorId', FlowRouter.getParam('vendorId'));
+    Session.set('vendorIdState', FlowRouter.getParam('vendorId'));
 };
 indexTmpl.helpers({
     discount(){
@@ -91,7 +91,7 @@ indexTmpl.helpers({
     term(){
         try {
 
-            return getVendorTerm(Session.get('vendorId'));
+            return getVendorTerm(Session.get('vendorIdState'));
 
         } catch (e) {
 
@@ -99,10 +99,10 @@ indexTmpl.helpers({
 
     },
     countIsqualSales() {
-        let invoicesObj = Session.get('invoicesObj');
-        let vendor = Vendors.findOne(Session.get('vendorId'));
-        let collection = (vendor && vendor.termId) ? Invoices.find() : GroupInvoice.find();
-        if (collection.count() != 0 && invoicesObj.count == collection.count()) {
+        let enterBillsObj = Session.get('enterBillsObj');
+        let vendor = Vendors.findOne(Session.get('vendorIdState'));
+        let collection = (vendor && vendor.termId) ? EnterBills.find() : GroupInvoice.find();
+        if (collection.count() != 0 && enterBillsObj.count == collection.count()) {
             return true;
         }
         return false;
@@ -122,7 +122,7 @@ indexTmpl.helpers({
     },
     invoices() {
         let invoices;
-        let vendor = getVendorInfo(Session.get('vendorId'));
+        let vendor = getVendorInfo(Session.get('vendorIdState'));
         if (vendor && vendor.termId) {
             invoices = EnterBills.find({}, {
                 sort: {
@@ -158,7 +158,7 @@ indexTmpl.helpers({
             this.discount = discount;
             saleInvoices[this._id] = this;
             saleInvoices[this._id].dueAmount = lastPayment == 0 ? valueAfterDiscount : lastPayment;
-            Session.set('invoicesObj', saleInvoices);
+            Session.set('enterBillsObj', saleInvoices);
             return true;
         }
         if (this.status == 'partial' && (this._id == _id || this.voucherId == _id)) { //match _id with status partial
@@ -170,27 +170,27 @@ indexTmpl.helpers({
             this.discount = 0;
             saleInvoices[this._id] = this;
             saleInvoices[this._id].dueAmount = lastPayment == 0 ? this.total : lastPayment;
-            Session.set('invoicesObj', saleInvoices);
+            Session.set('enterBillsObj', saleInvoices);
             return true;
         }
         return false;
     },
     totalPaid(){
         let totalPaid = 0;
-        let invoicesObjObj = Session.get('invoicesObj');
-        delete invoicesObjObj.count;
-        if (_.isEmpty(invoicesObjObj)) {
+        let enterBillsObjObj = Session.get('enterBillsObj');
+        delete enterBillsObjObj.count;
+        if (_.isEmpty(enterBillsObjObj)) {
             return 0;
         } else {
-            for (let k in invoicesObjObj) {
-                totalPaid += invoicesObjObj[k].receivedPay
+            for (let k in enterBillsObjObj) {
+                totalPaid += enterBillsObjObj[k].receivedPay
             }
             return totalPaid;
         }
     },
     totalAmountDue(){
         let totalAmountDue = 0;
-        let vendor = getVendorInfo(Session.get('vendorId'));
+        let vendor = getVendorInfo(Session.get('vendorIdState'));
         let invoices = (vendor && vendor.termId) ? EnterBills.find({}) : GroupInvoice.find({});
         if (invoices.count() > 0) {
             invoices.forEach(function (invoice) {
@@ -208,8 +208,8 @@ indexTmpl.helpers({
     },
     totalActualPay(){
         let totalAmountDue = 0;
-        let vendor = getVendorInfo(Session.get('vendorId'));
-        let invoices = (vendor && vendor.termId) ? Invoices.find({}) : GroupInvoice.find({});
+        let vendor = getVendorInfo(Session.get('vendorIdState'));
+        let invoices = (vendor && vendor.termId) ? EnterBills.find({}) : GroupInvoice.find({});
         if (invoices.count() > 0) {
             invoices.forEach(function (invoice) {
                 var discount = invoice.status == 'active' ? checkTerm(invoice) : 0;
@@ -227,7 +227,7 @@ indexTmpl.helpers({
     },
     totalOriginAmount(){
         let totalOrigin = 0;
-        let vendor = getVendorInfo(Session.get('vendorId'));
+        let vendor = getVendorInfo(Session.get('vendorIdState'));
         let collection = (vendor && vendor.termId) ? EnterBills.find({}) : GroupInvoice.find({});
         collection.forEach(function (invoices) {
             totalOrigin += invoices.total;
@@ -263,14 +263,13 @@ indexTmpl.events({
             Session.set('disableTerm', true);
             Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0})
         } else {
-            console.log('in else disable term');
-            getVendorTerm(Session.get('vendorId'));
+            getVendorTerm(Session.get('vendorIdState'));
         }
     },
     'change [name="vendorId"]' (event, instance) {
         if (event.currentTarget.value != '') {
             clearChecbox();
-            Session.set('vendorId', event.currentTarget.value);
+            Session.set('vendorIdState', event.currentTarget.value);
         }
     },
     'change [name="billId"]' (event, instance) {
@@ -280,7 +279,7 @@ indexTmpl.events({
         }
     },
     'click .select-invoice' (event, instance) {
-        var selectedInvoices = Session.get('invoicesObj');
+        var selectedInvoices = Session.get('enterBillsObj');
         let lastPayment = getLastPayment(this._id);
         var discount = $(event.currentTarget).parents('invoice-parents').find('.discount').val();
         if ($(event.currentTarget).prop('checked')) {
@@ -290,35 +289,35 @@ indexTmpl.events({
             delete selectedInvoices[this._id];
             selectedInvoices.count -= 1;
             $(event.currentTarget).parents('.invoice-parents').find('.total').val('');
-            Session.set('invoicesObj', selectedInvoices);
+            Session.set('enterBillsObj', selectedInvoices);
         }
     },
     'click .select-all' (event, instance) {
         clearChecbox();
         if ($(event.currentTarget).prop('checked')) {
-            let saleObj = Session.get('invoicesObj');
+            let saleObj = Session.get('enterBillsObj');
             let total = [];
             let index = 0;
-            let vendor = getVendorInfo(Session.get('vendorId'));
-            let invoicesObj;
+            let vendor = getVendorInfo(Session.get('vendorIdState'));
+            let enterBillsObj;
             if (vendor.termId) {
-                invoicesObj = EnterBills.find({}, {
+                enterBillsObj = EnterBills.find({}, {
                     sort: {
                         _id: 1
                     }
                 });
             } else {
-                invoicesObj = GroupInvoice.find({}, {sort: {_id: 1}});
+                enterBillsObj = GroupInvoice.find({}, {sort: {_id: 1}});
             }
-            invoicesObj.forEach((sale) => {
+            enterBillsObj.forEach((sale) => {
                 let lastPayment = getLastPayment(sale._id);
                 sale.dueAmount = lastPayment == 0 ? sale.total : lastPayment;
                 sale.receivedPay = lastPayment == 0 ? sale.total : lastPayment; //receive amount of pay
                 saleObj[sale._id] = sale;
                 total.push(sale.dueAmount);
             });
-            saleObj.count = invoicesObj.count();
-            Session.set('invoicesObj', saleObj);
+            saleObj.count = enterBillsObj.count();
+            Session.set('enterBillsObj', saleObj);
             $('.select-invoice').each(function () {
                 $(this).prop('checked', true);
                 $(this).parents('.invoice-parents').find('.total').val(total[index]).change()
@@ -349,14 +348,14 @@ indexTmpl.events({
         return !(charCode > 31 && (charCode < 48 || charCode > 57));
     },
     'change .total' (event, instance) {
-        var selectedInvoices = Session.get('invoicesObj');
+        var selectedInvoices = Session.get('enterBillsObj');
         var lastPayment = getLastPayment(this._id);
         var discount = $(event.currentTarget).parents('.invoice-parents').find('.discount').val(); // get discount
         if (event.currentTarget.value == '' || event.currentTarget.value == '0') {
             if (_.has(selectedInvoices, this._id)) {
                 selectedInvoices.count -= 1;
                 delete selectedInvoices[this._id];
-                Session.set('invoicesObj', selectedInvoices);
+                Session.set('enterBillsObj', selectedInvoices);
                 $(event.currentTarget).val('');
                 $(event.currentTarget).parents('.invoice-parents').find('.select-invoice').prop('checked', false);
             }
@@ -373,7 +372,7 @@ indexTmpl.events({
                 selectedInvoices[this._id].receivedPay = selectedInvoices[this._id].dueAmount;
                 $(event.currentTarget).parents('.invoice-parents').find('.total').val(selectedInvoices[this._id].dueAmount);
             }
-            Session.set('invoicesObj', selectedInvoices);
+            Session.set('enterBillsObj', selectedInvoices);
             $(event.currentTarget).val(numeral(event.currentTarget.value).format('0,0.00'));
         }
     },
@@ -388,7 +387,7 @@ function clearChecbox() {
     Session.set('billId', 0); //clear checkbox
     Session.set('disableTerm', false);
     Session.set('billId', '');
-    Session.set('invoicesObj', {
+    Session.set('enterBillsObj', {
         count: 0
     }); //set obj to empty on keychange
     $(".disable-term").prop('checked', false);
@@ -447,10 +446,10 @@ function getVendorInfo(id) {
 let hooksObject = {
     onSubmit(){
         this.event.preventDefault();
-        let invoicesObj = Session.get('invoicesObj');
+        let enterBillsObj = Session.get('enterBillsObj');
         let branch = Session.get('currentBranch');
-        delete invoicesObj.count;
-        if (_.isEmpty(invoicesObj)) {
+        delete enterBillsObj.count;
+        if (_.isEmpty(enterBillsObj)) {
             swal({
                 title: "Warning",
                 text: "Your payments can't be blank",
@@ -469,10 +468,9 @@ let hooksObject = {
                 closeOnConfirm: false,
                 showLoaderOnConfirm: true,
             }, function () {
-                payBill.callPromise({paymentDate, invoicesObj, branch})
+                payBill.callPromise({paymentDate, enterBillsObj, branch})
                     .then(function (result) {
                         clearChecbox();
-                        console.log(result);
                         swal({
                             title: "Pay Bill",
                             text: "Successfully paid!",
@@ -483,11 +481,11 @@ let hooksObject = {
                         });
                     })
                     .catch(function (err) {
-                        Session.set('invoicesObj', {count: 0});
+                        Session.set('enterBillsObj', {count: 0});
                         swal({
                             title: "[Error]",
                             text: err.message,
-                            type: "danger",
+                            type: "error",
                             confirmButtonClass: "btn-danger",
                             showConfirmButton: true,
                             timer: 3000

@@ -9,6 +9,7 @@ import {Customers} from '../../imports/api/collections/customer';
 import {Vendors} from '../../imports/api/collections/vendor';
 import {GroupInvoice} from '../../imports/api/collections/groupInvoice.js';
 import {Invoices} from '../../imports/api/collections/invoice.js';
+import {EnterBills} from '../../imports/api/collections/enterBill.js';
 import {ReceivePayment} from '../../imports/api/collections/receivePayment.js';
 //lib func
 import {idGenerator} from 'meteor/theara:id-generator';
@@ -30,7 +31,9 @@ export const generateInvoiceGroup = new ValidatedMethod({
                 insertGroupInvoice({collection: Invoices, range: range, doc: doc});
             }
             if (doc.vendorId) {
-
+                let vendor = getPaymentGroupInfo(Vendors, doc.vendorId);
+                let range = getRange(doc.enterBillDate, vendor.paymentGroup.numberOfDay);
+                insertGroupInvoice({collection: EnterBills, range: range, doc: doc})
             }
         }
     }
@@ -52,7 +55,7 @@ function getPaymentGroupInfo(collection, id) {
 
 function insertGroupInvoice({collection,range, doc}) {
     let groupInvoice = GroupInvoice.findOne({
-        vendorOrCustomerId: doc.customerId,
+        vendorOrCustomerId: doc.customerId || doc.vendorId,
         startDate:moment(range.startDate).toDate(),
         endDate: moment(range.endDate).toDate()
     });
@@ -73,7 +76,7 @@ function insertGroupInvoice({collection,range, doc}) {
             endDate: moment(range.endDate).toDate(),
             dueDate: doc.dueDate,
             total: doc.total,
-            vendorOrCustomerId: doc.customerId,
+            vendorOrCustomerId: doc.customerId || doc.vendorId,
             status: 'active',
             invoices: [doc]
         };

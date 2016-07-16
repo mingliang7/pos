@@ -76,7 +76,6 @@ Meteor.methods({
                         type: 'invoice',
                         refId: invoice._id
                     };
-                    console.log(thisItem);
                     AverageInventories.insert(newInventory);
                 }
             });
@@ -90,7 +89,6 @@ Meteor.methods({
 
     },
     locationTransferManageStock: function (locationTransferId) {
-        console.log(Meteor.userId());
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }

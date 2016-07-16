@@ -134,7 +134,6 @@ Meteor.methods({
                 list = getCategoryList(selector, list, categories, alreadyUse);
             }
         });
-        console.log(list);
         return list;
 
 

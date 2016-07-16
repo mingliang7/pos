@@ -227,7 +227,6 @@ function invoiceManageStock(invoice) {
                 type: 'invoice',
                 refId: invoice._id
             };
-            console.log(thisItem);
             AverageInventories.insert(newInventory);
         }
     });

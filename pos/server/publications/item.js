@@ -23,7 +23,6 @@ import {Item} from '../../imports/api/collections/item.js';
 
 Meteor.publish('pos.item', function posItem(selector) {
     this.unblock();
-    console.log(selector);
     if (this.userId) {
         return Item.find(selector);
     }

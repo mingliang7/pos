@@ -9,6 +9,16 @@ import {Item} from '../../imports/api/collections/item.js';
 import {billState} from '../../common/globalState/enterBill';
 
 EnterBills.before.insert(function (userId, doc) {
+    if (doc.total == 0) {
+        doc.status = 'closed';
+        doc.billType = 'prepaidOrder'
+    } else if (doc.termId) {
+        doc.status = 'active';
+        doc.billType = 'term'
+    } else {
+        doc.status == 'active';
+        doc.billType = 'group';
+    }
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
     let tmpBillId = doc._id;
@@ -25,6 +35,9 @@ EnterBills.after.insert(function (userId, doc) {
             doc.items.forEach(function (item) {
                 averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
             });
+        }
+        if (doc.billType == 'group') {
+            Meteor.call('pos.generateInvoiceGroup', {doc});
         }
     });
 });
