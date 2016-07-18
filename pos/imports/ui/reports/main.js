@@ -20,6 +20,9 @@ indexTmpl.helpers({
             },
             {
                 label: 'Stock Balance', value: 'stockBalance'
+            },
+            {
+                label: 'Location Transfer', value: 'locationTransfer'
             }
         ]
     }
@@ -44,6 +47,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'stockBalance':
             params = `/pos/report/stockBalance?date=${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
+            break;
+        case 'locationTransfer':
+            params = `/pos/report/locationTransfer?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&fromBranch=${Session.get('currentBranch')}`;
             break;
     }
     return params;

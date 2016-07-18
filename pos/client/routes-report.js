@@ -134,3 +134,19 @@ PosRoutes.route('/report/stockBalance', {
         parent: 'pos.mainReport'
     }
 });
+
+
+import '../imports/ui/reports/locationTransfer';
+PosRoutes.route('/report/locationTransfer', {
+    name: 'pos.',
+    title: 'Location Transfer Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_locationTransferReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Location Transfer Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
