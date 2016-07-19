@@ -7,6 +7,9 @@ export const correctFieldLabel = function (field) {
         case 'customerId':
             label = 'Customer';
             break;
+        case 'vendorId':
+            label = 'Vendor';
+            break;
         case 'paymentDate':
             label = 'Date';
             break;
@@ -29,6 +32,9 @@ export const correctFieldLabel = function (field) {
             label = 'Payment Status';
             break;
         case 'invoiceDate':
+            label = 'Date';
+            break;
+        case 'enterBillDate':
             label = 'Date';
             break;
         case 'total':

@@ -50,22 +50,6 @@ PosRoutes.route('/customer-report-gen', {
 
 
 
-// Order
-import '../imports/ui/reports/order.js';
-PosRoutes.route('/order-report', {
-    name: 'pos.orderReport',
-    title: __('pos.orderReport.title'),
-    action: function (params, queryParams) {
-        Layout.main('Pos_orderReport');
-    },
-    breadcrumb: {
-        //params: ['id'],
-        //queryParams: ['show', 'color'],
-        title: __('pos.orderReport.title'),
-        icon: 'cart-plus',
-        parent: 'pos.home'
-    }
-});
 
 PosRoutes.route('/order-report-gen', {
     name: 'pos.orderReportGen',
@@ -146,6 +130,21 @@ PosRoutes.route('/report/locationTransfer', {
     breadcrumb:{
         // params:['vendorId'],
         title: 'Location Transfer Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
+
+import '../imports/ui/reports/billReport';
+PosRoutes.route('/report/billReport', {
+    name: 'pos.billReport',
+    title: 'Bill Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_billReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Bill Report',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
