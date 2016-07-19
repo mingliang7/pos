@@ -88,14 +88,14 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(total).format('0,0.00')}</b></td>`;
+        string += `<td style="background: teal; color: #fff;"><b>TOTAL:</td></b><td  style="background: teal; color: #fff;"><b>${numeral(total).format('0,0.00')}</b></td>`;
         return string;
     }
 });
 
 
 AutoForm.hooks({
-    invoiceReport: {
+    locationTransferReport: {
         onSubmit(doc){
             this.event.preventDefault();
             FlowRouter.query.unset();
@@ -119,6 +119,9 @@ AutoForm.hooks({
             }
             if (doc.filter) {
                 params.filter = doc.filter.join(',');
+            }
+            if(doc.status) {
+                params.status = doc.status.join(',');
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());

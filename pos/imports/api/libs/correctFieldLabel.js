@@ -34,6 +34,27 @@ export const correctFieldLabel = function (field) {
         case 'total':
             label = 'Total';
             break;
+        case 'locationTransferDate':
+            label = 'Transfer Date';
+            break;
+        case 'fromBranchId':
+            label = "From Branch";
+            break;
+        case 'fromUserId':
+            label = "From User";
+            break;
+        case 'fromStockLocationId':
+            label = "From Location";
+            break;
+        case 'toBranchId':
+            label = "To Branch";
+            break;
+        case 'toStockLocationId':
+            label = "To Location";
+            break;
+        case 'toUserId':
+            label = "To User";
+            break;
     }
     return label;
 };

@@ -8,6 +8,10 @@
                 <div class="col-md-2">
                     {{> afQuickField name="toDate" label='To Date'}}
                 </div>
+                <div class="col-md-4">
+                    {{> afQuickField name="filter" label='Custom Field'}}
+
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-2">
@@ -21,6 +25,11 @@
                 </div>
                 <div class="col-md-2">
                     {{> afQuickField name="toLocation" label="To Location"}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    {{> afQuickField name="status"}}
                 </div>
             </div>
             <div class="row">
@@ -71,9 +80,8 @@
             {{#with data}}
                 {{#each col in content}}
                     {{#each field in col.data}}
-                        <tr>
+                        <tr style="background: #ddd;">
                             {{{display field}}}
-
                         </tr>
                         <tr>
                             {{{reduceField}}}
@@ -85,7 +93,7 @@
                         </tr>
                         {{#each item in col.items}}
 
-                            <tr style="background: #f5f5f5;">
+                            <tr>
                                 {{{reduceField}}}
                                 <td>{{item.itemId}}</td>
                                 <td>{{item.itemName}}</td>
@@ -95,12 +103,13 @@
                             </tr>
                         {{/each}}
                     {{/each}}
-                    <!--<tr>-->
-                    <!--{{{getTotal col.total}}}-->
-                    <!--</tr>-->
-                {{/each}}
 
+                {{/each}}
+                <tr>
+                    {{{getTotal footer.total}}}
+                </tr>
             {{/with}}
+
             </tbody>
         </table>
         {{> ReportSignFooter}}

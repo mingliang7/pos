@@ -132,17 +132,53 @@ export const locationTransferReport = new SimpleSchema({
                         value: '_id'
                     },
                     {
-                        label: 'Customer',
-                        value: 'customerId'
+                        label: 'Transfer Date',
+                        value: 'locationTransferDate'
                     },
                     {
-                        label: 'Date',
-                        value: 'invoiceDate'
+                        label: 'From Branch',
+                        value: 'fromBranchId'
+                    },
+                    {
+                        label: 'From User',
+                        value: 'fromUserId'
+                    },
+                    {
+                        label: 'From Location',
+                        value: 'fromStockLocationId'
+                    },
+                    {
+                        label: 'To Branch',
+                        value: 'toBranchId'
+                    },
+                    {
+                        label: 'To Location',
+                        value: 'toStockLocationId'
+                    } ,
+                    {
+                        label: 'To User',
+                        value: 'toUserId'
                     },
                     {
                         label: 'Status',
                         value: 'status'
                     }
+                ]
+            }
+        }
+    },
+    status: {
+        type: [String],
+        optional: true,
+        autoform: {
+            type: 'universe-select',
+            multiple: true,
+            uniPlaceholder: 'All',
+            options(){
+                return [
+                    {label: 'Active', value: 'active'},
+                    {label: 'Closed', value: 'closed'},
+                    {label: 'Declined', value: 'declined'}
                 ]
             }
         }

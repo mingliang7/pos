@@ -41,14 +41,34 @@ export const locationTransferMethods = new ValidatedMethod({
                 data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
                 selector.locationTransferDate = {$gte: fromDate, $lte: toDate};
             }
+            if (params.status) {
+                selector.status = {$in: params.status.split(',')}
+            }
             if (params.filter && params.filter != '') { //dynamic field
                 let filters = params.filter.split(','); //map specific field
                 for (let i = 0; i < filters.length; i++) {
                     data.fields.push({field: correctFieldLabel(filters[i])});
-                    data.displayFields.push({field: filters[i]});
+                    data.displayFields.push({field: correctDisplayField(filters[i])});
                     project[filters[i]] = `$${filters[i]}`;
-                    if (filters[i] == 'customerId') {
-                        project['_customer'] = '$_customer'
+                    switch (filters[i]) {
+                        case 'fromUserId':
+                            project['fromUser'] = '$_fromUser.username';
+                            break;
+                        case 'fromBranchId':
+                            project['fromBranch'] = '$_fromBranch.enName';
+                            break;
+                        case 'fromStockLocationId':
+                            project['fromStockLocation'] = '$_fromStockLocation.name';
+                            break;
+                        case 'toUserId':
+                            project['toUser'] = '$_toUser.username';
+                            break;
+                        case 'toStockLocationId':
+                            project['toStockLocation'] = '$_toStockLocation.name';
+                            break;
+                        case 'toBranchId':
+                            project['toBranch'] = '$_toBranch.enName';
+                            break;
                     }
                 }
                 data.fields.push({field: 'Total'}); //map total field for default
@@ -126,12 +146,46 @@ export const locationTransferMethods = new ValidatedMethod({
                         }
                     }
                 }]);
+            let total = LocationTransfers.aggregate(
+                [
+                    {
+                        $match: selector
+                    },
+                    {$group: {_id: null, total: {$sum: '$total'}}}
+                ]);
             if (locationTransfers.length > 0) {
                 let sortData = _.sortBy(locationTransfers[0].data, '_id');
                 locationTransfers[0].data = sortData
                 data.content = locationTransfers;
+                data.footer.total = total[0].total;
             }
             return data
         }
     }
 });
+
+
+function correctDisplayField(field) {
+    let label = field;
+    switch (field) {
+        case 'fromUserId':
+            label = 'fromUser';
+            break;
+        case 'fromBranchId':
+            label = 'fromBranch';
+            break;
+        case 'fromStockLocationId':
+            label = 'fromStockLocation';
+            break;
+        case 'toUserId':
+            label = 'toUser';
+            break;
+        case 'toStockLocationId':
+            label = 'toStockLocation';
+            break;
+        case 'toBranchId':
+            label = 'toBranch';
+            break;
+    }
+    return label;
+}
