@@ -20,17 +20,12 @@ Meteor.publish('pos.prepaidOrder', function posPrepaidOrder(selector, options) {
     return this.ready();
 });
 
-Meteor.publish('pos.payBill', function posPayBills(selector) {
-    this.unblock();
 
-    new SimpleSchema({
-        selector: {type: Object, blackbox: true},
-    }).validate({selector});
-
+Meteor.publish('pos.activePrepaidOrder', function posActiveSaleOrder(selector) {
     if (this.userId) {
-        let data = PayBills.find(selector);
-        return data;
+        Meteor._sleepForMs(200);
+        let prepaidOrders = PrepaidOrders.find(selector);
+        return prepaidOrders;
     }
-
     return this.ready();
 });

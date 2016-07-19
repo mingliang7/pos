@@ -1,39 +1,44 @@
 <!--Item Temporary-->
 <template name="Pos_enterBillItems">
     <div class="container-fluid report-header">
-        <div class="col-md-4 text-center">
-            ITEM
-        </div>
-        <div class="col-md-2 text-center">
-            QTY
-        </div>
-        <div class="col-md-2 text-center">
-            PRICE
-        </div>
-        <div class="col-md-3 text-center">
-            AMOUNT
-        </div>
-
-        {{#autoForm schema=schema id="Pos_enterBillItems"}}
-            <div class="row">
-                <div class="col-sm-4">
-                    {{> afQuickField name="itemId" label=false}}
-                </div>
-                <div class="col-sm-2">
-                    {{> afQuickField name="qty" label=false}}
-                </div>
-                <div class="col-sm-2">
-                    {{> afQuickField name="price" label=false}}
-                </div>
-                <div class="col-sm-3">
-                    {{> afQuickField name="amount" value=amount label=false readonly=true}}
-                </div>
-                <div class="col-sm-1">
-                    <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
-                </div>
-
+        <div class="row ">
+            <div class="col-md-4 text-center">
+                ITEM
             </div>
-        {{/autoForm}}
+            <div class="col-md-2 text-center">
+                QTY
+            </div>
+            <div class="col-md-2 text-center">
+                PRICE
+            </div>
+            <div class="col-md-3 text-center">
+                AMOUNT
+            </div>
+
+        </div>
+        <br>
+        {{#if notActivatedPrepaidOrder}}
+            {{#autoForm schema=schema id="Pos_enterBillItems"}}
+                <div class="row">
+                    <div class="col-sm-4">
+                        {{> afQuickField name="itemId" label=false}}
+                    </div>
+                    <div class="col-sm-2">
+                        {{> afQuickField name="qty" label=false}}
+                    </div>
+                    <div class="col-sm-2">
+                        {{> afQuickField name="price" label=false}}
+                    </div>
+                    <div class="col-sm-3">
+                        {{> afQuickField name="amount" value=amount label=false readonly=true}}
+                    </div>
+                    <div class="col-sm-1">
+                        <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
+                    </div>
+
+                </div>
+            {{/autoForm}}
+        {{/if}}
         <!--<hr>-->
     </div>
     <!--Reactive table-->
