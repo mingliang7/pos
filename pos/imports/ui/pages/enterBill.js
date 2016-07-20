@@ -498,9 +498,11 @@ let hooksObject = {
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
+                if(obj.prepaidOrderId) {
+                    doc.prepaidOrderId = obj.prepaidOrderId;
+                }
                 items.push(obj);
             });
-            debugger;
             var btnType = Session.get('btnType');
             if (btnType == "save" || btnType == "save-print") {
                 doc.status = "active";
@@ -519,7 +521,6 @@ let hooksObject = {
             return doc;
         },
         update: function (doc) {
-            debugger;
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;

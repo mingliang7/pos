@@ -222,8 +222,11 @@ EnterBills.schema = new SimpleSchema({
     billType: {
         type: String,
         optional: true
+    },
+    prepaidOrderId: {
+        type: String,
+        optional: true
     }
-
 });
 
 Meteor.startup(function () {

@@ -145,7 +145,7 @@ itemsTmpl.events({
     'click .js-add-item': function (event, instance) {
         let itemId = instance.$('[name="itemId"]').val();
         let qty = instance.$('[name="qty"]').val();
-        qty = qty == "" ? 1 : parseInt();
+        qty = qty == "" ? 1 : parseInt(qty);
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         let amount = math.round(qty * price, 2);
 

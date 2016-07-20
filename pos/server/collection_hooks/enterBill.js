@@ -5,6 +5,7 @@ import {idGenerator} from 'meteor/theara:id-generator';
 import {EnterBills} from '../../imports/api/collections/enterBill.js';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {Item} from '../../imports/api/collections/item.js';
+import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder';
 //import state
 import {billState} from '../../common/globalState/enterBill';
 
@@ -38,6 +39,25 @@ EnterBills.after.insert(function (userId, doc) {
         }
         if (doc.billType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
+        }
+        if (doc.prepaidOrderId) {
+            doc.items.forEach(function (item) {
+                PrepaidOrders.direct.update(
+                    {
+                        _id: doc.prepaidOrderId,
+                        "items.itemId": item.itemId
+                    },
+                    {
+                        $inc: {
+                            sumRemainQty: -item.qty,
+                            "items.$.remainQty": -item.qty
+                        }
+                    });
+            });
+            let prepaidOrder = PrepaidOrders.findOne(doc.prepaidOrderId);
+            if (prepaidOrder.sumRemainQty == 0) {
+                PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'closed'}});
+            }
         }
     });
 });
