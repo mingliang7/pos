@@ -144,9 +144,9 @@ SelectOptMethods.vendor = new ValidatedMethod({
             }
 
             let data = Vendors.find(selector, {limit: 10});
-            console.log(data.fetch())
             data.forEach(function (value) {
-                let label = value._id + ' : ' + value.name;
+                let termOrGroup = value._term ? ` (Term ${value._term.name})` : ` (Group ${value._paymentGroup.name})`;
+                let label = value._id + ' : ' + value.name + termOrGroup;
                 list.push({label: label, value: value._id});
             });
 

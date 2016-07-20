@@ -37,7 +37,26 @@ var itemsTmpl = Template.Pos_enterBillItems,
 
 // Local collection
 var itemsCollection;
+export const PrepaidOrderDeletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
+Tracker.autorun(function () {
+    if (FlowRouter.query.get('vendorId')) {
+        let sub = Meteor.subscribe('pos.activePrepaidOrder', {
+            vendorId: FlowRouter.query.get('vendorId'),
+            status: 'active'
+        });
+        if (!sub.ready()) {
+            swal({
+                title: "Pleas Wait",
+                text: "Getting Order....", showConfirmButton: false
+            });
+        } else {
+            setTimeout(function () {
+                swal.close();
+            }, 500);
+        }
 
+    }
+});
 // Page
 import './enterBill-items.html';
 
@@ -59,6 +78,13 @@ itemsTmpl.onRendered(function () {
 });
 
 itemsTmpl.helpers({
+    notActivatedPrepaidOrder(){
+        /// console.log('inside not activated');
+        if (FlowRouter.query.get('vendorId')) {
+            return false;
+        }
+        return true;
+    },
     tableSettings: function () {
         let i18nPrefix = 'pos.enterBill.schema';
 
@@ -204,15 +230,46 @@ itemsTmpl.events({
     'click .js-update-item': function (event, instance) {
         alertify.item(fa('pencil', TAPi18n.__('pos.enterBill.schema.itemId.label')), renderTemplate(editItemsTmpl, this));
     },
+    /*  'click .js-destroy-item': function (event, instance) {
+     destroyAction(
+     itemsCollection, {
+     _id: this._id
+     }, {
+     title: TAPi18n.__('pos.enterBill.schema.itemId.label'),
+     itemTitle: this.itemId
+     }
+     );
+     },*/
     'click .js-destroy-item': function (event, instance) {
-        destroyAction(
-            itemsCollection, {
-                _id: this._id
-            }, {
-                title: TAPi18n.__('pos.enterBill.schema.itemId.label'),
-                itemTitle: this.itemId
-            }
-        );
+        event.preventDefault();
+        let itemDoc = this;
+        if (AutoForm.getFormId() == "Pos_invoiceUpdate") { //check if update form
+            swal({
+                    title: "Are you sure?",
+                    text: "លុបទំនិញមួយនេះ?",
+                    type: "warning", showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, delete it!",
+                    closeOnConfirm: false
+                },
+                function () {
+                    if (!PrepaidOrderDeletedItem.findOne({itemId: itemDoc.itemId})) {
+                        PrepaidOrderDeletedItem.insert(itemDoc);
+                    }
+                    itemsCollection.remove({itemId: itemDoc.itemId});
+                    swal.close();
+                });
+        } else {
+            destroyAction(
+                itemsCollection, {
+                    _id: this._id
+                }, {
+                    title: TAPi18n.__('pos.enterBill.schema.itemId.label'),
+                    itemTitle: this.itemId
+                }
+            );
+        }
+
     }
 });
 

@@ -16,7 +16,7 @@ EnterBills.before.insert(function (userId, doc) {
         doc.status = 'active';
         doc.billType = 'term'
     } else {
-        doc.status == 'active';
+        doc.status = 'active';
         doc.billType = 'group';
     }
     let todayDate = moment().format('YYYYMMDD');
@@ -46,7 +46,6 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
     let preDoc = this.previous;
     if (doc.status == "active") {
     } else {
-
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
             reduceFromInventory(preDoc);

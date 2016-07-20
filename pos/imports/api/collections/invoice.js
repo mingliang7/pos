@@ -58,7 +58,7 @@ Invoices.schema = new SimpleSchema({
                 },
                 value(){
                     let customerId = AutoForm.getFieldValue('customerId');
-                    if(customerId) {
+                    if (customerId) {
                         return moment().toDate();
                     }
                 }
@@ -122,7 +122,7 @@ Invoices.schema = new SimpleSchema({
     staffId: {
         type: String,
         autoValue(){
-            return Meteor.userId();
+            return Meteor.user()._id;
         }
     },
     des: {
