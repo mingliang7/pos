@@ -71,6 +71,10 @@ export const billReportSchema = new SimpleSchema({
                     {
                         label: 'Status',
                         value: 'status'
+                    },
+                    {
+                        label: 'Type',
+                        value: 'billType'
                     }
                 ]
             }

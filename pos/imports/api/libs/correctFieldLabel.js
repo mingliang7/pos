@@ -61,6 +61,9 @@ export const correctFieldLabel = function (field) {
         case 'toUserId':
             label = "To User";
             break;
+        case 'billType':
+            label = "Type";
+            break;
     }
     return label;
 };
