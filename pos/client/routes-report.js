@@ -149,3 +149,18 @@ PosRoutes.route('/report/billReport', {
         parent: 'pos.mainReport'
     }
 });
+
+import '../imports/ui/reports/prepaidOrderReport';
+PosRoutes.route('/report/prepaidOrderReport', {
+    name: 'pos.prepaidOrderReport',
+    title: 'Prepaid Order Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_prepaidOrderReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Prepaid Order Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
