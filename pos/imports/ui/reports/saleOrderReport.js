@@ -1,27 +1,27 @@
 //component
 import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
 //page
-import './prepaidOrderReport.html';
+import './saleOrderReport.html';
 //import DI
 import  'printthis';
 //import collection
-import {prepaidOrderReportSchema} from '../../api/collections/reports/prepaidOrderReport';
+import {saleOrderReportSchema} from '../../api/collections/reports/saleOrder';
 
 //methods
-import {prepaidOrderReport} from '../../../common/methods/reports/prepaidOrder';
+import {saleOrderReport} from '../../../common/methods/reports/saleOrder';
 //state
 let paramsState = new ReactiveVar();
 let invoiceData = new ReactiveVar();
 //declare template
-let indexTmpl = Template.Pos_prepaidOrderReport,
-    invoiceDataTmpl = Template.prepaidOrderReportData;
+let indexTmpl = Template.Pos_saleOrderReport,
+    invoiceDataTmpl = Template.saleOrderReportData;
 Tracker.autorun(function () {
     if (paramsState.get()) {
         swal({
             title: "Pleas Wait",
             text: "Fetching Data....", showConfirmButton: false
         });
-        prepaidOrderReport.callPromise(paramsState.get())
+        saleOrderReport.callPromise(paramsState.get())
             .then(function (result) {
                 invoiceData.set(result);
                 setTimeout(function () {
@@ -40,7 +40,7 @@ indexTmpl.onCreated(function () {
 });
 indexTmpl.helpers({
     schema(){
-        return prepaidOrderReportSchema;
+        return saleOrderReportSchema;
     }
 });
 indexTmpl.events({
@@ -66,7 +66,7 @@ invoiceDataTmpl.helpers({
     display(col){
         let data = '';
         this.displayFields.forEach(function (obj) {
-            if (obj.field == 'prepaidOrderDate') {
+            if (obj.field == 'orderDate') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
@@ -93,7 +93,7 @@ invoiceDataTmpl.helpers({
 
 
 AutoForm.hooks({
-    prepaidOrderReport: {
+    saleOrderReport: {
         onSubmit(doc){
             this.event.preventDefault();
             FlowRouter.query.unset();
@@ -103,8 +103,8 @@ AutoForm.hooks({
                 let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
                 params.date = `${fromDate},${toDate}`;
             }
-            if (doc.vendorId) {
-                params.vendor = doc.vendor
+            if (doc.customer) {
+                params.customer = doc.customer
             }
             if (doc.filter) {
                 params.filter = doc.filter.join(',');

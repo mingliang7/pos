@@ -29,6 +29,9 @@ indexTmpl.helpers({
             },
             {
                 label: 'Prepaid Order', value: 'prepaidOrder'
+            },
+            {
+                label: 'Sale Order', value: 'saleOrder'
             }
         ]
     }
@@ -62,6 +65,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'prepaidOrder':
             params = `/pos/report/prepaidOrderReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
+            break;
+        case 'saleOrder':
+            params = `/pos/report/saleOrderReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
             break;
     }
     return params;

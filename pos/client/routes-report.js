@@ -164,3 +164,18 @@ PosRoutes.route('/report/prepaidOrderReport', {
         parent: 'pos.mainReport'
     }
 });
+
+import '../imports/ui/reports/saleOrderReport';
+PosRoutes.route('/report/saleOrderReport', {
+    name: 'pos.saleOrderReport',
+    title: 'Sale Order Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_saleOrderReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Sale Order Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
