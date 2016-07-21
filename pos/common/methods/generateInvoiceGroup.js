@@ -8,6 +8,7 @@ import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 import {Customers} from '../../imports/api/collections/customer';
 import {Vendors} from '../../imports/api/collections/vendor';
 import {GroupInvoice} from '../../imports/api/collections/groupInvoice.js';
+import {GroupBill} from '../../imports/api/collections/groupBill.js';
 import {Invoices} from '../../imports/api/collections/invoice.js';
 import {EnterBills} from '../../imports/api/collections/enterBill.js';
 import {ReceivePayment} from '../../imports/api/collections/receivePayment.js';
@@ -28,12 +29,12 @@ export const generateInvoiceGroup = new ValidatedMethod({
             if (doc.customerId) {
                 let customer = getPaymentGroupInfo(Customers, doc.customerId);
                 let range = getRange(doc.invoiceDate, customer.paymentGroup.numberOfDay);
-                insertGroupInvoice({collection: Invoices, range: range, doc: doc});
+                insertGroupInvoice({collection: Invoices, range: range, doc: doc, groupCollection: GroupInvoice});
             }
             if (doc.vendorId) {
                 let vendor = getPaymentGroupInfo(Vendors, doc.vendorId);
                 let range = getRange(doc.enterBillDate, vendor.paymentGroup.numberOfDay);
-                insertGroupInvoice({collection: EnterBills, range: range, doc: doc})
+                insertGroupInvoice({collection: EnterBills, range: range, doc: doc, groupCollection: GroupBill})
             }
         }
     }
@@ -53,14 +54,14 @@ function getPaymentGroupInfo(collection, id) {
     return info[0];
 }
 
-function insertGroupInvoice({collection,range, doc}) {
-    let groupInvoice = GroupInvoice.findOne({
+function insertGroupInvoice({collection,range, doc, groupCollection}) {
+    let groupInvoice = groupCollection.findOne({
         vendorOrCustomerId: doc.customerId || doc.vendorId,
         startDate:moment(range.startDate).toDate(),
         endDate: moment(range.endDate).toDate()
     });
     if (groupInvoice) {
-        var isUpdated = GroupInvoice.update(groupInvoice._id, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
+        var isUpdated = groupCollection.update(groupInvoice._id, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
         if(isUpdated == 1){
             collection.direct.update(doc._id, {$set: {paymentGroupId: groupInvoice._id}});
             doc.paymentGroupId = groupInvoice._id;
@@ -69,7 +70,7 @@ function insertGroupInvoice({collection,range, doc}) {
             collection.direct.remove(doc._id);
         }
     } else {
-        let genId = idGenerator.genWithPrefix(GroupInvoice, `${doc.branchId}-G`, 9);
+        let genId = idGenerator.genWithPrefix(groupCollection, `${doc.branchId}-G`, 9);
         let obj = {
             _id: genId,
             startDate: moment(range.startDate).toDate(),
@@ -78,9 +79,10 @@ function insertGroupInvoice({collection,range, doc}) {
             total: doc.total,
             vendorOrCustomerId: doc.customerId || doc.vendorId,
             status: 'active',
-            invoices: [doc]
+            invoices: [doc],
+            branchId: doc.branchId
         };
-        let isInserted = GroupInvoice.insert(obj);
+        let isInserted = groupCollection.insert(obj);
         if(isInserted){
             collection.direct.update(doc._id, {$set: {paymentGroupId: isInserted}});
         }else{

@@ -1,5 +1,5 @@
-export const GroupInvoice = new Mongo.Collection('pos_groupInvoice');
-GroupInvoice_schema = new SimpleSchema({
+export const GroupBill = new Mongo.Collection('pos_groupBill');
+GroupBill_schema = new SimpleSchema({
     startDate: {
         type: Date
     },
