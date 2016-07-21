@@ -11,7 +11,7 @@ import {PrepaidOrders} from '../../../imports/api/collections/prepaidOrder';
 // lib func
 import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
 export const prepaidOrderReport = new ValidatedMethod({
-    name: 'pos.invoiceReport',
+    name: 'pos.prepaidOrderReport',
     mixins: [CallPromiseMixin],
     validate: null,
     run(params) {
@@ -30,17 +30,16 @@ export const prepaidOrderReport = new ValidatedMethod({
             let user = Meteor.users.findOne(Meteor.userId());
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
-            selector.invoiceType = {$ne: 'group'};
-            selector.status = {$in: ['active', 'partial', 'closed']};
+            selector.status = {$in: ['active', 'closed']};
             if (params.date) {
                 let dateAsArray = params.date.split(',')
                 let fromDate = moment(dateAsArray[0]).toDate();
                 let toDate = moment(dateAsArray[1]).toDate();
                 data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
-                selector.invoiceDate = {$gte: fromDate, $lte: toDate};
+                selector.prepaidOrderDate = {$gte: fromDate, $lte: toDate};
             }
-            if (params.customer && params.customer != '') {
-                selector.customerId = params.customer;
+            if (params.vendor && params.vendor != '') {
+                selector.vendorId = params.vendor;
             }
             if (params.filter && params.filter != '') {
                 let filters = params.filter.split(','); //map specific field
@@ -58,52 +57,70 @@ export const prepaidOrderReport = new ValidatedMethod({
             } else {
                 project = {
                     '_id': '$_id',
-                    'invoiceDate': '$invoiceDate',
-                    'customerId': '$customerId',
-                    '_customer': '$_customer',
+                    'prepaidOrderDate': '$prepaidOrderDate',
+                    'vendor': '$_vendor.name',
+                    'status': '$status',
+                    'sumRemainQty': '$sumRemainQty',
                     'total': '$total'
                 };
-                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Customer'}, {field: 'Total'}];
-                data.displayFields = [{field: '_id'}, {field: 'invoiceDate'}, {field: 'customerId'}, {field: 'total'}];
+                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Vendor'}, {field: 'Status'}, {field: 'Remain Qty'}, {field: 'Total'}];
+                data.displayFields = [{field: '_id'}, {field: 'prepaidOrderDate'}, {field: 'vendor'}, {field: 'status'}, {field: 'sumRemainQty'}, {field: 'total'}];
             }
 
             /****** Title *****/
             data.title.company = Company.findOne();
 
             /****** Content *****/
-            let invoices = PrepaidOrders.aggregate([
+            let prepaidOrders = PrepaidOrders.aggregate([
                 {
                     $match: selector
-                },
-                {
+                }, {
+                    $unwind: {path: '$items', preserveNullAndEmptyArrays: true},
+
+                }, {
                     $lookup: {
-                        from: 'pos_customers',
-                        localField: 'customerId',
-                        foreignField: '_id',
-                        as: '_customer'
+                        from: "pos_item",
+                        localField: "items.itemId",
+                        foreignField: "_id",
+                        as: "itemDoc"
                     }
                 },
-                {
-                    $unwind: {
-                        preserveNullAndEmptyArrays: true,
-                        path: '$_customer'
-                    }
-                },
+                {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
                 {
                     $group: {
-                        _id: null,
+                        _id: '$_id',
                         data: {
                             $addToSet: project
                         },
-                        total: {
-                            $sum: '$total'
+                        items: {
+                            $addToSet: {
+                                qty: '$items.qty',
+                                price: '$items.price',
+                                amount: '$items.amount',
+                                itemId: '$items.itemId',
+                                itemName: '$itemDoc.name'
+                            }
                         }
                     }
                 }]);
-            if (invoices.length > 0) {
-                let sortData = _.sortBy(invoices[0].data, '_id');
-                invoices[0].data = sortData
-                data.content = invoices;
+            let total = PrepaidOrders.aggregate(
+                [
+                    {
+                        $match: selector
+                    },
+                    {
+                        $group: {
+                            _id: null, total: {$sum: '$total'},
+                            totalRemainQty: {$sum: '$sumRemainQty'}
+                        }
+                    }
+                ]);
+            if (prepaidOrders.length > 0) {
+                let sortData = _.sortBy(prepaidOrders[0].data, '_id');
+                prepaidOrders[0].data = sortData;
+                data.content = prepaidOrders;
+                data.footer.total = total[0].total;
+                data.footer.totalRemainQty = total[0].totalRemainQty
             }
             return data
         }

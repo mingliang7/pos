@@ -8,7 +8,7 @@ import  'printthis';
 import {prepaidOrderReportSchema} from '../../api/collections/reports/prepaidOrderReport';
 
 //methods
-// import {invoiceReport} from '../../../common/methods/reports/invoice';
+import {prepaidOrderReport} from '../../../common/methods/reports/prepaidOrder';
 //state
 let paramsState = new ReactiveVar();
 let invoiceData = new ReactiveVar();
@@ -16,22 +16,22 @@ let invoiceData = new ReactiveVar();
 let indexTmpl = Template.Pos_prepaidOrderReport,
     invoiceDataTmpl = Template.prepaidOrderReportData;
 Tracker.autorun(function () {
-    // if (paramsState.get()) {
-    //     swal({
-    //         title: "Pleas Wait",
-    //         text: "Fetching Data....", showConfirmButton: false
-    //     });
-    //     invoiceReport.callPromise(paramsState.get())
-    //         .then(function (result) {
-    //             invoiceData.set(result);
-    //             setTimeout(function () {
-    //                 swal.close()
-    //             }, 200);
-    //         }).catch(function (err) {
-    //         swal.close();
-    //         console.log(err.message);
-    //     })
-    // }
+    if (paramsState.get()) {
+        swal({
+            title: "Pleas Wait",
+            text: "Fetching Data....", showConfirmButton: false
+        });
+        prepaidOrderReport.callPromise(paramsState.get())
+            .then(function (result) {
+                invoiceData.set(result);
+                setTimeout(function () {
+                    swal.close()
+                }, 200);
+            }).catch(function (err) {
+            swal.close();
+            console.log(err.message);
+        })
+    }
 });
 
 indexTmpl.onCreated(function () {
@@ -55,11 +55,18 @@ invoiceDataTmpl.helpers({
             return invoiceData.get();
         }
     },
-
+    reduceField(){
+        let td = ''
+        let fieldLength = this.displayFields.length - 6;
+        for (let i = 0; i < fieldLength; i++) {
+            td += '<td></td>';
+        }
+        return td;
+    },
     display(col){
         let data = '';
         this.displayFields.forEach(function (obj) {
-            if (obj.field == 'invoiceDate') {
+            if (obj.field == 'prepaidOrderDate') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
@@ -73,13 +80,13 @@ invoiceDataTmpl.helpers({
 
         return data;
     },
-    getTotal(total){
+    getTotal(totalRemainQty, total){
         let string = '';
-        let fieldLength = this.displayFields.length - 2;
+        let fieldLength = this.displayFields.length - 3;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(total).format('0,0.00')}</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${totalRemainQty}</b></td></td><td><b>${numeral(total).format('0,0.00')}</b></td>`;
         return string;
     }
 });
