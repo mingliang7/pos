@@ -32,6 +32,9 @@ indexTmpl.helpers({
             },
             {
                 label: 'Sale Order', value: 'saleOrder'
+            },
+            {
+                label: 'Group Report', value: 'groupReport'
             }
         ]
     }
@@ -68,6 +71,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'saleOrder':
             params = `/pos/report/saleOrderReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
+            break;
+        case 'groupReport':
+            params = `/pos/report/groupReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 00:00:00')}&branch=${Session.get('currentBranch')}`;
             break;
     }
     return params;
