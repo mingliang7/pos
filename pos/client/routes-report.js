@@ -194,3 +194,18 @@ PosRoutes.route('/report/groupReport', {
         parent: 'pos.mainReport'
     }
 });
+
+import '../imports/ui/reports/groupBillReport';
+PosRoutes.route('/report/groupBillReport', {
+    name: 'pos.groupBillReport',
+    title: 'Group Bill Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_groupBillReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Group Bill Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
