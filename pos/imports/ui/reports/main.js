@@ -35,7 +35,11 @@ indexTmpl.helpers({
             },
             {
                 label: 'Group Report', value: 'groupReport'
+            },
+            {
+                label: 'Group Bill Report', value: 'groupBillReport'
             }
+
         ]
     }
 });
@@ -74,6 +78,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'groupReport':
             params = `/pos/report/groupReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 00:00:00')}&branch=${Session.get('currentBranch')}`;
+            break;
+        case 'groupBillReport':
+            params = `/pos/report/groupBillReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 00:00:00')}&branch=${Session.get('currentBranch')}`;
             break;
     }
     return params;
