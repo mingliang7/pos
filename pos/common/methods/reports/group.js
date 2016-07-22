@@ -36,11 +36,8 @@ export const groupReport = new ValidatedMethod({
                 let fromDate = moment(dateAsArray[0]).toDate();
                 let toDate = moment(dateAsArray[1]).toDate();
                 data.title.date = moment(fromDate).format('YYYY-MMM-DD') + ' - ' + moment(toDate).format('YYYY-MMM-DD');
-                selector.startDate = {$gte: fromDate};
-                selector.endDate = {$gte: toDate};
-            }
-            if (params.type && params.type != '') {
-                selector[`invoices.${params.type}`] = {$exists: true}
+                selector.startDate = {$lte: toDate};
+                selector.endDate = {$gte: fromDate};
             }
             if (params.filter && params.filter != '') {
                 let filters = params.filter.split(','); //map specific field
@@ -61,10 +58,11 @@ export const groupReport = new ValidatedMethod({
                     'startDate': '$startDate',
                     'endDate': '$endDate',
                     'status': '$status',
+                    'customer': '$customerDoc',
                     'total': '$total'
                 };
-                data.fields = [{field: '#ID'}, {field: 'Start Date'}, {field: 'End Date'}, {field: 'Status'}, {field: 'Total'}];
-                data.displayFields = [{field: '_id'}, {field: 'startDate'}, {field: 'endDate'}, {field: 'status'}, {field: 'total'}];
+                data.fields = [{field: '#ID'}, {field: 'Customer'}, {field: 'Start Date'}, {field: 'End Date'}, {field: 'Status'}, {field: 'Total'}];
+                data.displayFields = [{field: '_id'}, {field: 'customer'}, {field: 'startDate'}, {field: 'endDate'}, {field: 'status'}, {field: 'total'}];
             }
 
             /****** Title *****/
@@ -77,9 +75,14 @@ export const groupReport = new ValidatedMethod({
                 },
                 {
                     $lookup: {
-
+                        from: "pos_customers",
+                        localField: "vendorOrCustomerId",
+                        foreignField: "_id",
+                        as: "customerDoc"
                     }
                 },
+                {$unwind: {path: '$customerDoc', preserveNullAndEmptyArrays: true}},
+                {$unwind: {path: '$invoices', preserveNullAndEmptyArrays: true}},
                 {
                     $group: {
                         _id: '$_id',
@@ -91,16 +94,16 @@ export const groupReport = new ValidatedMethod({
                         }
                     }
                 }]);
-            let total =  GroupInvoice.aggregate([
+            let total = GroupInvoice.aggregate([
                 {
                     $match: selector
                 },
                 {
                     $group: {
                         _id: null,
-                       total: {
+                        total: {
                             $sum: '$total'
-                       }
+                        }
                     }
                 }]);
             if (groups.length > 0) {
@@ -109,6 +112,7 @@ export const groupReport = new ValidatedMethod({
                 data.content = groups;
                 data.footer.total = total[0].total;
             }
+            console.log(data.content[0].invoices);
             return data
         }
     }

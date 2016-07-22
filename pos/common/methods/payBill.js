@@ -7,7 +7,7 @@ import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 import {EnterBills} from '../../imports/api/collections/enterBill.js'
 import {PayBills} from '../../imports/api/collections/payBill.js';
 import {Vendors} from '../../imports/api/collections/vendor';
-import {GroupInvoice} from '../../imports/api/collections/groupInvoice';
+import {GroupBill} from '../../imports/api/collections/groupBill';
 // Check user password
 export const payBill = new ValidatedMethod({
     name: 'pos.payBill',
@@ -42,7 +42,7 @@ export const payBill = new ValidatedMethod({
                 if(Vendors.termId) {
                     EnterBills.direct.update(k, selector)
                 }else{
-                    GroupInvoice.direct.update(k, selector);
+                    GroupBill.direct.update(k, selector);
                 }
             }
             return true;

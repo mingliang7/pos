@@ -2,7 +2,7 @@
 
 //collections
 import {EnterBills} from '../../api/collections/enterBill.js';
-import {GroupInvoice} from '../../api/collections/groupInvoice';
+import {GroupBill} from '../../api/collections/groupBill';
 import {PayBills} from '../../api/collections/payBill';
 import {Vendors} from '../../api/collections/vendor';
 //schema
@@ -34,7 +34,7 @@ Tracker.autorun(function () {
                 billType: 'term'
             });
         } else {
-            billSub = Meteor.subscribe('pos.activeGroupInvoices', {
+            billSub = Meteor.subscribe('pos.activeGroupBills', {
                 vendorOrCustomerId: Session.get('vendorIdState'),
                 status: {$in: ['active', 'partial']}
             });
@@ -57,7 +57,7 @@ Tracker.autorun(function () {
 indexTmpl.onCreated(function () {
     Session.set('amountDue', 0);
     Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, billId: ''});
-    Session.get('disableTerm', false);
+    Session.set('disableTerm', false);
     Session.set('enterBillsObjCount', 0);
     if (FlowRouter.getParam('billId')) {
         Session.set('billId', FlowRouter.getParam('billId'));
@@ -72,7 +72,7 @@ indexTmpl.onCreated(function () {
 indexTmpl.onDestroyed(function () {
     Session.set('vendorIdState', undefined);
     Session.set('invoices', undefined);
-    Session.get('disableTerm', false);
+    Session.set('disableTerm', false);
     Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, billId: ''});
     Session.set('amountDue', 0);
     Session.set('billId', 0);
@@ -101,7 +101,7 @@ indexTmpl.helpers({
     countIsqualSales() {
         let enterBillsObj = Session.get('enterBillsObj');
         let vendor = Vendors.findOne(Session.get('vendorIdState'));
-        let collection = (vendor && vendor.termId) ? EnterBills.find() : GroupInvoice.find();
+        let collection = (vendor && vendor.termId) ? EnterBills.find() : GroupBill.find();
         if (collection.count() != 0 && enterBillsObj.count == collection.count()) {
             return true;
         }
@@ -130,7 +130,7 @@ indexTmpl.helpers({
                 }
             });
         } else {
-            invoices = GroupInvoice.find({}, {sort: {_id: 1}});
+            invoices = GroupBill.find({}, {sort: {_id: 1}});
         }
         if (invoices.count() > 0) {
             let arr = [];
@@ -191,7 +191,7 @@ indexTmpl.helpers({
     totalAmountDue(){
         let totalAmountDue = 0;
         let vendor = getVendorInfo(Session.get('vendorIdState'));
-        let invoices = (vendor && vendor.termId) ? EnterBills.find({}) : GroupInvoice.find({});
+        let invoices = (vendor && vendor.termId) ? EnterBills.find({}) : GroupBill.find({});
         if (invoices.count() > 0) {
             invoices.forEach(function (invoice) {
                 let receivePayments = PayBills.find({billId: invoice._id}, {sort: {_id: 1, paymentDate: 1}});
@@ -209,7 +209,7 @@ indexTmpl.helpers({
     totalActualPay(){
         let totalAmountDue = 0;
         let vendor = getVendorInfo(Session.get('vendorIdState'));
-        let invoices = (vendor && vendor.termId) ? EnterBills.find({}) : GroupInvoice.find({});
+        let invoices = (vendor && vendor.termId) ? EnterBills.find({}) : GroupBill.find({});
         if (invoices.count() > 0) {
             invoices.forEach(function (invoice) {
                 var discount = invoice.status == 'active' ? checkTerm(invoice) : 0;
@@ -228,7 +228,7 @@ indexTmpl.helpers({
     totalOriginAmount(){
         let totalOrigin = 0;
         let vendor = getVendorInfo(Session.get('vendorIdState'));
-        let collection = (vendor && vendor.termId) ? EnterBills.find({}) : GroupInvoice.find({});
+        let collection = (vendor && vendor.termId) ? EnterBills.find({}) : GroupBill.find({});
         collection.forEach(function (invoices) {
             totalOrigin += invoices.total;
         });
@@ -307,7 +307,7 @@ indexTmpl.events({
                     }
                 });
             } else {
-                enterBillsObj = GroupInvoice.find({}, {sort: {_id: 1}});
+                enterBillsObj = GroupBill.find({}, {sort: {_id: 1}});
             }
             enterBillsObj.forEach((sale) => {
                 let lastPayment = getLastPayment(sale._id);

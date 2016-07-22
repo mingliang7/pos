@@ -57,7 +57,7 @@ invoiceDataTmpl.helpers({
     },
     reduceField(){
         let td = ''
-        let fieldLength = this.displayFields.length - 6;
+        let fieldLength = this.displayFields.length - 5;
         for (let i = 0; i < fieldLength; i++) {
             td += '<td></td>';
         }
@@ -68,8 +68,9 @@ invoiceDataTmpl.helpers({
         this.displayFields.forEach(function (obj) {
             if (obj.field == 'startDate' || obj.field == 'endDate') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD')}</td>`
-            } else if (obj.field == 'customerId') {
-                data += `<td>${col._customer.name}</td>`
+            } else if (obj.field == 'customer') {
+                let type = col.customer._paymentGroup ? col.customer._paymentGroup.name : 'term';
+                    data += `<td>${col.customer.name}(${type})</td>`;
             } else if (obj.field == 'total') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }

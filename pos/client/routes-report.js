@@ -183,13 +183,13 @@ PosRoutes.route('/report/saleOrderReport', {
 import '../imports/ui/reports/groupReport';
 PosRoutes.route('/report/groupReport', {
     name: 'pos.groupReport',
-    title: 'Group Report',
+    title: 'Group Invoice Report',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_groupReport');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Group Report',
+        title: 'Group Invoice Report',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }

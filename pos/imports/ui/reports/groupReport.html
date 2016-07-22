@@ -71,19 +71,16 @@
                     {{/each}}
                     <tr>
                         {{{reduceField}}}
-                        <th>ITEM</th>
-                        <th>PRICE</th>
-                        <th>QTY</th>
-                        <th>AMOUNT</th>
+                        <th>INVOICE</th>
+                        <th>INVOICE DATE</th>
+                        <th>TOTAL</th>
                     </tr>
-                    {{#each item in col.items}}
-
+                    {{#each invoice in col.invoices}}
                         <tr>
                             {{{reduceField}}}
-                            <td>{{item.itemName}}</td>
-                            <td>{{item.price}}</td>
-                            <td>{{item.qty}}</td>
-                            <td>{{item.amount}}</td>
+                            <td>{{invoice._id}}</td>
+                            <td>{{moFormat invoice.invoiceDate 'YYYY-MM-DD HH:mm'}}</td>
+                            <td>{{numFormat invoice.total '0,0.00'}}</td>
                         </tr>
                     {{/each}}
                     <tr>
