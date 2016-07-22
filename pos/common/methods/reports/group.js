@@ -31,6 +31,9 @@ export const groupReport = new ValidatedMethod({
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.status = {$in: ['active', 'closed']};
+            if(params.customer && params.customer != '') {
+                selector.vendorOrCustomerId = params.customer;
+            }
             if (params.date) {
                 let dateAsArray = params.date.split(',')
                 let fromDate = moment(dateAsArray[0]).toDate();
@@ -67,12 +70,12 @@ export const groupReport = new ValidatedMethod({
 
             /****** Title *****/
             data.title.company = Company.findOne();
-
             /****** Content *****/
             let groups = GroupInvoice.aggregate([
                 {
                     $match: selector
                 },
+
                 {
                     $lookup: {
                         from: "pos_customers",
@@ -93,6 +96,8 @@ export const groupReport = new ValidatedMethod({
                             $addToSet: '$invoices'
                         }
                     }
+                }, {
+                    $sort: {_id: 1}
                 }]);
             let total = GroupInvoice.aggregate([
                 {
@@ -112,7 +117,6 @@ export const groupReport = new ValidatedMethod({
                 data.content = groups;
                 data.footer.total = total[0].total;
             }
-            console.log(data.content[0].invoices);
             return data
         }
     }

@@ -30,16 +30,19 @@ export const groupReportSchema = new SimpleSchema({
             }
         }
     },
-    type: {
+    customer: {
         type: String,
         optional: true,
         autoform: {
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'All',
-                options: function () {
-                    return [{label: 'Customer', value: 'customerId'}
-                        , {label: 'Vendor', value: 'vendorId'}]
+                optionsMethod: 'pos.selectOptMethods.customer',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let currentBranch = Session.get('currentBranch');
+                        return {branchId: currentBranch};
+                    }
                 }
             }
         }

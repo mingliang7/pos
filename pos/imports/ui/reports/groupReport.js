@@ -83,11 +83,11 @@ invoiceDataTmpl.helpers({
     },
     getTotal(totalRemainQty, total){
         let string = '';
-        let fieldLength = this.displayFields.length - 3;
+        let fieldLength = this.displayFields.length - 2;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalRemainQty).format('0,0')}</b></td></td><td><b>${numeral(total).format('0,0.00')}</b></td>`;
+        string += `<td><b>Total:</b></td><td><b>${numeral(total).format('0,0.00')}</b></td>`;
         return string;
     }
 });
