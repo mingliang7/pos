@@ -218,19 +218,37 @@ Meteor.methods({
                     itemId: item.itemId,
                     stockLocationId: enterBill.stockLocationId
                 }, {sort: {_id: 1}});
-                let newInventory = {
-                    _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                    branchId: enterBill.branchId,
-                    stockLocationId: enterBill.stockLocationId,
-                    itemId: item.itemId,
-                    qty: item.qty,
-                    price: inventory.price,
-                    remainQty: inventory.remainQty - item.qty,
-                    coefficient: -1,
-                    type: 'enter-return',
-                    refId: enterBill._id
-                };
-                AverageInventories.insert(newInventory);
+                if (inventory) {
+                    let newInventory = {
+                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                        branchId: enterBill.branchId,
+                        stockLocationId: enterBill.stockLocationId,
+                        itemId: item.itemId,
+                        qty: item.qty,
+                        price: inventory.price,
+                        remainQty: inventory.remainQty - item.qty,
+                        coefficient: -1,
+                        type: 'enter-return',
+                        refId: enterBill._id
+                    };
+                    AverageInventories.insert(newInventory);
+                } else {
+                    let thisItem = Item.findOne(item.itemId);
+                    let newInventory = {
+                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                        branchId: enterBill.branchId,
+                        stockLocationId: enterBill.stockLocationId,
+                        itemId: item.itemId,
+                        qty: item.qty,
+                        price: thisItem.purchasePrice,
+                        remainQty: 0 - item.qty,
+                        coefficient: -1,
+                        type: 'enter-return',
+                        refId: enterBill._id
+                    };
+                    AverageInventories.insert(newInventory);
+                }
+
             });
         });
     },

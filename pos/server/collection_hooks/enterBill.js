@@ -14,10 +14,10 @@ EnterBills.before.insert(function (userId, doc) {
         doc.status = 'closed';
         doc.billType = 'prepaidOrder'
     } else if (doc.termId) {
-        doc.status = 'active';
+        doc.status = 'partial';
         doc.billType = 'term'
     } else {
-        doc.status = 'active';
+        doc.status = 'partial';
         doc.billType = 'group';
     }
     let todayDate = moment().format('YYYYMMDD');
@@ -33,6 +33,7 @@ EnterBills.after.insert(function (userId, doc) {
         Meteor._sleepForMs(200);
         if (doc.status == "active") {
         } else {
+            console.log('from enterBill after insert');
             doc.items.forEach(function (item) {
                 averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
             });
@@ -166,25 +167,45 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
 }
 function reduceFromInventory(enterBill) {
     //let enterBill = EnterBills.findOne(enterBillId);
+    let prefix = enterBill.stockLocationId + '-';
     enterBill.items.forEach(function (item) {
         let inventory = AverageInventories.findOne({
             branchId: enterBill.branchId,
             itemId: item.itemId,
             stockLocationId: enterBill.stockLocationId
         }, {sort: {_id: 1}});
-        let newInventory = {
-            _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-            branchId: enterBill.branchId,
-            stockLocationId: enterBill.stockLocationId,
-            itemId: item.itemId,
-            qty: item.qty,
-            price: inventory.price,
-            remainQty: inventory.remainQty - item.qty,
-            coefficient: -1,
-            type: 'enter-return',
-            refId: enterBill._id
-        };
-        AverageInventories.insert(newInventory);
+
+        if (inventory) {
+            let newInventory = {
+                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                branchId: enterBill.branchId,
+                stockLocationId: enterBill.stockLocationId,
+                itemId: item.itemId,
+                qty: item.qty,
+                price: inventory.price,
+                remainQty: inventory.remainQty - item.qty,
+                coefficient: -1,
+                type: 'enter-return',
+                refId: enterBill._id
+            };
+            AverageInventories.insert(newInventory);
+        } else {
+            let thisItem = Item.findOne(item.itemId);
+            let newInventory = {
+                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                branchId: enterBill.branchId,
+                stockLocationId: enterBill.stockLocationId,
+                itemId: item.itemId,
+                qty: item.qty,
+                price: thisItem.purchasePrice,
+                remainQty: 0 - item.qty,
+                coefficient: -1,
+                type: 'enter-return',
+                refId: enterBill._id
+            };
+            AverageInventories.insert(newInventory);
+        }
+
     });
 
 }
