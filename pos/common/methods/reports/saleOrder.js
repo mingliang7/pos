@@ -98,7 +98,8 @@ export const saleOrderReport = new ValidatedMethod({
                                 price: '$items.price',
                                 amount: '$items.amount',
                                 itemId: '$items.itemId',
-                                itemName: '$itemDoc.name'
+                                itemName: '$itemDoc.name',
+                                remainQty: '$items.remainQty'
                             }
                         }
                     }

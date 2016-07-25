@@ -75,6 +75,7 @@
                         <th>PRICE</th>
                         <th>QTY</th>
                         <th>AMOUNT</th>
+                        <th>Remain QTY</th>
                     </tr>
                     {{#each item in col.items}}
 
@@ -84,6 +85,7 @@
                             <td>{{item.price}}</td>
                             <td>{{item.qty}}</td>
                             <td>{{item.amount}}</td>
+                            <td>{{item.remainQty}}</td>
                         </tr>
                     {{/each}}
                     <tr>
