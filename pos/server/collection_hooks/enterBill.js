@@ -16,7 +16,7 @@ EnterBills.before.insert(function (userId, doc) {
         doc.billType = 'prepaidOrder'
     } else if (doc.termId) {
         doc.status = 'partial';
-        doc.billType = 'term'
+        doc.billType = 'term';
     } else {
         doc.status = 'partial';
         doc.billType = 'group';
@@ -61,6 +61,9 @@ EnterBills.after.insert(function (userId, doc) {
                     averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
                 });
             }
+        }
+        if (doc.billType == 'group') {
+            Meteor.call('pos.generateInvoiceGroup', {doc});
         }
     });
 });
