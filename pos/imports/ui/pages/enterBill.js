@@ -505,7 +505,7 @@ let hooksObject = {
             });
             var btnType = Session.get('btnType');
             if (btnType == "save" || btnType == "save-print") {
-                doc.status = "active";
+                doc.status = "partial";
                 doc.paidAmount = 0;
                 doc.dueAmount = math.round(doc.total, 2);
             } else if (btnType == "pay") {
@@ -529,7 +529,7 @@ let hooksObject = {
             doc.$set.items = items;
             var btnType = Session.get('btnType');
             if (btnType == "save" || btnType == "save-print") {
-                doc.$set.status = "active";
+                doc.$set.status = "partial";
                 doc.$set.paidAmount = 0;
                 doc.$set.dueAmount = math.round(doc.$set.total, 2);
             } else if (btnType == "pay") {
