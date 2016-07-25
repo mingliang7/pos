@@ -8,7 +8,8 @@ import {Item} from '../../imports/api/collections/item.js';
 import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder';
 //import state
 import {billState} from '../../common/globalState/enterBill';
-
+import {GroupBill} from '../../imports/api/collections/groupBill.js'
+import {PayBills} from '../../imports/api/collections/payBill.js';
 EnterBills.before.insert(function (userId, doc) {
     if (doc.total == 0) {
         doc.status = 'closed';
@@ -31,13 +32,6 @@ EnterBills.before.insert(function (userId, doc) {
 EnterBills.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        if (doc.status == "active") {
-        } else {
-            console.log('from enterBill after insert');
-            doc.items.forEach(function (item) {
-                averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
-            });
-        }
         if (doc.billType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
         }
@@ -59,28 +53,102 @@ EnterBills.after.insert(function (userId, doc) {
             if (prepaidOrder.sumRemainQty == 0) {
                 PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'closed'}});
             }
+        } else {
+            if (doc.status == "active") {
+            } else {
+                console.log('from enterBill after insert');
+                doc.items.forEach(function (item) {
+                    averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
+                });
+            }
         }
     });
 });
 
 EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
     let preDoc = this.previous;
-    if (doc.status == "active") {
+    let type = {
+        prepaidOrder: doc.billType == 'prepaidOrder',
+        term: doc.billType == 'term',
+        group: doc.billType == 'group'
+    };
+    if (type.prepaidOrder) {
+        Meteor.defer(function () {
+            recalculateQty(preDoc);
+            updateQtyInPrepaidOrder(doc);
+            let prepaidOrder = PrepaidOrders.aggregate([{$match: {_id: doc.prepaidOrderId}}, {$projection: {sumRemainQty: 1}}]);
+            if (prepaidOrder.sumRemainQty == 0) {
+                PrepaidOrders.direct.update(doc.prepaidOrderId, {$set: {status: 'closed'}});
+            } else {
+                PrepaidOrders.direct.update(doc.prepaidOrderId, {$set: {status: 'active'}});
+            }
+        });
+    } else if (type.group) {
+        Meteor.defer(function () {
+            removeBillFromGroup(preDoc);
+            pushBillFromGroup(doc);
+            recalculatePayment({preDoc, doc});
+            // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
+        });
+        //////////
+        if (doc.status == "active") {
+        } else {
+            Meteor.defer(function () {
+                Meteor._sleepForMs(200);
+                reduceFromInventory(preDoc);
+                doc.items.forEach(function (item) {
+                    averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
+                });
+
+            });
+        }
+        //////////
+
     } else {
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
-            reduceFromInventory(preDoc);
-            doc.items.forEach(function (item) {
-                averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
-            });
-
+            recalculatePayment({preDoc, doc});
         });
+        //////////
+        if (doc.status == "active") {
+        } else {
+            Meteor.defer(function () {
+                Meteor._sleepForMs(200);
+                reduceFromInventory(preDoc);
+                doc.items.forEach(function (item) {
+                    averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
+                });
+
+            });
+        }
+        //////////
     }
+
 });
 
 EnterBills.after.remove(function (userId, doc) {
+
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
+        let type = {
+            prepaidOrder: doc.billType == 'prepaidOrder',
+            term: doc.billType == 'term',
+            group: doc.billType == 'group'
+        };
+        if (type.prepaidOrder) {
+            recalculateQty(doc);
+            PrepaidOrders.direct.update(doc.prepaidOrderId, {$set: {status: 'active'}});
+        } else if (type.group) {
+            removeBillFromGroup(doc);
+            let groupBill = GroupBill.findOne(doc.paymentGroupId);
+            if (groupBill.invoices.length <= 0) {
+                GroupBill.direct.remove(doc.paymentGroupId);
+            }else{
+                recalculatePaymentAfterRemoved({doc});
+            }
+        }else if (type.term) {
+            Meteor.call('insertRemovedBill', doc);
+        }
         reduceFromInventory(doc);
     });
 });
@@ -214,3 +282,67 @@ function reduceFromInventory(enterBill) {
  let payObj={};
  payObj._id=idGenerator.genWithPrefix()
  }*/
+//recalculate qty
+function recalculateQty(preDoc) {
+    Meteor._sleepForMs(200);
+    let updatedFlag;
+    preDoc.items.forEach(function (item) {
+        PrepaidOrders.direct.update(
+            {_id: preDoc.prepaidOrderId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
+        ); //re sum remain qty
+    });
+}
+//update qty
+function updateQtyInPrepaidOrder(doc) {
+    Meteor._sleepForMs(200);
+    doc.items.forEach(function (item) {
+        PrepaidOrders.direct.update(
+            {_id: doc.prepaidOrderId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': -item.qty, sumRemainQty: -item.qty}}
+        )
+    });
+}
+// update group invoice
+function removeBillFromGroup(doc) {
+    Meteor._sleepForMs(200);
+    GroupBill.update({_id: doc.paymentGroupId}, {$pull: {invoices: {_id: doc._id}}, $inc: {total: -doc.total}});
+}
+function pushBillFromGroup(doc) {
+    Meteor._sleepForMs(200);
+    GroupBill.update({_id: doc.paymentGroupId}, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
+}
+//update payment
+function recalculatePayment({doc,preDoc}) {
+    let totalChanged = doc.total - preDoc.total;
+    if (totalChanged != 0) {
+        let billId = doc.paymentGroupId || doc._id;
+        let receivePayment = PayBills.find({billId: billId});
+        if (receivePayment.count() > 0) {
+            PayBills.update({billId: billId}, {
+                $inc: {
+                    dueAmount: totalChanged,
+                    balanceAmount: totalChanged
+                }
+            }, {multi: true});
+            PayBills.direct.remove({billId: billId, dueAmount: {$lte: 0}});
+        }
+    }
+}
+//update payment after remove
+function recalculatePaymentAfterRemoved({doc}) {
+    let totalChanged = -doc.total;
+    if (totalChanged != 0) {
+        let billId = doc.paymentGroupId;
+        let receivePayment = PayBills.find({billId: billId});
+        if (receivePayment.count() > 0) {
+            PayBills.update({billId: billId}, {
+                $inc: {
+                    dueAmount: totalChanged,
+                    balanceAmount: totalChanged
+                }
+            }, {multi: true});
+            PayBills.direct.remove({billId: billId, dueAmount: {$lte: 0}});
+        }
+    }
+}
