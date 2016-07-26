@@ -84,6 +84,11 @@ Invoices.after.update(function (userId, doc) {
             removeInvoiceFromGroup(preDoc);
             pushInvoiceFromGroup(doc);
             recalculatePayment({preDoc, doc});
+
+            //average inventory calculate
+            returnToInventory(preDoc);
+            invoiceManageStock(doc);
+
             // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
         });
 
@@ -91,13 +96,12 @@ Invoices.after.update(function (userId, doc) {
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
             recalculatePayment({preDoc, doc});
+
+            //average inventory calculate
+            returnToInventory(preDoc);
+            invoiceManageStock(doc);
         })
     }
-    Meteor.defer(function () {
-        Meteor._sleepForMs(200);
-        returnToInventory(preDoc);
-        invoiceManageStock(doc);
-    });
 });
 
 //remove
@@ -120,10 +124,15 @@ Invoices.after.remove(function (userId, doc) {
             }else{
                 recalculatePaymentAfterRemoved({doc});
             }
+            //average inventory calculation
+            returnToInventory(doc);
         }else if (type.term) {
             Meteor.call('insertRemovedInvoice', doc);
+
+            //average inventory calculation
+            returnToInventory(doc);
         }
-        returnToInventory(doc);
+
     });
 });
 
