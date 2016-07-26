@@ -20,7 +20,7 @@ Invoices.before.insert(function (userId, doc) {
         doc.status = 'active';
         doc.invoiceType = 'term'
     } else {
-        doc.status == 'active';
+        doc.status = 'active';
         doc.invoiceType = 'group';
     }
     let tmpInvoiceId = doc._id;
