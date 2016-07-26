@@ -296,22 +296,22 @@ Template.schemeItem.events({
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         let amount = math.round(qty * price, 2);
         // Check exist
-        let exist = tmpCollection.findOne({itemId: itemId});
-        if (exist) {
-            qty += parseInt(exist.quantity);
-            amount = math.round(qty * price, 2);
-            tmpCollection.update(
-                {_id: exist._id},
-                {$set: {quantity: qty, price: price, amount: amount}}
-            );
-        } else {
-            tmpCollection.insert({
-                itemId: itemId,
-                quantity: qty,
-                price: price,
+        // let exist = tmpCollection.findOne({itemId: itemId});
+        // if (exist) {
+        //     qty += parseInt(exist.quantity);
+        //     amount = math.round(qty * price, 2);
+        //     tmpCollection.update(
+        //         {_id: exist._id},
+        //         {$set: {quantity: qty, price: price, amount: amount}}
+        //     );
+        // } else {
+        tmpCollection.insert({
+            itemId: itemId,
+            quantity: qty,
+            price: price,
                 name: instance.name
             });
-        }
+        // }
     },
     // Reactive table for item
     'click .js-update-item': function (event, instance) {
