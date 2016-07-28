@@ -161,6 +161,11 @@
                         <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.paymentGroup"}}</span>
                     </a>
                 </li>
+                <li class="{{isActiveRoute name='pos.requirePassword'}}">
+                    <a href="{{pathFor 'pos.requirePassword'}}">
+                        <i class="fa fa-circle-o"></i> <span>Require Password</span>
+                    </a>
+                </li>
             </ul>
         </li>
     {{/if}}
