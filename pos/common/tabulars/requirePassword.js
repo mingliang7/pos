@@ -25,7 +25,7 @@ tabularOpts.columns = [
     {data: "password", title: "Password"},
     {data: "invoiceForm", title: "Invoice Form"},
     {data: "saleOrderForm", title: "Sale Order Form"},
-    {data: "branch", title: "Branch"},
+    {data: "branchId", title: "Branch"},
    // {data: "description", title: "Description"}
 ];
 //tabularOpts.extraFields=['_parent'];

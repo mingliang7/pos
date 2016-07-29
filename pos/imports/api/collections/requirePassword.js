@@ -26,7 +26,7 @@ RequirePassword.schema = new SimpleSchema({
             type: 'boolean-checkbox'
         }
     },
-    branch: {
+    branchId: {
         type: [String],
         autoform: {
             type: "universe-select",
