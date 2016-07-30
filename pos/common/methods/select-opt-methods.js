@@ -92,11 +92,11 @@ SelectOptMethods.customer = new ValidatedMethod({
         if (!this.isSimulation) {
             this.unblock();
 
-            let list = [], selector = {};
+            let list = [];
             let searchText = options.searchText;
             let values = options.values;
             let params = options.params || {};
-
+            let selector = {branchId: params.branchId};
             if (searchText && params.branchId) {
                 selector = {
                     $or: [
@@ -106,9 +106,9 @@ SelectOptMethods.customer = new ValidatedMethod({
                     branchId: params.branchId
                 };
             } else if (values.length) {
-                selector = {_id: {$in: values}};
+                selector = {_id: {$in: values}, branchId: params.branchId};
             }
-
+            console.log(selector);
             let data = Customers.find(selector, {limit: 10});
             data.forEach(function (value) {
                 let termOrGroup = value._term ? ` (Term ${value._term.name})` : ` (Group ${value._paymentGroup.name})`;
