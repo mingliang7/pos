@@ -58,6 +58,7 @@ Tracker.autorun(function () {
                         swal({
                             title: "Password Required!",
                             text: `Balance Amount(${result}) > Credit Limit(${customerInfo.creditLimit}), Ask your Admin for password!`,
+                            inputType: "password",
                             type: "input",
                             showCancelButton: true,
                             closeOnConfirm: false,
@@ -77,9 +78,9 @@ Tracker.autorun(function () {
                                     swal("Message!", "Successfully", "success");
                                     return false
                                 }else{
-                                    $('.reset-button').trigger('click'); //reset from when wrong
-                                    Session.set("getCustomerId", "");
-                                    swal("Message!", "Incorrect Password!", "error");
+                                    // $('.reset-button').trigger('click'); //reset from when wrong
+                                    // swal("Message!", "Incorrect Password!", "error");
+                                    swal.showInputError("Wrong password!");
                                     return false;
                                 }
                             }
