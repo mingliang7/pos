@@ -108,7 +108,6 @@ SelectOptMethods.customer = new ValidatedMethod({
             } else if (values.length) {
                 selector = {_id: {$in: values}, branchId: params.branchId};
             }
-            console.log(selector);
             let data = Customers.find(selector, {limit: 10});
             data.forEach(function (value) {
                 let termOrGroup = value._term ? ` (Term ${value._term.name})` : ` (Group ${value._paymentGroup.name})`;
