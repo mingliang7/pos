@@ -2,15 +2,24 @@
 <template name="Pos_invoiceItems">
     <div class="container-fluid report-header">
         <div class="row ">
-            <div class="col-md-4" align="center">PRODUCT</div>
+            <div class="col-md-2" align="center">
+                <label for="">Filter:</label>
+                <select name="item-filter" id="" style="background: white; color: #000000;">
+                    <option value="all">All</option>
+                    <option value="none-scheme">None Scheme</option>
+                    <option value="scheme">Scheme</option>
+                </select></div>
+            <div class="col-md-2" align="left">PRODUCT</div>
             <div class="col-md-2" align="center">QTY</div>
             <div class="col-md-2" align="center">PRICE</div>
-            <div class="col-md-3" align="center">AMOUNT</div>
+            <div class="col-md-2" align="center">AMOUNT</div>
         </div>
-
-        <br>
+        <hr>
         {{#if notActivatedSaleOrder}}
             {{#autoForm schema=schema id="Pos_invoiceItems"}}
+
+
+
                 <div class="row">
                     <div class="col-sm-4">
                         {{> afQuickField name="itemId" label=false}}

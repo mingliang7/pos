@@ -13,7 +13,12 @@ import {itemInfo} from '../../../common/methods/item-info.js';
 
 // Item schema
 let defaultPrice = new ReactiveVar(0);
-
+let itemFilterSelector = new ReactiveVar({});
+Tracker.autorun(function () {
+    if(Session.get('itemFilterState')) {
+        itemFilterSelector.set(Session.get('itemFilterState'));
+    }
+});
 export const ItemsSchema = new SimpleSchema({
     itemId: {
         type: String,
@@ -23,7 +28,16 @@ export const ItemsSchema = new SimpleSchema({
             afFieldInput: {
                 create: true,
                 uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.item'
+                optionsMethod: 'pos.selectOptMethods.item',
+                optionsMethodParams: function() {
+                    if (Meteor.isClient) {
+                        if(!_.isEmpty(itemFilterSelector.get())) {
+                            return itemFilterSelector.get();
+                        }else{
+                            return {scheme: {}};
+                        }
+                    }
+                }
             }
         }
     },

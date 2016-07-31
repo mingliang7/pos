@@ -155,6 +155,22 @@ itemsTmpl.helpers({
 });
 
 itemsTmpl.events({
+    'change [name="item-filter"]'(event,instance){
+        //filter item in order-item collection
+        let currentValue = event.currentTarget.value;
+        switch (currentValue) {
+            case 'none-scheme':
+                Session.set('itemFilterState', {scheme: {$exists: false}});
+                break;
+            case 'scheme':
+                Session.set('itemFilterState', {scheme: {$exists: true}});
+                break;
+            case 'all':
+                Session.set('itemFilterState', {});
+                break;
+        }
+
+    },
     'change [name="itemId"]': function (event, instance) {
         instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
         instance.$('[name="qty"]').val('');
@@ -239,7 +255,10 @@ itemsTmpl.events({
 
     }
 });
-
+//destroy
+itemsTmpl.onDestroyed(function () {
+    Session.set('itemFilterState', {});
+});
 
 // Edit
 editItemsTmpl.onCreated(function () {
