@@ -1,12 +1,20 @@
 <!--Item Temporary-->
 <template name="Pos_orderItems">
     <div class="container-fluid report-header">
-        <div class="row">
-            <div class="col-md-4 text-center">ITEMS</div>
-            <div class="col-md-2 text-center">QTY</div>
-            <div class="col-md-2 text-center">PRICE</div>
-            <div class="col-md-3 text-center">AMOUNT</div>
+        <div class="row ">
+            <div class="col-md-2" align="center">
+                <label for="">Filter:</label>
+                <select name="item-filter" id="" style="background: white; color: #000000;">
+                    <option value="all">All</option>
+                    <option value="none-scheme">None Scheme</option>
+                    <option value="scheme">Scheme</option>
+                </select></div>
+            <div class="col-md-2" align="left">PRODUCT</div>
+            <div class="col-md-2" align="center">QTY</div>
+            <div class="col-md-2" align="center">PRICE</div>
+            <div class="col-md-2" align="center">AMOUNT</div>
         </div>
+        <hr>
         {{#autoForm schema=schema id="Pos_orderItems"}}
             <div class="row">
                 <div class="col-sm-4">
