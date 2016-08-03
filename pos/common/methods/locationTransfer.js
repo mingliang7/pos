@@ -60,7 +60,6 @@ export const LocationTransferInfo = new ValidatedMethod({
             }, {
                 $unwind: '$data'
             }]);
-
             return locationTransfer[0];
         }
     }

@@ -106,9 +106,10 @@ indexTmpl.events({
         loadMore.set(0);
         sumLoadMore.set(10);
     },
-    'click .cursor-pointer'(event, instance){
+    'click .show-detail'(event, instance){
         Meteor.call('pos.locationTransferInfo', {_id: this._id}, function (err, result) {
             if (result) {
+                console.log(result);
                 alertify.locationTransfer(fa('eye', 'Showing Transfer'), renderTemplate(transferInfo, result));
             }
             if (err) {
