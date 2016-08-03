@@ -123,7 +123,7 @@ indexTmpl.helpers({
         return InvoiceTabular;
     },
     selector() {
-        return {branchId: Session.get('currentBranch')};
+        return {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
     }
 });
 
