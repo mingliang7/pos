@@ -46,10 +46,7 @@ indexTmpl.onCreated(function () {
     createNewAlertify('categoryShow');
 
     // Reactive table filter
-    this.filter = new ReactiveTable.Filter('pos.categoryByBranchFilter', ['branchId']);
-    this.autorun(()=> {
-        this.filter.set(Session.get('currentBranch'));
-    });
+
 });
 
 indexTmpl.helpers({
@@ -114,12 +111,14 @@ newTmpl.helpers({
         //return ReactiveMethod.call('categoryList', 'Select One | No Parent',categoryId);
         let list = [];
         let categories = Template.instance().categoryList.get();
-        categories.forEach(function (category) {
-            list.push({
-                label: Spacebars.SafeString(category.label),
-                value: category.value
+        if(categories) {
+            categories.forEach(function (category) {
+                list.push({
+                    label: Spacebars.SafeString(category.label),
+                    value: category.value
+                });
             });
-        });
+        }
         return list;
     }
 });
@@ -148,12 +147,14 @@ editTmpl.helpers({
     categoryList(){
         let list = [];
         let categories = Template.instance().categoryList.get();
-        categories.forEach(function (category) {
-            list.push({
-                label: Spacebars.SafeString(category.label),
-                value: category.value
+        if(categories) {
+            categories.forEach(function (category) {
+                list.push({
+                    label: Spacebars.SafeString(category.label),
+                    value: category.value
+                });
             });
-        });
+        }
         return list;
         // let categoryId = Session.get('CategoryIdSession');
         //  return ReactiveMethod.call('categoryList', 'Select One | No Parent', categoryId);

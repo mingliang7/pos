@@ -17,7 +17,7 @@ import {RequirePassword} from '../../imports/api/collections/requirePassword.js'
 // Page
 Meteor.isClient && require('../../imports/ui/pages/requirePassword.html');
 
-tabularOpts.name = 'pos.category';
+tabularOpts.name = 'pos.requirePassword';
 tabularOpts.collection = RequirePassword;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_requirePasswordAction},
