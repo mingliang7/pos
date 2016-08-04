@@ -4,7 +4,8 @@ Meteor.methods({
     getInvoiceId(tmpId){
         Meteor._sleepForMs(1000);
         let invoice = invoiceState.get(tmpId);
-        invoiceState.set({}); //clearing state
+        delete invoiceState._obj[tmpId];
+        // invoiceState.set({}); //clearing state
         return invoice;
     },
     unsetTerm(id){

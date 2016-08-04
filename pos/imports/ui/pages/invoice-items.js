@@ -102,7 +102,10 @@ itemsTmpl.helpers({
             label: 'Name'
         }, {
             key: 'qty',
-            label: __(`${i18nPrefix}.qty.label`)
+            label: __(`${i18nPrefix}.qty.label`),
+            fn(value, obj, key){
+                return FlowRouter.query.get('customerId') ? value : Spacebars.SafeString(`<input type="text" value=${value} class="item-qty">`);
+            }
         }, {
             key: 'price',
             label: __(`${i18nPrefix}.price.label`),
@@ -155,6 +158,22 @@ itemsTmpl.helpers({
 });
 
 itemsTmpl.events({
+    'change [name="item-filter"]'(event, instance){
+        //filter item in order-item collection
+        let currentValue = event.currentTarget.value;
+        switch (currentValue) {
+            case 'none-scheme':
+                Session.set('itemFilterState', {scheme: {$exists: false}});
+                break;
+            case 'scheme':
+                Session.set('itemFilterState', {scheme: {$exists: true}});
+                break;
+            case 'all':
+                Session.set('itemFilterState', {});
+                break;
+        }
+
+    },
     'change [name="itemId"]': function (event, instance) {
         instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
         instance.$('[name="qty"]').val('');
@@ -239,13 +258,13 @@ itemsTmpl.events({
                     closeOnConfirm: false
                 },
                 function () {
-                    if(!deletedItem.findOne({itemId: itemDoc.itemId})){
+                    if (!deletedItem.findOne({itemId: itemDoc.itemId})) {
                         deletedItem.insert(itemDoc);
                     }
                     itemsCollection.remove({itemId: itemDoc.itemId});
                     swal.close();
                 });
-        }else{
+        } else {
             destroyAction(
                 itemsCollection, {
                     _id: this._id
@@ -256,9 +275,34 @@ itemsTmpl.events({
             );
         }
 
+    },
+    'change .item-qty'(event, instance){
+        let currentQty = event.currentTarget.value;
+        let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
+        let currentItem = itemsCollection.findOne({itemId: itemId});
+        let selector = {};
+        if (currentQty != '') {
+            selector.$set = {
+                amount: currentQty * currentItem.price,
+                qty: currentQty
+            }
+        } else {
+            selector.$set = {
+                amount: 1 * currentItem.price,
+                qty: 1
+            }
+        }
+        itemsCollection.update({itemId: itemId}, selector);
+    },
+    "keypress .item-qty" (evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        return !(charCode > 31 && (charCode < 48 || charCode > 57));
     }
 });
-
+//destroy
+itemsTmpl.onDestroyed(function () {
+    Session.set('itemFilterState', {});
+});
 
 // Edit
 editItemsTmpl.onCreated(function () {

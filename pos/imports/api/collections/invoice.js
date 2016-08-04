@@ -9,7 +9,6 @@ import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 import {SelectOpts} from '../../ui/libs/select-opts.js';
 
 export const Invoices = new Mongo.Collection("pos_invoices");
-
 // Items sub schema
 Invoices.itemsSchema = new SimpleSchema({
     itemId: {

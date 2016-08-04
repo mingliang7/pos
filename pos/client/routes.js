@@ -341,3 +341,19 @@ PosRoutes.route('/prepaid-order', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/requirePassword.js';
+PosRoutes.route('/require-password', {
+    name: 'pos.requirePassword',
+    title: 'Required Password',
+    action: function (params, queryParams) {
+        Layout.main('Pos_requirePassword');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'Require Password',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});

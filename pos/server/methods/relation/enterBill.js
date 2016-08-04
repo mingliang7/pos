@@ -5,7 +5,7 @@ Meteor.methods({
     getBillId(tmpId){
         Meteor._sleepForMs(1000);
         let sale = billState.get(tmpId);
-        billState.set({}); //clearing state
+        delete  billState._obj[tmpId]; //clearing state
         return sale;
     }
 });

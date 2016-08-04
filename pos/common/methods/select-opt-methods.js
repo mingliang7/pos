@@ -92,11 +92,11 @@ SelectOptMethods.customer = new ValidatedMethod({
         if (!this.isSimulation) {
             this.unblock();
 
-            let list = [], selector = {};
+            let list = [];
             let searchText = options.searchText;
             let values = options.values;
             let params = options.params || {};
-
+            let selector = {branchId: params.branchId};
             if (searchText && params.branchId) {
                 selector = {
                     $or: [
@@ -106,9 +106,8 @@ SelectOptMethods.customer = new ValidatedMethod({
                     branchId: params.branchId
                 };
             } else if (values.length) {
-                selector = {_id: {$in: values}};
+                selector = {_id: {$in: values}, branchId: params.branchId};
             }
-
             let data = Customers.find(selector, {limit: 10});
             data.forEach(function (value) {
                 let termOrGroup = value._term ? ` (Term ${value._term.name})` : ` (Group ${value._paymentGroup.name})`;
@@ -165,18 +164,22 @@ SelectOptMethods.item = new ValidatedMethod({
             let list = [], selector = {};
             let searchText = options.searchText;
             let values = options.values;
+            let params = options.params || {};
+            if(_.isEmpty(params.scheme)) {
+                selector = {}
+            }else{
+                selector.scheme = params.scheme;
 
+            }
             if (searchText) {
-                selector = {
-                    $or: [
+                selector.$or =
+                    [
                         {_id: {$regex: searchText, $options: 'i'}},
                         {name: {$regex: searchText, $options: 'i'}}
                     ]
-                };
             } else if (values.length) {
-                selector = {_id: {$in: values}};
+                selector._id = {$in: values}
             }
-
             let data = Item.find(selector, {limit: 10});
             data.forEach(function (value) {
                 let label = value._id + ' : ' + value.name;
@@ -303,7 +306,7 @@ SelectOptMethods.paymentGroup = new ValidatedMethod({
                 let label = value.name;
                 list.push({label: label, value: value._id});
             });
-            
+
             return list;
         }
     }
