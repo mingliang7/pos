@@ -84,7 +84,7 @@ indexTmpl.helpers({
         return EnterBillTabular;
     },
     selector() {
-        return {branchId: Session.get('currentBranch')};
+        return {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
     }
 });
 

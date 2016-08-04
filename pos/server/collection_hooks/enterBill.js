@@ -142,6 +142,7 @@ EnterBills.after.remove(function (userId, doc) {
             recalculateQty(doc);
             PrepaidOrders.direct.update(doc.prepaidOrderId, {$set: {status: 'active'}});
         } else if (type.group) {
+            reduceFromInventory(doc);
             removeBillFromGroup(doc);
             let groupBill = GroupBill.findOne(doc.paymentGroupId);
             if (groupBill.invoices.length <= 0) {
@@ -150,9 +151,10 @@ EnterBills.after.remove(function (userId, doc) {
                 recalculatePaymentAfterRemoved({doc});
             }
         }else if (type.term) {
+            reduceFromInventory(doc);
             Meteor.call('insertRemovedBill', doc);
         }
-        reduceFromInventory(doc);
+
     });
 });
 
