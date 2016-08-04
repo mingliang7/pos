@@ -341,6 +341,7 @@ newTmpl.onDestroyed(function () {
     FlowRouter.query.unset();
     Session.set('saleOrderItems', undefined);
     Session.set('totalOrder', undefined);
+    deletedItem.remove({});
 });
 
 // Edit
@@ -407,7 +408,6 @@ editTmpl.helpers({
                 itemsCollection.insert(value);
             })
         });
-
         return data;
     },
     itemsCollection(){
@@ -524,6 +524,7 @@ editTmpl.onDestroyed(function () {
     FlowRouter.query.unset();
     Session.set('saleOrderItems', undefined);
     Session.set('totalOrder', undefined);
+    deletedItem.remove({});
 });
 
 // Show
