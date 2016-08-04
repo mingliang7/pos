@@ -4,7 +4,7 @@
         <div class="row ">
             <div class="col-md-2" align="center">
                 <label for="">Filter:</label>
-                <select name="item-filter" id="" style="background: white; color: #000000;">
+                <select name="item-filter" id="" style="border: none;background: white; color: #000000;">
                     <option value="all">All</option>
                     <option value="none-scheme">None Scheme</option>
                     <option value="scheme">Scheme</option>
@@ -17,9 +17,6 @@
         <hr>
         {{#if notActivatedSaleOrder}}
             {{#autoForm schema=schema id="Pos_invoiceItems"}}
-
-
-
                 <div class="row">
                     <div class="col-sm-4">
                         {{> afQuickField name="itemId" label=false}}

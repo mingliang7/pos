@@ -143,6 +143,9 @@ newTmpl.events({
             $('.prepaid-order').removeClass('toggle-list');
         }
     },
+    'click .toggle-list'(event, instance){
+        alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
+    },
     'change [name=vendorId]'(event, instance){
         if (event.currentTarget.value != '') {
             Session.set('getVendorId', event.currentTarget.value);

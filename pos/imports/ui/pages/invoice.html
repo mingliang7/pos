@@ -149,11 +149,16 @@
     <div class="box-body">
         {{#autoForm collection=collection id="Pos_invoiceUpdate" doc=data type="update"}}
             <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
-                <div class="col-md-3">
+                <div class="hidden">
                     <label for="email">Customer:<span style="color: red;">*</span> (<a href="" class="add-new-customer">Add
                         New</a>) </label>
                     {{> afQuickField name="customerId" label=false}}
                 </div>
+                <div class="col-md-3">
+                    <label for="">Customer:</label>
+                    <input type="text" readonly="true" value="{{customerId}}" class="form-control">
+                </div>
+
                 <div class="col-md-3">
                     <br>
                     {{#if isSaleOrder}}

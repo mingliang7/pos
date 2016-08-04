@@ -74,7 +74,10 @@ itemsTmpl.helpers({
             label: 'Name'
         }, {
             key: 'qty',
-            label: __(`${i18nPrefix}.qty.label`)
+            label: __(`${i18nPrefix}.qty.label`),
+            fn(value, obj, key){
+                return Spacebars.SafeString(`<input type="text" value=${value} class="item-qty">`);
+            }
         }, {
             key: 'price',
             label: __(`${i18nPrefix}.price.label`),
@@ -189,6 +192,28 @@ itemsTmpl.events({
                 itemTitle: this.itemId
             }
         );
+    },
+    'change .item-qty'(event, instance){
+        let currentQty = event.currentTarget.value;
+        let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
+        let currentItem = itemsCollection.findOne({itemId: itemId});
+        let selector = {};
+        if (currentQty != '') {
+            selector.$set = {
+                amount: currentQty * currentItem.price,
+                qty: currentQty
+            }
+        } else {
+            selector.$set = {
+                amount: 1 * currentItem.price,
+                qty: 1
+            }
+        }
+        itemsCollection.update({itemId: itemId}, selector);
+    },
+    "keypress .item-qty" (evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        return !(charCode > 31 && (charCode < 48 || charCode > 57));
     }
 });
 
