@@ -194,33 +194,52 @@ itemsTmpl.events({
         let qty = parseInt(instance.$('[name="qty"]').val());
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         let amount = math.round(qty * price, 2);
-
         // Check exist
-        let exist = itemsCollection.findOne({
-            itemId: itemId
-        });
-        if (exist) {
-            qty += parseInt(exist.qty);
-            amount = math.round(qty * price, 2);
+        Meteor.call('addScheme', {itemId}, function (err, result) {
+            if(!_.isEmpty(result[0])) {
+                result.forEach(function (item) {
+                    // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
+                    // if(schemeItem) {
+                    //     let amount = item.price * item.quantity;
+                    //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
+                    // }else{
+                        itemsCollection.insert({
+                            itemId: item.itemId,
+                            qty: item.quantity * qty,
+                            price: item.price,
+                            amount: (item.price * item.quantity) * qty,
+                            name: item.itemName
+                        });
+                    // }
+                });
+            }else{
+                let exist = itemsCollection.findOne({
+                    itemId: itemId
+                });
+                if (exist) {
+                    qty += parseInt(exist.qty);
+                    amount = math.round(qty * price, 2);
 
-            itemsCollection.update({
-                _id: exist._id
-            }, {
-                $set: {
-                    qty: qty,
-                    price: price,
-                    amount: amount
+                    itemsCollection.update({
+                        _id: exist._id
+                    }, {
+                        $set: {
+                            qty: qty,
+                            price: price,
+                            amount: amount
+                        }
+                    });
+                } else {
+                    itemsCollection.insert({
+                        itemId: itemId,
+                        qty: qty,
+                        price: price,
+                        amount: amount,
+                        name: instance.name
+                    });
                 }
-            });
-        } else {
-            itemsCollection.insert({
-                itemId: itemId,
-                qty: qty,
-                price: price,
-                amount: amount,
-                name: instance.name
-            });
-        }
+            }
+        });
     },
     // Reactive table for item
     'click .js-update-item': function (event, instance) {
