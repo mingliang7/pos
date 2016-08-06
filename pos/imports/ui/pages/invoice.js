@@ -28,7 +28,6 @@ import {Invoices} from '../../api/collections/invoice.js';
 import {Order} from '../../api/collections/order';
 import {Item} from '../../api/collections/item';
 import {deletedItem} from './invoice-items';
-import {RequirePassword} from '../../api/collections/requirePassword';
 // Tabular
 import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
 
@@ -40,7 +39,6 @@ import './customer.html';
 //methods
 import {invoiceInfo} from '../../../common/methods/invoice.js'
 import {customerInfo} from '../../../common/methods/customer.js';
-import {checkCreditLimit} from '../../../common/methods/validations/creditLimit.js';
 import {isGroupInvoiceClosed} from '../../../common/methods/invoiceGroup';
 //Tracker for customer infomation
 Tracker.autorun(function () {
@@ -49,50 +47,6 @@ Tracker.autorun(function () {
             .then(function (result) {
                 Session.set('customerInfo', result);
             });
-        checkCreditLimit.callPromise({customerId: Session.get('getCustomerId'), customerInfo: Session.get('customerInfo')})
-            .then(function (result) {
-                let customerInfo = Session.get('customerInfo');
-                let requirePassword = RequirePassword.findOne({}, {sort:{_id: -1}});
-                if (customerInfo.creditLimit && result > customerInfo.creditLimit) {
-                    if (requirePassword && requirePassword.invoiceForm) {
-                        swal({
-                            title: "Password Required!",
-                            text: `Balance Amount(${result}) > Credit Limit(${customerInfo.creditLimit}), Ask your Admin for password!`,
-                            inputType: "password",
-                            type: "input",
-                            showCancelButton: true,
-                            closeOnConfirm: false,
-                            inputPlaceholder: "Type Password"
-                        }, function (inputValue) {
-                            if (inputValue === false) {
-                                $('.reset-button').trigger('click');
-                                Session.set("getCustomerId", "");
-                                return false;
-                            }
-                            if (inputValue === "") {
-                                swal.showInputError("You need to input password!");
-                                return false
-                            }else{
-                                let inputPassword = SHA256(inputValue.trim());
-                                if(inputPassword == requirePassword.password){
-                                    swal("Message!", "Successfully", "success");
-                                    return false
-                                }else{
-                                    // $('.reset-button').trigger('click'); //reset from when wrong
-                                    // swal("Message!", "Incorrect Password!", "error");
-                                    swal.showInputError("Wrong password!");
-                                    return false;
-                                }
-                            }
-
-                        });
-                    }
-                }
-            })
-            .catch(function (err) {
-                console.log(err);
-            })
-
     }
     if (Session.get('saleOrderItems')) {
         Meteor.subscribe('pos.item', {_id: {$in: Session.get('saleOrderItems')}});
@@ -341,6 +295,7 @@ newTmpl.onDestroyed(function () {
     FlowRouter.query.unset();
     Session.set('saleOrderItems', undefined);
     Session.set('totalOrder', undefined);
+    Session.set('creditLimitAmount', undefined);
     deletedItem.remove({});
 });
 
@@ -381,8 +336,11 @@ editTmpl.events({
     'change [name="termId"]'(event, instance){
         let customerInfo = Session.get('customerInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
-            customerInfo._term.netDueIn = result.netDueIn;
-            Session.set('customerInfo', customerInfo);
+            try{
+                customerInfo._term.netDueIn = result.netDueIn ;
+                Session.set('customerInfo', customerInfo);
+            }catch (e){
+            }
         });
     }
 });
@@ -499,7 +457,6 @@ editTmpl.helpers({
                 let term = Session.get('customerInfo')._term;
 
                 let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
-                console.log(dueDate);
                 return dueDate;
             }
         }
@@ -535,7 +492,6 @@ showTmpl.onCreated(function () {
             .then((result) => {
                 this.invoice.set(result);
             }).catch(function (err) {
-                console.log(err.message);
             }
         );
     });
@@ -563,7 +519,6 @@ listSaleOrder.helpers({
         let saleOrders = Order.find({status: 'active', customerId: FlowRouter.query.get('customerId')}).fetch();
         if (deletedItem.find().count() > 0) {
             deletedItem.find().forEach(function (item) {
-                console.log(item);
                 saleOrders.forEach(function (saleOrder) {
                     saleOrder.items.forEach(function (saleItem) {
                         if (saleItem.itemId == item.itemId) {

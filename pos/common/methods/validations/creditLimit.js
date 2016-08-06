@@ -16,9 +16,12 @@ export const checkCreditLimit = new ValidatedMethod({
         customerInfo: {
             type: Object,
             blackbox: true
+        },
+        creditLimitAmount: {
+            type: Number
         }
     }).validator(),
-    run({customerId, customerInfo})
+    run({customerId, customerInfo, creditLimitAmount})
     {
         if (!this.isSimulation) {
             let total = 0;
@@ -53,7 +56,9 @@ export const checkCreditLimit = new ValidatedMethod({
                 {$group: {_id: null, totalBalance: {$sum: '$balanceAmount'}}}
             ]);
             receivePayment = _.isUndefined(payment[0]) ? 0 : payment[0].totalBalance;
-            return receivePayment + totalInvoiceOrGroupInvoice;
+            let limitAmount = receivePayment + totalInvoiceOrGroupInvoice + creditLimitAmount;
+            console.log(limitAmount);
+            return limitAmount;
         }
     }
 });

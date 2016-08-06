@@ -35,6 +35,18 @@ RequirePassword.schema = new SimpleSchema({
                 return Meteor.isClient && SelectOpts.branchForCurrentUser(false);
             }
         }
+    },
+    whiteListCustomer: {
+        type: [String],
+        optional: true,
+        autoform: {
+            type: 'universe-select',
+            multiple: true,
+            afFieldInput: {
+                uniPlaceholder: 'Please search .... (Limit 10)',
+                optionsMethod: 'pos.selectOptMethods.customer'
+            }
+        }
     }
 });
 

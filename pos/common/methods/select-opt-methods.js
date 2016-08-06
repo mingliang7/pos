@@ -96,17 +96,17 @@ SelectOptMethods.customer = new ValidatedMethod({
             let searchText = options.searchText;
             let values = options.values;
             let params = options.params || {};
-            let selector = {branchId: params.branchId};
-            if (searchText && params.branchId) {
-                selector = {
-                    $or: [
-                        {_id: {$regex: searchText, $options: 'i'}},
-                        {name: {$regex: searchText, $options: 'i'}}
-                    ],
-                    branchId: params.branchId
-                };
+            let selector = {};
+            if(!_.isEmpty(params)){
+                selector = params;
+            }
+            if (searchText) {
+                selector.$or = [
+                    {_id: {$regex: searchText, $options: 'i'}},
+                    {name: {$regex: searchText, $options: 'i'}}
+                ];
             } else if (values.length) {
-                selector = {_id: {$in: values}, branchId: params.branchId};
+                selector._id = {$in: values};
             }
             let data = Customers.find(selector, {limit: 10});
             data.forEach(function (value) {

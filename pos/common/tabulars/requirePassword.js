@@ -28,5 +28,5 @@ tabularOpts.columns = [
     {data: "branchId", title: "Branch"},
    // {data: "description", title: "Description"}
 ];
-//tabularOpts.extraFields=['_parent'];
+tabularOpts.extraFields=['whiteListCustomer'];
 export const RequirePasswordTabular = new Tabular.Table(tabularOpts);
