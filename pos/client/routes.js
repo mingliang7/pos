@@ -343,16 +343,16 @@ PosRoutes.route('/prepaid-order', {
 });
 
 import '../imports/ui/pages/requirePassword.js';
-PosRoutes.route('/require-password', {
-    name: 'pos.requirePassword',
-    title: 'Required Password',
+PosRoutes.route('/credit-validation', {
+    name: 'pos.creditValidation',
+    title: 'Credit Validation',
     action: function (params, queryParams) {
         Layout.main('Pos_requirePassword');
     },
     breadcrumb: {
         //params: ['id'],
         //queryParams: ['show', 'color'],
-        title: 'Require Password',
+        title: 'Credit Validation',
         // icon: 'cart-plus',
         parent: 'pos.home'
     }
