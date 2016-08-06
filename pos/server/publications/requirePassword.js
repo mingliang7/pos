@@ -4,7 +4,6 @@ import {Meteor} from 'meteor/meteor';
 import {RequirePassword} from '../../imports/api/collections/requirePassword';
 
 Meteor.publish('pos.requirePassword', function posrequirePassword(selector) {
-    console.log(selector);
     if(this.userId) {
         Meteor._sleepForMs(200);
         let requirePasswords = RequirePassword.find(selector);

@@ -25,10 +25,11 @@ import '../../../../core/client/components/form-footer.js';
 
 // Collection
 import {Order} from '../../api/collections/order.js';
-
+import {nullCollection} from '../../api/collections/tmpCollection';
 // Tabular
 import {OrderTabular} from '../../../common/tabulars/order.js';
-
+//import tracker
+import '../../../imports/api/tracker/creditLimitTracker';
 // Page
 import './order.html';
 import './order-items.js';
@@ -37,6 +38,8 @@ import './info-tab.html';
 import {saleOrderInfo} from '../../../common/methods/sale-order.js'
 import {customerInfo} from '../../../common/methods/customer.js';
 import {isInvoiceExist} from '../../../common/methods/sale-order';
+//import tracker
+import '../../api/tracker/creditLimitTracker';
 //Tracker for customer infomation
 Tracker.autorun(function () {
     if (Session.get("saleOrderCustomerId")) {
@@ -54,7 +57,7 @@ let indexTmpl = Template.Pos_order,
     showTmpl = Template.Pos_orderShow;
 
 // Local collection
-let itemsCollection = new Mongo.Collection(null);
+let itemsCollection = nullCollection;
 
 // Index
 indexTmpl.onCreated(function () {
@@ -78,9 +81,9 @@ indexTmpl.events({
     },
     'click .js-update' (event, instance) {
         Meteor.call("pos.isInvoiceExist", {_id: this._id}, (err, result)=> {
-            if(result.exist){
+            if (result.exist) {
                 swal('បញ្ជាក់!', `សូមធ្វើការលុប Invoice លេខ​ ${result.invoiceId} ជាមុនសិន!​​​​`, 'error');
-            }else{
+            } else {
                 alertify.order(fa('pencil', TAPi18n.__('pos.order.title')), renderTemplate(editTmpl, this));
             }
         });
@@ -88,9 +91,9 @@ indexTmpl.events({
     'click .js-destroy' (event, instance) {
         let data = this;
         Meteor.call("pos.isInvoiceExist", {_id: this._id}, (err, result)=> {
-            if(result.exist){
+            if (result.exist) {
                 swal('បញ្ជាក់!', `សូមធ្វើការលុប Invoice លេខ​ ${result.invoiceId} ជាមុនសិន!​​​​`, 'error');
-            }else{
+            } else {
                 destroyAction(
                     Order,
                     {_id: data._id},
@@ -112,13 +115,16 @@ indexTmpl.events({
 });
 
 // New
+newTmpl.onCreated(function () {
+    Meteor.subscribe('pos.requirePassword', {branchId: {$in: [Session.get('currentBranch')]}});//subscribe require password validation
+});
 newTmpl.events({
     'change [name=customerId]'(event, instance){
         if (event.currentTarget.value != '') {
             Session.set('saleOrderCustomerId', event.currentTarget.value);
         }
     }
-})
+});
 newTmpl.helpers({
     customerInfo() {
         let customerInfo = Session.get('customerInfo');
@@ -206,7 +212,6 @@ showTmpl.onCreated(function () {
             .then((result) => {
                 this.saleOrder.set(result);
             }).catch(function (err) {
-                console.log(err.message);
             }
         );
     });

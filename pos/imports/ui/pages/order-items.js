@@ -124,7 +124,9 @@ itemsTmpl.helpers({
         getItems.forEach((obj) => {
             total += obj.amount;
         });
-
+        if(Session.get('saleOrderCustomerId')) {
+            Session.set('creditLimitAmount', total);
+        }
         return total;
     }
 });

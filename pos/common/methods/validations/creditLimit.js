@@ -57,7 +57,6 @@ export const checkCreditLimit = new ValidatedMethod({
             ]);
             receivePayment = _.isUndefined(payment[0]) ? 0 : payment[0].totalBalance;
             let limitAmount = receivePayment + totalInvoiceOrGroupInvoice + creditLimitAmount;
-            console.log(limitAmount);
             return limitAmount;
         }
     }

@@ -28,6 +28,7 @@ import {Invoices} from '../../api/collections/invoice.js';
 import {Order} from '../../api/collections/order';
 import {Item} from '../../api/collections/item';
 import {deletedItem} from './invoice-items';
+import {nullCollection} from '../../api/collections/tmpCollection';
 // Tabular
 import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
 
@@ -61,7 +62,7 @@ let indexTmpl = Template.Pos_invoice,
     showTmpl = Template.Pos_invoiceShow,
     listSaleOrder = Template.listSaleOrder;
 // Local collection
-let itemsCollection = new Mongo.Collection(null);
+let itemsCollection = nullCollection;
 
 // Index
 indexTmpl.onCreated(function () {
@@ -270,7 +271,6 @@ newTmpl.helpers({
                 let term = Session.get('customerInfo')._term;
 
                 let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
-                console.log(dueDate);
                 return dueDate;
             }
         }
@@ -336,10 +336,10 @@ editTmpl.events({
     'change [name="termId"]'(event, instance){
         let customerInfo = Session.get('customerInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
-            try{
-                customerInfo._term.netDueIn = result.netDueIn ;
+            try {
+                customerInfo._term.netDueIn = result.netDueIn;
                 Session.set('customerInfo', customerInfo);
-            }catch (e){
+            } catch (e) {
             }
         });
     }

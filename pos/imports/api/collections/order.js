@@ -69,7 +69,6 @@ Order.schema = new SimpleSchema({
                 optionsMethod: 'pos.selectOptMethods.customer',
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
-                      debugger
                         let currentBranch = Session.get('currentBranch');
                         return {branchId: currentBranch};
                     }

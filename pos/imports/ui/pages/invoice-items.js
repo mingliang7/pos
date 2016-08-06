@@ -26,7 +26,7 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {RequirePassword} from '../../api/collections/requirePassword';
+
 
 import {ItemsSchema} from '../../api/collections/order-items.js';
 import {Invoices} from '../../api/collections/invoice.js';
@@ -38,13 +38,11 @@ editItemsTmpl = Template.Pos_invoiceItemsEdit;
 
 //methods
 import {removeItemInSaleOrder} from '../../../common/methods/sale-order';
-import {checkCreditLimit} from '../../../common/methods/validations/creditLimit.js';
 
 // Local collection
 var itemsCollection;
 export const deletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
 Tracker.autorun(function () {
-    console.log('tracker always run has ha');
     if (FlowRouter.query.get('customerId')) {
         let sub = Meteor.subscribe('pos.activeSaleOrder', {
             customerId: FlowRouter.query.get('customerId'),
@@ -61,55 +59,6 @@ Tracker.autorun(function () {
             }, 500);
         }
 
-    }
-    if(Session.get('creditLimitAmount' ||  Session.get('getCustomerId'))) {
-        checkCreditLimit.callPromise({customerId: Session.get('getCustomerId'), customerInfo: Session.get('customerInfo'), creditLimitAmount: Session.get('creditLimitAmount')})
-            .then(function (result) {
-                let customerInfo = Session.get('customerInfo');
-                let requirePassword = RequirePassword.findOne({}, {sort:{_id: -1}});
-                if (customerInfo.creditLimit && result > customerInfo.creditLimit) {
-                    if (requirePassword && requirePassword.invoiceForm &&
-                        !_.includes(requirePassword.whiteListCustomer, Session.get('getCustomerId'))) {
-                        swal({
-                            title: "Password Required!",
-                            text: `Balance Amount(${result}) > Credit Limit(${customerInfo.creditLimit}), Ask your Admin for password!`,
-                            inputType: "password",
-                            type: "input",
-                            showCancelButton: true,
-                            closeOnConfirm: false,
-                            inputPlaceholder: "Type Password"
-                        }, function (inputValue) {
-                            if (inputValue === false) {
-                                $('.reset-button').trigger('click');
-                                itemsCollection.remove({});
-                                Session.set("getCustomerId", "");
-                                Session.set("creditLimitAmount", undefined);
-                                return false;
-                            }
-                            if (inputValue === "") {
-                                swal.showInputError("You need to input password!");
-                                return false
-                            }else{
-                                let inputPassword = SHA256(inputValue.trim());
-                                if(inputPassword == requirePassword.password){
-                                    swal("Message!", "Successfully", "success");
-                                    Session.set("creditLimitAmount", undefined);
-                                    return false
-                                }else{
-                                    // $('.reset-button').trigger('click'); //reset from when wrong
-                                    // swal("Message!", "Incorrect Password!", "error");
-                                    swal.showInputError("Wrong password!");
-                                    return false;
-                                }
-                            }
-
-                        });
-                    }
-                }
-            })
-            .catch(function (err) {
-                console.log(err);
-            })
     }
 });
 // Page
@@ -135,7 +84,6 @@ itemsTmpl.onRendered(function () {
 
 itemsTmpl.helpers({
     notActivatedSaleOrder(){
-        console.log('inside not activated');
         if (FlowRouter.query.get('customerId')) {
             return false;
         }
@@ -207,8 +155,9 @@ itemsTmpl.helpers({
             total += obj.amount;
         });
         total = FlowRouter.query.get('customerId') ? 0 : total;
-        console.log('in total state');
-        Session.set('creditLimitAmount', total);
+        if(Session.get('getCustomerId')) {
+            Session.set('creditLimitAmount', total);
+        }
         return total;
     }
 });

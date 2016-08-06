@@ -120,18 +120,6 @@ showTmpl.helpers({
 
 // Hook
 let hooksObject = {
-    before:{
-        insert(doc){
-            let encryptPassword = SHA256(doc.password);
-            doc.password = encryptPassword;
-            return doc;
-        },
-        update(doc){
-            let encryptPassword = SHA256(doc.$set.password);
-            doc.$set.password = encryptPassword;
-            return doc;
-        }
-    },
     onSuccess (formType, result) {
         if (formType == 'update') {
             alertify.requirePassword().close();
