@@ -357,3 +357,19 @@ PosRoutes.route('/credit-validation', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/penalty.js';
+PosRoutes.route('/penalty', {
+    name: 'pos.penalty',
+    title: 'Penalty',
+    action: function (params, queryParams) {
+        Layout.main('Pos_penalty');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'Penalty',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
