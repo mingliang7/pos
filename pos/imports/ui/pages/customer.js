@@ -24,7 +24,7 @@ import '../../../../core/client/components/form-footer.js';
 
 // Collection
 import {Customers} from '../../api/collections/customer.js';
-
+import {balanceTmpCollection} from '../../api/collections/tmpCollection';
 // Tabular
 import {CustomerTabular} from '../../../common/tabulars/customer.js';
 
@@ -53,9 +53,10 @@ indexTmpl.onCreated(function () {
     });
 });
 
-indexTmpl.onDestroyed(()=>{
-  ReactiveTable.clearFilters(['pos.customerByBranchFilter']);
-})
+indexTmpl.onDestroyed(()=> {
+    ReactiveTable.clearFilters(['pos.customerByBranchFilter']);
+    balanceTmpCollection.remove({});
+});
 
 indexTmpl.helpers({
     tabularTable(){
@@ -82,15 +83,15 @@ indexTmpl.helpers({
             {key: '_term.name', label: __(`${i18nPrefix}.term.label`)},
             {key: '_paymentGroup.name', label: __(`${i18nPrefix}.paymentGroup.label`)},
             {
-              key: '_id',
-              label(){
-                return ''
-              },
-              headerClass: function () {
-                  let css = 'col-receive-payment cursor-pointer';
-                  return css;
-              },
-              tmpl: buttonActionTmpl, sortable: false
+                key: '_id',
+                label(){
+                    return ''
+                },
+                headerClass: function () {
+                    let css = 'col-receive-payment cursor-pointer';
+                    return css;
+                },
+                tmpl: buttonActionTmpl, sortable: false
             },
             {
                 key: '_id',
@@ -127,7 +128,7 @@ indexTmpl.events({
         alertify.customerShow(fa('eye', TAPi18n.__('pos.customer.title')), renderTemplate(showTmpl, this));
     },
     'click .go-to-receive-payment'(event, instance){
-       FlowRouter.go('pos.receivePayment', { customerId: this._id });
+        FlowRouter.go('pos.receivePayment', {customerId: this._id});
     }
 });
 
@@ -141,14 +142,14 @@ newTmpl.helpers({
         return Customers;
     },
     isTerm(){
-        return Template.instance().paymentType.get()=="Term";
+        return Template.instance().paymentType.get() == "Term";
     },
     isGroup(){
-        return Template.instance().paymentType.get()=="Group";
+        return Template.instance().paymentType.get() == "Group";
     }
 });
 newTmpl.events({
-    'change [name="paymentType"]'(event,instance){
+    'change [name="paymentType"]'(event, instance){
         instance.paymentType.set($(event.currentTarget).val());
     }
 });
@@ -161,7 +162,7 @@ editTmpl.onCreated(function () {
     });
 });
 editTmpl.events({
-    'change [name="paymentType"]'(event,instance){
+    'change [name="paymentType"]'(event, instance){
         instance.paymentType.set($(event.currentTarget).val());
     }
 });
@@ -175,10 +176,10 @@ editTmpl.helpers({
         return data;
     },
     isTerm(){
-        return Template.instance().paymentType.get()=="Term";
+        return Template.instance().paymentType.get() == "Term";
     },
     isGroup(){
-        return Template.instance().paymentType.get()=="Group";
+        return Template.instance().paymentType.get() == "Group";
     }
 });
 
