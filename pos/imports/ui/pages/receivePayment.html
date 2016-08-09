@@ -25,33 +25,47 @@
                         </div>
                         <hr>
                         <div class="row">
-
                             <div class="col-xs-3">
-                                {{> afQuickField name="paymentDate"}}
+                                <label for=""><i class="fa fa-user"></i> Customer Balance</label>
+                                {{> afQuickField name="customerBalance" label=false value=customerBalance readonly=true}}
                             </div>
                             <div class="col-xs-3">
-                                {{> afQuickField name="exchangeRate" readonly=true}}
+                                <label for="">
+                                    <i class="fa fa-calendar"></i> Date*
+                                </label>
+                                {{> afQuickField label=false name="paymentDate"}}
+                            </div>
+                            <div class="col-xs-3">
+                                <label for="">
+                                    <i class="fa fa-credit-card"></i> Payment Methods
+                                </label>
+                                {{> afQuickField name="paymentMethods" label=false}}<br>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-3">
-                                {{> afQuickField name="customerBalance" value=customerBalance readonly=true}}
-                            </div>
-                            <div class="col-xs-3">
-                                {{> afQuickField name="accountReceivable"}}
-                            </div>
-                        </div>
-
-
-                        <div class="row">
-                            <div class="col-xs-3">
-                                {{> afQuickField name="paymentMethods"}}<br>
-                            </div>
                             <div class="col-xs-3">
                                 {{> afQuickField name="referenceId"}}<br>
                             </div>
                             <div class="col-xs-3">
-                                {{> afQuickField name="depositTo"}}<br>
+                                <label for="">
+                                    <i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i> Deposit to
+                                </label>
+                                {{> afQuickField name="depositTo" label=false}}<br>
+                            </div>
+
+                            <div class="col-xs-3">
+                                {{> afQuickField name="accountReceivable"}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 ">
+                                <b>
+                                    <span class="text-green"><i class="fa fa-dot-circle-o"></i> Late Invoice</span>: {{{countLateInvoice}}}
+
+                                    <p class="text-green">
+                                        <input type="checkbox" id="penalty" checked> Penalty <i class="fa fa-credit-card-alt"></i>
+                                    </p>
+                                </b>
                             </div>
                         </div>
                     </div>
@@ -80,6 +94,7 @@
                                             <td class="text-right"><strong>Org.Amount</strong></td>
                                             <td class="text-right"><strong>Amount Due</strong></td>
                                             <td class="text-right"><strong>Discount(%)</strong></td>
+                                            <td class="text-right"><strong>Penalty</strong></td>
                                             <td class="text-right"><strong>Actual Pay</strong></td>
                                             <td class="text-right"><strong>Paid</strong></td>
                                         </tr>
@@ -100,14 +115,18 @@
                                                                        class="select-invoice">
                                                             {{/if}}
                                                         </td>
-                                                        <td class="text-center">{{_id}}</td>
+                                                        <td class="text-center">{{{checkLate _id}}}{{_id}}</td>
                                                         <td class="text-center">{{isInvoiceDate}}</td>
                                                         <td class="text-center">{{voucherId}}</td>
                                                         <td class="text-right">{{originAmount}}</td>
                                                         <td class="text-right">{{dueAmount}}</td>
                                                         <td class="text-right"><input type="text" class="discount"
                                                                                       value="{{discount}}"></td>
-                                                        <td class="text-right"><input class="text-right actual-pay" value="{{total}}" style="background: none; border: none;" readonly="true">
+                                                        <td class="text-right text-red">{{getPenalty _id}}</td>
+                                                        <td class="text-right"><input class="text-right actual-pay"
+                                                                                      value="{{total}}"
+                                                                                      style="background: none; border: none;"
+                                                                                      readonly="true">
                                                         </td>
                                                         <td class="text-right"><input type="text"
                                                                                       value="{{#if hasAmount}}{{total}}{{/if}}"

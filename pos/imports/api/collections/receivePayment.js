@@ -3,6 +3,10 @@ ReceivePayment.schema = new SimpleSchema({
     invoiceId: {
         type: String
     },
+    penalty: {
+        type: Number,
+        decimal: true,
+    },
     discount: {
         type: Number,
         decimal: true,

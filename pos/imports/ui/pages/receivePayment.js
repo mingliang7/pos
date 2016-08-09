@@ -1,5 +1,6 @@
 //components
-
+import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
+import {renderTemplate} from '../../../../core/client/libs/render-template.js';
 //collections
 import {Invoices} from '../../api/collections/invoice';
 import {GroupInvoice} from '../../api/collections/groupInvoice';
@@ -13,8 +14,10 @@ import {receivePayment} from '../../../common/methods/receivePayment';
 
 //page
 import './receivePayment.html';
+import './penalty.html';
 //methods
-
+let countLateInvoice = new ReactiveVar(0);
+let isPenalty = new ReactiveVar(true);
 let indexTmpl = Template.Pos_receivePayment;
 Tracker.autorun(function () {
     if (Session.get('customerId')) {
@@ -40,10 +43,21 @@ Tracker.autorun(function () {
             });
         }
         if (invoiceSub.ready()) {
+            let invoices = customer.termId ? Invoices.find({}).fetch() : GroupInvoice.find({}).fetch();
+            Meteor.call('calculateLateInvoice', {invoices}, function (err, result) {
+                countLateInvoice.set(result);
+            });
             setTimeout(function () {
                 swal.close()
             }, 500);
         }
+    }
+    if (Session.get('createPenalty')) {
+        let customer = getCustomerInfo(Session.get('customerId'));
+        let invoices = customer.termId ? Invoices.find({}).fetch() : GroupInvoice.find({}).fetch();
+        Meteor.call('calculateLateInvoice', {invoices}, function (err, result) {
+            countLateInvoice.set(result);
+        });
     }
     if (Session.get('invoices')) {
         Meteor.subscribe('pos.receivePayment', {
@@ -55,6 +69,7 @@ Tracker.autorun(function () {
     }
 });
 indexTmpl.onCreated(function () {
+    createNewAlertify('penalty');
     Session.set('amountDue', 0);
     Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0, invoiceId: ''});
     Session.get('disableTerm', false);
@@ -85,6 +100,21 @@ indexTmpl.rendered = function () {
     Session.set('customerId', FlowRouter.getParam('customerId'));
 };
 indexTmpl.helpers({
+    getPenalty(_id){
+        let invoice = countLateInvoice.get();
+        return (_.isEmpty(invoice.calculatePenalty) || !isPenalty.get()) ? 0 : (invoice.calculatePenalty[_id] || 0);
+    },
+    checkLate(_id){
+        let invoice = countLateInvoice.get();
+        return _.includes(invoice.lateInvoices, _id) && isPenalty.get() ? '<b class="text-red"><i class="fa fa-exclamation-circle"></i></b> ' : '';
+    },
+    countLateInvoice(){
+        let createOne = countLateInvoice.get().count > 0 ? ", Penalty is not exist. <a class='cursor-pointer create-penalty'>Create Penalty <i class='fa fa-pencil-square-o'></i></a>" : '';
+        if (isPenalty.get()) {
+            return countLateInvoice.get().penaltyNotExist ? `<span class="text-green">${countLateInvoice.get().count}</span>` + ` ${createOne}` : countLateInvoice.get().count;
+        }
+        return 0;
+    },
     discount(){
         return checkTerm(this);
     },
@@ -157,6 +187,7 @@ indexTmpl.helpers({
             this.receivedPay = valueAfterDiscount;
             this.discount = discount;
             saleInvoices[this._id] = this;
+            saleInvoices[this._id].penalty = isPenalty.get() ? (countLateInvoice.get().calculatePenalty[this._id] || 0) : 0;
             saleInvoices[this._id].dueAmount = lastPayment == 0 ? valueAfterDiscount : lastPayment;
             Session.set('invoicesObj', saleInvoices);
             return true;
@@ -169,6 +200,7 @@ indexTmpl.helpers({
             this.receivedPay = lastPayment;
             this.discount = 0;
             saleInvoices[this._id] = this;
+            saleInvoices[this._id].penalty = isPenalty.get() ? (countLateInvoice.get().calculatePenalty[this._id] || 0) : 0;
             saleInvoices[this._id].dueAmount = lastPayment == 0 ? this.total : lastPayment;
             Session.set('invoicesObj', saleInvoices);
             return true;
@@ -183,7 +215,7 @@ indexTmpl.helpers({
             return 0;
         } else {
             for (let k in invoicesObjObj) {
-                totalPaid += invoicesObjObj[k].receivedPay
+                totalPaid += invoicesObjObj[k].receivedPay + invoicesObjObj[k].penalty
             }
             return totalPaid;
         }
@@ -239,9 +271,10 @@ indexTmpl.helpers({
     },
     total(){
         let discount = this.status == 'active' ? checkTerm(this) : 0;
+        let penalty = countLateInvoice.get().calculatePenalty[this._id];
         let valueAfterDiscount = this.total * (1 - (discount / 100));
         let lastPayment = getLastPayment(this._id);
-        return lastPayment == 0 ? numeral(valueAfterDiscount).format('0,0.00') : numeral(lastPayment).format('0,0.00');
+        return lastPayment == 0 ? numeral(valueAfterDiscount + penalty).format('0,0.00') : numeral(lastPayment + penalty).format('0,0.00');
     },
     originAmount(){
         return numeral(this.total).format('0,0.00');
@@ -258,12 +291,15 @@ indexTmpl.helpers({
 });
 
 indexTmpl.events({
+    'change #penalty'(event, instance){
+        isPenalty.set($(event.currentTarget).prop('checked'));
+        clearChecbox();
+    },
     'change .disable-term'(event, instance){
         if ($(event.currentTarget).prop('checked')) {
             Session.set('disableTerm', true);
             Session.set('discount', {discountIfPaidWithin: 0, discountPerecentages: 0})
         } else {
-            console.log('in else disable term')
             getCustomerTerm(Session.get('customerId'));
         }
     },
@@ -281,11 +317,12 @@ indexTmpl.events({
     },
     'click .select-invoice' (event, instance) {
         var selectedInvoices = Session.get('invoicesObj');
+        let penalty = countLateInvoice.get().calculatePenalty[this._id] || 0;
         let lastPayment = getLastPayment(this._id);
         var discount = $(event.currentTarget).parents('invoice-parents').find('.discount').val();
         if ($(event.currentTarget).prop('checked')) {
-            $(event.currentTarget).parents('.invoice-parents').find('.total').val(lastPayment == 0 ? this.total : lastPayment).change();
-
+            $(event.currentTarget).parents('.invoice-parents').find('.total').val(lastPayment == 0 ? this.total + penalty : lastPayment + penalty).change();
+            debugger
         } else {
             delete selectedInvoices[this._id];
             selectedInvoices.count -= 1;
@@ -312,6 +349,7 @@ indexTmpl.events({
             }
             invoicesObj.forEach((sale) => {
                 let lastPayment = getLastPayment(sale._id);
+                sale.penalty = isPenalty.get() ? (countLateInvoice.get().calculatePenalty[sale._id] || 0) : 0;
                 sale.dueAmount = lastPayment == 0 ? sale.total : lastPayment;
                 sale.receivedPay = lastPayment == 0 ? sale.total : lastPayment; //receive amount of pay
                 saleObj[sale._id] = sale;
@@ -352,6 +390,7 @@ indexTmpl.events({
         var selectedInvoices = Session.get('invoicesObj');
         var lastPayment = getLastPayment(this._id);
         var discount = $(event.currentTarget).parents('.invoice-parents').find('.discount').val(); // get discount
+        var penalty = isPenalty.get() ? countLateInvoice.get().calculatePenalty[this._id] || 0 : 0;
         if (event.currentTarget.value == '' || event.currentTarget.value == '0') {
             if (_.has(selectedInvoices, this._id)) {
                 selectedInvoices.count -= 1;
@@ -366,12 +405,13 @@ indexTmpl.events({
             }
             selectedInvoices[this._id] = this;
             selectedInvoices[this._id].discount = parseFloat(discount);
+            selectedInvoices[this._id].penalty = penalty;
             selectedInvoices[this._id].receivedPay = parseFloat(event.currentTarget.value);
             selectedInvoices[this._id].dueAmount = lastPayment == 0 ? this.total * (1 - parseFloat(discount / 100)) : lastPayment;
             $(event.currentTarget).parents('.invoice-parents').find('.select-invoice').prop('checked', true);
             if (parseFloat(event.currentTarget.value) > selectedInvoices[this._id].dueAmount) { //check if entering payment greater than dueamount
                 selectedInvoices[this._id].receivedPay = selectedInvoices[this._id].dueAmount;
-                $(event.currentTarget).parents('.invoice-parents').find('.total').val(selectedInvoices[this._id].dueAmount);
+                $(event.currentTarget).parents('.invoice-parents').find('.total').val(selectedInvoices[this._id].dueAmount + penalty);
             }
             Session.set('invoicesObj', selectedInvoices);
             $(event.currentTarget).val(numeral(event.currentTarget.value).format('0,0.00'));
@@ -380,9 +420,15 @@ indexTmpl.events({
     "keypress .total" (evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
         return !(charCode > 31 && (charCode < 48 || charCode > 57));
+    },
+    "click .create-penalty"(event, instance){
+        alertify.penalty(fa('', 'Create New Penalty'), renderTemplate(Template.Pos_penaltyNew));
     }
 });
-
+indexTmpl.onDestroyed(function () {
+    countLateInvoice.set(0);
+    Session.set('createPenalty', undefined);
+});
 //functions
 function clearChecbox() {
     Session.set('invoiceId', 0); //clear checkbox
@@ -472,7 +518,6 @@ let hooksObject = {
                 receivePayment.callPromise({paymentDate, invoicesObj, branch})
                     .then(function (result) {
                         clearChecbox();
-                        console.log(result)
                         swal({
                             title: "Receive Payment",
                             text: "Successfully paid!",
