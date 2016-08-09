@@ -92,7 +92,9 @@ newTmpl.helpers({
     }
 });
 
-
+newTmpl.onDestroyed(function () {
+    Session.set('createPenalty', undefined);
+});
 // Edit
 
 
@@ -130,6 +132,8 @@ let hooksObject = {
     onSuccess (formType, result) {
         if (formType == 'update') {
             alertify.penalty().close();
+        }else{
+            Session.set('createPenalty', true);
         }
         displaySuccess();
     },
