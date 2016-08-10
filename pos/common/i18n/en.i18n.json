@@ -12,7 +12,8 @@
       "rep": "Representative",
       "stockLocation": "Stock Location",
       "invoice": "Invoice",
-      "enterBill": "Enter Bill"
+      "enterBill": "Enter Bill",
+      "lendingStock": "Lending Stock"
     },
     "home": {
       "title": "Home",
@@ -393,7 +394,7 @@
         "amount": {
           "label": "Amount"
         },
-        "invoiceDate": {
+        "enterBillDate": {
           "label": "Date"
         },
         "vendorId": {
@@ -411,23 +412,23 @@
         "total": {
           "label": "Total"
         },
-        "subTotal":{
-          "label":"SubTotal"
+        "subTotal": {
+          "label": "SubTotal"
         },
-        "discount":{
-          "label":"Discount"
+        "discount": {
+          "label": "Discount"
         },
-        "status":{
-          "label":"Status"
+        "status": {
+          "label": "Status"
         },
         "branchId": {
           "label": "Branch"
         }
       }
     },
-    "custom":{
-      "saveAndPrint":"Save & Print",
-      "pay":"Pay"
+    "custom": {
+      "saveAndPrint": "Save & Print",
+      "pay": "Pay"
     },
     "locationTransfer": {
       "title": "Location Transfer",
@@ -466,14 +467,65 @@
         "total": {
           "label": "Total"
         },
-        "subTotal":{
-          "label":"SubTotal"
+        "subTotal": {
+          "label": "SubTotal"
         },
-        "discount":{
-          "label":"Discount"
+        "discount": {
+          "label": "Discount"
         },
-        "status":{
-          "label":"Status"
+        "status": {
+          "label": "Status"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "lendingStock": {
+      "title": "Lending Stock",
+      "invoiceAction": "Lending Stock",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "lendingStockDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "stockLocationId": {
+          "label": "Stock Location"
+        },
+        "repId": {
+          "label": "Staff"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "subTotal": {
+          "label": "SubTotal"
+        },
+        "discount": {
+          "label": "Discount"
+        },
+        "status": {
+          "label": "Status"
         },
         "branchId": {
           "label": "Branch"
