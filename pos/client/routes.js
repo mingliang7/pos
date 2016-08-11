@@ -373,3 +373,19 @@ PosRoutes.route('/penalty', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/paymentTransactionList.js';
+PosRoutes.route('/payment-transaction-list', {
+    name: 'pos.paymentTransactionList',
+    title: 'Receive Payment Transaction',
+    action: function (params, queryParams) {
+        Layout.main('Pos_paymentTransaction');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'Receive Payment Transaction',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
