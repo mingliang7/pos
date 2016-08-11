@@ -374,6 +374,22 @@ PosRoutes.route('/penalty', {
     }
 });
 
+
+import '../imports/ui/pages/lendingStock.js';
+PosRoutes.route('/lending-stock', {
+    name: 'pos.lendingStock',
+    title: 'LendingStock',
+    action: function (params, queryParams) {
+        Layout.main('Pos_lendingStock');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'LendingStock',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
 import '../imports/ui/pages/paymentTransactionList.js';
 PosRoutes.route('/payment-transaction-list', {
     name: 'pos.paymentTransactionList',

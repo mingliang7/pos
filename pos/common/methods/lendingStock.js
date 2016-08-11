@@ -5,10 +5,10 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 
 // Collection
-import {EnterBills} from '../../imports/api/collections/enterBill.js';
+import {LendingStocks} from '../../imports/api/collections/lendingStock.js';
 // Check user password
-export const EnterBillInfo = new ValidatedMethod({
-    name: 'pos.enterBillInfo',
+export const LendingStockInfo = new ValidatedMethod({
+    name: 'pos.lendingStockInfo',
     mixins: [CallPromiseMixin],
     validate: new SimpleSchema({
         _id: {
@@ -19,7 +19,7 @@ export const EnterBillInfo = new ValidatedMethod({
         _id
     }) {
         if (!this.isSimulation) {
-            let enterBill = EnterBills.aggregate([{
+            let lendingStock = LendingStocks.aggregate([{
                 $unwind: '$items'
             }, {
                 $lookup: {
@@ -36,7 +36,7 @@ export const EnterBillInfo = new ValidatedMethod({
                     data: {
                         $addToSet: {
                             _id: '$_id',
-                            enterBillDate: '$enterBillDate',
+                            lendingStockDate: '$lendingStockDate',
                             des: '$des',
                             vendor: '$_vendor.name',
                             total: '$total'
@@ -54,9 +54,9 @@ export const EnterBillInfo = new ValidatedMethod({
                 }
             }, {
                 $unwind: '$data'
-            }])
+            }]);
 
-            return enterBill[0];
+            return lendingStock[0];
         }
     }
 });
