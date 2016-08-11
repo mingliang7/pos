@@ -28,7 +28,8 @@
                     <a href="{{pathFor 'pos.invoice'}}">
                         <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.invoice"}}</span>
                     </a>
-                </li><li class="{{isActiveRoute name='pos.receivePayment'}}">
+                </li>
+                <li class="{{isActiveRoute name='pos.receivePayment'}}">
                     <a href="{{pathFor 'pos.receivePayment'}}">
                         <i class="fa fa-circle-o"></i> <span>Receive Payment</span>
                     </a>
@@ -69,6 +70,11 @@
                         <i class="fa fa-circle-o"></i> <span>Pay Bill</span>
                     </a>
                 </li>
+                <li class="{{isActiveRoute name='pos.lendingStock'}}">
+                    <a href="{{pathFor 'pos.lendingStock'}}">
+                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.lendingStock"}}</span>
+                    </a>
+                </li>
             </ul>
         </li>
         <li class="treeview">
@@ -83,7 +89,8 @@
                         <i class="fa fa-circle-o" aria-hidden="true"></i>
                         <span>{{_ "pos.sidebarMenu.stockLocation"}}</span>
                     </a>
-                </li>   <li class="{{isActiveRoute name='pos.locationTransfer'}}">
+                </li>
+                <li class="{{isActiveRoute name='pos.locationTransfer'}}">
                     <a href="{{pathFor 'pos.locationTransfer'}}">
                         <i class="fa fa-circle-o" aria-hidden="true"></i>
                         <span>Location Transfer</span>
