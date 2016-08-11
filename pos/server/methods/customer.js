@@ -8,7 +8,10 @@ Meteor.methods({
         let customer = Customers.findOne(customerId);
         let totalAmountDue = 0;
         let selector = {customerId: customerId, status: {$in: ['active', 'partial']}};
-        let invoices = (customer && customer.termId) ? Invoices.find(selector) : GroupInvoice.find({vendorOrCustomerId: customerId, status: {$in: ['active', 'partial']}});
+        let invoices = (customer && customer.termId) ? Invoices.find(selector) : GroupInvoice.find({
+            vendorOrCustomerId: customerId,
+            status: {$in: ['active', 'partial']}
+        });
         if (invoices.count() > 0) {
             invoices.forEach(function (invoice) {
                 let receivePayments = ReceivePayment.find({invoiceId: invoice._id}, {sort: {_id: 1, paymentDate: 1}});
@@ -21,5 +24,8 @@ Meteor.methods({
             });
         }
         return totalAmountDue;
+    },
+    getCustomer({customerId}){
+        return Customers.findOne(customerId);
     }
 });
