@@ -374,6 +374,7 @@ PosRoutes.route('/penalty', {
     }
 });
 
+
 import '../imports/ui/pages/lendingStock.js';
 PosRoutes.route('/lending-stock', {
     name: 'pos.lendingStock',
@@ -385,6 +386,21 @@ PosRoutes.route('/lending-stock', {
         //params: ['id'],
         //queryParams: ['show', 'color'],
         title: 'LendingStock',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
+import '../imports/ui/pages/paymentTransactionList.js';
+PosRoutes.route('/payment-transaction-list', {
+    name: 'pos.paymentTransactionList',
+    title: 'Receive Payment Transaction',
+    action: function (params, queryParams) {
+        Layout.main('Pos_paymentTransaction');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'Receive Payment Transaction',
         // icon: 'cart-plus',
         parent: 'pos.home'
     }
