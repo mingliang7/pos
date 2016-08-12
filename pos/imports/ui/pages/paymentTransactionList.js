@@ -50,7 +50,7 @@ indexTmpl.helpers({
         return PaymentTransactionListTabular;
     },
     selector() {
-        return {branchId: Session.get('currentBranch')};
+        return {branchId: Session.get('currentBranch'), status: {$in: ['closed', 'partial']}};
     }
 
 });
@@ -64,8 +64,19 @@ indexTmpl.events({
         // alertify.penalty(fa('pencil', TAPi18n.__('pos.penalty.title')), renderTemplate(editTmpl, this));
     },
     'click .js-destroy' (event, instance) {
-
-
+        let doc = this;
+        swal({
+            title: "Are you sure?",
+            text: `ធ្វើការលុបវិក័យប័ត្របង់ប្រាក់លេខ  ${this._id}`,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            closeOnConfirm: false
+        }, function () {
+            Meteor.call('removedReceivePayment', {doc});
+            swal("Deleted!", `វិក័យប័ត្របង់ប្រាក់លេខ ${doc._id} បានលុបដោយជោគជ័យ`, "success");
+        });
     },
     'click .js-display' (event, instance) {
     }

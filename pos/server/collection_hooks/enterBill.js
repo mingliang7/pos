@@ -330,7 +330,7 @@ function recalculatePayment({doc,preDoc}) {
                     balanceAmount: totalChanged
                 }
             }, {multi: true});
-            PayBills.direct.remove({billId: billId, dueAmount: {$lte: 0}});
+            PayBills.remove({billId: billId, dueAmount: {$lte: 0}});
         }
     }
 }

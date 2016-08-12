@@ -21,6 +21,7 @@ tabularOpts.name = 'pos.paymentTransaction';
 tabularOpts.collection = ReceivePayment;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_paymentTransactionAction},
+    {data: "_id", title: '#ID'},
     {data: "invoiceId", title: "Invoice ID"},
     {
         data: "paymentDate",
@@ -41,31 +42,44 @@ tabularOpts.columns = [
     },
     {
         data: "dueAmount",
+        title: "Actual Due Amount",
+        render: function(val, type,doc) {
+            let recalDueAmountWithDiscount = val / (1 - (doc.discount / 100));
+            return numeral(recalDueAmountWithDiscount).format('0,0.00');
+        }
+    },
+    {data: "discount",title: "Discount(%)"},
+    {
+        data: "dueAmount",
         title: 'Due Amount',
-        render: function(val) {
+        render: function (val) {
             return numeral(val).format('0,0.00');
         }
     },
     {
         data: "paidAmount",
         title: "Paid Amount",
-        render: function(val) {
+        render: function (val) {
             return numeral(val).format('0,0.00');
         }
     },
     {
         data: 'balanceAmount',
         title: "Balance Amount",
-        render: function(val) {
-            if(val > 0) {
+        render: function (val) {
+            if (val > 0) {
                 return `<span class="text-red">${numeral(val).format('0,0.00')}</span>`
             }
             return numeral(val).format('0,0.00');
         }
+    },
+    {
+        data: 'paymentType',
+        title: 'Type'
     }
 
 // {data: "description", title: "Description"}
 ]
 ;
-//tabularOpts.extraFields=['_parent'];
+// tabularOpts.extraFields=['_parent'];
 export const PaymentTransactionListTabular = new Tabular.Table(tabularOpts);

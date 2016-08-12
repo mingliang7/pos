@@ -1,5 +1,6 @@
 import {EnterBills} from '../../imports/api/collections/enterBill';
 import {PayBills} from '../../imports/api/collections/payBill';
+import {RemoveEnterBill} from '../../imports/api/collections/removedCollection';
 Meteor.methods({
     insertRemovedBill(doc){
         if (doc.billType == 'term' && (doc.status == 'partial' || doc.status == 'closed')) {
@@ -7,6 +8,6 @@ Meteor.methods({
         }
         doc.status = 'removed';
         doc._id = `${doc._id}R${moment().format('YYYY-MMM-DD-HH:mm')}`;
-        EnterBills.direct.insert(doc);
+        RemoveEnterBill.insert(doc);
     }
 });

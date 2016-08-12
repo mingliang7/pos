@@ -5,3 +5,7 @@ import {PayBills} from '../../imports/api/collections/payBill';
 PayBills.before.insert(function (userId, doc) {
     doc._id = idGenerator.gen(PayBills, 9);
 });
+
+PayBills.after.remove(function(userId, doc) {
+    Meteor.call('insertRemovedPayBill', doc);
+});

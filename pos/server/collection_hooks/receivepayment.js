@@ -4,6 +4,7 @@ import {ReceivePayment} from '../../imports/api/collections/receivePayment';
 import {Invoices} from '../../imports/api/collections/invoice';
 import {GroupInvoice} from '../../imports/api/collections/groupInvoice';
 ReceivePayment.before.insert(function (userId, doc) {
+    console.log(doc._id);
     doc._id = idGenerator.genWithPrefix(ReceivePayment, `${doc.branchId}-`, 9);
 });
 
