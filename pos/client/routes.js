@@ -405,3 +405,18 @@ PosRoutes.route('/payment-transaction-list', {
         parent: 'pos.home'
     }
 });
+import '../imports/ui/pages/exchangeRingPull.js';
+PosRoutes.route('/exchange-ring-pull', {
+    name: 'pos.exchangeRingPull',
+    title: 'Exchange Ring Pull',
+    action: function (params, queryParams) {
+        Layout.main('Pos_exchangeRingPull');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'Exchange Ring Pull',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
