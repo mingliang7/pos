@@ -76,6 +76,16 @@ tabularOpts.columns = [
     {
         data: 'paymentType',
         title: 'Type'
+    },
+    {
+        data: 'status',
+        title: 'Status',
+        render: function(val) {
+            if(val == 'closed') {
+                return `<span class="label label-success">${val}</span>`
+            }
+            return `<span class="label label-danger">${val}</span>`
+        }
     }
 
 // {data: "description", title: "Description"}
