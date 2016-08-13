@@ -44,7 +44,7 @@ let indexTmpl = Template.Pos_customer,
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('customer', {size: 'lg'});
-    createNewAlertify('customerShow',);
+    createNewAlertify('customerShow');
 
     // Reactive table filter
     this.filter = new ReactiveTable.Filter('pos.customerByBranchFilter', ['branchId']);

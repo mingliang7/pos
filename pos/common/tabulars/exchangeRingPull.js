@@ -23,6 +23,16 @@ tabularOpts.collection = ExchangeRingPulls;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_exchangeRingPullAction},
     {data: "_id", title: "ID"},
-    {title: '', tmpl: Meteor.isClient && Template.Pos_exchangeRingPullButtonAction}
+    {data: "_customer", title: "Customer"},
+    {
+        data: "exchangeRingPullDate",
+        title: "Date",
+        render: function (val, type, doc) {
+            return moment(val).format('YYYY-MM-DD');
+        }
+    },
+    {data: "amount", title: "Amount"},
+    {data: "des", title: "Description"},
+
 ];
 export const ExchangeRingPullTabular = new Tabular.Table(tabularOpts);

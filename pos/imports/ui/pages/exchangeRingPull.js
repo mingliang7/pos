@@ -44,7 +44,7 @@ let indexTmpl = Template.Pos_exchangeRingPull,
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('exchangeRingPull', {size: 'lg'});
-    createNewAlertify('exchangeRingPullShow',);
+    createNewAlertify('exchangeRingPullShow');
 
     // Reactive table filter
     this.filter = new ReactiveTable.Filter('pos.exchangeRingPullByBranchFilter', ['branchId']);

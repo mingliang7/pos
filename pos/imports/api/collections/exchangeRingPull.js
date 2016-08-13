@@ -47,15 +47,6 @@ ExchangeRingPulls.schema = new SimpleSchema({
             }
         }
     },
-    repId: {
-        type: String,
-        autoform: {
-            type: 'universe-select',
-            afFieldInput: {
-                uniPlaceholder: 'Select One'
-            }
-        }
-    },
     staffId: {
         type: String,
         autoValue(){
@@ -84,14 +75,6 @@ ExchangeRingPulls.schema = new SimpleSchema({
     },
     branchId: {
         type: String
-    },
-    status: {
-        type: String,
-        optional: true
-    },
-    exchangeRingPullType: {
-        type: String,
-        optional: true
     },
     amount: {
         type: Number,
