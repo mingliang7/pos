@@ -5,4 +5,4 @@ import {ExchangeRingPulls} from '../../imports/api/collections/exchangeRingPull.
 import {Customers} from '../../imports/api/collections/customer.js';
 
 ExchangeRingPulls.cacheTimestamp();
-Customers.cacheDoc('customer', Customers, ['name']);
+ExchangeRingPulls.cacheDoc('customer', Customers, ['name']);

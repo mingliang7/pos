@@ -23,7 +23,7 @@ tabularOpts.collection = ExchangeRingPulls;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_exchangeRingPullAction},
     {data: "_id", title: "ID"},
-    {data: "_customer", title: "Customer"},
+    {data: "_customer.name", title: "Customer"},
     {
         data: "exchangeRingPullDate",
         title: "Date",
