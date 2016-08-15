@@ -75,6 +75,11 @@
                         <i class="fa fa-circle-o"></i> <span>Pay Bill</span>
                     </a>
                 </li>
+                <li class="{{isActiveRoute name='pos.payBillTransactionList'}}">
+                    <a href="{{pathFor 'pos.payBillTransactionList'}}">
+                        <i class="fa fa-exchange"></i> <span>PayBill Transaction</span>
+                    </a>
+                </li>
                 <li class="{{isActiveRoute name='pos.lendingStock'}}">
                     <a href="{{pathFor 'pos.lendingStock'}}">
                         <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.lendingStock"}}</span>

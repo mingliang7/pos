@@ -12,29 +12,29 @@ import {tmpCollection} from '../../imports/api/collections/tmpCollection';
 import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
-import {ReceivePayment} from '../../imports/api/collections/receivePayment.js';
+import {PayBills} from '../../imports/api/collections/payBill.js';
 
 // Page
-Meteor.isClient && require('../../imports/ui/pages/paymentTransactionList.html');
+Meteor.isClient && require('../../imports/ui/pages/payBillTransaction.html');
 
-tabularOpts.name = 'pos.paymentTransaction';
-tabularOpts.collection = ReceivePayment;
+tabularOpts.name = 'pos.payBillTransaction';
+tabularOpts.collection = PayBills;
 tabularOpts.columns = [
-    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_paymentTransactionAction},
+    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_payBillTransactionAction},
     {data: "_id", title: '#ID'},
-    {data: "invoiceId", title: "Invoice ID"},
+    {data: "billId", title: "Bill ID"},
     {
-        data: "paymentDate",
+        data: "billDate",
         title: "Date",
         render: function (val) {
             return moment(val).format('YYYY-MM-DD HH:mm')
         }
     },
     {
-        data: "customerId",
-        title: "Customer",
+        data: "vendorId",
+        title: "Vendor",
         render: function (val) {
-            Meteor.call('getCustomer', {customerId: val}, function (err, result) {
+            Meteor.call('getVendor', {vendorId: val}, function (err, result) {
                 tmpCollection.insert(result);
             });
             return tmpCollection.findOne(val).name;
@@ -56,13 +56,7 @@ tabularOpts.columns = [
             return numeral(val).format('0,0.00');
         }
     },
-    {
-        data: 'penalty',
-        title: 'Penalty',
-        render: function(val) {
-            return `<span class="label label-info">${numeral(val).format('0,0.00')}</span>`;
-        }
-    },
+    // {data: "discount", title: "Discount(%)"},
     {
         data: "paidAmount",
         title: "Paid Amount",
@@ -106,4 +100,4 @@ tabularOpts.columns = [
 ]
 ;
 tabularOpts.extraFields=['paymentType'];
-export const PaymentTransactionListTabular = new Tabular.Table(tabularOpts);
+export const PayBillTransactionListTabular = new Tabular.Table(tabularOpts);
