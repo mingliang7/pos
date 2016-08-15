@@ -420,3 +420,19 @@ PosRoutes.route('/exchange-ring-pull', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/ringPullTransfer.js';
+PosRoutes.route('/ring-pull-transfer', {
+    name: 'pos.ringPullTransfer',
+    title: 'Ring Pull Transfer',
+    action: function (params, queryParams) {
+        Layout.main('Pos_ringPullTransfer');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'Ring Pull Transfer',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
