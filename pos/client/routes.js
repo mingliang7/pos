@@ -406,6 +406,7 @@ PosRoutes.route('/payment-transaction-list', {
     }
 });
 
+
 import '../imports/ui/pages/payBillTransaction.js';
 PosRoutes.route('/payBill-transaction-list', {
     name: 'pos.payBillTransactionList',
@@ -416,8 +417,25 @@ PosRoutes.route('/payBill-transaction-list', {
     breadcrumb: {
         //params: ['id'],
         //queryParams: ['show', 'color'],
+
         title: 'PayBill Transaction',
         // icon: 'cart-plus',
         parent: 'pos.home'
     }
 });
+import '../imports/ui/pages/exchangeRingPull.js';
+PosRoutes.route('/exchange-ring-pull', {
+    name: 'pos.exchangeRingPull',
+    title: 'Exchange Ring Pull',
+    action: function (params, queryParams) {
+        Layout.main('Pos_exchangeRingPull');
+
+    },
+    breadcrumb: {
+        title: 'Exchange Ring Pull',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+})
+;
+
