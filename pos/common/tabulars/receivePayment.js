@@ -43,17 +43,24 @@ tabularOpts.columns = [
     {
         data: "dueAmount",
         title: "Actual Due Amount",
-        render: function(val, type,doc) {
+        render: function (val, type, doc) {
             let recalDueAmountWithDiscount = val / (1 - (doc.discount / 100));
             return numeral(recalDueAmountWithDiscount).format('0,0.00');
         }
     },
-    {data: "discount",title: "Discount(%)"},
+    {data: "discount", title: "Discount(%)"},
     {
         data: "dueAmount",
         title: 'Due Amount',
         render: function (val) {
             return numeral(val).format('0,0.00');
+        }
+    },
+    {
+        data: 'penalty',
+        title: 'Penalty',
+        render: function(val) {
+            return `<span class="label label-info">${numeral(val).format('0,0.00')}</span>`;
         }
     },
     {
@@ -73,18 +80,25 @@ tabularOpts.columns = [
             return numeral(val).format('0,0.00');
         }
     },
-    {
-        data: 'paymentType',
-        title: 'Type'
-    },
+    // {
+    //     data: 'paymentType',
+    //     title: 'Type',
+    //     render: function(val) {
+    //         if(val == 'term') {
+    //             return `<span class="label label-primary">T</span>`;
+    //         }
+    //         return `<span class="label label-warning">G</span>`;
+    //     }
+    // },
+
     {
         data: 'status',
         title: 'Status',
-        render: function(val) {
-            if(val == 'closed') {
-                return `<span class="label label-success">${val}</span>`
+        render: function (val) {
+            if (val == 'closed') {
+                return `<span class="label label-success">C</span>`
             }
-            return `<span class="label label-danger">${val}</span>`
+            return `<span class="label label-danger">P</span>`
         }
     }
 
