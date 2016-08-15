@@ -63,7 +63,7 @@ indexTmpl.helpers({
         return RingPullTransferTabular;
     },
     selector() {
-        return {branchId: Session.get('currentBranch')};
+        return {fromBranchId: Session.get('currentBranch')};
     },
     tableSettings(){
         let i18nPrefix = 'pos.ringPullTransfer.schema';
@@ -133,19 +133,27 @@ indexTmpl.events({
 });
 
 newTmpl.onCreated(function () {
-    this.paymentType = new ReactiveVar();
+    this.branch = new ReactiveVar();
+    Meteor.call('getBranch', Session.get('currentBranch'),(err,result)=> {
+        if(result) {
+            this.branch.set(result);
+        }else{
+            console.log(err);
+        }
+    })
 });
 
 // New
 newTmpl.helpers({
+    fromBranchId(){
+        let instance = Template.instance();
+        if(instance.branch.get()) {
+            return instance.branch.get().enShortName;
+        }
+        return '';
+    },
     collection(){
         return RingPullTransfers;
-    },
-    isTerm(){
-        return Template.instance().paymentType.get() == "Term";
-    },
-    isGroup(){
-        return Template.instance().paymentType.get() == "Group";
     }
 });
 newTmpl.events({
@@ -174,12 +182,6 @@ editTmpl.helpers({
     data () {
         let data = RingPullTransfers.findOne(this._id);
         return data;
-    },
-    isTerm(){
-        return Template.instance().paymentType.get() == "Term";
-    },
-    isGroup(){
-        return Template.instance().paymentType.get() == "Group";
     }
 });
 

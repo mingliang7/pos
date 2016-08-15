@@ -133,19 +133,12 @@ indexTmpl.events({
 });
 
 newTmpl.onCreated(function () {
-    this.paymentType = new ReactiveVar();
 });
 
 // New
 newTmpl.helpers({
     collection(){
         return ExchangeRingPulls;
-    },
-    isTerm(){
-        return Template.instance().paymentType.get() == "Term";
-    },
-    isGroup(){
-        return Template.instance().paymentType.get() == "Group";
     }
 });
 newTmpl.events({
@@ -174,12 +167,6 @@ editTmpl.helpers({
     data () {
         let data = ExchangeRingPulls.findOne(this._id);
         return data;
-    },
-    isTerm(){
-        return Template.instance().paymentType.get() == "Term";
-    },
-    isGroup(){
-        return Template.instance().paymentType.get() == "Group";
     }
 });
 

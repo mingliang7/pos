@@ -67,13 +67,7 @@ RingPullTransfers.schema = new SimpleSchema({
         }
     },
     fromBranchId: {
-        type: String,
-        autoValue(){
-            if (this.isInsert) {
-                var branchId = this.field('fromStockLocationId').value;
-                return branchId.split('-')[0];
-            }
-        }
+        type: String
     },
     toBranchId: {
         type: String,

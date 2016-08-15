@@ -33,12 +33,19 @@
                 <div class="col-md-6">
                     {{> afQuickField name='ringPullTransferDate'}}
                     {{> afQuickField name='amount'}}
-                    {{> afQuickField name='fromBranchId'}}
-                    {{> afQuickField name='toBranchId'}}
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="">From Branch</label>
+                            <input type="text" readonly="true" value="{{fromBranchId}}" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            {{> afQuickField name='toBranchId'}}
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6">
+                    {{> afQuickField type="hidden" name='fromBranchId' value=currentBranch}}
                     {{> afQuickField name='des'}}
-                    {{> afQuickField type="hidden" name='branchId' value=currentBranch}}
                 </div>
             </div>
             {{> formFooterWithButton}}
