@@ -23,53 +23,53 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {Customers} from '../../api/collections/customer.js';
+import {ExchangeRingPulls} from '../../api/collections/exchangeRingPull.js';
 import {balanceTmpCollection} from '../../api/collections/tmpCollection';
 // Tabular
-import {CustomerTabular} from '../../../common/tabulars/customer.js';
+import {ExchangeRingPullTabular} from '../../../common/tabulars/exchangeRingPull.js';
 
 // Page
-import './customer.html';
+import './exchangeRingPull.html';
 
 // Declare template
-let indexTmpl = Template.Pos_customer,
-    actionTmpl = Template.Pos_customerAction,
-    buttonActionTmpl = Template.Pos_customerButtonAction,
-    newTmpl = Template.Pos_customerNew,
-    editTmpl = Template.Pos_customerEdit,
-    showTmpl = Template.Pos_customerShow;
+let indexTmpl = Template.Pos_exchangeRingPull,
+    actionTmpl = Template.Pos_exchangeRingPullAction,
+    buttonActionTmpl = Template.Pos_exchangeRingPullButtonAction,
+    newTmpl = Template.Pos_exchangeRingPullNew,
+    editTmpl = Template.Pos_exchangeRingPullEdit,
+    showTmpl = Template.Pos_exchangeRingPullShow;
 
 
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    createNewAlertify('customer', {size: 'lg'});
-    createNewAlertify('customerShow');
+    createNewAlertify('exchangeRingPull', {size: 'lg'});
+    createNewAlertify('exchangeRingPullShow');
 
     // Reactive table filter
-    this.filter = new ReactiveTable.Filter('pos.customerByBranchFilter', ['branchId']);
+    this.filter = new ReactiveTable.Filter('pos.exchangeRingPullByBranchFilter', ['branchId']);
     this.autorun(()=> {
         this.filter.set(Session.get('currentBranch'));
     });
 });
 
 indexTmpl.onDestroyed(()=> {
-    ReactiveTable.clearFilters(['pos.customerByBranchFilter']);
+    ReactiveTable.clearFilters(['pos.exchangeRingPullByBranchFilter']);
     balanceTmpCollection.remove({});
 });
 
 indexTmpl.helpers({
     tabularTable(){
-        return CustomerTabular;
+        return ExchangeRingPullTabular;
     },
     selector() {
         return {branchId: Session.get('currentBranch')};
     },
     tableSettings(){
-        let i18nPrefix = 'pos.customer.schema';
+        let i18nPrefix = 'pos.exchangeRingPull.schema';
 
-        reactiveTableSettings.collection = 'pos.reactiveTable.customer';
-        reactiveTableSettings.filters = ['pos.customerByBranchFilter'];
+        reactiveTableSettings.collection = 'pos.reactiveTable.exchangeRingPull';
+        reactiveTableSettings.filters = ['pos.exchangeRingPullByBranchFilter'];
         reactiveTableSettings.fields = [
             // {
             //     key: '_id',
@@ -112,23 +112,23 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        alertify.customer(fa('plus', TAPi18n.__('pos.customer.title')), renderTemplate(newTmpl));
+        alertify.exchangeRingPull(fa('plus', TAPi18n.__('pos.exchangeRingPull.title')), renderTemplate(newTmpl));
     },
     'click .js-update' (event, instance) {
-        alertify.customer(fa('pencil', TAPi18n.__('pos.customer.title')), renderTemplate(editTmpl, this));
+        alertify.exchangeRingPull(fa('pencil', TAPi18n.__('pos.exchangeRingPull.title')), renderTemplate(editTmpl, this));
     },
     'click .js-destroy' (event, instance) {
         destroyAction(
-            Customers,
+            ExchangeRingPulls,
             {_id: this._id},
-            {title: TAPi18n.__('pos.customer.title'), itemTitle: this._id}
+            {title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: this._id}
         );
     },
     'click .js-display' (event, instance) {
-        alertify.customerShow(fa('eye', TAPi18n.__('pos.customer.title')), renderTemplate(showTmpl, this));
+        alertify.exchangeRingPullShow(fa('eye', TAPi18n.__('pos.exchangeRingPull.title')), renderTemplate(showTmpl, this));
     },
     'click .go-to-receive-payment'(event, instance){
-        FlowRouter.go('pos.receivePayment', {customerId: this._id});
+        FlowRouter.go('pos.receivePayment', {exchangeRingPullId: this._id});
     }
 });
 
@@ -139,7 +139,7 @@ newTmpl.onCreated(function () {
 // New
 newTmpl.helpers({
     collection(){
-        return Customers;
+        return ExchangeRingPulls;
     },
     isTerm(){
         return Template.instance().paymentType.get() == "Term";
@@ -158,7 +158,7 @@ newTmpl.events({
 editTmpl.onCreated(function () {
     this.paymentType = new ReactiveVar(this.data.paymentType);
     this.autorun(()=> {
-        this.subscribe('pos.customer', {_id: this.data._id});
+        this.subscribe('pos.exchangeRingPull', {_id: this.data._id});
     });
 });
 editTmpl.events({
@@ -169,10 +169,10 @@ editTmpl.events({
 
 editTmpl.helpers({
     collection(){
-        return Customers;
+        return ExchangeRingPulls;
     },
     data () {
-        let data = Customers.findOne(this._id);
+        let data = ExchangeRingPulls.findOne(this._id);
         return data;
     },
     isTerm(){
@@ -186,22 +186,22 @@ editTmpl.helpers({
 // Show
 showTmpl.onCreated(function () {
     this.autorun(()=> {
-        this.subscribe('pos.customer', {_id: this.data._id});
+        this.subscribe('pos.exchangeRingPull', {_id: this.data._id});
     });
 });
 
 showTmpl.helpers({
     i18nLabel(label){
-        let i18nLabel = `pos.customer.schema.${label}.label`;
+        let i18nLabel = `pos.exchangeRingPull.schema.${label}.label`;
         return i18nLabel;
     },
     data () {
-        let data = Customers.findOne(this._id);
+        let data = ExchangeRingPulls.findOne(this._id);
         return data;
     }
 });
 //receive payment
-Template.Pos_customerButtonAction.helpers({
+Template.Pos_exchangeRingPullButtonAction.helpers({
     checkIfInvoiced(){
         debugger
     }
@@ -210,7 +210,7 @@ Template.Pos_customerButtonAction.helpers({
 let hooksObject = {
     onSuccess (formType, result) {
         if (formType == 'update') {
-            alertify.customer().close();
+            alertify.exchangeRingPull().close();
         }
         displaySuccess();
     },
@@ -220,6 +220,6 @@ let hooksObject = {
 };
 
 AutoForm.addHooks([
-    'Pos_customerNew',
-    'Pos_customerEdit'
+    'Pos_exchangeRingPullNew',
+    'Pos_exchangeRingPullEdit'
 ], hooksObject);
