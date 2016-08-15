@@ -29,6 +29,11 @@
                         <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.invoice"}}</span>
                     </a>
                 </li>
+                <li class="{{isActiveRoute name='pos.groupInvoiceList'}}">
+                    <a href="{{pathFor 'pos.groupInvoiceList'}}">
+                        <i class="fa fa-circle-o"></i> <span>Group Invoice List</span>
+                    </a>
+                </li>
                 <li class="{{isActiveRoute name='pos.receivePayment'}}">
                     <a href="{{pathFor 'pos.receivePayment'}}">
                         <i class="fa fa-circle-o"></i> <span>Receive Payment</span>

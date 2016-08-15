@@ -8,6 +8,7 @@ Meteor.methods({
             ReceivePayment.remove({invoiceId: doc._id});
         }
         doc.status = 'removed';
+        doc.removeDate = new Date();
         doc._id = `${doc._id}R${moment().format('YYYY-MMM-DD-HH:mm')}`;
         RemovedInvoice.insert(doc);
     },

@@ -436,6 +436,19 @@ PosRoutes.route('/exchange-ring-pull', {
         // icon: 'cart-plus',
         parent: 'pos.home'
     }
-})
-;
+});
 
+import '../imports/ui/pages/groupInvoice.js';
+PosRoutes.route('/group-invoice', {
+    name: 'pos.groupInvoiceList',
+    title: 'Group Invoice',
+    action: function (params, queryParams) {
+        Layout.main('Pos_groupInvoiceList');
+
+    },
+    breadcrumb: {
+        title: 'Group Invoice',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});

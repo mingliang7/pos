@@ -6,6 +6,7 @@ Meteor.methods({
     insertRemovedPayment(doc){
         doc.status = 'removed';
         doc._id = `${doc._id}R${moment().format('YYYY-MMM-DD-HH:mm')}`;
+        doc.removeDate = new Date();
         RemovedPayment.insert(doc);
     },
     removedReceivePayment({doc}){

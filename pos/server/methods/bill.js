@@ -7,6 +7,7 @@ Meteor.methods({
             PayBills.remove({billId: doc._id});
         }
         doc.status = 'removed';
+        doc.removeDate = new Date();
         doc._id = `${doc._id}R${moment().format('YYYY-MMM-DD-HH:mm')}`;
         RemoveEnterBill.insert(doc);
     }
