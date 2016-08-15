@@ -45,10 +45,10 @@ Tracker.autorun(function () {
             }, 500);
         }
     }
-    if (Session.get('enterBills')) {
+    if (Session.get('invoices')) {
         Meteor.subscribe('pos.payBills', {
             billId: {
-                $in: Session.get('enterBills')
+                $in: Session.get('invoices')
             },
             status: {$in: ['active', 'partial']}
         });
@@ -115,6 +115,7 @@ indexTmpl.helpers({
     dueAmount(){
         let total = this.total || 0;
         let lastPayment = getLastPayment(this._id);
+        console.log(lastPayment);
         return lastPayment == 0 ? `${numeral(total).format('0,0.00')}` : `${numeral(lastPayment).format('0,0.00')}`;
     },
     schema() {

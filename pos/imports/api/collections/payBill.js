@@ -10,6 +10,11 @@ PayBills.schema = new SimpleSchema({
         type: Number,
         decimal: true
     },
+    discount: {
+        type: Number,
+        decimal: true,
+        optional: true
+    },
     dueAmount: {
         type: Number,
         decimal: true
@@ -28,6 +33,10 @@ PayBills.schema = new SimpleSchema({
         type: String
     },
     paymentType: {
+        type: String,
+        optional: true
+    },
+    branchId: {
         type: String,
         optional: true
     }

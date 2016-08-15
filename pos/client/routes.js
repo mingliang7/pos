@@ -405,3 +405,19 @@ PosRoutes.route('/payment-transaction-list', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/payBillTransaction.js';
+PosRoutes.route('/payBill-transaction-list', {
+    name: 'pos.payBillTransactionList',
+    title: 'PayBill Transaction',
+    action: function (params, queryParams) {
+        Layout.main('Pos_payBillTransaction');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'PayBill Transaction',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
