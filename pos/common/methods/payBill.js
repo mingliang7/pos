@@ -30,16 +30,18 @@ export const payBill = new ValidatedMethod({
                     paymentDate: paymentDate,
                     paidAmount: enterBillsObj[k].receivedPay,
                     dueAmount: enterBillsObj[k].dueAmount,
+                    discount: enterBillsObj[k].discount || 0,
                     balanceAmount: enterBillsObj[k].dueAmount - enterBillsObj[k].receivedPay,
                     vendorId: enterBillsObj[k].vendorId || enterBillsObj[k].vendorOrCustomerId,
                     status: enterBillsObj[k].dueAmount - enterBillsObj[k].receivedPay == 0 ? 'closed' : 'partial',
-                    staffId: Meteor.userId()
+                    staffId: Meteor.userId(),
+                    branchId: branch
                 };
                 let vendor = Vendors.findOne(obj.vendorId);
                 obj.paymentType = vendor.termId ? 'term' : 'group';
                 PayBills.insert(obj);
                 obj.status == 'closed' ? selector.$set = {status: 'closed'} : selector.$set = {status: 'partial'};
-                if(Vendors.termId) {
+                if(vendor.termId) {
                     EnterBills.direct.update(k, selector)
                 }else{
                     GroupBill.direct.update(k, selector);

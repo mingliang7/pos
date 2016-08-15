@@ -12,7 +12,6 @@ Meteor.methods({
         let payments = ReceivePayment.find({invoiceId: doc.invoiceId, status: {$ne: 'removed'}});
         let selector = {$set: {status: 'active'}};
         let collections = doc.paymentType == 'term' ? Invoices : GroupInvoice;
-        console.log(payments.count());
         if (payments.count() == 1) {
             collections.direct.update(doc.invoiceId, selector)
         } else {
@@ -25,7 +24,8 @@ Meteor.methods({
                     {dueAmount: {$lt: doc.dueAmount}}
                 ]
             }, {
-                $inc: {dueAmount: doc.paidAmount, balanceAmount: doc.paidAmount}
+                $inc: {dueAmount: doc.paidAmount, balanceAmount: doc.paidAmount},
+                $set: {status: 'partial'}
             }, {multi: true});
             selector.$set.status = 'partial';
             collections.direct.update(doc.invoiceId, selector);
