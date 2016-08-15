@@ -23,53 +23,53 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {ExchangeRingPulls} from '../../api/collections/exchangeRingPull.js';
+import {RingPullTransfers} from '../../api/collections/ringPullTransfer.js';
 import {balanceTmpCollection} from '../../api/collections/tmpCollection';
 // Tabular
-import {ExchangeRingPullTabular} from '../../../common/tabulars/exchangeRingPull.js';
+import {RingPullTransferTabular} from '../../../common/tabulars/ringPullTransfer.js';
 
 // Page
-import './exchangeRingPull.html';
+import './ringPullTransfer.html';
 
 // Declare template
-let indexTmpl = Template.Pos_exchangeRingPull,
-    actionTmpl = Template.Pos_exchangeRingPullAction,
-    buttonActionTmpl = Template.Pos_exchangeRingPullButtonAction,
-    newTmpl = Template.Pos_exchangeRingPullNew,
-    editTmpl = Template.Pos_exchangeRingPullEdit,
-    showTmpl = Template.Pos_exchangeRingPullShow;
+let indexTmpl = Template.Pos_ringPullTransfer,
+    actionTmpl = Template.Pos_ringPullTransferAction,
+    buttonActionTmpl = Template.Pos_ringPullTransferButtonAction,
+    newTmpl = Template.Pos_ringPullTransferNew,
+    editTmpl = Template.Pos_ringPullTransferEdit,
+    showTmpl = Template.Pos_ringPullTransferShow;
 
 
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    createNewAlertify('exchangeRingPull', {size: 'lg'});
-    createNewAlertify('exchangeRingPullShow');
+    createNewAlertify('ringPullTransfer', {size: 'lg'});
+    createNewAlertify('ringPullTransferShow');
 
     // Reactive table filter
-    this.filter = new ReactiveTable.Filter('pos.exchangeRingPullByBranchFilter', ['branchId']);
+    this.filter = new ReactiveTable.Filter('pos.ringPullTransferByBranchFilter', ['branchId']);
     this.autorun(()=> {
         this.filter.set(Session.get('currentBranch'));
     });
 });
 
 indexTmpl.onDestroyed(()=> {
-    ReactiveTable.clearFilters(['pos.exchangeRingPullByBranchFilter']);
+    ReactiveTable.clearFilters(['pos.ringPullTransferByBranchFilter']);
     balanceTmpCollection.remove({});
 });
 
 indexTmpl.helpers({
     tabularTable(){
-        return ExchangeRingPullTabular;
+        return RingPullTransferTabular;
     },
     selector() {
-        return {branchId: Session.get('currentBranch')};
+        return {fromBranchId: Session.get('currentBranch')};
     },
     tableSettings(){
-        let i18nPrefix = 'pos.exchangeRingPull.schema';
+        let i18nPrefix = 'pos.ringPullTransfer.schema';
 
-        reactiveTableSettings.collection = 'pos.reactiveTable.exchangeRingPull';
-        reactiveTableSettings.filters = ['pos.exchangeRingPullByBranchFilter'];
+        reactiveTableSettings.collection = 'pos.reactiveTable.ringPullTransfer';
+        reactiveTableSettings.filters = ['pos.ringPullTransferByBranchFilter'];
         reactiveTableSettings.fields = [
             // {
             //     key: '_id',
@@ -112,33 +112,48 @@ indexTmpl.helpers({
 
 indexTmpl.events({
     'click .js-create' (event, instance) {
-        alertify.exchangeRingPull(fa('plus', TAPi18n.__('pos.exchangeRingPull.title')), renderTemplate(newTmpl));
+        alertify.ringPullTransfer(fa('plus', TAPi18n.__('pos.ringPullTransfer.title')), renderTemplate(newTmpl));
     },
     'click .js-update' (event, instance) {
-        alertify.exchangeRingPull(fa('pencil', TAPi18n.__('pos.exchangeRingPull.title')), renderTemplate(editTmpl, this));
+        alertify.ringPullTransfer(fa('pencil', TAPi18n.__('pos.ringPullTransfer.title')), renderTemplate(editTmpl, this));
     },
     'click .js-destroy' (event, instance) {
         destroyAction(
-            ExchangeRingPulls,
+            RingPullTransfers,
             {_id: this._id},
-            {title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: this._id}
+            {title: TAPi18n.__('pos.ringPullTransfer.title'), itemTitle: this._id}
         );
     },
     'click .js-display' (event, instance) {
-        alertify.exchangeRingPullShow(fa('eye', TAPi18n.__('pos.exchangeRingPull.title')), renderTemplate(showTmpl, this));
+        alertify.ringPullTransferShow(fa('eye', TAPi18n.__('pos.ringPullTransfer.title')), renderTemplate(showTmpl, this));
     },
     'click .go-to-receive-payment'(event, instance){
-        FlowRouter.go('pos.receivePayment', {exchangeRingPullId: this._id});
+        FlowRouter.go('pos.receivePayment', {ringPullTransferId: this._id});
     }
 });
 
 newTmpl.onCreated(function () {
+    this.branch = new ReactiveVar();
+    Meteor.call('getBranch', Session.get('currentBranch'),(err,result)=> {
+        if(result) {
+            this.branch.set(result);
+        }else{
+            console.log(err);
+        }
+    })
 });
 
 // New
 newTmpl.helpers({
+    fromBranchId(){
+        let instance = Template.instance();
+        if(instance.branch.get()) {
+            return instance.branch.get().enShortName;
+        }
+        return '';
+    },
     collection(){
-        return ExchangeRingPulls;
+        return RingPullTransfers;
     }
 });
 newTmpl.events({
@@ -151,7 +166,7 @@ newTmpl.events({
 editTmpl.onCreated(function () {
     this.paymentType = new ReactiveVar(this.data.paymentType);
     this.autorun(()=> {
-        this.subscribe('pos.exchangeRingPull', {_id: this.data._id});
+        this.subscribe('pos.ringPullTransfer', {_id: this.data._id});
     });
 });
 editTmpl.events({
@@ -162,10 +177,10 @@ editTmpl.events({
 
 editTmpl.helpers({
     collection(){
-        return ExchangeRingPulls;
+        return RingPullTransfers;
     },
     data () {
-        let data = ExchangeRingPulls.findOne(this._id);
+        let data = RingPullTransfers.findOne(this._id);
         return data;
     }
 });
@@ -173,22 +188,22 @@ editTmpl.helpers({
 // Show
 showTmpl.onCreated(function () {
     this.autorun(()=> {
-        this.subscribe('pos.exchangeRingPull', {_id: this.data._id});
+        this.subscribe('pos.ringPullTransfer', {_id: this.data._id});
     });
 });
 
 showTmpl.helpers({
     i18nLabel(label){
-        let i18nLabel = `pos.exchangeRingPull.schema.${label}.label`;
+        let i18nLabel = `pos.ringPullTransfer.schema.${label}.label`;
         return i18nLabel;
     },
     data () {
-        let data = ExchangeRingPulls.findOne(this._id);
+        let data = RingPullTransfers.findOne(this._id);
         return data;
     }
 });
 //receive payment
-Template.Pos_exchangeRingPullButtonAction.helpers({
+Template.Pos_ringPullTransferButtonAction.helpers({
     checkIfInvoiced(){
         debugger
     }
@@ -197,7 +212,7 @@ Template.Pos_exchangeRingPullButtonAction.helpers({
 let hooksObject = {
     onSuccess (formType, result) {
         if (formType == 'update') {
-            alertify.exchangeRingPull().close();
+            alertify.ringPullTransfer().close();
         }
         displaySuccess();
     },
@@ -207,6 +222,6 @@ let hooksObject = {
 };
 
 AutoForm.addHooks([
-    'Pos_exchangeRingPullNew',
-    'Pos_exchangeRingPullEdit'
+    'Pos_ringPullTransferNew',
+    'Pos_ringPullTransferEdit'
 ], hooksObject);
