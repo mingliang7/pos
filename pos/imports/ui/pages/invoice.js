@@ -28,7 +28,7 @@ import {Invoices} from '../../api/collections/invoice.js';
 import {Order} from '../../api/collections/order';
 import {Item} from '../../api/collections/item';
 import {deletedItem} from './invoice-items';
-import {nullCollection} from '../../api/collections/tmpCollection';
+import {customerInvoiceCollection, nullCollection} from '../../api/collections/tmpCollection';
 // Tabular
 import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
 
@@ -81,7 +81,9 @@ indexTmpl.helpers({
         return {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
     }
 });
-
+indexTmpl.onDestroyed(function () {
+    customerInvoiceCollection.remove({});
+});
 indexTmpl.events({
     'click .js-create' (event, instance) {
         alertify.invoice(fa('cart-arrow-down', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl)).maximize();
@@ -116,7 +118,15 @@ indexTmpl.events({
 
     },
     'click .js-display' (event, instance) {
-        alertify.invoiceShow(fa('eye', TAPi18n.__('pos.invoice.title')), renderTemplate(showTmpl, this));
+        swal({
+            title: "Pleas Wait",
+            text: "Getting Invoices....", showConfirmButton: false
+        });
+        this.customer = customerInvoiceCollection.findOne(this.customerId).name;
+        Meteor.call('invoiceShowItems', {doc: this}, function (err, result) {
+            swal.close();
+            alertify.invoiceShow(fa('eye', TAPi18n.__('pos.invoice.title')), renderTemplate(showTmpl, result)).maximize();
+        });
     },
     'click .js-invoice' (event, instance) {
         let params = {};
@@ -502,14 +512,24 @@ showTmpl.helpers({
         let key = `pos.invoice.schema.${label}.label`;
         return TAPi18n.__(key);
     },
-    invoiceInfo () {
-
-        let invoiceInfo = Template.instance().invoice.get();
-
-        // Use jsonview
-        invoiceInfo.jsonViewOpts = {collapsed: true};
-        //
-        return invoiceInfo;
+    colorizeType(type) {
+        if (type == 'term') {
+            return `<label class="label label-info">T</label>`
+        }
+        return `<label class="label label-success">G</label>`
+    },
+    colorizeStatus(status){
+        if(status == 'active') {
+            return `<label class="label label-info">A</label>`
+        }else if(status == 'partial') {
+            return `<label class="label label-danger">P</label>`
+        }
+        return `<label class="label label-success">C</label>`
+    }
+});
+showTmpl.events({
+    'click .print-invoice-show'(event,instance){
+        $('#to-print').printThis();
     }
 });
 //listSaleOrder

@@ -1,4 +1,4 @@
-import {Invoices} from '../../imports/api/collections/invoice';
+import {Item} from '../../imports/api/collections/item';
 import {ReceivePayment} from '../../imports/api/collections/receivePayment';
 import {Penalty} from '../../imports/api/collections/penalty';
 import {RemovedInvoice} from '../../imports/api/collections/removedCollection';
@@ -33,5 +33,11 @@ Meteor.methods({
             }
         });
         return {count, lateInvoices, calculatePenalty, penaltyNotExist: penalty.notExist || false};
+    },
+    invoiceShowItems({doc}){
+        doc.items.forEach(function (item) {
+            item.name = Item.findOne(item.itemId).name;
+        });
+        return doc;
     }
 });

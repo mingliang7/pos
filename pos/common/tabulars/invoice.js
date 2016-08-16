@@ -12,7 +12,7 @@ import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
 import {Invoices} from '../../imports/api/collections/invoice.js';
-
+import {customerInvoiceCollection} from '../../imports/api/collections/tmpCollection';
 // Page
 Meteor.isClient && require('../../imports/ui/pages/invoice.html');
 
@@ -30,7 +30,24 @@ tabularOpts.columns = [
     },
     {data: "total", title: "Total"},
     {data: "des", title: "Description"},
-    {data: "customerId", title: "Customer ID"},
+    {
+        data: "customerId",
+        title: "Customer ID",
+        render: function (val) {
+            Meteor.call('getCustomer', {customerId: val}, function (err, result) {
+                let customer = customerInvoiceCollection.findOne(result._id);
+                if (!customer) {
+                    customerInvoiceCollection.insert(result);
+                }
+            });
+            try {
+                return customerInvoiceCollection.findOne(val).name;
+
+            } catch (e) {
+
+            }
+        }
+    },
     {data: "invoiceType", title: "Type"},
     {data: "status", title: "Status"},
     //{
