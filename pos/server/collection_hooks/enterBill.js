@@ -62,9 +62,6 @@ EnterBills.after.insert(function (userId, doc) {
                 });
             }
         }
-        if (doc.billType == 'group') {
-            Meteor.call('pos.generateInvoiceGroup', {doc});
-        }
     });
 });
 

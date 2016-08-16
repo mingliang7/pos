@@ -65,6 +65,11 @@
                         <i class="fa fa-money" aria-hidden="true"></i> <span>{{_ "pos.sidebarMenu.enterBill"}}</span>
                     </a>
                 </li>
+                <li class="{{isActiveRoute name='pos.groupBillList'}}">
+                    <a href="{{pathFor 'pos.groupBillList'}}">
+                        <i class="fa fa-money" aria-hidden="true"></i> <span>Group Bill List</span>
+                    </a>
+                </li>
                 <li class="{{isActiveRoute name='pos.prepaidOrder'}}">
                     <a href="{{pathFor 'pos.prepaidOrder'}}">
                         <i class="fa fa-cart-arrow-down" aria-hidden="true"></i> <span>Prepaid Order</span>

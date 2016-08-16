@@ -22,33 +22,32 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {GroupInvoice} from '../../api/collections/groupInvoice.js';
+import {GroupBill} from '../../api/collections/groupBill.js';
 
 // Tabular
-import {GroupInvoiceTabular} from '../../../common/tabulars/groupInvoice.js';
-import  {tmpCollection} from '../../api/collections/tmpCollection';
+import {GroupBillTabular} from '../../../common/tabulars/groupBill.js';
+
 // Page
 import './groupInvoice.html';
+import {tmpCollection} from '../../api/collections/tmpCollection';
 // Declare template
-let indexTmpl = Template.Pos_groupInvoiceList,
-    actionTmpl = Template.Pos_groupInvoiceListAction,
-    editTmpl = Template.Pos_groupInvoiceListEdit,
-    showTmpl = Template.Pos_groupInvoiceListShow;
+let indexTmpl = Template.Pos_groupBill,
+    actionTmpl = Template.Pos_groupBillAction,
+    editTmpl = Template.Pos_groupBillEdit,
+    showTmpl = Template.Pos_groupBillShow;
 
 
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    createNewAlertify('groupInvoiceList', {size: 'lg'});
+    createNewAlertify('groupBillList', {size: 'lg'});
     // Reactive table filter
 
 });
-indexTmpl.onDestroyed(function () {
-    tmpCollection.remove({});
-});
+
 indexTmpl.helpers({
     tabularTable(){
-        return GroupInvoiceTabular;
+        return GroupBillTabular;
     },
     selector() {
         return {branchId: Session.get('currentBranch'), status: {$nin: ['removed']}};
@@ -75,13 +74,12 @@ indexTmpl.events({
             confirmButtonText: "Yes, delete it!",
             closeOnConfirm: false
         }, function () {
-            Meteor.call('removeGroupInvoice', {doc});
+            Meteor.call('removeGroupBill', {doc});
             swal("Deleted!", `វិក័យប័ត្របង់ប្រាក់លេខ ${doc._id} បានលុបដោយជោគជ័យ`, "success");
         });
     },
     'click .js-display' (event, instance) {
-        this.customer = tmpCollection.findOne(this.vendorOrCustomerId).name;
-        alertify.groupInvoiceList(fa('eye', ''), renderTemplate(showTmpl, this));
+        alertify.groupBillList(fa('eye', ''), renderTemplate(showTmpl, this));
     }
 });
 
@@ -91,7 +89,7 @@ indexTmpl.events({
 editTmpl.helpers({
 
     collection(){
-        return GroupInvoice;
+        return GroupBill;
     },
     data () {
         let data = this;
@@ -101,7 +99,7 @@ editTmpl.helpers({
 
 // Show
 showTmpl.events({
-    'click .print-group-invoice'(event, instance){
+    'click .print-group-invoice'(event,instance){
         $('#to-print').printThis();
     }
 });
@@ -124,6 +122,6 @@ let hooksObject = {
 };
 
 AutoForm.addHooks([
-    'Pos_groupInvoiceListNew',
-    'Pos_groupInvoiceListEdit'
+    'Pos_groupBillNew',
+    'Pos_groupBillEdit'
 ], hooksObject);

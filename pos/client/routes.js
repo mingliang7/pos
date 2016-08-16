@@ -453,6 +453,20 @@ PosRoutes.route('/group-invoice', {
     }
 });
 
+import '../imports/ui/pages/groupBill.js';
+PosRoutes.route('/group-bill', {
+    name: 'pos.groupBillList',
+    title: 'Group Bill',
+    action: function (params, queryParams) {
+        Layout.main('Pos_groupBill');
+
+    },
+    breadcrumb: {
+        title: 'Group Bill',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
 
 import '../imports/ui/pages/ringPullTransfer.js';
 PosRoutes.route('/ring-pull-transfer', {

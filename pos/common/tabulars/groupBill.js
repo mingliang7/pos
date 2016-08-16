@@ -11,30 +11,29 @@ import {lightbox} from 'meteor/theara:lightbox-helpers';
 import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
-import {GroupInvoice} from '../../imports/api/collections/groupInvoice.js';
+import {GroupBill} from '../../imports/api/collections/groupBill.js';
 import {tmpCollection} from '../../imports/api/collections/tmpCollection';
 // Page
-Meteor.isClient && require('../../imports/ui/pages/groupInvoice.html');
+Meteor.isClient && require('../../imports/ui/pages/groupBill.html');
 
-tabularOpts.name = 'pos.groupInvoiceList';
-tabularOpts.collection = GroupInvoice;
+tabularOpts.name = 'pos.groupBillList';
+tabularOpts.collection = GroupBill;
 tabularOpts.columns = [
-    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_groupInvoiceListAction},
+    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_groupBillAction},
     {data: "_id", title: "ID"},
     {
         data: "vendorOrCustomerId",
-        title: "Customer",
+        title: "Vendor",
         render: function (val) {
-            Meteor.call('getCustomer', {customerId: val}, function (err, result) {
+            Meteor.call('getVendor', {vendorId: val}, function (err, result) {
                 let customer = tmpCollection.findOne(result._id);
-                if(!customer) {
+                if (!customer) {
                     tmpCollection.insert(result);
                 }
             });
             try {
                 return tmpCollection.findOne(val).name;
-
-            }catch (e) {
+            } catch (e) {
 
             }
         }
@@ -82,4 +81,4 @@ tabularOpts.columns = [
     //}
 ];
 tabularOpts.extraFields = ['invoices'];
-export const GroupInvoiceTabular = new Tabular.Table(tabularOpts);
+export const GroupBillTabular = new Tabular.Table(tabularOpts);
