@@ -4,6 +4,7 @@ import {idGenerator} from 'meteor/theara:id-generator';
 // Collection
 import {LendingStocks} from '../../imports/api/collections/lendingStock.js';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
+import {LendingInventories} from '../../imports/api/collections/lendingInventory.js';
 import {Item} from '../../imports/api/collections/item.js';
 import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder';
 //import state
@@ -19,7 +20,7 @@ LendingStocks.before.insert(function (userId, doc) {
 LendingStocks.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-
+       // lendingStockManageStock(doc);
         if (doc.status == "active") {
         }
         else {
@@ -52,7 +53,6 @@ LendingStocks.after.remove(function (userId, doc) {
         reduceFromInventory(doc);
     });
 });
-
 
 function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
     let lastPurchasePrice = 0;
@@ -239,4 +239,79 @@ function recalculatePaymentAfterRemoved({doc}) {
             PayBills.direct.remove({billId: billId, dueAmount: {$lte: 0}});
         }
     }
+}
+
+
+function lendingStockManageStock(lendingStock) {
+
+    let totalCost = 0;
+    // let lendingStock = LendingStocks.findOne(lendingStockId);
+    let prefix = lendingStock.stockLocationId + "-";
+    let lendingPrefix = lendingStock.branchId + '-';
+    lendingStock.items.forEach(function (item) {
+        //---Open Inventory type block "Average Inventory"---
+        let inventory = AverageInventories.findOne({
+            branchId: lendingStock.branchId,
+            itemId: item.itemId,
+            stockLocationId: lendingStock.stockLocationId
+        }, {sort: {_id: 1}});
+        if (inventory) {
+            let newInventory = {
+                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                branchId: lendingStock.branchId,
+                stockLocationId: lendingStock.stockLocationId,
+                itemId: item.itemId,
+                qty: item.qty,
+                price: inventory.price,
+                remainQty: inventory.remainQty - item.qty,
+                coefficient: -1,
+                type: 'lendingStock',
+                refId: lendingStock._id
+            };
+            AverageInventories.insert(newInventory);
+        }
+        else {
+            let thisItem = Item.findOne(item.itemId);
+            let newInventory = {
+                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                branchId: lendingStock.branchId,
+                stockLocationId: lendingStock.stockLocationId,
+                itemId: item.itemId,
+                qty: item.qty,
+                price: thisItem.purchasePrice,
+                remainQty: 0 - item.qty,
+                coefficient: -1,
+                type: 'lendingStock',
+                refId: lendingStock._id
+            };
+            AverageInventories.insert(newInventory);
+        }
+        //--- End Inventory type block "Average Inventory"---
+
+        //Manage Lending Stock
+        let lendingInventory = LendingInventories.findOne({
+            itemId: item.itemId,
+            vendorId: lendingStock.vendorId,
+            branchId: lendingStock.branchId
+        });
+        if (lendingInventory) {
+            LendingInventories.update(
+                lendingInventory._id,
+                {
+                    $inc: {qty: item.qty}
+                });
+        } else {
+            let newLendingStock = {
+                _id: idGenerator.genWithPrefix(lendingInventory, lendingPrefix, 13),
+                vendor: lendingStock.vendorId,
+                branchId: lendingStock.branchId,
+                itemId: item.itemId,
+                qty: item.qty
+            };
+            LendingInventories.insert(newLendingStock);
+        }
+
+    });
+
+
 }
