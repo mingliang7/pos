@@ -97,7 +97,7 @@ receivePaymentTmpl.helpers({
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
-            } else if (obj.field == 'dueAmount' || obj.field == 'paidAmount' || obj.field == 'balanceAmount') {
+            } else if (obj.field == 'actualDueAmount' || obj.field == 'dueAmount' || obj.field == 'paidAmount' || obj.field == 'balanceAmount') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
             else {

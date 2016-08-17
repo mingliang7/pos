@@ -80,6 +80,18 @@ export const paymentSchema = new SimpleSchema({
                     {
                         label: 'Status',
                         value: 'status'
+                    },
+                    {
+                        label: 'Penalty',
+                        value: 'penalty'
+                    },
+                    {
+                        label: 'Actual Amount',
+                        value: 'actualDueAmount'
+                    },
+                    {
+                        label: 'Discount',
+                        value: 'discount'
                     }
                 ]
             }

@@ -2,7 +2,7 @@ export const correctFieldLabel = function (field) {
     let label = '';
     switch (field) {
         case '_id':
-            label = '#ID';
+            label = 'ID';
             break;
         case 'customerId':
             label = 'Customer';
@@ -14,7 +14,7 @@ export const correctFieldLabel = function (field) {
             label = 'Date';
             break;
         case 'invoiceId':
-            label = '#Invoice';
+            label = 'Invoice';
             break;
         case 'dueAmount':
             label = 'Due Amount';
@@ -29,7 +29,7 @@ export const correctFieldLabel = function (field) {
             label = 'Status';
             break;
         case 'paymentType':
-            label = 'Payment Status';
+            label = 'Payment Type';
             break;
         case 'invoiceDate':
             label = 'Date';
@@ -63,6 +63,15 @@ export const correctFieldLabel = function (field) {
             break;
         case 'billType':
             label = "Type";
+            break;
+        case 'penalty':
+            label = "Penalty";
+            break;
+        case 'discount':
+            label = "Discount";
+            break;
+        case 'actualDueAmount':
+            label = "Actual Amount";
             break;
     }
     return label;

@@ -36,7 +36,7 @@ export const receivePaymentReport = new ValidatedMethod({
             if (params.skip) {
                 skip = parseInt(params.skip);
             }
-            if(params.limit) {
+            if (params.limit) {
                 limit = parseInt(params.limit) <= 0 ? 500 : parseInt(params.limit);
             }
             if (params.date) {
@@ -101,6 +101,33 @@ export const receivePaymentReport = new ValidatedMethod({
                     }
                 },
                 {$unwind: {path: '$_customer', preserveNullAndEmptyArrays: true}},
+                {
+                    $project: {
+                        actualDueAmount: {
+                            $divide: [
+                                '$dueAmount',
+                                {
+                                    $subtract: [1,
+                                        {
+                                            $divide: ['$discount', 100]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        _customer: 1,
+                        _id: 1,
+                        invoiceId: 1,
+                        paymentDate: 1,
+                        discount: 1,
+                        paymentType: 1,
+                        penalty: 1,
+                        status: 1,
+                        dueAmount: 1,
+                        balanceAmount: 1,
+                        paidAmount: 1
+                    }
+                },
                 {
                     $group: {
                         _id: null,
