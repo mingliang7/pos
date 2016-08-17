@@ -12,7 +12,7 @@ import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
 import {EnterBills} from '../../imports/api/collections/enterBill.js';
-
+import {vendorBillCollection} from '../../imports/api/collections/tmpCollection';
 // Page
 Meteor.isClient && require('../../imports/ui/pages/enterBill.html');
 
@@ -25,12 +25,27 @@ tabularOpts.columns = [
         data: "enterBillDate",
         title: "Date",
         render: function (val, type, doc) {
-            return moment(val).format('YYYY-MM-DD');
+            return moment(val).format('YYYY-MM-DD HH:mm:ss');
         }
     },
     {data: "total", title: "Total"},
     {data: "des", title: "Description"},
-    {data: "vendorId", title: "Vendor ID"},
+    {
+        data: "vendorId",
+        title: "Vendor ID",
+        render: function (val) {
+            let vendor = vendorBillCollection.findOne(val);
+            if (!vendor) {
+                Meteor.call('getVendor', {vendorId: val}, function (err, result) {
+                    vendorBillCollection.insert(result);
+                })
+            }
+            try {
+                return vendorBillCollection.findOne(val).name;
+            } catch (e) {
+            }
+        }
+    },
     {data: "staffId", title: "Staff ID"},
     {data: "stockLocationId", title: "Stock Location"},
     //{

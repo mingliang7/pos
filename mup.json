@@ -22,7 +22,7 @@
   // Location of app (local directory). This can reference '~' as the users home directory.
   // i.e., "app": "~/Desktop/restaurant-mobile",
   // This is the same as the line below.
-  "app": "~/Desktop/rabbit-core",
+  "app": "~/Desktop/pos",
 
   // Configure environment
   // ROOT_URL must be set to your correct domain (https or http)

@@ -28,6 +28,7 @@ import {EnterBills} from '../../api/collections/enterBill.js';
 import {PrepaidOrders} from '../../api/collections/prepaidOrder.js';
 import {PrepaidOrderDeletedItem} from './enterBill-items.js';
 import {Item} from '../../api/collections/item';
+import {vendorBillCollection} from '../../api/collections/tmpCollection';
 // Tabular
 import {EnterBillTabular} from '../../../common/tabulars/enterBill.js';
 
@@ -104,7 +105,15 @@ indexTmpl.events({
         );
     },
     'click .js-display' (event, instance) {
-        alertify.enterBillShow(fa('eye', TAPi18n.__('pos.enterBill.title')), renderTemplate(showTmpl, this));
+        swal({
+            title: "Pleas Wait",
+            text: "Getting Invoices....", showConfirmButton: false
+        });
+        this.customer = vendorBillCollection.findOne(this.vendorId).name;
+        Meteor.call('billShowItems', {doc: this}, function (err, result) {
+            swal.close();
+            alertify.enterBillShow(fa('eye', TAPi18n.__('pos.invoice.title')), renderTemplate(showTmpl, result)).maximize();
+        });
     },
     'click .js-enterBill' (event, instance) {
         let params = {};
@@ -113,6 +122,9 @@ indexTmpl.events({
 
         window.open(path, '_blank');
     }
+});
+indexTmpl.onDestroyed(function () {
+    vendorBillCollection.remove({});
 });
 newTmpl.onCreated(function () {
     this.repOptions = new ReactiveVar();
@@ -466,34 +478,30 @@ editTmpl.onDestroyed(function () {
 
 // Show
 showTmpl.onCreated(function () {
-    this.enterBill = new ReactiveVar();
-    this.autorun(()=> {
-        EnterBillInfo.callPromise({_id: this.data._id})
-            .then((result) => {
-                this.enterBill.set(result);
-            }).catch(function (err) {
-                console.log(err.message);
-            }
-        );
-    });
+
 });
 
 showTmpl.helpers({
-    i18nLabel(label){
-        let key = `pos.enterBill.schema.${label}.label`;
-        return TAPi18n.__(key);
+    colorizeType(type) {
+        if (type == 'term') {
+            return `<label class="label label-info">T</label>`
+        }
+        return `<label class="label label-success">G</label>`
     },
-    enterBillInfo () {
-
-        let enterBillInfo = Template.instance().enterBill.get();
-
-        // Use jsonview
-        enterBillInfo.jsonViewOpts = {collapsed: true};
-        //
-        return enterBillInfo;
+    colorizeStatus(status){
+        if(status == 'active') {
+            return `<label class="label label-info">A</label>`
+        }else if(status == 'partial') {
+            return `<label class="label label-danger">P</label>`
+        }
+        return `<label class="label label-success">C</label>`
     }
 });
-
+showTmpl.events({
+    'click .print-bill-show'(event, instance){
+        $('#to-print').printThis();
+    }
+});
 // Hook
 let hooksObject = {
     before: {
@@ -501,7 +509,7 @@ let hooksObject = {
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
-                if(obj.prepaidOrderId) {
+                if (obj.prepaidOrderId) {
                     doc.prepaidOrderId = obj.prepaidOrderId;
                 }
                 items.push(obj);

@@ -299,8 +299,8 @@
                     <div class="row">
                         <div class="col-md-4" style="padding: 10px;">
                             <strong>Customer: </strong> {{customer}}<br>
-                        <span><strong>Invoice Date: </strong>{{moFormat invoiceDate 'YYYY-MM-DD'}}</span>,
-                            <span><strong>Due Date: </strong>{{moFormat dueDate 'YYYY-MM-DD'}}</span><br>
+                        <span><strong>Invoice Date: </strong>{{moFormat invoiceDate 'YYYY-MM-DD HH:mm:ss'}}</span>,
+                            <span><strong>Due Date: </strong>{{moFormat dueDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>
                             <span><strong>Status: </strong>{{{colorizeStatus status}}}, <strong>Type: {{{colorizeType invoiceType}}}</strong></span><br>
                         </div>
                     </div>

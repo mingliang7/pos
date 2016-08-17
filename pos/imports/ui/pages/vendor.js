@@ -24,7 +24,7 @@ import '../../../../core/client/components/form-footer.js';
 
 // Collection
 import {Vendors} from '../../api/collections/vendor.js';
-
+import {balanceTmpCollection} from '../../api/collections/tmpCollection';
 // Tabular
 import {VendorTabular} from '../../../common/tabulars/vendor.js';
 
@@ -126,11 +126,13 @@ indexTmpl.events({
         alertify.vendorShow(fa('eye', TAPi18n.__('pos.vendor.title')), renderTemplate(showTmpl, this));
     },
     'click .go-to-pay-bill'(event, instance){
-        FlowRouter.go('pos.payBill', { vendorId: this._id });
+        FlowRouter.go('pos.payBill', {vendorId: this._id});
     }
 });
 
-
+indexTmpl.onDestroyed(function () {
+    balanceTmpCollection.remove({});
+});
 // New
 newTmpl.onCreated(function () {
     this.paymentType = new ReactiveVar();

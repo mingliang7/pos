@@ -13,7 +13,7 @@ import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
 import {Vendors} from '../../imports/api/collections/vendor.js';
-
+import {balanceTmpCollection} from '../../imports/api/collections/tmpCollection';
 // Page
 Meteor.isClient && require('../../imports/ui/pages/vendor.html');
 
@@ -26,6 +26,17 @@ tabularOpts.columns = [
     {data: "gender", title: "Gender"},
     {data: "telephone", title: "Telephone"},
     {data: "email", title: "Email"},
+    {
+        data: "_id",
+        title: "Amount Due",
+        render: function (val) {
+            Meteor.call('getVendorBalance', {vendorId: val}, function (err, result) {
+                balanceTmpCollection.insert({_id: val, balanceAmount: result});
+            });
+            let balanceAmount = balanceTmpCollection.findOne(val).balanceAmount;
+            return numeral(balanceAmount).format('0,0.00');
+        }
+    },
     {title: '', tmpl: Meteor.isClient && Template.Pos_vendorButtonAction}
 ];
 tabularOpts.extraFields = ['termId', '_term', 'paymentType', 'repId', 'paymentGroupId'];
