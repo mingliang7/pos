@@ -61,8 +61,8 @@ export const invoiceSchema = new SimpleSchema({
                         value: '_id'
                     },
                     {
-                        label: 'Customer',
-                        value: 'customerId'
+                        label: 'Representative',
+                        value: 'repId'
                     },
                     {
                         label: 'Date',

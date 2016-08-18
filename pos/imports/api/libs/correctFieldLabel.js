@@ -73,6 +73,9 @@ export const correctFieldLabel = function (field) {
         case 'actualDueAmount':
             label = "Actual Amount";
             break;
+        case 'repId':
+            label = 'Representative';
+            break;
     }
     return label;
 };
