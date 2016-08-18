@@ -20,37 +20,24 @@ LendingStocks.before.insert(function (userId, doc) {
 LendingStocks.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-       // lendingStockManageStock(doc);
-        if (doc.status == "active") {
-        }
-        else {
-            console.log('from lendingStock after insert');
-            doc.items.forEach(function (item) {
-                averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'lendingStock', doc._id);
-            });
-        }
-
+        lendingStockManageStock(doc);
     });
 });
 
 LendingStocks.after.update(function (userId, doc, fieldNames, modifier, options) {
     let preDoc = this.previous;
-    if (doc.status == "active") {
-    } else {
-        Meteor.defer(function () {
-            Meteor._sleepForMs(200);
-            reduceFromInventory(preDoc);
-            doc.items.forEach(function (item) {
-                averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'lendingStock', doc._id);
-            });
-        });
-    }
+    Meteor.defer(function () {
+        Meteor._sleepForMs(200);
+        returnToInventoryAndLendingStock(preDoc);
+        lendingStockManageStock(doc);
+    })
+
 });
 
 LendingStocks.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        reduceFromInventory(doc);
+        returnToInventoryAndLendingStock(doc);
     });
 });
 
@@ -133,118 +120,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
     setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
     Item.direct.update(item.itemId, setModifier);
 }
-function reduceFromInventory(lendingStock) {
-    //let lendingStock = LendingStocks.findOne(lendingStockId);
-    let prefix = lendingStock.stockLocationId + '-';
-    lendingStock.items.forEach(function (item) {
-        let inventory = AverageInventories.findOne({
-            branchId: lendingStock.branchId,
-            itemId: item.itemId,
-            stockLocationId: lendingStock.stockLocationId
-        }, {sort: {_id: 1}});
-
-        if (inventory) {
-            let newInventory = {
-                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                branchId: lendingStock.branchId,
-                stockLocationId: lendingStock.stockLocationId,
-                itemId: item.itemId,
-                qty: item.qty,
-                price: inventory.price,
-                remainQty: inventory.remainQty - item.qty,
-                coefficient: -1,
-                type: 'enter-return',
-                refId: lendingStock._id
-            };
-            AverageInventories.insert(newInventory);
-        } else {
-            let thisItem = Item.findOne(item.itemId);
-            let newInventory = {
-                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                branchId: lendingStock.branchId,
-                stockLocationId: lendingStock.stockLocationId,
-                itemId: item.itemId,
-                qty: item.qty,
-                price: thisItem.purchasePrice,
-                remainQty: 0 - item.qty,
-                coefficient: -1,
-                type: 'enter-return',
-                refId: lendingStock._id
-            };
-            AverageInventories.insert(newInventory);
-        }
-
-    });
-
-}
-function recalculateQty(preDoc) {
-    Meteor._sleepForMs(200);
-    let updatedFlag;
-    preDoc.items.forEach(function (item) {
-        PrepaidOrders.direct.update(
-            {_id: preDoc.prepaidOrderId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
-        ); //re sum remain qty
-    });
-}
-//update qty
-function updateQtyInPrepaidOrder(doc) {
-    Meteor._sleepForMs(200);
-    doc.items.forEach(function (item) {
-        PrepaidOrders.direct.update(
-            {_id: doc.prepaidOrderId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': -item.qty, sumRemainQty: -item.qty}}
-        )
-    });
-}
-// update group invoice
-function removeBillFromGroup(doc) {
-    Meteor._sleepForMs(200);
-    GroupBill.update({_id: doc.paymentGroupId}, {$pull: {invoices: {_id: doc._id}}, $inc: {total: -doc.total}});
-}
-function pushBillFromGroup(doc) {
-    Meteor._sleepForMs(200);
-    GroupBill.update({_id: doc.paymentGroupId}, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
-}
-//update payment
-function recalculatePayment({doc, preDoc}) {
-    let totalChanged = doc.total - preDoc.total;
-    if (totalChanged != 0) {
-        let billId = doc.paymentGroupId || doc._id;
-        let receivePayment = PayBills.find({billId: billId});
-        if (receivePayment.count() > 0) {
-            PayBills.update({billId: billId}, {
-                $inc: {
-                    dueAmount: totalChanged,
-                    balanceAmount: totalChanged
-                }
-            }, {multi: true});
-            PayBills.direct.remove({billId: billId, dueAmount: {$lte: 0}});
-        }
-    }
-}
-//update payment after remove
-function recalculatePaymentAfterRemoved({doc}) {
-    let totalChanged = -doc.total;
-    if (totalChanged != 0) {
-        let billId = doc.paymentGroupId;
-        let receivePayment = PayBills.find({billId: billId});
-        if (receivePayment.count() > 0) {
-            PayBills.update({billId: billId}, {
-                $inc: {
-                    dueAmount: totalChanged,
-                    balanceAmount: totalChanged
-                }
-            }, {multi: true});
-            PayBills.direct.remove({billId: billId, dueAmount: {$lte: 0}});
-        }
-    }
-}
-
-
 function lendingStockManageStock(lendingStock) {
-
-    let totalCost = 0;
     // let lendingStock = LendingStocks.findOne(lendingStockId);
     let prefix = lendingStock.stockLocationId + "-";
     let lendingPrefix = lendingStock.branchId + '-';
@@ -302,11 +178,50 @@ function lendingStockManageStock(lendingStock) {
                 });
         } else {
             let newLendingStock = {
-                _id: idGenerator.genWithPrefix(lendingInventory, lendingPrefix, 13),
+                _id: idGenerator.genWithPrefix(LendingInventories, lendingPrefix, 13),
                 vendor: lendingStock.vendorId,
                 branchId: lendingStock.branchId,
                 itemId: item.itemId,
                 qty: item.qty
+            };
+            LendingInventories.insert(newLendingStock);
+        }
+    });
+}
+function returnToInventoryAndLendingStock(lendingStock) {
+    let lendingPrefix = lendingStock.branchId + '-';
+    // let lendingStock = Invoices.findOne(lendingStockId);
+    lendingStock.items.forEach(function (item) {
+        //---Open Inventory type block "Average Inventory"---
+        averageInventoryInsert(
+            lendingStock.branchId,
+            item,
+            lendingStock.stockLocationId,
+            'lendingStock-return',
+            lendingStock._id
+        );
+        //--- End Inventory type block "Average Inventory"---
+
+        //-- reduceFromLendingStock to lending stock---
+        let lendingInventory = LendingInventories.findOne({
+            itemId: item.itemId,
+            vendorId: lendingStock.vendorId,
+            branchId: lendingStock.branchId
+        });
+        let qty = -1 * item.qty;
+        if (lendingInventory) {
+            LendingInventories.update(
+                lendingInventory._id,
+                {
+                    $inc: {qty: qty}
+                });
+        } else {
+            let newLendingStock = {
+                _id: idGenerator.genWithPrefix(LendingInventories, lendingPrefix, 13),
+                vendor: lendingStock.vendorId,
+                branchId: lendingStock.branchId,
+                itemId: item.itemId,
+                qty: qty
             };
             LendingInventories.insert(newLendingStock);
         }
@@ -315,3 +230,5 @@ function lendingStockManageStock(lendingStock) {
 
 
 }
+
+
