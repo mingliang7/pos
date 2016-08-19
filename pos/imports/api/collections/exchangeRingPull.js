@@ -9,9 +9,43 @@ import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 import {SelectOpts} from '../../ui/libs/select-opts.js';
 
 export const ExchangeRingPulls = new Mongo.Collection("pos_exchangeRingPulls");
+// Items sub schema
+ExchangeRingPulls.itemsSchema = new SimpleSchema({
+    itemId: {
+        type: String
+    },
+    qty: {
+        type: Number,
+        min: 1
+    },
+    price: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
+    amount: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    }
+});
 
 // ExchangeRingPulls schema
 ExchangeRingPulls.schema = new SimpleSchema({
+    voucherId: {
+        type: String,
+        optional: true
+    },
     exchangeRingPullDate: {
         type: Date,
         autoform: {
@@ -47,6 +81,15 @@ ExchangeRingPulls.schema = new SimpleSchema({
             }
         }
     },
+    repId: {
+        type: String,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One'
+            }
+        }
+    },
     staffId: {
         type: String,
         autoValue(){
@@ -73,15 +116,32 @@ ExchangeRingPulls.schema = new SimpleSchema({
             }
         }
     },
+    items: {
+        type: [ExchangeRingPulls.itemsSchema]
+    },
+    total: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
+
     branchId: {
         type: String
     },
-    amount: {
-        type: Number,
-    }
+    status: {
+        type: String,
+        optional: true
+    },
+
 });
 
 Meteor.startup(function () {
+    ExchangeRingPulls.itemsSchema.i18n("pos.exchangeRingPull.schema");
     ExchangeRingPulls.schema.i18n("pos.exchangeRingPull.schema");
     ExchangeRingPulls.attachSchema(ExchangeRingPulls.schema);
 });
