@@ -104,6 +104,21 @@ PosRoutes.route('/report/invoiceByCustomer', {
     }
 });
 
+import '../imports/ui/reports/invoiceByItem';
+PosRoutes.route('/report/invoiceByItemReport', {
+    name: 'pos.invoiceByItemReport',
+    title: 'Invoice By Item Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_invoiceByItemReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Invoice By Item Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
+
 import '../imports/ui/reports/payment';
 PosRoutes.route('/report/payment', {
     name: 'pos.paymentReport',
