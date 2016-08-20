@@ -10,3 +10,5 @@ RingPullTransfers.before.insert(function (userId, doc) {
     doc._id = idGenerator.genWithPrefix(RingPullTransfers, prefix, 4);
 });
 
+//When Accept: reduce RingPull Inventory from fromBranch and Increase RingPull Inventory to toBranch
+//When Accept: 
