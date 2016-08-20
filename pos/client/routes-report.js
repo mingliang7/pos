@@ -180,6 +180,21 @@ PosRoutes.route('/report/billReport', {
     }
 });
 
+import '../imports/ui/reports/billByVendor';
+PosRoutes.route('/report/billByVendorReport', {
+    name: 'pos.billByVendorReport',
+    title: 'Bill By Vendor Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_billByVendorReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Bill By Vendor Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
+
 import '../imports/ui/reports/prepaidOrderReport';
 PosRoutes.route('/report/prepaidOrderReport', {
     name: 'pos.prepaidOrderReport',
