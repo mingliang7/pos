@@ -42,10 +42,6 @@ ExchangeRingPulls.itemsSchema = new SimpleSchema({
 
 // ExchangeRingPulls schema
 ExchangeRingPulls.schema = new SimpleSchema({
-    voucherId: {
-        type: String,
-        optional: true
-    },
     exchangeRingPullDate: {
         type: Date,
         autoform: {
@@ -78,15 +74,6 @@ ExchangeRingPulls.schema = new SimpleSchema({
                         return {branchId: currentBranch};
                     }
                 }
-            }
-        }
-    },
-    repId: {
-        type: String,
-        autoform: {
-            type: 'universe-select',
-            afFieldInput: {
-                uniPlaceholder: 'Select One'
             }
         }
     },
@@ -129,7 +116,6 @@ ExchangeRingPulls.schema = new SimpleSchema({
             }
         }
     },
-
     branchId: {
         type: String
     },
