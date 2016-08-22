@@ -57,5 +57,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['items', 'repId'];
+tabularOpts.extraFields = ['items', 'repId','stockLocationId'];
 export const ExchangeRingPullTabular = new Tabular.Table(tabularOpts);

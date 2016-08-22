@@ -48,9 +48,6 @@ Tracker.autorun(function () {
                 Session.set('customerInfo', result);
             });
     }
-    if (Session.get('saleOrderItems')) {
-        Meteor.subscribe('pos.item', {_id: {$in: Session.get('saleOrderItems')}});
-    }
 });
 
 // Declare template
@@ -58,8 +55,7 @@ let indexTmpl = Template.Pos_exchangeRingPull,
     actionTmpl = Template.Pos_exchangeRingPullAction,
     newTmpl = Template.Pos_exchangeRingPullNew,
     editTmpl = Template.Pos_exchangeRingPullEdit,
-    showTmpl = Template.Pos_exchangeRingPullShow,
-    listSaleOrder = Template.listSaleOrder;
+    showTmpl = Template.Pos_exchangeRingPullShow
 // Local collection
 let itemsCollection = nullCollection;
 
@@ -68,7 +64,6 @@ indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('exchangeRingPull', {size: 'lg'});
     createNewAlertify('exchangeRingPullShow',);
-    createNewAlertify('listSaleOrder', {size: 'lg'});
     createNewAlertify('customer');
 });
 
@@ -156,41 +151,10 @@ newTmpl.events({
             if (FlowRouter.query.get('customerId')) {
                 FlowRouter.query.set('customerId', event.currentTarget.value);
             }
-
         }
         Session.set('totalOrder', undefined);
 
     },
-    'change .enable-sale-order'(event, instance){
-        itemsCollection.remove({});
-        let customerId = $('[name="customerId"]').val();
-        if ($(event.currentTarget).prop('checked')) {
-            if (customerId != '') {
-                FlowRouter.query.set('customerId', customerId);
-                $('.sale-order').addClass('toggle-list');
-                setTimeout(function () {
-                    alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
-                }, 700)
-            } else {
-                displayError('Please select customer');
-                $(event.currentTarget).prop('checked', false);
-            }
-
-        } else {
-            FlowRouter.query.unset();
-            $('.sale-order').removeClass('toggle-list');
-        }
-    },
-    'click .toggle-list'(event, instance){
-        alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
-    },
-    'change [name="termId"]'(event, instance){
-        let customerInfo = Session.get('customerInfo');
-        Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
-            customerInfo._term.netDueIn = result.netDueIn;
-            Session.set('customerInfo', customerInfo);
-        });
-    }
 });
 newTmpl.helpers({
     repId(){
@@ -201,31 +165,13 @@ newTmpl.helpers({
 
             }
         }
-        return '';
-    },
-    termId(){
-        if (Session.get('customerInfo')) {
-            try {
-                return Session.get('customerInfo').termId;
-            } catch (e) {
-
-            }
-        }
-        return '';
     },
     options(){
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().repList) {
             return instance.repOptions.get().repList
         }
-        return '';
-    },
-    termOption(){
-        let instance = Template.instance();
-        if (instance.repOptions.get() && instance.repOptions.get().termList) {
-            return instance.repOptions.get().termList
-        }
-        return '';
+        return [];
     },
     totalOrder(){
         let total = 0;
@@ -253,11 +199,6 @@ newTmpl.helpers({
               <li>Sale Order to be exchangeRingPull: <span class="label label-primary">0</span>`
         };
     },
-    repId(){
-        if (Session.get('customerInfo')) {
-            return Session.get('customerInfo').repId;
-        }
-    },
     collection(){
         return ExchangeRingPulls;
     },
@@ -272,27 +213,6 @@ newTmpl.helpers({
 
         return {};
     },
-    dueDate(){
-        let date = AutoForm.getFieldValue('exchangeRingPullDate');
-        if (Session.get('customerInfo')) {
-            if (Session.get('customerInfo')._term) {
-                let term = Session.get('customerInfo')._term;
-
-                let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
-                return dueDate;
-            }
-        }
-        return date;
-    },
-    isTerm(){
-        if (Session.get('customerInfo')) {
-            let customerInfo = Session.get('customerInfo');
-            if (customerInfo._term) {
-                return true;
-            }
-            return false;
-        }
-    }
 });
 
 newTmpl.onDestroyed(function () {
@@ -301,16 +221,13 @@ newTmpl.onDestroyed(function () {
     Session.set('customerInfo', undefined);
     Session.set('getCustomerId', undefined);
     FlowRouter.query.unset();
-    Session.set('saleOrderItems', undefined);
     Session.set('totalOrder', undefined);
-    Session.set('creditLimitAmount', undefined);
     deletedItem.remove({});
 });
 
 // Edit
 editTmpl.onCreated(function () {
     this.repOptions = new ReactiveVar();
-    this.isSaleOrder = new ReactiveVar(false);
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
     });
@@ -327,29 +244,6 @@ editTmpl.events({
     },
     'click .go-to-receive-payment'(event, instance){
         alertify.exchangeRingPull().close();
-    },
-    'change [name=customerId]'(event, instance){
-        if (event.currentTarget.value != '') {
-            Session.set('getCustomerId', event.currentTarget.value);
-            if (FlowRouter.query.get('customerId')) {
-                FlowRouter.query.set('customerId', event.currentTarget.value);
-            }
-        }
-        Session.set('totalOrder', undefined);
-
-    },
-    'click .toggle-list'(event, instance){
-        alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
-    },
-    'change [name="termId"]'(event, instance){
-        let customerInfo = Session.get('customerInfo');
-        Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
-            try {
-                customerInfo._term.netDueIn = result.netDueIn;
-                Session.set('customerInfo', customerInfo);
-            } catch (e) {
-            }
-        });
     }
 });
 editTmpl.helpers({
@@ -357,9 +251,6 @@ editTmpl.helpers({
         setTimeout(function () {
             swal.close();
         }, 500);
-    },
-    isSaleOrder(){
-        return Template.instance().isSaleOrder.get();
     },
     collection(){
         return ExchangeRingPulls;
@@ -397,27 +288,10 @@ editTmpl.helpers({
         }
         return '';
     },
-    termId(){
-        if (Session.get('customerInfo')) {
-            try {
-                return Session.get('customerInfo').termId;
-            } catch (e) {
-
-            }
-        }
-        return '';
-    },
     options(){
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().repList) {
             return instance.repOptions.get().repList
-        }
-        return '';
-    },
-    termOption(){
-        let instance = Template.instance();
-        if (instance.repOptions.get() && instance.repOptions.get().termList) {
-            return instance.repOptions.get().termList
         }
         return '';
     },
@@ -447,38 +321,12 @@ editTmpl.helpers({
               <li>Sale Order to be exchangeRingPull: <span class="label label-primary">0</span>`
         };
     },
-    repId(){
-        if (Session.get('customerInfo')) {
-            return Session.get('customerInfo').repId;
-        }
-    },
     collection(){
         return ExchangeRingPulls;
     },
     itemsCollection(){
         return itemsCollection;
     },
-    dueDate(){
-        let date = AutoForm.getFieldValue('exchangeRingPullDate');
-        if (Session.get('customerInfo')) {
-            if (Session.get('customerInfo')._term) {
-                let term = Session.get('customerInfo')._term;
-
-                let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
-                return dueDate;
-            }
-        }
-        return date;
-    },
-    isTerm(){
-        if (Session.get('customerInfo')) {
-            let customerInfo = Session.get('customerInfo');
-            if (customerInfo._term) {
-                return true;
-            }
-            return false;
-        }
-    }
 });
 
 editTmpl.onDestroyed(function () {
@@ -487,7 +335,6 @@ editTmpl.onDestroyed(function () {
     Session.set('customerInfo', undefined);
     Session.set('getCustomerId', undefined);
     FlowRouter.query.unset();
-    Session.set('saleOrderItems', undefined);
     Session.set('totalOrder', undefined);
     deletedItem.remove({});
 });
@@ -530,149 +377,8 @@ showTmpl.events({
         $('#to-print').printThis();
     }
 });
-//listSaleOrder
-listSaleOrder.helpers({
-    saleOrders(){
-        let item = [];
-        let saleOrders = Order.find({status: 'active', customerId: FlowRouter.query.get('customerId')}).fetch();
-        if (deletedItem.find().count() > 0) {
-            deletedItem.find().forEach(function (item) {
-                saleOrders.forEach(function (saleOrder) {
-                    saleOrder.items.forEach(function (saleItem) {
-                        if (saleItem.itemId == item.itemId) {
-                            saleItem.remainQty += item.qty;
-                            saleOrder.sumRemainQty += item.qty;
-                        }
-                    });
-                });
-            });
-        }
-        saleOrders.forEach(function (saleOrder) {
-            saleOrder.items.forEach(function (saleItem) {
-                item.push(saleItem.itemId);
-            });
-        });
-        Session.set('saleOrderItems', item);
-        return saleOrders;
-    },
-    hasSaleOrders(){
-        let count = Order.find({status: 'active', customerId: FlowRouter.query.get('customerId')}).count();
-        return count > 0;
-    },
-    getItemName(itemId){
-        try {
-            return Item.findOne(itemId).name;
-        } catch (e) {
-
-        }
-
-    }
-});
-listSaleOrder.events({
-    'click .add-item'(event, instance){
-        event.preventDefault();
-        let remainQty = $(event.currentTarget).parents('.sale-item-parents').find('.remain-qty').val();
-        let saleId = $(event.currentTarget).parents('.sale-item-parents').find('.saleId').text().trim()
-        let tmpCollection = itemsCollection.find().fetch();
-        if (remainQty != '' && remainQty != '0') {
-            if (this.remainQty > 0) {
-                if (tmpCollection.length > 0) {
-                    let saleIdExist = _.find(tmpCollection, function (o) {
-                        return o.saleId == saleId;
-                    });
-                    if (saleIdExist) {
-                        insertSaleOrderItem({
-                            self: this,
-                            remainQty: parseFloat(remainQty),
-                            saleItem: saleIdExist,
-                            saleId: saleId
-                        });
-                    } else {
-                        swal("Retry!", "Item Must be in the same saleId", "warning")
-                    }
-                } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
-                        this.saleId = saleId;
-                        this.qty = parseFloat(remainQty)
-                        this.name = result.name;
-                        itemsCollection.insert(this);
-                    });
-                    displaySuccess('Added!')
-                }
-            } else {
-                swal("ប្រកាស!", "មុខទំនិញនេះត្រូវបានកាត់កងរួចរាល់", "info");
-            }
-        } else {
-            swal("Retry!", "ចំនួនមិនអាចអត់មានឬស្មើសូន្យ", "warning");
-        }
-    },
-    'change .remain-qty'(event, instance){
-        event.preventDefault();
-        let remainQty = $(event.currentTarget).val();
-        let saleId = $(event.currentTarget).parents('.sale-item-parents').find('.saleId').text().trim()
-        let tmpCollection = itemsCollection.find().fetch();
-        if (remainQty != '' && remainQty != '0') {
-            if (this.remainQty > 0) {
-                if (parseFloat(remainQty) > this.remainQty) {
-                    remainQty = this.remainQty;
-                    $(event.currentTarget).val(this.remainQty);
-                }
-                if (tmpCollection.length > 0) {
-                    let saleIdExist = _.find(tmpCollection, function (o) {
-                        return o.saleId == saleId;
-                    });
-                    if (saleIdExist) {
-                        insertSaleOrderItem({
-                            self: this,
-                            remainQty: parseFloat(remainQty),
-                            saleItem: saleIdExist,
-                            saleId: saleId
-                        });
-                    } else {
-                        swal("Retry!", "Item Must be in the same saleId", "warning")
-                    }
-                } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
-                        this.saleId = saleId;
-                        this.qty = parseFloat(remainQty);
-                        this.name = result.name;
-                        this.amount = this.qty * this.price;
-                        itemsCollection.insert(this);
-                    });
-                    displaySuccess('Added!')
-                }
-            } else {
-                swal("ប្រកាស!", "មុខទំនិញនេះត្រូវបានកាត់កងរួចរាល់", "info");
-            }
-        } else {
-            swal("Retry!", "ចំនួនមិនអាចអត់មានឬស្មើសូន្យ", "warning");
-        }
-
-    }
-});
 
 
-//insert sale order item to itemsCollection
-let insertSaleOrderItem = ({self, remainQty, saleItem, saleId}) => {
-    Meteor.call('getItem', self.itemId, (err, result)=> {
-        self.saleId = saleId;
-        self.qty = remainQty;
-        self.name = result.name;
-        self.amount = self.qty * self.price;
-        let getItem = itemsCollection.findOne({itemId: self.itemId});
-        if (getItem) {
-            if (getItem.qty + remainQty <= self.remainQty) {
-                itemsCollection.update(getItem._id, {$inc: {qty: self.qty, amount: self.qty * getItem.price}});
-                displaySuccess('Added!')
-            } else {
-                swal("Retry!", `ចំនួនបញ្ចូលចាស់(${getItem.qty}) នឹងបញ្ចូលថ្មី(${remainQty}) លើសពីចំនួនកម្ម៉ង់ទិញចំនួន ${(self.remainQty)}`, "error");
-            }
-        } else {
-            itemsCollection.insert(self);
-            displaySuccess('Added!')
-        }
-    });
-};
 function excuteEditForm(doc) {
     swal({
         title: "Pleas Wait",

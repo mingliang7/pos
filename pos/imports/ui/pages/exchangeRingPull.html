@@ -17,7 +17,8 @@
         <li><a class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
         <li><a class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
         <li role="separator" class="divider"></li>
-        <li><a href="/pos/customer/{{customerId}}/receive-payment/{{_id}}"><i class="fa fa-money"></i> Receive Payment</a></li>
+        <li><a href="/pos/customer/{{customerId}}/receive-payment/{{_id}}"><i class="fa fa-money"></i> Receive
+            Payment</a></li>
         <li><a class="js-exchangeRingPull"><i class="fa fa-print"></i> {{_ "pos.order.exchangeRingPullAction"}}</a></li>
     {{/columnAction}}
 </template>
@@ -33,10 +34,6 @@
                     {{> afQuickField name="customerId" label=false }}
                 </div>
                 <div class="col-md-3">
-                    <br>
-                    <span><input type="checkbox" class="filled-in enable-sale-order"><a href=""
-                                                                                        class="sale-order btn btn-default">Sale
-                       Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
                 </div>
                 <div class="col-md-6">
                     <p class="pull-right ">
@@ -63,6 +60,7 @@
                     {{> afQuickField name="repId" options=options value=repId label="Rep"}}
                 </div>
                 <div class="col-md-2">
+                    {{> afQuickField name="stockLocationId"}}
                     {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
                 </div>
 
@@ -173,26 +171,16 @@
             <hr>
             <div class="row">
                 <div class="col-md-2">
-                    {{> afQuickField name="voucherId"}}
-                </div>
-                {{#if isTerm}}
-                    <div class="col-md-2">
-                        {{> afQuickField name="termId" options=termOption value=termId}}
-                    </div>
-                {{/if}}
-                <div class="col-md-2">
                     {{> afQuickField name="exchangeRingPullDate"}}
                 </div>
                 <div class="col-md-2">
-                    {{> afQuickField name="dueDate" value=dueDate}}
+                    {{> afQuickField name="repId" options=options value=repId label="Rep"}}
                 </div>
                 <div class="col-md-2">
                     {{> afQuickField name="stockLocationId"}}
                     {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
                 </div>
-                <div class="col-md-2">
-                    {{> afQuickField name="repId" options=options value=repId label="Rep"}}
-                </div>
+
 
             </div>
             <div class="col-md-12 well">
@@ -292,7 +280,8 @@
                             <strong>Customer: </strong> {{customer}}<br>
                             <span><strong>ExchangeRingPull Date: </strong>{{moFormat exchangeRingPullDate 'YYYY-MM-DD HH:mm:ss'}}</span>,
                             <span><strong>Due Date: </strong>{{moFormat dueDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>
-                            <span><strong>Status: </strong>{{{colorizeStatus status}}}, <strong>Type: {{{colorizeType exchangeRingPullType}}}</strong></span><br>
+                            <span><strong>Status: </strong>{{{colorizeStatus status}}}
+                                , <strong>Type: {{{colorizeType exchangeRingPullType}}}</strong></span><br>
                         </div>
                     </div>
                 </div>
