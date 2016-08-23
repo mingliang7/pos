@@ -1,5 +1,5 @@
 import {Meteor} from 'meteor/meteor';
-import {Templet} from 'meteor/templating';
+import {Template} from 'meteor/templating';
 import {Tabular} from 'meteor/aldeed:tabular';
 import {EJSON} from 'meteor/ejson';
 import {moment} from 'meteor/momentjs:moment';

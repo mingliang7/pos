@@ -131,7 +131,6 @@ indexTmpl.events({
 });
 //on rendered
 newTmpl.onCreated(function () {
-    Meteor.subscribe('pos.requirePassword', {branchId: {$in: [Session.get('currentBranch')]}});//subscribe require password validation
     this.repOptions = new ReactiveVar();
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
@@ -153,7 +152,6 @@ newTmpl.events({
             }
         }
         Session.set('totalOrder', undefined);
-
     },
 });
 newTmpl.helpers({
@@ -231,10 +229,6 @@ editTmpl.onCreated(function () {
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
     });
-    if (this.data.exchangeRingPullType == 'saleOrder') {
-        FlowRouter.query.set('customerId', this.data.customerId);
-        this.isSaleOrder.set(true);
-    }
 });
 
 
