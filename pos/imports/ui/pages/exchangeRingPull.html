@@ -27,108 +27,42 @@
 <template name="Pos_exchangeRingPullNew">
     <div class="box-body">
         {{#autoForm collection=collection id="Pos_exchangeRingPullNew" type="insert"}}
-            <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
-                <div class="col-md-3">
-                    <label for="email">Customer:<span style="color: red;">*</span> (<a href="" class="add-new-customer">Add
-                        New</a>) </label>
-                    {{> afQuickField name="customerId" label=false }}
-                </div>
-                <div class="col-md-3">
-                </div>
-                <div class="col-md-6">
-                    <p class="pull-right ">
-                    <h4 class="text-black">BALANCE DUE</h4>
-                    <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
-                    {{#if totalOrder.customerId}}
-                        <a class="btn btn-default text-center go-to-receive-payment"
-                           href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.exchangeRingPullId}}">
-                            Receive Payment
-                        </a>
-                    {{/if}}
-                    </p>
-                </div>
-            </div>
-            <hr>
             <div class="row">
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Exchange Ring Pull</div>
+                        <div class="panel-body">
+                                    {{> afQuickField name="customerId" label=false }}
+                                    {{> afQuickField name="exchangeRingPullDate"}}
+                                    {{> afQuickField name="repId" options=options value=repId label="Rep"}}
+                                    {{> afQuickField name="stockLocationId"}}
+                                    {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                            {{> afQuickField name="des"}}
 
-
-                <div class="col-md-2">
-                    {{> afQuickField name="exchangeRingPullDate"}}
-                </div>
-
-                <div class="col-md-2">
-                    {{> afQuickField name="repId" options=options value=repId label="Rep"}}
-                </div>
-                <div class="col-md-2">
-                    {{> afQuickField name="stockLocationId"}}
-                    {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
-                </div>
-
-            </div>
-            <div class="col-md-12 well">
-                <!--Item Temporary-->
-                {{> Pos_exchangeRingPullItems itemsCollection=itemsCollection}}
-            </div>
-            <div class="row">
-                <div class="col-sm-12 pull-right">
-                    <!--{{> formFooterWithButton}}-->
-                    {{#formFooter}}
-                        <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
-                            <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
-                        </button>
-                        <button type="reset" class="btn btn-default reset-button">
-                            <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
-                        </button>
-                    {{/formFooter}}
-                </div>
-            </div>
-            <!--<div class="row">-->
-            <!--<div class="col-md-6" id="main">-->
-            <!--<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">-->
-            <!--<div class="panel panel-default">-->
-            <!--<div class="panel-heading" role="tab" id="headingTwo">-->
-            <!--<h4 class="panel-title">-->
-            <!--<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"-->
-            <!--href="#customerInfo" aria-expanded="false" aria-controls="collapseTwo">-->
-            <!--Customer Information-->
-            <!--</a>-->
-            <!--</h4>-->
-            <!--</div>-->
-            <!--<div id="customerInfo" class="panel-collapse collapse" role="tabpanel"-->
-            <!--aria-labelledby="headingTwo">-->
-            <!--<div class="panel-body">-->
-            <!--{{>infoTab data=customerInfo info="Customer"}}-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-
-            <!--</div>-->
-            <div class="row">
-                <div class="col-md-6" id="main">
-                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                        <div class="panel panel-default">
-                            <div class="panel-heading" role="tab" id="headingTwo">
-                                <h4 class="panel-title">
-                                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
-                                       href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                        Memo
-                                    </a>
-                                </h4>
                             </div>
-                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
-                                 aria-labelledby="headingTwo">
-                                <div class="panel-body">
-                                    <!--<div class="col-md-3">-->
-                                    {{> afQuickField name="des"}}
-                                    <!--</div>-->
-                                </div>
-                            </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="col-md-12 well">
+                        <!--Item Temporary-->
+                        {{> Pos_exchangeRingPullItems itemsCollection=itemsCollection}}
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 pull-right">
+                            <!--{{> formFooterWithButton}}-->
+                            {{#formFooter}}
+                                <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
+                                    <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
+                                </button>
+                                <button type="reset" class="btn btn-default reset-button">
+                                    <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
+                                </button>
+                            {{/formFooter}}
                         </div>
                     </div>
                 </div>
             </div>
+
         {{/autoForm}}
     </div>
 </template>
@@ -136,115 +70,41 @@
 <!--Update-->
 <template name="Pos_exchangeRingPullEdit">
     <div class="box-body">
+
         {{#autoForm collection=collection id="Pos_exchangeRingPullUpdate" doc=data type="update"}}
-            <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
-                <div class="hidden">
-                    <label for="email">Customer:<span style="color: red;">*</span> (<a href="" class="add-new-customer">Add
-                        New</a>) </label>
-                    {{> afQuickField name="customerId" label=false}}
-                </div>
-                <div class="col-md-3">
-                    <label for="">Customer:</label>
-                    <input type="text" readonly="true" value="{{customerId}}" class="form-control">
-                </div>
 
-                <div class="col-md-3">
-                    <br>
-                    {{#if isSaleOrder}}
-                        <span><a href="" class="toggle-list sale-order btn btn-default">Sale
-                            Order <i class="fa fa-list " aria-hidden="true"></i></a></span>
-                    {{/if}}
-                </div>
-                <div class="col-md-6">
-                    <p class="pull-right ">
-                    <h4 class="text-black">BALANCE DUE</h4>
-                    <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
-                    {{#if totalOrder.customerId}}
-                        <a class="btn btn-default text-center go-to-receive-payment"
-                           href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.exchangeRingPullId}}">
-                            Receive Payment
-                        </a>
-                    {{/if}}
-                    </p>
-                </div>
-            </div>
-            <hr>
             <div class="row">
-                <div class="col-md-2">
-                    {{> afQuickField name="exchangeRingPullDate"}}
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Exchange Ring Pull</div>
+                        <div class="panel-body">
+                            {{> afQuickField name="customerId"}}
+                            {{> afQuickField name="exchangeRingPullDate"}}
+                            {{> afQuickField name="repId" options=options label="Rep"}}
+                            {{> afQuickField name="stockLocationId"}}
+                            {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                            {{> afQuickField name="des"}}
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    {{> afQuickField name="repId" options=options value=repId label="Rep"}}
-                </div>
-                <div class="col-md-2">
-                    {{> afQuickField name="stockLocationId"}}
-                    {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
-                </div>
-
-
-            </div>
-            <div class="col-md-12 well">
-                <!--Item Temporary-->
-                {{> Pos_exchangeRingPullItems itemsCollection=itemsCollection}}
-            </div>
-            {{closeSwal}}
-            <!-- closing swal -->
-            <div class="row">
-                <div class="col-sm-12 pull-right">
-                    <!--{{> formFooterWithButton}}-->
-                    {{#formFooter}}
-                        <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
-                            <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
-                        </button>
-                        <button type="reset" class="btn btn-default">
-                            <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
-                        </button>
-                    {{/formFooter}}
-                </div>
-            </div>
-            <!--<div class="row">-->
-            <!--<div class="col-md-6" id="main">-->
-            <!--<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">-->
-            <!--<div class="panel panel-default">-->
-            <!--<div class="panel-heading" role="tab" id="headingTwo">-->
-            <!--<h4 class="panel-title">-->
-            <!--<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"-->
-            <!--href="#customerInfo" aria-expanded="false" aria-controls="collapseTwo">-->
-            <!--Customer Information-->
-            <!--</a>-->
-            <!--</h4>-->
-            <!--</div>-->
-            <!--<div id="customerInfo" class="panel-collapse collapse" role="tabpanel"-->
-            <!--aria-labelledby="headingTwo">-->
-            <!--<div class="panel-body">-->
-            <!--{{>infoTab data=customerInfo info="Customer"}}-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-
-            <!--</div>-->
-            <div class="row">
-                <div class="col-md-6" id="main">
-                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                        <div class="panel panel-default">
-                            <div class="panel-heading" role="tab" id="headingTwo">
-                                <h4 class="panel-title">
-                                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
-                                       href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                        Memo
-                                    </a>
-                                </h4>
-                            </div>
-                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
-                                 aria-labelledby="headingTwo">
-                                <div class="panel-body">
-                                    <!--<div class="col-md-3">-->
-                                    {{> afQuickField name="des"}}
-                                    <!--</div>-->
-                                </div>
-                            </div>
+                <div class="col-md-8">
+                    <div class="col-md-12 well">
+                        <!--Item Temporary-->
+                        {{> Pos_exchangeRingPullItems itemsCollection=itemsCollection}}
+                    </div>
+                    {{closeSwal}}
+                    <!-- closing swal -->
+                    <div class="row">
+                        <div class="col-sm-12 pull-right">
+                            <!--{{> formFooterWithButton}}-->
+                            {{#formFooter}}
+                                <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
+                                    <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
+                                </button>
+                                <button type="reset" class="btn btn-default">
+                                    <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
+                                </button>
+                            {{/formFooter}}
                         </div>
                     </div>
                 </div>

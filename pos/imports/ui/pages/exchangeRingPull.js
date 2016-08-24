@@ -155,7 +155,7 @@ newTmpl.events({
     },
 });
 newTmpl.helpers({
-    repId(){
+  repId(){
         if (Session.get('customerInfo')) {
             try {
                 return Session.get('customerInfo').repId;
@@ -272,7 +272,7 @@ editTmpl.helpers({
 
         return {};
     },
-    repId(){
+   /* repId(){
         if (Session.get('customerInfo')) {
             try {
                 return Session.get('customerInfo').repId;
@@ -281,7 +281,7 @@ editTmpl.helpers({
             }
         }
         return '';
-    },
+    },*/
     options(){
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().repList) {
