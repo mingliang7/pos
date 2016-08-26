@@ -50,6 +50,9 @@ indexTmpl.helpers({
             },
             {
                 label: 'Customer Term Balance Report', value: 'termCustomerBalance'
+            },
+            {
+                label: 'Customer Group Balance Report', value: 'groupCustomerBalance'
             }
 
         ]
@@ -84,6 +87,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'termCustomerBalance':
             params = `/pos/report/termCustomerBalance?date=${moment().format('YYYY-MM-DD 23:59:59')}`;
+            break;
+        case 'groupCustomerBalance':
+            params = `/pos/report/groupCustomerBalance?date=${moment().format('YYYY-MM-DD 23:59:59')}`;
             break;
         case 'locationTransfer':
             params = `/pos/report/locationTransfer?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&fromBranch=${Session.get('currentBranch')}`;
