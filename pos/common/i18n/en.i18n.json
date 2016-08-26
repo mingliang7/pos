@@ -13,7 +13,8 @@
       "stockLocation": "Stock Location",
       "invoice": "Invoice",
       "enterBill": "Enter Bill",
-      "lendingStock": "Lending Stock"
+      "lendingStock": "Lending Stock",
+      "exchangeRingPull": "Exchange Ring Pull"
     },
     "home": {
       "title": "Home",
@@ -526,6 +527,42 @@
         },
         "status": {
           "label": "Status"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
+    "exchangeRingPull": {
+      "title": "Exchange Ring Pull",
+      "invoiceAction": "Exchange Ring Pull",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "exchangeRingPullDate": {
+          "label": "Date"
+        },
+        "customerId": {
+          "label": "Customer"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
         },
         "branchId": {
           "label": "Branch"
