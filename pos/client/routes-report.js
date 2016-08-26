@@ -254,3 +254,18 @@ PosRoutes.route('/report/groupBillReport', {
         parent: 'pos.mainReport'
     }
 });
+
+import '../imports/ui/reports/termCustomerBalance';
+PosRoutes.route('/report/termCustomerBalance', {
+    name: 'pos.termCustomerBalance',
+    title: 'Term Customer Balance Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_termCustomerBalance');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Term Customer Balance Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
