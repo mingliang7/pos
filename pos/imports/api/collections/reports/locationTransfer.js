@@ -13,7 +13,7 @@ export const locationTransferReport = new SimpleSchema({
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
                     format: 'DD/MM/YYYY HH:mm:ss',
-                    pickTime: true
+
                 }
             }
         }
@@ -26,7 +26,7 @@ export const locationTransferReport = new SimpleSchema({
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
                     format: 'DD/MM/YYYY HH:mm:ss',
-                    pickTime: true
+
                 }
             }
         }

@@ -48,12 +48,13 @@ Invoices.schema = new SimpleSchema({
     },
     invoiceDate: {
         type: Date,
+        defaultValue: moment().toDate(),
         autoform: {
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
                     format: 'DD/MM/YYYY HH:mm:ss',
-                    pickTime: true
+
                 },
                 value(){
                     let customerId = AutoForm.getFieldValue('customerId');
@@ -73,7 +74,7 @@ Invoices.schema = new SimpleSchema({
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
                     format: 'DD/MM/YYYY HH:mm:ss',
-                    pickTime: true
+
                 }
             }
         }

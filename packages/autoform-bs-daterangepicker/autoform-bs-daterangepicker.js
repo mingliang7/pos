@@ -14,7 +14,7 @@ AutoForm.addInputType('bootstrap-daterangepicker', {
     valueOut: function () {
         var range = this.data('daterangepicker');
         var startDate = range.startDate.toDate();
-        var endDate = range.startDate.toDate();
+        var endDate = range.endDate.toDate();
 
         //console.log('Out');
         //console.log(startDate);
@@ -43,8 +43,9 @@ Template.afBootstrapDateRangePicker.onRendered(function () {
     var data = this.data;
     var opts = data.atts.dateRangePickerOptions || {};
 
-    //console.log('render');
-    //console.log(data);
+    if (_.isFunction(opts)) {
+        opts = opts();
+    }
 
     // instanciate daterangepicker
     $input.daterangepicker(opts);
@@ -63,66 +64,66 @@ Template.afBootstrapDateRangePicker.helpers({
 Template.afBootstrapDateRangePicker.onDestroyed(function () {
     var $input = this.$('input');
     var drp = $input.data('daterangepicker');
-    if(drp){
+    if (drp) {
         drp.remove()
     }
 });
 
-//var range = {};
+// var range = {};
 //
-//AutoForm.addInputType('bootstrap-daterangepicker', {
-//    template: 'afBootstrapDateRangePicker',
-//    valueOut: function () {
-//        if (range.startDate && range.endDate)
-//            return [range.startDate.toDate(), range.endDate.toDate()];
-//        else
-//            return [];
-//    },
-//    valueConverters: {
-//        "dateArray": function (val) {
-//            if (range.startDate && range.endDate)
-//                return [range.startDate.toDate(), range.endDate.toDate()];
-//            else
-//                return [];
-//        }
-//    }
-//});
+// AutoForm.addInputType('bootstrap-daterangepicker', {
+//     template: 'afBootstrapDateRangePicker',
+//     valueOut: function () {
+//         if (range.startDate && range.endDate)
+//             return [range.startDate.toDate(), range.endDate.toDate()];
+//         else
+//             return [];
+//     },
+//     valueConverters: {
+//         "dateArray": function (val) {
+//             if (range.startDate && range.endDate)
+//                 return [range.startDate.toDate(), range.endDate.toDate()];
+//             else
+//                 return [];
+//         }
+//     }
+// });
 //
-//Template.afBootstrapDateRangePicker.helpers({
-//    atts: function addFormControlAtts() {
-//        var atts = _.clone(this.atts);
-//        // Add bootstrap class
-//        atts = AutoForm.Utility.addClass(atts, "form-control");
-//        delete atts.dateRangePickerOptions;
-//        return atts;
-//    },
-//    dateRangePickerValue: function() {
-//        return this.atts['dateRangePickerValue'];
-//    }
-//});
+// Template.afBootstrapDateRangePicker.helpers({
+//     atts: function addFormControlAtts() {
+//         var atts = _.clone(this.atts);
+//         // Add bootstrap class
+//         atts = AutoForm.Utility.addClass(atts, "form-control");
+//         delete atts.dateRangePickerOptions;
+//         return atts;
+//     },
+//     dateRangePickerValue: function() {
+//         return this.atts['dateRangePickerValue'];
+//     }
+// });
 //
-//Template.afBootstrapDateRangePicker.rendered = function () {
+// Template.afBootstrapDateRangePicker.rendered = function () {
 //
-//    var $input = this.$('input');
-//    var data = this.data;
+//     var $input = this.$('input');
+//     var data = this.data;
 //
-//    if (data.atts.dateRangePickerOptions.startDate)
-//        range.startDate = data.atts.dateRangePickerOptions.startDate;
+//     if (data.atts.dateRangePickerOptions.startDate)
+//         range.startDate = data.atts.dateRangePickerOptions.startDate;
 //
-//    if (data.atts.dateRangePickerOptions.endDate)
-//        range.endDate = data.atts.dateRangePickerOptions.endDate;
+//     if (data.atts.dateRangePickerOptions.endDate)
+//         range.endDate = data.atts.dateRangePickerOptions.endDate;
 //
-//    // instanciate datepicker
-//    $input.daterangepicker(
-//        data.atts.dateRangePickerOptions,
-//        function(start, end) {
-//            range.startDate = start;
-//            range.endDate = end;
-//        }
-//    );
-//};
+//     // instanciate datepicker
+//     $input.daterangepicker(
+//         data.atts.dateRangePickerOptions,
+//         function(start, end) {
+//             range.startDate = start;
+//             range.endDate = end;
+//         }
+//     );
+// };
 //
-//Template.afBootstrapDateRangePicker.destroyed = function () {
-//    var $input = this.$('input');
-//    $input.daterangepicker('remove');
-//};
+// Template.afBootstrapDateRangePicker.destroyed = function () {
+//     var $input = this.$('input');
+//     $input.daterangepicker('remove');
+// };

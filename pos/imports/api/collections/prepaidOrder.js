@@ -55,7 +55,7 @@ PrepaidOrders.schema = new SimpleSchema({
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
                     format: 'DD/MM/YYYY HH:mm',
-                    pickTime: true
+
                 }
             }
         }

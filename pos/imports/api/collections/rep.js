@@ -33,7 +33,7 @@ Reps.schema = new SimpleSchema({
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
                     format: 'DD/MM/YYYY',
-                    pickTime: false
+
                 }
             }
         }

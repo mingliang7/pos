@@ -12,7 +12,7 @@ export const groupBillReportSchema = new SimpleSchema({
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
                     format: 'DD/MM/YYYY',
-                    pickTime: false
+
                 }
             }
         }
@@ -25,7 +25,7 @@ export const groupBillReportSchema = new SimpleSchema({
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
                     format: 'DD/MM/YYYY',
-                    pickTime: false
+
                 }
             }
         }

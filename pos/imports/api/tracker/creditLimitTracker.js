@@ -19,35 +19,39 @@ Tracker.autorun(function () {
                         swal({
                             title: "Password Required!",
                             text: `Balance Amount(${result}) > Credit Limit(${customerInfo.creditLimit}), Ask your Admin for password!`,
-                            inputType: "password",
-                            type: "input",
+                            input: "password",
                             showCancelButton: true,
                             closeOnConfirm: false,
-                            inputPlaceholder: "Type Password"
-                        }, function (inputValue) {
-                            if (inputValue === false) {
-                                // $('.reset-button').trigger('click');
+                            inputPlaceholder: "Type Password",
+                            preConfirm: function (inputValue) {
+                                return new Promise(function (resolve, reject) {
+                                    if (inputValue === "") {
+                                        reject("You need to input password!");
+                                        return false
+                                    } else if (inputValue !== "") {
+                                        let inputPassword = inputValue.trim();
+                                        if (inputPassword == requirePassword.password) {
+                                            swal("Message!", "Successfully", "success");
+                                            Session.set("creditLimitAmount", undefined);
+                                            resolve();
+
+                                        } else {
+                                            // $('.reset-button').trigger('click'); //reset from when wrong
+                                            // swal("Message!", "Incorrect Password!", "error");
+                                            reject("Wrong password!");
+                                        }
+                                    }
+                                });
+                            },
+                            allowOutsideClick: false
+                        })
+                            .then(function (inputValue) {
+
+                            }).catch(function (err) {
+                            if (err == 'cancel') {
                                 itemsCollection.remove({});
                                 Session.set("creditLimitAmount", undefined);
-                                return false;
                             }
-                            if (inputValue === "") {
-                                swal.showInputError("You need to input password!");
-                                return false
-                            } else {
-                                let inputPassword = inputValue.trim();
-                                if (inputPassword == requirePassword.password) {
-                                    swal("Message!", "Successfully", "success");
-                                    Session.set("creditLimitAmount", undefined);
-                                    return false
-                                } else {
-                                    // $('.reset-button').trigger('click'); //reset from when wrong
-                                    // swal("Message!", "Incorrect Password!", "error");
-                                    swal.showInputError("Wrong password!");
-                                    return false;
-                                }
-                            }
-
                         });
                     }
                 }
@@ -57,4 +61,4 @@ Tracker.autorun(function () {
             });
     }
 
-})
+});
