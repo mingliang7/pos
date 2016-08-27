@@ -15,7 +15,7 @@ import {itemInfo} from '../../../common/methods/item-info.js';
 let defaultPrice = new ReactiveVar(0);
 let itemFilterSelector = new ReactiveVar({});
 Tracker.autorun(function () {
-    if(Session.get('itemFilterState')) {
+    if (Session.get('itemFilterState')) {
         itemFilterSelector.set(Session.get('itemFilterState'));
     }
 });
@@ -29,11 +29,11 @@ export const ItemsSchema = new SimpleSchema({
                 create: true,
                 uniPlaceholder: 'Select One',
                 optionsMethod: 'pos.selectOptMethods.item',
-                optionsMethodParams: function() {
+                optionsMethodParams: function () {
                     if (Meteor.isClient) {
-                        if(!_.isEmpty(itemFilterSelector.get())) {
+                        if (!_.isEmpty(itemFilterSelector.get())) {
                             return itemFilterSelector.get();
-                        }else{
+                        } else {
                             return {scheme: {}};
                         }
                     }
@@ -97,4 +97,78 @@ export const ItemsSchema = new SimpleSchema({
             }
         }
     }
+});
+
+export const RingPullItemsSchema = new SimpleSchema({
+    itemId: {
+        type: String,
+        label: 'Item',
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                create: true,
+                uniPlaceholder: 'Select One',
+                optionsMethod: 'pos.selectOptMethods.item',
+                optionsMethodParams: function () {
+                    return {scheme: {$exists: false}};
+                }
+            }
+        }
+    },
+    qty: {
+        type: Number,
+        label: 'Qty',
+        optional: true,
+        min: 1,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.integer();
+            }
+        }
+    },
+    /* price: {
+     type: Number,
+     label: 'Price',
+     decimal: true,
+     optional: true,
+     defaultValue: function () {
+     let id = AutoForm.getFieldValue('itemId');
+
+     console.log(id);
+
+     if (id) {
+     itemInfo.callPromise({
+     _id: id
+     }).then(function (result) {
+     defaultPrice.set(result.price);
+     }).catch(function (err) {
+     console.log(err.message);
+     });
+     } else {
+     defaultPrice.set(0);
+     }
+
+     return defaultPrice.get();
+     },
+     autoform: {
+     type: 'inputmask',
+     optional: true,
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     },
+     amount: {
+     type: Number,
+     label: 'Amount',
+     optional: true,
+     decimal: true,
+     autoform: {
+     type: 'inputmask',
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     }*/
 });
