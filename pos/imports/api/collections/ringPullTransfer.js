@@ -9,6 +9,36 @@ import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 import {SelectOpts} from '../../ui/libs/select-opts.js';
 
 export const RingPullTransfers = new Mongo.Collection("pos_ringPullTransfers");
+// Items sub schema
+RingPullTransfers.itemsSchema = new SimpleSchema({
+    itemId: {
+        type: String
+    },
+    qty: {
+        type: Number,
+        min: 1
+    },
+    /*price: {
+     type: Number,
+     decimal: true,
+     autoform: {
+     type: 'inputmask',
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     },
+     amount: {
+     type: Number,
+     decimal: true,
+     autoform: {
+     type: 'inputmask',
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     }*/
+});
 
 // RingPullTransfers schema
 RingPullTransfers.schema = new SimpleSchema({
@@ -66,8 +96,27 @@ RingPullTransfers.schema = new SimpleSchema({
             }
         }
     },
+    items: {
+        type: [RingPullTransfers.itemsSchema]
+    },
+    /*total: {
+     type: Number,
+     decimal: true,
+     autoform: {
+     type: 'inputmask',
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     },*/
     fromBranchId: {
-        type: String
+        type: String,
+        autoValue(){
+            if (this.isInsert) {
+                var branchId = this.field('fromStockLocationId').value;
+                return branchId.split('-')[0];
+            }
+        }
     },
     toBranchId: {
         type: String,
@@ -86,12 +135,39 @@ RingPullTransfers.schema = new SimpleSchema({
             }
         }
     },
-    amount: {
-        type: Number,
-    }
+    status: {
+        type: String,
+        optional: true
+    },
+    repId: {
+        type: String,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One'
+            }
+        }
+    },
+    stockLocationId: {
+        type: String,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+                optionsMethod: 'pos.selectOptMethods.stockLocation',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let currentBranch = Session.get('currentBranch');
+                        return {branchId: currentBranch};
+                    }
+                }
+            }
+        }
+    },
 });
 
 Meteor.startup(function () {
+    RingPullTransfers.itemsSchema.i18n("pos.ringPullTransfer.schema");
     RingPullTransfers.schema.i18n("pos.ringPullTransfer.schema");
     RingPullTransfers.attachSchema(RingPullTransfers.schema);
 });
