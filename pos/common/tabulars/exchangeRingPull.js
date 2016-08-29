@@ -12,7 +12,7 @@ import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
 import {ExchangeRingPulls} from '../../imports/api/collections/exchangeRingPull.js';
-import {customerExchangeRingPullCollection} from '../../imports/api/collections/tmpCollection';
+import {CustomerNullCollection} from '../../imports/api/collections/tmpCollection';
 // Page
 Meteor.isClient && require('../../imports/ui/pages/exchangeRingPull.html');
 
@@ -35,13 +35,13 @@ tabularOpts.columns = [
         title: "Customer ID",
         render: function (val) {
             Meteor.call('getCustomer', {customerId: val}, function (err, result) {
-                let customer = customerExchangeRingPullCollection.findOne(result._id);
+                let customer = CustomerNullCollection.findOne(result._id);
                 if (!customer) {
-                    customerExchangeRingPullCollection.insert(result);
+                    CustomerNullCollection.insert(result);
                 }
             });
             try {
-                return customerExchangeRingPullCollection.findOne(val).name;
+                return CustomerNullCollection.findOne(val).name;
 
             } catch (e) {
 

@@ -28,7 +28,7 @@ import {ExchangeRingPulls} from '../../api/collections/exchangeRingPull.js';
 import {Order} from '../../api/collections/order';
 import {Item} from '../../api/collections/item';
 import {deletedItem} from './exchangeRingPull-items';
-import {customerExchangeRingPullCollection, nullCollection} from '../../api/collections/tmpCollection';
+import {CustomerNullCollection, nullCollection} from '../../api/collections/tmpCollection';
 // Tabular
 import {ExchangeRingPullTabular} from '../../../common/tabulars/exchangeRingPull.js';
 
@@ -76,7 +76,7 @@ indexTmpl.helpers({
     }
 });
 indexTmpl.onDestroyed(function () {
-    customerExchangeRingPullCollection.remove({});
+    CustomerNullCollection.remove({});
 });
 indexTmpl.events({
     'click .js-create' (event, instance) {
@@ -115,7 +115,7 @@ indexTmpl.events({
             title: "Pleas Wait",
             text: "Getting ExchangeRingPulls....", showConfirmButton: false
         });
-        this.customer = customerExchangeRingPullCollection.findOne(this.customerId).name;
+        this.customer = CustomerNullCollection.findOne(this.customerId).name;
         Meteor.call('exchangeRingPullShowItems', {doc: this}, function (err, result) {
             swal.close();
             alertify.exchangeRingPullShow(fa('eye', TAPi18n.__('pos.exchangeRingPull.title')), renderTemplate(showTmpl, result)).maximize();

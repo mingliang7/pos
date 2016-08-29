@@ -11,8 +11,10 @@
       "vendor": "អ្នកផ្គត់ផ្គង់",
       "rep": "អ្នកតំណាង",
       "stockLocation": "ទីតាំងស្តុក",
-      "invoice": "វិក័យបត្រ",
-      "enterBill": "សរសេរវិក័យបត្រ"
+      "invoice": "វិក្កយបត្រ",
+      "enterBill": "សរសេរវិក្កយបត្រ",
+      "exchangeRingPull": "ប្តូរក្រវិលកំប៉ុង",
+      "ringPullTransfer": "ផ្ទេរក្រវិលកំប៉ុង"
     },
     "home": {
       "title": "ទំព័រដើម",

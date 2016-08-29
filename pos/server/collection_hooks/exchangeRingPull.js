@@ -141,7 +141,7 @@ function returnToInventory(exchangeRingPull) {
             exchangeRingPull._id
         );
 
-        //---Return to Ring Pull Stock---
+        //---Reduce from Ring Pull Stock---
         let ringPullInventory = RingPullInventories.findOne({
             branchId: exchangeRingPull.branchId,
             itemId: item.itemId,

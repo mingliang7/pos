@@ -9,26 +9,49 @@ import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 import {SelectOpts} from '../../ui/libs/select-opts.js';
 
 export const RingPullTransfers = new Mongo.Collection("pos_ringPullTransfers");
+// Items sub schema
+RingPullTransfers.itemsSchema = new SimpleSchema({
+    itemId: {
+        type: String
+    },
+    qty: {
+        type: Number,
+        min: 1
+    },
+    /*price: {
+     type: Number,
+     decimal: true,
+     autoform: {
+     type: 'inputmask',
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     },
+     amount: {
+     type: Number,
+     decimal: true,
+     autoform: {
+     type: 'inputmask',
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     }*/
+});
 
 // RingPullTransfers schema
 RingPullTransfers.schema = new SimpleSchema({
     ringPullTransferDate: {
         type: Date,
+        defaultValue: moment().toDate(),
         autoform: {
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY HH:mm:ss',
-
-                },
-                value(){
-                    let customerId = AutoForm.getFieldValue('customerId');
-                    if (customerId) {
-                        return moment().toDate();
-                    }
+                    format: 'DD/MM/YYYY HH:mm:ss'
                 }
             }
-
         }
     },
     fromUserId: {
@@ -66,8 +89,21 @@ RingPullTransfers.schema = new SimpleSchema({
             }
         }
     },
+    items: {
+        type: [RingPullTransfers.itemsSchema]
+    },
+    /*total: {
+     type: Number,
+     decimal: true,
+     autoform: {
+     type: 'inputmask',
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     },*/
     fromBranchId: {
-        type: String
+        type: String,
     },
     toBranchId: {
         type: String,
@@ -76,7 +112,7 @@ RingPullTransfers.schema = new SimpleSchema({
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.branch',
+                optionsMethod: 'pos.selectOptMethods.branchListExcludeCurrent',
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
                         let currentBranch = Meteor.isClient && Session.get('currentBranch');
@@ -86,12 +122,38 @@ RingPullTransfers.schema = new SimpleSchema({
             }
         }
     },
-    amount: {
-        type: Number,
+    status: {
+        type: String,
+        optional: true
+    },
+    stockLocationId: {
+        type: String,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+                optionsMethod: 'pos.selectOptMethods.stockLocation',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let currentBranch = Session.get('currentBranch');
+                        return {branchId: currentBranch};
+                    }
+                }
+            }
+        }
+    },
+    pending: {
+        type: Boolean,
+        autoValue(){
+            if (this.isInsert) {
+                return true;
+            }
+        }
     }
 });
 
 Meteor.startup(function () {
+    RingPullTransfers.itemsSchema.i18n("pos.ringPullTransfer.schema");
     RingPullTransfers.schema.i18n("pos.ringPullTransfer.schema");
     RingPullTransfers.attachSchema(RingPullTransfers.schema);
 });
