@@ -22,6 +22,9 @@ indexTmpl.helpers({
                 label: 'Invoice By Item', value: 'invoiceByItemReport'
             },
             {
+                label: 'Bill By Item', value: 'billByItemReport'
+            },
+            {
                 label: 'Receive Payment', value: 'paymentReport'
             },
             {
@@ -78,6 +81,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'invoiceByItemReport':
             params = `/pos/report/invoiceByItemReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}`;
+            break;
+        case 'billByItemReport':
+            params = `/pos/report/billByItemReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}`;
             break;
         case 'paymentReport':
             params = `/pos/report/payment?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}`;

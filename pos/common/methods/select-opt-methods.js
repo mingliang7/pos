@@ -129,8 +129,11 @@ SelectOptMethods.vendor = new ValidatedMethod({
             let searchText = options.searchText;
             let values = options.values;
             let params = options.params || {};
-
+            if(params.paymentType){
+                selector.paymentType = params.paymentType;
+            }
             if (searchText && params.branchId) {
+
                 selector = {
                     $or: [
                         {_id: {$regex: searchText, $options: 'i'}},

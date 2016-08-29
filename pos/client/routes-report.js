@@ -118,6 +118,20 @@ PosRoutes.route('/report/invoiceByItemReport', {
         parent: 'pos.mainReport'
     }
 });
+import '../imports/ui/reports/billByItem';
+PosRoutes.route('/report/billByItemReport', {
+    name: 'pos.billByItemReport',
+    title: 'Bill By Item Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_billByItemReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Bill By Item Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
 
 import '../imports/ui/reports/payment';
 PosRoutes.route('/report/payment', {
