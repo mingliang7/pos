@@ -120,57 +120,55 @@ indexTmpl.events({
     'click .accept'(){
         let id = this._id;
         swal({
-                title: "Are you sure?",
-                text: "",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, accept it!",
-                closeOnConfirm: false
-            },
-            function () {
-                Meteor.call('locationTransferManageStock', id, function (er, re) {
-                    if (er) {
-                        alertify.error(er.message);
-                    } else {
-                        swal({
-                            title: "Accepted!",
-                            text: "Successfully",
-                            type: "success",
-                            showConfirmButton: false,
-                            timer: 2000
-                        });
-                    }
-                })
-            });
+            title: "Are you sure?",
+            text: "",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, accept it!",
+            closeOnConfirm: false
+        }).then(function () {
+            Meteor.call('locationTransferManageStock', id, function (er, re) {
+                if (er) {
+                    alertify.error(er.message);
+                } else {
+                    swal({
+                        title: "Accepted!",
+                        text: "Successfully",
+                        type: "success",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+            })
+        });
     },
     'click .decline'(){
         let id = this._id;
         swal({
-                title: "Are you sure?",
-                text: "",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, decline it!",
-                closeOnConfirm: false
-            },
-            function () {
-                Meteor.call('declineTransfer', id, function (er, re) {
-                    if (er) {
-                        alertify.error(er.message);
-                    } else {
-                        swal({
-                            title: "Declined!",
-                            text: "successfully",
-                            type: "success",
-                            showConfirmButton: false,
-                            timer: 2000
-                        });
-                    }
-                });
+            title: "Are you sure?",
+            text: "",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, decline it!",
+            closeOnConfirm: false
+        }).then(function () {
+            Meteor.call('declineTransfer', id, function (er, re) {
+                if (er) {
+                    alertify.error(er.message);
+                } else {
+                    swal({
+                        title: "Declined!",
+                        text: "successfully",
+                        type: "success",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
             });
+        });
     },
-    'click .load-more'(event,instance){
+    'click .load-more'(event, instance){
         let more = sumLoadMore.get();
         sumLoadMore.set(more + 10);
     }
