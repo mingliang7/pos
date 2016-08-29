@@ -74,7 +74,7 @@ indexTmpl.events({
             confirmButtonColor: "#DD6B55",
             confirmButtonText: "Yes, delete it!",
             closeOnConfirm: false
-        }, function () {
+        }).then(function () {
             Meteor.call('removeGroupInvoice', {doc});
             swal("Deleted!", `វិក័យប័ត្របង់ប្រាក់លេខ ${doc._id} បានលុបដោយជោគជ័យ`, "success");
         });
