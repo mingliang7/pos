@@ -3,6 +3,7 @@ import {EnterBills} from '../../imports/api/collections/enterBill.js'
 import {Invoices} from '../../imports/api/collections/invoice.js'
 import {LocationTransfers} from '../../imports/api/collections/locationTransfer.js'
 import {Item} from '../../imports/api/collections/item.js'
+import {RingPullTransfers} from '../../imports/api/collections/ringPullTransfer.js'
 import {idGenerator} from 'meteor/theara:id-generator';
 import 'meteor/matb33:collection-hooks';
 
@@ -262,6 +263,91 @@ Meteor.methods({
             locationTransferId,
             {$set: setObj}
         );
+    },
+    ringPullTransferManageStock: function (ringPullTransferId) {
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let userId = Meteor.userId();
+        Meteor.defer(function () {
+            Meteor._sleepForMs(200);
+            //---Open Inventory type block "FIFO Inventory"---
+            let ringPullTransferTotalCost = 0;
+            let ringPullTransfer = RingPullTransfers.findOne(ringPullTransferId);
+            let prefix = ringPullTransfer.stockLocationId + "-";
+            let newItems = [];
+            let total = 0;
+
+            ringPullTransfer.items.forEach(function (item) {
+                let inventory = AverageInventories.findOne({
+                    branchId: ringPullTransfer.fromBranchId,
+                    itemId: item.itemId,
+                    stockLocationId: ringPullTransfer.stockLocationId
+                }, {sort: {_id: 1}});
+
+                if (inventory) {
+                    let newInventory = {
+                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                        branchId: ringPullTransfer.fromBranchId,
+                        stockLocationId: ringPullTransfer.stockLocationId,
+                        itemId: item.itemId,
+                        qty: item.qty,
+                        price: inventory.price,
+                        remainQty: inventory.remainQty - item.qty,
+                        coefficient: -1,
+                        type: 'ringPullTransfer-from',
+                        refId: ringPullTransferId
+                    };
+                    AverageInventories.insert(newInventory);
+                    item.price = inventory.price;
+                    item.amount = inventory.price * item.qty;
+                } else {
+                    let thisItem = Item.findOne(item.itemId);
+                    let newInventory = {
+                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                        branchId: ringPullTransfer.fromBranchId,
+                        stockLocationId: ringPullTransfer.fromStockLocationId,
+                        itemId: item.itemId,
+                        qty: item.qty,
+                        price: thisItem.purchasePrice,
+                        remainQty: 0 - item.qty,
+                        coefficient: -1,
+                        type: 'ringPullTransfer-from',
+                        refId: ringPullTransferId
+                    };
+                    AverageInventories.insert(newInventory);
+                    item.price = thisItem.purchasePrice;
+                    item.amount = thisItem.purchasePrice * item.qty;
+                }
+                //total += item.amount;
+                newItems.push(item);
+                averageInventoryInsert(
+                    ringPullTransfer.toBranchId,
+                    item,
+                    ringPullTransfer.toStockLocationId,
+                    'ringPullTransfer-to',
+                    ringPullTransferId
+                );
+                //inventories=sortArrayByKey()
+            });
+            let setObj = {};
+            setObj.items = newItems;
+            //setObj.total = total;
+            setObj.pending = false;
+            setObj.status = "closed";
+            setObj.toUserId = userId;
+            RingPullTransfers.update(
+                ringPullTransferId,
+                {$set: setObj}
+            );
+            //--- End Inventory type block "FIFO Inventory"---
+        });
+
+        //1. reduce stock from the current stock location Or Add to some Account?....
+        //2. reduce RingPullInventory from fromBranch
+        //3. increase RingPullInventory to toBranch
+
+
     }
 });
 

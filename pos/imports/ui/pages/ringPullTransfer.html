@@ -30,13 +30,18 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Exchange Ring Pull</div>
+                        <div class="panel-heading">Ring Pull Transfer</div>
                         <div class="panel-body">
-                            {{> afQuickField name="customerId" label=false }}
                             {{> afQuickField name="ringPullTransferDate"}}
-                            {{> afQuickField name="repId" options=options value=repId label="Rep"}}
                             {{> afQuickField name="stockLocationId"}}
-                            {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="">From Branch</label>
+                                    <input type="text" readonly="true" value="{{fromBranchId}}" class="form-control">
+                                </div>
+                                <div class="col-md-6"> {{> afQuickField name="toBranchId"}}</div>
+                            </div>
+                            {{> afQuickField type="hidden" name="fromBranchId" value=currentBranch}}
                             {{> afQuickField name="des"}}
 
                         </div>
@@ -78,11 +83,17 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">Exchange Ring Pull</div>
                         <div class="panel-body">
-                            {{> afQuickField name="customerId"}}
                             {{> afQuickField name="ringPullTransferDate"}}
-                            {{> afQuickField name="repId" options=options label="Rep"}}
                             {{> afQuickField name="stockLocationId"}}
-                            {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="">From Branch</label>
+                                    <input type="text" readonly="true" value="{{fromBranchId}}" class="form-control">
+                                </div>
+                                <div class="col-md-6"> {{> afQuickField name="toBranchId"}}</div>
+                            </div>
+
+                            <!--{{> afQuickField type="hidden" name="fromBranchId" value=currentBranch}}-->
                             {{> afQuickField name="des"}}
                         </div>
                     </div>

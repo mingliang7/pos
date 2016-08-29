@@ -44,21 +44,14 @@ RingPullTransfers.itemsSchema = new SimpleSchema({
 RingPullTransfers.schema = new SimpleSchema({
     ringPullTransferDate: {
         type: Date,
+        defaultValue: moment().toDate(),
         autoform: {
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY HH:mm:ss',
-
-                },
-                value(){
-                    let customerId = AutoForm.getFieldValue('customerId');
-                    if (customerId) {
-                        return moment().toDate();
-                    }
+                    format: 'DD/MM/YYYY HH:mm:ss'
                 }
             }
-
         }
     },
     fromUserId: {
@@ -111,12 +104,6 @@ RingPullTransfers.schema = new SimpleSchema({
      },*/
     fromBranchId: {
         type: String,
-        autoValue(){
-            if (this.isInsert) {
-                var branchId = this.field('fromStockLocationId').value;
-                return branchId.split('-')[0];
-            }
-        }
     },
     toBranchId: {
         type: String,
@@ -125,7 +112,7 @@ RingPullTransfers.schema = new SimpleSchema({
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.branch',
+                optionsMethod: 'pos.selectOptMethods.branchListExcludeCurrent',
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
                         let currentBranch = Meteor.isClient && Session.get('currentBranch');
@@ -138,15 +125,6 @@ RingPullTransfers.schema = new SimpleSchema({
     status: {
         type: String,
         optional: true
-    },
-    repId: {
-        type: String,
-        autoform: {
-            type: 'universe-select',
-            afFieldInput: {
-                uniPlaceholder: 'Select One'
-            }
-        }
     },
     stockLocationId: {
         type: String,
@@ -164,6 +142,14 @@ RingPullTransfers.schema = new SimpleSchema({
             }
         }
     },
+    pending: {
+        type: Boolean,
+        autoValue(){
+            if (this.isInsert) {
+                return true;
+            }
+        }
+    }
 });
 
 Meteor.startup(function () {

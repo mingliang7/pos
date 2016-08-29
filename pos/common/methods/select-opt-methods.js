@@ -97,7 +97,7 @@ SelectOptMethods.customer = new ValidatedMethod({
             let values = options.values;
             let params = options.params || {};
             let selector = {};
-            if(!_.isEmpty(params)){
+            if (!_.isEmpty(params)) {
                 selector = params;
             }
             if (searchText) {
@@ -165,9 +165,9 @@ SelectOptMethods.item = new ValidatedMethod({
             let searchText = options.searchText;
             let values = options.values;
             let params = options.params || {};
-            if(_.isEmpty(params.scheme)) {
+            if (_.isEmpty(params.scheme)) {
                 selector = {}
-            }else{
+            } else {
                 selector.scheme = params.scheme;
 
             }
@@ -277,6 +277,32 @@ SelectOptMethods.branch = new ValidatedMethod({
         }
     }
 });
+
+SelectOptMethods.branchListExcludeCurrent = new ValidatedMethod({
+    name: 'pos.selectOptMethods.branchListExcludeCurrent',
+    validate: null,
+    run(options) {
+        if (!this.isSimulation) {
+            this.unblock();
+
+            let list = [], selector = {};
+            let searchText = options.searchText;
+            let values = options.values;
+            let params = options.params || {};
+            if (params.branchId) {
+                selector._id = {$ne: params.branchId};
+            }
+            let data = Branch.find(selector, {limit: 100});
+            data.forEach(function (value) {
+                let label = value._id + ' : ' + value.enName;
+                list.push({label: label, value: value._id});
+            });
+
+            return list;
+        }
+    }
+});
+
 
 SelectOptMethods.paymentGroup = new ValidatedMethod({
     name: 'pos.selectOptMethods.paymentGroup',

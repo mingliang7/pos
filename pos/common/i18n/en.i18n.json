@@ -14,7 +14,8 @@
       "invoice": "Invoice",
       "enterBill": "Enter Bill",
       "lendingStock": "Lending Stock",
-      "exchangeRingPull": "Exchange Ring Pull"
+      "exchangeRingPull": "Exchange Ring Pull",
+      "ringPullTransfer": "Ring Pull Transfer"
     },
     "home": {
       "title": "Home",
@@ -566,6 +567,45 @@
         },
         "branchId": {
           "label": "Branch"
+        }
+      }
+    },
+    "ringPullTransfer": {
+      "title": "Ring Pull Transfer",
+      "invoiceAction": "Ring Pull Transfer",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "ringPullTransferDate": {
+          "label": "Date"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "fromBranchId": {
+          "label": "From Branch"
+        },
+        "toBranchId":{
+          "label":"To Branch"
+        },
+        "fromUserId": {
+          "label": "From User"
+        },
+        "toUserId":{
+          "label":"To User"
         }
       }
     }

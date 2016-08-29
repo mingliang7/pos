@@ -72,7 +72,7 @@ indexTmpl.helpers({
         return RingPullTransferTabular;
     },
     selector() {
-        return {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
+        return {status: {$ne: 'removed'}, fromBranchId: Session.get('currentBranch')};
     }
 });
 indexTmpl.onDestroyed(function () {
@@ -131,10 +131,15 @@ indexTmpl.events({
 });
 //on rendered
 newTmpl.onCreated(function () {
-    this.repOptions = new ReactiveVar();
-    Meteor.call('getRepList', (err, result) => {
-        this.repOptions.set(result);
-    });
+    this.branch = new ReactiveVar();
+    Meteor.call('getBranch', Session.get('currentBranch'),(err,result)=> {
+        if(result) {
+            this.branch.set(result);
+        }else{
+            console.log(err);
+        }
+
+    })
 });
 // New
 newTmpl.events({
@@ -155,21 +160,12 @@ newTmpl.events({
     },
 });
 newTmpl.helpers({
-    repId(){
-        if (Session.get('customerInfo')) {
-            try {
-                return Session.get('customerInfo').repId;
-            } catch (e) {
-
-            }
-        }
-    },
-    options(){
+    fromBranchId(){
         let instance = Template.instance();
-        if (instance.repOptions.get() && instance.repOptions.get().repList) {
-            return instance.repOptions.get().repList
+        if(instance.branch.get()) {
+            return instance.branch.get().enShortName;
         }
-        return [];
+        return '';
     },
     totalOrder(){
         let total = 0;
@@ -225,10 +221,6 @@ newTmpl.onDestroyed(function () {
 
 // Edit
 editTmpl.onCreated(function () {
-    this.repOptions = new ReactiveVar();
-    Meteor.call('getRepList', (err, result) => {
-        this.repOptions.set(result);
-    });
 });
 
 

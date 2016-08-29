@@ -57,5 +57,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['items', 'repId','stockLocationId'];
+tabularOpts.extraFields = ['items', 'fromBranchId','toBranchId','stockLocationId'];
 export const RingPullTransferTabular = new Tabular.Table(tabularOpts);
