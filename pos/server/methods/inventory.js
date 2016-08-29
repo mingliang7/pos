@@ -3,6 +3,7 @@ import {EnterBills} from '../../imports/api/collections/enterBill.js'
 import {Invoices} from '../../imports/api/collections/invoice.js'
 import {LocationTransfers} from '../../imports/api/collections/locationTransfer.js'
 import {Item} from '../../imports/api/collections/item.js'
+import {RingPullInventories} from '../../imports/api/collections/ringPullInventory.js'
 import {RingPullTransfers} from '../../imports/api/collections/ringPullTransfer.js'
 import {idGenerator} from 'meteor/theara:id-generator';
 import 'meteor/matb33:collection-hooks';
@@ -271,6 +272,7 @@ Meteor.methods({
         let userId = Meteor.userId();
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
+
             //---Open Inventory type block "FIFO Inventory"---
             let ringPullTransferTotalCost = 0;
             let ringPullTransfer = RingPullTransfers.findOne(ringPullTransferId);
@@ -279,7 +281,8 @@ Meteor.methods({
             let total = 0;
 
             ringPullTransfer.items.forEach(function (item) {
-                let inventory = AverageInventories.findOne({
+                //1. reduce stock from the current stock location Or Add to some Account?....
+                /*  let inventory = AverageInventories.findOne({
                     branchId: ringPullTransfer.fromBranchId,
                     itemId: item.itemId,
                     stockLocationId: ringPullTransfer.stockLocationId
@@ -301,7 +304,8 @@ Meteor.methods({
                     AverageInventories.insert(newInventory);
                     item.price = inventory.price;
                     item.amount = inventory.price * item.qty;
-                } else {
+                }
+                else {
                     let thisItem = Item.findOne(item.itemId);
                     let newInventory = {
                         _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
@@ -327,8 +331,49 @@ Meteor.methods({
                     ringPullTransfer.toStockLocationId,
                     'ringPullTransfer-to',
                     ringPullTransferId
-                );
+                );*/
+
                 //inventories=sortArrayByKey()
+                //2. reduce RingPullInventory from fromBranch
+                //---Reduce from Ring Pull Stock---
+                let ringPullInventory = RingPullInventories.findOne({
+                    branchId: ringPullTransfer.fromBranchId,
+                    itemId: item.itemId,
+                });
+                if (ringPullInventory) {
+                    RingPullInventories.update(
+                        ringPullInventory._id,
+                        {
+                            $inc: {qty: -item.qty}
+                        });
+                }
+                else {
+                    RingPullInventories.insert({
+                        itemId: item.itemId,
+                        branchId: ringPullTransfer.fromBranchId,
+                        qty: 0-item.qty
+                    })
+                }
+                //3. increase RingPullInventory to toBranch
+                //---insert to Ring Pull Stock---
+                let toRingPullInventory = RingPullInventories.findOne({
+                    branchId: ringPullTransfer.toBranchId,
+                    itemId: item.itemId,
+                });
+                if (toRingPullInventory) {
+                    RingPullInventories.update(
+                        toRingPullInventory._id,
+                        {
+                            $inc: {qty: item.qty}
+                        });
+                }
+                else {
+                    RingPullInventories.insert({
+                        itemId: item.itemId,
+                        branchId: ringPullTransfer.toBranchId,
+                        qty: item.qty
+                    })
+                }
             });
             let setObj = {};
             setObj.items = newItems;
@@ -341,14 +386,24 @@ Meteor.methods({
                 {$set: setObj}
             );
             //--- End Inventory type block "FIFO Inventory"---
+
         });
 
-        //1. reduce stock from the current stock location Or Add to some Account?....
-        //2. reduce RingPullInventory from fromBranch
-        //3. increase RingPullInventory to toBranch
 
 
-    }
+
+    },
+    declineRingPullTransfer(ringPullTransferId){
+        let userId = Meteor.userId();
+        let setObj = {};
+        setObj.status = "declined";
+        setObj.pending = false;
+        setObj.toUserId = userId;
+        RingPullTransfers.update(
+            ringPullTransferId,
+            {$set: setObj}
+        );
+    },
 });
 
 
