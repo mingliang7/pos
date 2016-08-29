@@ -468,7 +468,7 @@ let hooksObject = {
                 showCancelButton: true,
                 closeOnConfirm: false,
                 showLoaderOnConfirm: true,
-            }, function () {
+            }).then(function () {
                 payBill.callPromise({paymentDate, enterBillsObj, branch})
                     .then(function (result) {
                         clearChecbox();

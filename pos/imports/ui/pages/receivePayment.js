@@ -102,7 +102,7 @@ indexTmpl.rendered = function () {
 indexTmpl.helpers({
     getPenalty(_id){
         let invoice = countLateInvoice.get();
-        let penalty = invoice.calculatePenalty[_id] || 0 ;
+        let penalty = invoice.calculatePenalty[_id] || 0;
         return (_.isEmpty(invoice.calculatePenalty) || !isPenalty.get()) ? 0 : numeral(penalty).format('0,0.00');
     },
     checkLate(_id){
@@ -381,7 +381,7 @@ indexTmpl.events({
 
         } else {
             //trigger change on total
-            let valueAfterDiscount = (total  * (1 - (parseFloat(event.currentTarget.value) / 100))) + penalty;
+            let valueAfterDiscount = (total * (1 - (parseFloat(event.currentTarget.value) / 100))) + penalty;
             $(event.currentTarget).parents('.invoice-parents').find('.total').val(valueAfterDiscount).change();
             $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(valueAfterDiscount).format('0,0.00')).change();
         }
@@ -518,7 +518,7 @@ let hooksObject = {
                 showCancelButton: true,
                 closeOnConfirm: false,
                 showLoaderOnConfirm: true,
-            }, function () {
+            }).then(function () {
                 receivePayment.callPromise({paymentDate, invoicesObj, branch})
                     .then(function (result) {
                         clearChecbox();
