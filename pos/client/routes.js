@@ -483,17 +483,36 @@ PosRoutes.route('/ring-pull-transfer', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/receiveItem.js';
+PosRoutes.route('/receive-item', {
+    name: 'pos.receiveItem',
+    title: 'Receive Item',
+    action: function (params, queryParams) {
+        Layout.main('Pos_receiveItem');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+
+        title: 'Receive Item',
+        parent: 'pos.home'
+    }
+});
 import '../imports/ui/pages/ringPullRequest.js';
 PosRoutes.route('/ring-pull-transfer-request', {
     name: 'pos.ringPullTransferRequest',
     title: 'Ring Pull Transfer Request',
     action: function (params, queryParams) {
         Layout.main('Pos_ringPullRequest');
+
     },
     breadcrumb: {
         //params: ['id'],
         //queryParams: ['show', 'color'],
+
         title: 'Ring Pull Transfer Request',
+
         // icon: 'cart-plus',
         parent: 'pos.home'
     }
