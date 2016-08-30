@@ -1,23 +1,24 @@
 //page
-import './confirm-transferlocation.html';
+import './ringPullRequest.html';
 //lib
 import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify';
 import {renderTemplate} from '../../../../core/client/libs/render-template';
 //collection
-import {LocationTransfers} from '../../api/collections/locationTransfer';
+import {RingPullTransfers} from '../../api/collections/ringPullTransfer';
 //methods
-let indexTmpl = Template.Pos_confirmTransferLocation,
-    transferInfo = Template.transferInfo;
+let indexTmpl = Template.Pos_ringPullRequest,
+    transferInfo = Template.ringPullRequestInfo;
 let transferState = new ReactiveVar(true);
 let statusState = new ReactiveVar('active');
 let loadMore = new ReactiveVar(0);
 let sumLoadMore = new ReactiveVar(10);
-
+let ringPullTmpCollection = new Mongo.Collection(null);
 indexTmpl.onCreated(function () {
-    createNewAlertify('locationTransfer', {size: 'lg'});
+    createNewAlertify('ringPullRequest', {size: 'lg'});
     this.autorun(function () {
         if (Session.get('currentBranch') || transferState.get() || statusState.get()) {
-            let subscription = Meteor.subscribe('pos.activeLocationTransfers',
+            ringPullTmpCollection.remove({});
+            let subscription = Meteor.subscribe('pos.activeRingPullTransfers',
                 {
                     toBranchId: Session.get('currentBranch'),
                     pending: transferState.get() == undefined ? true : transferState.get(),
@@ -29,14 +30,25 @@ indexTmpl.onCreated(function () {
                     text: "Fetching Data....", showConfirmButton: false
                 });
             } else {
+                let locationTransfers = RingPullTransfers.find({
+                    toBranchId: Session.get('currentBranch'),
+                    pending: transferState.get(),
+                    status: statusState.get()
+                });
+                if(locationTransfers.count() > 0) {
+                    locationTransfers.forEach(function (doc) {
+                        Meteor.call('lookupRingPull', {doc}, function (err, result) {
+                            ringPullTmpCollection.insert(result);
+                        });
+                    });
+                }
                 setTimeout(function () {
                     swal.close()
                 }, 200);
-
             }
         }
         if (sumLoadMore.get() || transferState.get() || statusState.get()) {
-            Meteor.call('loadMoreTransfer', {
+            Meteor.call('loadMoreRingPull', {
                 branchId: Session.get('currentBranch'),
                 pending: transferState.get(),
                 status: statusState.get()
@@ -49,15 +61,10 @@ indexTmpl.onCreated(function () {
 
 indexTmpl.helpers({
     transferRequest(){
-        let locationTransfers = LocationTransfers.find({
-            toBranchId: Session.get('currentBranch'),
-            pending: transferState.get(),
-            status: statusState.get()
-        });
-        return locationTransfers;
+        return ringPullTmpCollection.find();
     },
     isNotEmpty(){
-        let locationTransfers = LocationTransfers.find({toBranchId: Session.get('currentBranch')});
+        let locationTransfers = RingPullTransfers.find({toBranchId: Session.get('currentBranch')});
         return locationTransfers.count() > 0;
     },
     accepted(){
@@ -71,7 +78,7 @@ indexTmpl.helpers({
         }
     },
     isHasMore(){
-        let locationTransfers = LocationTransfers.find({
+        let locationTransfers = RingPullTransfers.find({
             toBranchId: Session.get('currentBranch'),
             pending: transferState.get(),
             status: statusState.get()
@@ -178,6 +185,7 @@ indexTmpl.onDestroyed(function () {
     statusState.set('active');
     loadMore.set(0);
     sumLoadMore.set(10);
+    ringPullTmpCollection.remove({});
 });
 transferInfo.helpers({
     capitalize(name){

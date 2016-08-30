@@ -2,37 +2,35 @@ import './header-menu.html';
 import {ReactiveVar} from 'meteor/reactive-var';
 //collection
 import {LocationTransfers} from '../../imports/api/collections/locationTransfer';
+import {RingPullTransfers} from '../../imports/api/collections/ringPullTransfer';
+import {Branch} from '../../../core/imports/api/collections/branch';
 let indexTmpl = Template.Pos_headerMenu;
-let playNotification = new buzz.sound('/notification-sounds/unique-notification.mp3');
 indexTmpl.onCreated(function () {
-    this.transferCount = new ReactiveVar();
-    Meteor.call('countTransferLocation', Session.get('currentBranch'), (err, result)=> {
-        if (result) {
-            this.transferCount.set(result);
-        }
-    });
     this.autorun(function () {
         if (Session.get('currentBranch')) {
-            let subscription = Meteor.subscribe('pos.activeLocationTransfers',
+            let branch = Meteor.subscribe('core.branch');
+            let locationTransferSubscription = Meteor.subscribe('pos.activeLocationTransfers',
                 {
                     toBranchId: Session.get('currentBranch'),
                     pending: true,
                     status: 'active'
                 });
+            let ringPullTransferSubscription = Meteor.subscribe('pos.activeRingPullTransfers', {
+                toBranchId: Session.get('currentBranch'),
+                pending: true,
+                status: 'active'
+            });
 
         }
     });
 });
 
 indexTmpl.helpers({
-    count(){
-        let collectionCount = LocationTransfers.find({toBranchId: Session.get('currentBranch'), pending: true}).count();
-        let instance = Template.instance();
-        let count = instance.transferCount.get();
-        if (collectionCount > count) {
-            playNotification.play();
-        }
-        return collectionCount;
+    locationTransferCount(){
+        return locationTransfers = LocationTransfers.find({
+            toBranchId: Session.get('currentBranch'),
+            pending: true
+        }).count();
     },
     transferRequest(){
         let locationTransfers = LocationTransfers.find({
@@ -40,5 +38,23 @@ indexTmpl.helpers({
             pending: true
         });
         return locationTransfers;
+    },
+    ringPullTransferRequest(){
+        let arr = [];
+        let ringPullTransfer = RingPullTransfers.find({
+            toBranchId: Session.get('currentBranch'),
+            pending: true
+        });
+        ringPullTransfer.fetch().forEach(function (ringPull) {
+            ringPull._fromBranch = Branch.findOne(ringPull.fromBranchId);
+            arr.push(ringPull);
+        });
+        return arr;
+    },
+    ringPullCount(){
+        return ringPullTransfer = RingPullTransfers.find({
+            toBranchId: Session.get('currentBranch'),
+            pending: true
+        }).count();
     }
 });

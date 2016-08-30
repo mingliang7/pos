@@ -20,6 +20,17 @@ Meteor.publish('pos.ringPullTransfer', function posRingPullTransfer(selector) {
 
     return this.ready();
 });
-
+Meteor.publish('pos.activeRingPullTransfers', function activeRingPullTransfers(selector,options={}) {
+    this.unblock();
+    new SimpleSchema({
+        selector: {type: Object, blackbox: true}
+    }).validate({selector});
+    if (this.userId) {
+        Meteor._sleepForMs(200);
+        let data = RingPullTransfers.find(selector, options);
+        return data;
+    }
+    return this.ready();
+});
 // Reactive Table
 // ReactiveTable.publish("pos.reactiveTable.ringPullTransfer", RingPullTransfers);
