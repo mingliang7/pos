@@ -376,7 +376,7 @@ Meteor.methods({
                 }
             });
             let setObj = {};
-            setObj.items = newItems;
+            //setObj.items = newItems;
             //setObj.total = total;
             setObj.pending = false;
             setObj.status = "closed";

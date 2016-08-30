@@ -30,13 +30,13 @@ indexTmpl.onCreated(function () {
                     text: "Fetching Data....", showConfirmButton: false
                 });
             } else {
-                let locationTransfers = RingPullTransfers.find({
+                let ringPullTransfers = RingPullTransfers.find({
                     toBranchId: Session.get('currentBranch'),
                     pending: transferState.get(),
                     status: statusState.get()
                 });
-                if(locationTransfers.count() > 0) {
-                    locationTransfers.forEach(function (doc) {
+                if(ringPullTransfers.count() > 0) {
+                    ringPullTransfers.forEach(function (doc) {
                         Meteor.call('lookupRingPull', {doc}, function (err, result) {
                             ringPullTmpCollection.insert(result);
                         });
@@ -64,8 +64,8 @@ indexTmpl.helpers({
         return ringPullTmpCollection.find();
     },
     isNotEmpty(){
-        let locationTransfers = RingPullTransfers.find({toBranchId: Session.get('currentBranch')});
-        return locationTransfers.count() > 0;
+        let ringPullTransfers = RingPullTransfers.find({toBranchId: Session.get('currentBranch')});
+        return ringPullTransfers.count() > 0;
     },
     accepted(){
         if (!this.pending && this.status == 'closed') {
@@ -78,12 +78,12 @@ indexTmpl.helpers({
         }
     },
     isHasMore(){
-        let locationTransfers = RingPullTransfers.find({
+        let ringPullTransfers = RingPullTransfers.find({
             toBranchId: Session.get('currentBranch'),
             pending: transferState.get(),
             status: statusState.get()
         }).count();
-        if (locationTransfers < loadMore.get()) {
+        if (ringPullTransfers < loadMore.get()) {
             return true;
         }
         return false;
@@ -114,10 +114,10 @@ indexTmpl.events({
         sumLoadMore.set(10);
     },
     'click .show-detail'(event, instance){
-        Meteor.call('pos.locationTransferInfo', {_id: this._id}, function (err, result) {
+        Meteor.call('pos.ringPullTransferInfo', {_id: this._id}, function (err, result) {
             if (result) {
                 console.log(result);
-                alertify.locationTransfer(fa('eye', 'Showing Transfer'), renderTemplate(transferInfo, result));
+                alertify.ringPullTransfer(fa('eye', 'Showing Transfer'), renderTemplate(transferInfo, result));
             }
             if (err) {
                 console.log(err);
@@ -134,7 +134,7 @@ indexTmpl.events({
             confirmButtonText: "Yes, accept it!",
             closeOnConfirm: false
         }).then(function () {
-            Meteor.call('locationTransferManageStock', id, function (er, re) {
+            Meteor.call('ringPullTransferManageStock', id, function (er, re) {
                 if (er) {
                     alertify.error(er.message);
                 } else {
@@ -160,7 +160,7 @@ indexTmpl.events({
             confirmButtonText: "Yes, decline it!",
             closeOnConfirm: false
         }).then(function () {
-            Meteor.call('declineTransfer', id, function (er, re) {
+            Meteor.call('declineRingPullTransfer', id, function (er, re) {
                 if (er) {
                     alertify.error(er.message);
                 } else {
