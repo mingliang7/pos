@@ -124,7 +124,11 @@ RingPullTransfers.schema = new SimpleSchema({
     },
     status: {
         type: String,
-        optional: true
+        autoValue(){
+            if(this.isInsert) {
+                return 'active';
+            }
+        }
     },
     stockLocationId: {
         type: String,
