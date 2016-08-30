@@ -428,6 +428,57 @@
         }
       }
     },
+    "receiveItem": {
+      "title": "Receive Item",
+      "invoiceAction": "Receive Item",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "enterBillDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "stockLocationId": {
+          "label": "Stock Location"
+        },
+        "repId": {
+          "label": "Staff"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "subTotal": {
+          "label": "SubTotal"
+        },
+        "discount": {
+          "label": "Discount"
+        },
+        "status": {
+          "label": "Status"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
     "custom": {
       "saveAndPrint": "Save & Print",
       "pay": "Pay"

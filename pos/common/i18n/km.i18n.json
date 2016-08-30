@@ -391,6 +391,57 @@
         }
       }
     },
+    "receiveItem": {
+      "title": "ទទួលទំនិញ",
+      "invoiceAction": "ទទួលទំនិញ",
+      "schema": {
+        "_id": {
+          "label": "លេខកូដ"
+        },
+        "itemId": {
+          "label": "ទំនិញ"
+        },
+        "qty": {
+          "label": "បរិមាណ"
+        },
+        "price": {
+          "label": "តម្លៃ"
+        },
+        "amount": {
+          "label": "ចំនួន"
+        },
+        "invoiceDate": {
+          "label": "កាលបរិច្ឆេទ"
+        },
+        "repId": {
+          "label": "បុគ្គលិក"
+        },
+        "stockLocationId": {
+          "label": "ទីតាំងស្តុក"
+        },
+        "vendorId": {
+          "label": "អ្នកផ្គត់ផ្គង់"
+        },
+        "des": {
+          "label": "បរិយាយ"
+        },
+        "total": {
+          "label": "សរុប"
+        },
+        "subTotal":{
+          "label":"សរុបរង"
+        },
+        "discount":{
+          "label":"បញ្ចុះតម្លៃ"
+        },
+        "status":{
+          "label":"ស្ថានភាព"
+        },
+        "branchId": {
+          "label": "សាខា"
+        }
+      }
+    },
     "custom":{
       "saveAndPrint":"រក្សាទុក & ​​​បោះពុម្ភ",
       "pay":"បង់ប្រាក់"
