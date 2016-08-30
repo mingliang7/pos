@@ -104,6 +104,12 @@
                 <i class="fa fa-angle-left pull-right"></i>
             </a>
             <ul class="treeview-menu" style="display: none;">
+                <li class="{{isActiveRoute name='pos.receiveItem'}}">
+                    <a href="{{pathFor 'pos.receiveItem'}}">
+                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <span>Receive Item</span>
+                    </a>
+                </li>
                 <li class="{{isActiveRoute name='pos.stockLocation'}}">
                     <a href="{{pathFor 'pos.stockLocation'}}">
                         <i class="fa fa-circle-o" aria-hidden="true"></i>
