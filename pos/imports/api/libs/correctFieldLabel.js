@@ -76,6 +76,9 @@ export const correctFieldLabel = function (field) {
         case 'repId':
             label = 'Representative';
             break;
+        case 'ringPullTransferDate':
+            label = 'Transfer Date';
+            break;
     }
     return label;
 };

@@ -166,7 +166,7 @@ PosRoutes.route('/report/stockBalance', {
 
 import '../imports/ui/reports/locationTransfer';
 PosRoutes.route('/report/locationTransfer', {
-    name: 'pos.',
+    name: 'pos.locationTransferReport',
     title: 'Location Transfer Report',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_locationTransferReport');
@@ -174,6 +174,21 @@ PosRoutes.route('/report/locationTransfer', {
     breadcrumb:{
         // params:['vendorId'],
         title: 'Location Transfer Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
+
+import '../imports/ui/reports/ringPullTransfer';
+PosRoutes.route('/report/ringPullTransfer', {
+    name: 'pos.ringPullTransferReport',
+    title: 'Ring Pull Transfer Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_ringPullTransferReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Ring Pull Transfer Report',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }

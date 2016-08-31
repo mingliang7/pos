@@ -34,6 +34,9 @@ indexTmpl.helpers({
                 label: 'Location Transfer', value: 'locationTransfer'
             },
             {
+                label: 'Ring Pull Transfer', value: 'ringPullTransfer'
+            },
+            {
                 label: 'Bill', value: 'bill'
             },
             {
@@ -99,6 +102,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'locationTransfer':
             params = `/pos/report/locationTransfer?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&fromBranch=${Session.get('currentBranch')}`;
+            break;
+        case 'ringPullTransfer':
+            params = `/pos/report/ringPullTransfer?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&fromBranch=${Session.get('currentBranch')}`;
             break;
         case 'bill':
             params = `/pos/report/billReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
