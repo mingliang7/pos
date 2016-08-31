@@ -114,10 +114,10 @@ indexTmpl.events({
         sumLoadMore.set(10);
     },
     'click .show-detail'(event, instance){
-        Meteor.call('pos.ringPullTransferInfo', {_id: this._id}, function (err, result) {
+        Meteor.call('pos.ringPullTransfersInfo', {_id: this._id}, function (err, result) {
             if (result) {
                 console.log(result);
-                alertify.ringPullTransfer(fa('eye', 'Showing Transfer'), renderTemplate(transferInfo, result));
+                alertify.ringPullRequest(fa('eye', 'Showing Transfer'), renderTemplate(transferInfo, result));
             }
             if (err) {
                 console.log(err);

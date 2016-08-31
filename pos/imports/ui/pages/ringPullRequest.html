@@ -89,7 +89,7 @@
                 <div class="col-xs-12">
                     <div class="row">
                         <div class="col-xs-6 pull-left">
-                            <h2>ITEMS TRANSFER</h2>
+                            <h2>RING PULL TRANSFER</h2>
                         </div>
                         <div class="col-xs-6 pull-left">
                             <h3 class="pull-right">#{{_id}}</h3>
@@ -101,7 +101,7 @@
                             <address>
                                 <strong>Transfered From:</strong><br>
                                 {{_fromBranch.khName}}({{_fromBranch.enName}})<br>
-                                Stock({{_fromStockLocation.name}})<br>
+                                Stock({{_stockLocation.name}})<br>
                                 {{capitalize _fromUser.username}}<br>
                             </address>
                         </div>
@@ -109,7 +109,9 @@
                             <address>
                                 <strong>Transfered To:</strong><br>
                                 {{_toBranch.khName}}({{_toBranch.enName}})<br>
-                                Stock({{_toStockLocation.name}})<br><br>
+                                {{capitalize _toUser.username}}<br>
+
+                                <!--Stock({{_toStockLocation.name}})<br><br>-->
                             </address>
                         </div>
                     </div>
@@ -137,7 +139,7 @@
                         <div class="col-xs-6 text-right">
                             <address>
                                 <strong>Request on:</strong><br>
-                                {{moFormat locationTransferDate 'YYYY-MM-DD HH:mm'}}<br>
+                                {{moFormat ringPullTransferDate 'YYYY-MM-DD HH:mm'}}<br>
                             </address>
                         </div>
                     </div>
@@ -157,7 +159,7 @@
                             <table class="table table-condensed">
                                 <thead>
                                 <tr>
-                                    <td><strong>Item</strong></td>
+                                    <td><strong>Ring pull</strong></td>
                                     <td class="text-center"><strong>Price</strong></td>
                                     <td class="text-center"><strong>Quantity</strong></td>
                                     <td class="text-right"><strong>Amount</strong></td>
