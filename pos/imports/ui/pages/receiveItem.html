@@ -27,17 +27,27 @@
         {{#autoForm collection=collection id="Pos_receiveItemNew" type="insert"}}
             <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
                 <div class="col-md-3">
-                    <label for="email">Vendor:<span style="color: red;">*</span> </label>
+                    <label for="vendorId">Vendor:<span style="color: red;">*</span> </label>
                     {{> afQuickField name="vendorId" label=false}}
                 </div>
-                <div class="col-md-3">
-                    <br>
-                    <span><input type="checkbox" class="filled-in enable-prepaid-order">
+                <div class="col-md-2">
+                    <label for="receive-type">Receive From:<span style="color: red;">*</span> </label>
+                    <select class="form-control" id="receive-type">
+                        <option value="PrepaidOrder">Prepaid Order</option>
+                        <option value="StockBorrowing">Stock Borrowing</option>
+                        <option value="RingPull">Ring Pull</option>
+                        <option value="Gratis">Gratis</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <span>
+                        <input type="checkbox" class="filled-in enable-prepaid-order">
                        <a href="" class="prepaid-order btn btn-default">
                            Prepaid Order <i class="fa fa-list " aria-hidden="true"></i>
-                       </a></span>
+                       </a>
+                    </span>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <p class="pull-right ">
                     <h4 class="text-black">BALANCE DUE</h4>
                     <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
@@ -214,7 +224,8 @@
                             <strong>Vendor: </strong> {{customer}}<br>
                             <span><strong>Bill Date: </strong>{{moFormat receiveItemDate 'YYYY-MM-DD HH:mm:ss'}}</span>,
                             <span><strong>Due Date: </strong>{{moFormat dueDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>
-                            <span><strong>Status: </strong>{{{colorizeStatus status}}}, <strong>Type: {{{colorizeType invoiceType}}}</strong></span><br>
+                            <span><strong>Status: </strong>{{{colorizeStatus status}}}
+                                , <strong>Type: {{{colorizeType invoiceType}}}</strong></span><br>
                         </div>
                     </div>
                 </div>
@@ -280,7 +291,7 @@
         </thead>
         <tbody>
         {{#if hasPrepaidOrders}}
-            {{#each prepaidOrder in prepaidOrders}}
+    {{#each prepaidOrder in prepaidOrders}}
                 <tr class="prepaid-order-doc">
                     <td><a href="">{{prepaidOrder._id}}</a></td>
                     <td>{{moFormat prepaidOrder.orderDate 'YYYY-MM-DD HH:mm'}}</td>
@@ -308,8 +319,8 @@
                         <td><a href="" class="add-item"><i class="fa fa-plus-circle"></i>Add</a></td>
                     </tr>
                 {{/each}}
-            {{/each}}
-        {{else}}
+    {{/each}}
+{{else}}
             <h4>
                 <bold>No prepaid orders available..</bold>
             </h4>
