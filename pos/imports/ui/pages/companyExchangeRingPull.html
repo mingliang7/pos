@@ -1,5 +1,5 @@
 <!--Index-->
-<template name="Pos_exchangeRingPull">
+<template name="Pos_companyExchangeRingPull">
     <div class="box-header with-border">
         <h3 class="box-title">
             {{> addNewButton}}
@@ -11,29 +11,29 @@
 </template>
 
 <!--Action-->
-<template name="Pos_exchangeRingPullAction">
+<template name="Pos_companyExchangeRingPullAction">
     {{#columnAction}}
         <li><a class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
         <li><a class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
         <li><a class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
         <li role="separator" class="divider"></li>
-        <li><a href="/pos/customer/{{customerId}}/receive-payment/{{_id}}"><i class="fa fa-money"></i> Receive
+        <li><a href="/pos/vendor/{{vendorId}}/receive-payment/{{_id}}"><i class="fa fa-money"></i> Receive
             Payment</a></li>
-        <li><a class="js-exchangeRingPull"><i class="fa fa-print"></i> {{_ "pos.order.exchangeRingPullAction"}}</a></li>
+        <li><a class="js-companyExchangeRingPull"><i class="fa fa-print"></i> {{_ "pos.order.companyExchangeRingPullAction"}}</a></li>
     {{/columnAction}}
 </template>
 
 <!--Insert-->
-<template name="Pos_exchangeRingPullNew">
+<template name="Pos_companyExchangeRingPullNew">
     <div class="box-body">
-        {{#autoForm collection=collection id="Pos_exchangeRingPullNew" type="insert"}}
+        {{#autoForm collection=collection id="Pos_companyExchangeRingPullNew" type="insert"}}
             <div class="row">
                 <div class="col-md-4">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Exchange Ring Pull</div>
+                        <div class="panel-heading">Company Exchange Ring Pull</div>
                         <div class="panel-body">
-                                    {{> afQuickField name="customerId"}}
-                                    {{> afQuickField name="exchangeRingPullDate"}}
+                                    {{> afQuickField name="vendorId"}}
+                                    {{> afQuickField name="companyExchangeRingPullDate"}}
                                     {{> afQuickField name="repId" options=options value=repId label="Rep"}}
                                     {{> afQuickField name="stockLocationId"}}
                                     {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
@@ -45,7 +45,7 @@
                 <div class="col-md-8">
                     <div class="col-md-12 well">
                         <!--Item Temporary-->
-                        {{> Pos_exchangeRingPullItems itemsCollection=itemsCollection}}
+                        {{> Pos_companyExchangeRingPullItems itemsCollection=itemsCollection}}
                     </div>
                     <div class="row">
                         <div class="col-sm-12 pull-right">
@@ -68,18 +68,18 @@
 </template>
 
 <!--Update-->
-<template name="Pos_exchangeRingPullEdit">
+<template name="Pos_companyExchangeRingPullEdit">
     <div class="box-body">
 
-        {{#autoForm collection=collection id="Pos_exchangeRingPullUpdate" doc=data type="update"}}
+        {{#autoForm collection=collection id="Pos_companyExchangeRingPullUpdate" doc=data type="update"}}
 
             <div class="row">
                 <div class="col-md-4">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Exchange Ring Pull</div>
+                        <div class="panel-heading">Company Exchange Ring Pull</div>
                         <div class="panel-body">
-                            {{> afQuickField name="customerId"}}
-                            {{> afQuickField name="exchangeRingPullDate"}}
+                            {{> afQuickField name="vendorId"}}
+                            {{> afQuickField name="companyExchangeRingPullDate"}}
                             {{> afQuickField name="repId" options=options label="Rep"}}
                             {{> afQuickField name="stockLocationId"}}
                             {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
@@ -90,7 +90,7 @@
                 <div class="col-md-8">
                     <div class="col-md-12 well">
                         <!--Item Temporary-->
-                        {{> Pos_exchangeRingPullItems itemsCollection=itemsCollection}}
+                        {{> Pos_companyExchangeRingPullItems itemsCollection=itemsCollection}}
                     </div>
                     {{closeSwal}}
                     <!-- closing swal -->
@@ -114,12 +114,12 @@
 </template>
 
 <!--Show-->
-<template name="Pos_exchangeRingPullShow">
+<template name="Pos_companyExchangeRingPullShow">
     <div class="box-body">
         <div class="container-fluid">
             <div class="col-md-2 pull-left">
                 <br>
-                <a class="print-exchangeRingPull-show btn btn-primary"><i class="fa fa-print"></i>Print</a>
+                <a class="print-companyExchangeRingPull-show btn btn-primary"><i class="fa fa-print"></i>Print</a>
             </div>
         </div>
         <div class="container" id="to-print">
@@ -137,11 +137,11 @@
 
                     <div class="row">
                         <div class="col-md-4" style="padding: 10px;">
-                            <strong>Customer: </strong> {{customer}}<br>
-                            <span><strong>ExchangeRingPull Date: </strong>{{moFormat exchangeRingPullDate 'YYYY-MM-DD HH:mm:ss'}}</span>,
+                            <strong>Vendor: </strong> {{vendor}}<br>
+                            <span><strong>ExchangeRingPull Date: </strong>{{moFormat companyExchangeRingPullDate 'YYYY-MM-DD HH:mm:ss'}}</span>,
                             <span><strong>Due Date: </strong>{{moFormat dueDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>
                             <span><strong>Status: </strong>{{{colorizeStatus status}}}
-                                , <strong>Type: {{{colorizeType exchangeRingPullType}}}</strong></span><br>
+                                , <strong>Type: {{{colorizeType companyExchangeRingPullType}}}</strong></span><br>
                         </div>
                     </div>
                 </div>
