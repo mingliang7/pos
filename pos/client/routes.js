@@ -517,3 +517,18 @@ PosRoutes.route('/ring-pull-transfer-request', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/companyExchangeRingPull.js';
+PosRoutes.route('/company-exchange-ring-pull', {
+    name: 'pos.companyExchangeRingPull',
+    title: 'Company Exchange Ring Pull',
+    action: function (params, queryParams) {
+        Layout.main('Pos_companyExchangeRingPull');
+
+    },
+    breadcrumb: {
+        title: 'Company Exchange Ring Pull',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
