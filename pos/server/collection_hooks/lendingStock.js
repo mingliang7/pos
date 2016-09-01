@@ -179,7 +179,7 @@ function lendingStockManageStock(lendingStock) {
         } else {
             let newLendingStock = {
                 _id: idGenerator.genWithPrefix(LendingInventories, lendingPrefix, 13),
-                vendor: lendingStock.vendorId,
+                vendorId: lendingStock.vendorId,
                 branchId: lendingStock.branchId,
                 itemId: item.itemId,
                 qty: item.qty
@@ -201,7 +201,6 @@ function returnToInventoryAndLendingStock(lendingStock) {
             lendingStock._id
         );
         //--- End Inventory type block "Average Inventory"---
-
         //-- reduceFromLendingStock to lending stock---
         let lendingInventory = LendingInventories.findOne({
             itemId: item.itemId,
@@ -218,7 +217,7 @@ function returnToInventoryAndLendingStock(lendingStock) {
         } else {
             let newLendingStock = {
                 _id: idGenerator.genWithPrefix(LendingInventories, lendingPrefix, 13),
-                vendor: lendingStock.vendorId,
+                vendorId: lendingStock.vendorId,
                 branchId: lendingStock.branchId,
                 itemId: item.itemId,
                 qty: qty
