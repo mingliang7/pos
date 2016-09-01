@@ -621,6 +621,42 @@
         }
       }
     },
+    "companyExchangeRingPull": {
+      "title": "Company Exchange Ring Pull",
+      "invoiceAction": "Company Exchange Ring Pull",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "companyExchangeRingPullDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
     "ringPullTransfer": {
       "title": "Ring Pull Transfer",
       "invoiceAction": "Ring Pull Transfer",
