@@ -517,3 +517,22 @@ PosRoutes.route('/ring-pull-transfer-request', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/stockAndAccountMapping.js';
+PosRoutes.route('/stock-and-account-mapping', {
+    name: 'pos.stockAndAccountMapping',
+    title: 'Stock And Account Mapping',
+    action: function (params, queryParams) {
+        Layout.main('Pos_stockAndAccountMapping');
+
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+
+        title: 'Stock And Account Mapping',
+
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
