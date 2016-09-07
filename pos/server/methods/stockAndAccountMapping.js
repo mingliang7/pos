@@ -44,7 +44,6 @@ Meteor.methods({
                 }
             }
         ]);
-        console.log(stockAndAccountMapping[0]);
         return stockAndAccountMapping[0];
     },
     currentUserStockAndAccountMappingDoc({userId}){

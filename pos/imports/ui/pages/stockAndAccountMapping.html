@@ -25,7 +25,8 @@
         {{#autoForm collection=collection id="Pos_stockAndAccountMappingNew" type="insert"}}
             <div class="row">
                 <div class="col-md-12">
-                    {{> afQuickField name='userId'}}
+                    <label>User <span class="text-red">*</span>: {{{userBranches}}}</label>
+                    {{> afQuickField name='userId' label=false}}
                     {{> afQuickField name='branchId'}}
                     <!--{{> afQuickField name='chartAccounts'}}-->
                     {{> afQuickField name='stockLocations'}}
@@ -44,7 +45,8 @@
             {{#autoForm collection=collection id="Pos_stockAndAccountMappingEdit" doc=data type="update"}}
                 <div class="row">
                     <div class="col-md-12">
-                        {{> afQuickField name='userId'}}
+                        <label>User <span class="text-red">*</span>: {{{userBranches}}}</label>
+                        {{> afQuickField name='userId' label=false}}
                         {{> afQuickField name='branchId'}}
                         <!--{{> afQuickField name='chartAccounts'}}-->
                         {{> afQuickField name='stockLocations'}}
