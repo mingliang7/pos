@@ -14,11 +14,11 @@ Tracker.autorun(function () {
             .then(function (result) {
                 let customerInfo = Session.get('customerInfo');
                 let requirePassword = RequirePassword.findOne({}, {sort: {_id: -1}});
-                if (requirePassword && customerInfo.creditLimit && result > customerInfo.creditLimit) {
-                    if ((Session.get('getCustomerId') ? requirePassword.invoiceForm : requirePassword.saleOrderForm) && !_.includes(requirePassword.whiteListCustomer, customerId)) {
+                if (requirePassword && customerInfo.creditLimit && result.limitAmount > customerInfo.creditLimit) {
+                    if ((Session.get('getCustomerId') ? requirePassword.invoiceForm : requirePassword.saleOrderForm) && (!result.whiteListCustomer || (result.whiteListCustomer && result.whiteListCustomer.limitTimes == 0))) {
                         swal({
                             title: "Password Required!",
-                            text: `Balance Amount(${result}) > Credit Limit(${customerInfo.creditLimit}), Ask your Admin for password!`,
+                            text: `Balance Amount(${result.limitAmount}) > Credit Limit(${customerInfo.creditLimit}), Ask your Admin for password!`,
                             input: "password",
                             showCancelButton: true,
                             closeOnConfirm: false,
@@ -53,6 +53,8 @@ Tracker.autorun(function () {
                                 Session.set("creditLimitAmount", undefined);
                             }
                         });
+                    }else if(result.whiteListCustomer && result.whiteListCustomer.limitTimes > 0) {
+                        Meteor.call('reduceWhiteListCustomerLimitTimeByOne', {whiteListCustomer: result.whiteListCustomer});
                     }
                 }
             })

@@ -532,3 +532,17 @@ PosRoutes.route('/company-exchange-ring-pull', {
         parent: 'pos.home'
     }
 });
+import '../imports/ui/pages/whiteListCustomer.js';
+PosRoutes.route('/white-list-customer', {
+    name: 'pos.whiteListCustomer',
+    title: 'White List Customer',
+    action: function (params, queryParams) {
+        Layout.main('Pos_whiteListCustomer');
+
+    },
+    breadcrumb: {
+        title: 'White List Customer',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
