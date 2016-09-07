@@ -80,7 +80,9 @@ CompanyExchangeRingPulls.schema = new SimpleSchema({
     staffId: {
         type: String,
         autoValue(){
-            return Meteor.user()._id;
+            if(this.isInsert) {
+                return Meteor.user()._id;
+            }
         }
     },
     des: {

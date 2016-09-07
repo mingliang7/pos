@@ -8,11 +8,11 @@ Tracker.autorun(function () {
         let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
         checkCreditLimit.callPromise({
             customerId: customerId,
-            customerInfo: Session.get('customerInfo'),
+            customerInfo: Session.get('customerInfo').customerInfo,
             creditLimitAmount: Session.get('creditLimitAmount')
         })
             .then(function (result) {
-                let customerInfo = Session.get('customerInfo');
+                let {customerInfo} = Session.get('customerInfo');
                 let requirePassword = RequirePassword.findOne({}, {sort: {_id: -1}});
                 if (requirePassword && customerInfo.creditLimit && result.limitAmount > customerInfo.creditLimit) {
                     if ((Session.get('getCustomerId') ? requirePassword.invoiceForm : requirePassword.saleOrderForm) && (!result.whiteListCustomer || (result.whiteListCustomer && result.whiteListCustomer.limitTimes == 0))) {
