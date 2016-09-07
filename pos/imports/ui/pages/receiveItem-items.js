@@ -37,6 +37,7 @@ var itemsTmpl = Template.Pos_receiveItemItems,
 
 // Local collection
 var itemsCollection;
+export const LendingStockDeletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
 export const PrepaidOrderDeletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
 Tracker.autorun(function () {
     if (FlowRouter.query.get('vendorId')) {
