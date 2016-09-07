@@ -1,4 +1,4 @@
-<template name="Pos_requirePassword">
+<template name="Pos_whiteListCustomer">
     <div class="box-header with-border">
         <h3 class="box-title">
             {{> addNewButton}}
@@ -10,7 +10,7 @@
 </template>
 
 <!--Action-->
-<template name="Pos_requirePasswordAction">
+<template name="Pos_whiteListCustomerAction">
     {{#columnAction align="right"}}
         <li><a class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
         <li><a class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
@@ -19,25 +19,17 @@
 </template>
 
 <!--Insert-->
-<template name="Pos_requirePasswordNew">
+<template name="Pos_whiteListCustomerNew">
     <div class="box-body">
-        {{#autoForm collection=collection id="Pos_requirePasswordNew" type="insert"}}
+        {{#autoForm collection=collection id="Pos_whiteListCustomerNew" type="insert"}}
             <div class="row">
                 <div class="col-md-12">
-                    <label for="">Password*
-                    </label>
-                    {{> afQuickField name='password'}}
+                    {{> afQuickField name='customerId'}}
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    {{> afQuickField name='branchId'}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-8">
-                    {{> afQuickField name='invoiceForm' checked=true}}
-                    {{> afQuickField name='saleOrderForm' checked=true}}
+                    {{> afQuickField name='limitTimes'}}
                 </div>
             </div>
             {{> formFooterWithButton}}
@@ -46,29 +38,17 @@
 </template>
 
 <!--Update-->
-<template name="Pos_requirePasswordEdit">
+<template name="Pos_whiteListCustomerEdit">
     <div class="box-body">
-        {{#autoForm collection=collection id="Pos_requirePasswordEdit" doc=this type="update"}}
+        {{#autoForm collection=collection id="Pos_whiteListCustomerEdit" doc=this type="update"}}
             <div class="row">
                 <div class="col-md-12">
-                    <label for="">Password*</label>
-                    {{> afQuickField name='password'}}
+                    {{> afQuickField name='customerId'}}
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    {{> afQuickField name='branchId'}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    {{> afQuickField name="whiteListCustomer" label="Whitelist Customer"}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-8">
-                    {{> afQuickField name='invoiceForm' checked=true}}
-                    {{> afQuickField name='saleOrderForm' checked=true}}
+                    {{> afQuickField name='limitTimes'}}
                 </div>
             </div>
             {{> formFooterWithButton}}
@@ -77,7 +57,7 @@
 </template>
 
 <!--Show-->
-<template name="Pos_requirePasswordShow">
+<template name="Pos_whiteListCustomerShow">
     <div class="box-body">
         {{#if Template.subscriptionsReady}}
             {{#with data}}
