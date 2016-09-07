@@ -6,6 +6,7 @@ import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 import {ReceivePayment} from '../../../imports/api/collections/receivePayment';
 import {Invoices} from '../../../imports/api/collections/invoice';
 import {GroupInvoice} from '../../../imports/api/collections/groupInvoice';
+import {WhiteListCustomer} from '../../../imports/api/collections/whiteListCustomer';
 export const checkCreditLimit = new ValidatedMethod({
     name: 'pos.checkCreditLimit',
     mixins: [CallPromiseMixin],
@@ -57,7 +58,8 @@ export const checkCreditLimit = new ValidatedMethod({
             ]);
             receivePayment = _.isUndefined(payment[0]) ? 0 : payment[0].totalBalance;
             let limitAmount = receivePayment + totalInvoiceOrGroupInvoice + creditLimitAmount;
-            return limitAmount;
+            let whiteListCustomer = WhiteListCustomer.findOne({customerId: customerId});
+            return {limitAmount, whiteListCustomer};
         }
     }
 });

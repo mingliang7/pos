@@ -134,8 +134,8 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
-
     'change .enable-prepaid-order'(event, instance){
+        debugger;
         itemsCollection.remove({});
         let vendorId = $('[name="vendorId"]').val();
         if ($(event.currentTarget).prop('checked')) {
@@ -156,9 +156,12 @@ newTmpl.events({
         }
     },
     'click .toggle-list'(event, instance){
+        debugger;
         alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
     },
+
     'change [name=vendorId]'(event, instance){
+        debugger;
         if (event.currentTarget.value != '') {
             Session.set('getVendorId', event.currentTarget.value);
             if (FlowRouter.query.get('vendorId')) {
