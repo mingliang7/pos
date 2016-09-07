@@ -86,7 +86,8 @@ export const updateUser = new ValidatedMethod({
                     'emails.0.address': doc.email,
                     username: doc.username,
                     profile: {name: doc['profile.name']},
-                    rolesBranch: doc.rolesBranch
+                    rolesBranch: doc.rolesBranch,
+                    roles: {}
                 }
             });
 
