@@ -63,7 +63,6 @@ indexTmpl.events({
         alertify.whiteListCustomer(fa('plus', 'Add New'), renderTemplate(newTmpl));
     },
     'click .js-update' (event, instance) {
-        Session.set('CategoryIdSession', this._id);
         alertify.whiteListCustomer(fa('pencil', TAPi18n.__('pos.whiteListCustomer.title')), renderTemplate(editTmpl, this));
     },
     'click .js-destroy' (event, instance) {

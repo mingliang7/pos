@@ -12,6 +12,7 @@ export const WhiteListCustomer = new Mongo.Collection("pos_whiteListCustomer");
 WhiteListCustomer.schema = new SimpleSchema({
     customerId: {
         type: String,
+        unique: true,
         autoform: {
             type: 'universe-select',
             afFieldInput: {

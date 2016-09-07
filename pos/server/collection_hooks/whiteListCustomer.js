@@ -11,9 +11,11 @@ WhiteListCustomer.before.insert(function (userId, doc) {
 });
 
 
-WhiteListCustomer.before.update(function (userId, doc) {
-   if(doc.$set.customerId) {
-       let currentCustomer = Customers.findOne(doc.$set.customerId);
-       doc.$set.customerName = currentCustomer.name;
+WhiteListCustomer.before.update(function (userId, doc, fieldNames, modifier, options) {
+    modifier.$set = modifier.$set || {}
+   if(modifier.$set.customerId) {
+       let currentCustomer = Customers.findOne(modifier.$set.customerId);
+       console.log(currentCustomer);
+       modifier.$set.customerName = currentCustomer.name;
    }
 });
