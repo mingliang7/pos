@@ -243,16 +243,19 @@ newTmpl.helpers({
         return {total};
     },
     customerInfo() {
-        let customerInfo = Session.get('customerInfo');
+        let {customerInfo, totalAmountDue, whiteListCustomer} = Session.get('customerInfo');
+        let allowOverAmountDue = whiteListCustomer ? whiteListCustomer.limitTimes : 'Not set';
         if (!customerInfo) {
             return {empty: true, message: 'No data available'}
         }
 
         return {
-            fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
-              <li>Opening Balance: <span class="label label-success">0</span></li>
-              <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
-              <li>Sale Order to be invoice: <span class="label label-primary">0</span>`
+            fields: `<li><i class="fa fa-phone-square"></i> Phone: <b><span class="label label-success">${customerInfo.telephone ? customerInfo.telephone : ''}</span></b> | </li>
+              <!--<li>Opening Balance: <span class="label label-success">0</span></li>-->
+              <li><i class="fa fa-credit-card" aria-hidden="true"></i> Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span> | </li>
+              <li><i class="fa fa-money"></i> Balance: <span class="label label-primary">${numeral(totalAmountDue).format('0,0.00')}</span> | 
+              <li><i class="fa fa-flag"></i> Allow over amount due: <b class="label label-danger">${allowOverAmountDue}</b> | 
+              <li><i class="fa fa-home"></i> Address: <b>${customerInfo.address ? customerInfo.address : 'None'}</b>`
         };
     },
     repId(){
@@ -519,16 +522,16 @@ showTmpl.helpers({
         return `<label class="label label-success">G</label>`
     },
     colorizeStatus(status){
-        if(status == 'active') {
+        if (status == 'active') {
             return `<label class="label label-info">A</label>`
-        }else if(status == 'partial') {
+        } else if (status == 'partial') {
             return `<label class="label label-danger">P</label>`
         }
         return `<label class="label label-success">C</label>`
     }
 });
 showTmpl.events({
-    'click .print-invoice-show'(event,instance){
+    'click .print-invoice-show'(event, instance){
         $('#to-print').printThis();
     }
 });

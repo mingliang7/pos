@@ -27,7 +27,6 @@ SelectOptMethods.stockLocation = new ValidatedMethod({
             let searchText = options.searchText;
             let values = options.values;
             let params = options.params || {};
-
             if (searchText && params.branchId) {
                 selector = {
                     $or: [
@@ -37,7 +36,42 @@ SelectOptMethods.stockLocation = new ValidatedMethod({
                     branchId: params.branchId
                 };
             } else if (values.length) {
-                selector = {_id: {$in: values}};
+                selector = {_id: {$in: values}, branchId: params.branchId};
+            } else {
+                selector.branchId = params.branchId;
+            }
+            let data = StockLocations.find(selector, {limit: 10});
+            data.forEach(function (value) {
+                let label = value._id + ' : ' + value.name;
+                list.push({label: label, value: value._id});
+            });
+
+            return list;
+        }
+    }
+});
+SelectOptMethods.stockLocationMapping = new ValidatedMethod({
+    name: 'pos.selectOptMethods.stockLocationMapping',
+    validate: null,
+    run(options) {
+        if (!this.isSimulation) {
+            this.unblock();
+
+            let list = [], selector = {};
+            let searchText = options.searchText;
+            let values = options.values;
+            let params = options.params || {};
+            if (params.stockLocations) {
+                selector._id = params.stockLocations;
+            }
+            if(params.branchId){
+                selector.branchId = params.branchId;
+            }
+            if (searchText && params.branchId) {
+                selector['$or'] = [
+                    {_id: {$regex: searchText, $options: 'i'}},
+                    {name: {$regex: searchText, $options: 'i'}}
+                ]
             }
 
             let data = StockLocations.find(selector, {limit: 10});
@@ -50,7 +84,6 @@ SelectOptMethods.stockLocation = new ValidatedMethod({
         }
     }
 });
-
 SelectOptMethods.rep = new ValidatedMethod({
     name: 'pos.selectOptMethods.rep',
     validate: null,
@@ -129,7 +162,7 @@ SelectOptMethods.vendor = new ValidatedMethod({
             let searchText = options.searchText;
             let values = options.values;
             let params = options.params || {};
-            if(params.paymentType){
+            if (params.paymentType) {
                 selector.paymentType = params.paymentType;
             }
             if (searchText && params.branchId) {
@@ -375,3 +408,38 @@ SelectOptMethods.term = new ValidatedMethod({
     }
 });
 
+SelectOptMethods.settingUser = new ValidatedMethod({
+    name: 'pos.selectOptMethods.settingUser',
+    validate: null,
+    run(options) {
+        if (!this.isSimulation) {
+            this.unblock();
+
+            let list = [], selector = {};
+            let searchText = options.searchText;
+            let values = options.values;
+            let params = options.params || {};
+
+            if (searchText && params.branchId) {
+                selector = {
+                    $or: [
+                        {_id: {$regex: searchText, $options: 'i'}},
+                        {username: {$regex: searchText, $options: 'i'}}
+                    ],
+                    username: {$ne: 'super'}
+                };
+            } else if (values.length) {
+                selector = {_id: {$in: values}, username: {$ne: 'super'}};
+            } else {
+                selector = {username: {$ne: 'super'}};
+            }
+            let data = Meteor.users.find(selector, {limit: 10});
+            data.forEach(function (value) {
+                let label = value.username;
+                list.push({label: label, value: value._id});
+            });
+
+            return list;
+        }
+    }
+});

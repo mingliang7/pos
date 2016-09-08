@@ -31,6 +31,15 @@
                         <div class="panel-heading">Order</div>
                         <div class="panel-body">
                             {{> afQuickField name="customerId"}}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {{#with customerInfo}}
+                                        <ul class="list-inline">
+                                            {{{fields}}}
+                                        </ul>
+                                    {{/with}}
+                                </div>
+                            </div>
                             {{> afQuickField name="orderDate"}}
                             {{> afQuickField name="des"}}
 

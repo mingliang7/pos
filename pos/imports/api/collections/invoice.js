@@ -122,7 +122,9 @@ Invoices.schema = new SimpleSchema({
     staffId: {
         type: String,
         autoValue(){
-            return Meteor.user()._id;
+            if(this.isInsert) {
+                return Meteor.user()._id;
+            }
         }
     },
     des: {
@@ -164,11 +166,18 @@ Invoices.schema = new SimpleSchema({
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.stockLocation',
+                optionsMethod: 'pos.selectOptMethods.stockLocationMapping',
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
+                        let currentUserStockAndAccountMappingDoc = Session.get('currentUserStockAndAccountMappingDoc');
+                        let stockLocations = currentUserStockAndAccountMappingDoc == undefined ? ' ' : currentUserStockAndAccountMappingDoc.stockLocations ;
                         let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
+                        return {
+                            branchId: currentBranch,
+                            stockLocations: {
+                                $in: stockLocations
+                            }
+                        };
                     }
                 }
             }

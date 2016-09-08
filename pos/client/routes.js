@@ -518,6 +518,23 @@ PosRoutes.route('/ring-pull-transfer-request', {
     }
 });
 
+
+import '../imports/ui/pages/stockAndAccountMapping.js';
+PosRoutes.route('/stock-and-account-mapping', {
+    name: 'pos.stockAndAccountMapping',
+    title: 'Stock And Account Mapping',
+    action: function (params, queryParams) {
+        Layout.main('Pos_stockAndAccountMapping');
+
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+
+        title: 'Stock And Account Mapping',
+        parent: 'pos.home'
+    }
+});
 import '../imports/ui/pages/companyExchangeRingPull.js';
 PosRoutes.route('/company-exchange-ring-pull', {
     name: 'pos.companyExchangeRingPull',
@@ -532,3 +549,19 @@ PosRoutes.route('/company-exchange-ring-pull', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/whiteListCustomer.js';
+PosRoutes.route('/white-list-customer', {
+    name: 'pos.whiteListCustomer',
+    title: 'White List Customer',
+    action: function (params, queryParams) {
+        Layout.main('Pos_whiteListCustomer');
+
+    },
+    breadcrumb: {
+        title: 'White List Customer',
+        // icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
+
