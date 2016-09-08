@@ -12,36 +12,38 @@ import 'meteor/tap:i18n-ui';
 
 
 // Lib
-import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
-import {renderTemplate} from '../../../../core/client/libs/render-template.js';
-import {destroyAction} from '../../../../core/client/libs/destroy-action.js';
-import {displaySuccess, displayError} from '../../../../core/client/libs/display-alert.js';
-import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
+import {createNewAlertify} from '../../../../../core/client/libs/create-new-alertify.js';
+import {renderTemplate} from '../../../../../core/client/libs/render-template.js';
+import {destroyAction} from '../../../../../core/client/libs/destroy-action.js';
+import {displaySuccess, displayError} from '../../../../../core/client/libs/display-alert.js';
+import {__} from '../../../../../core/common/libs/tapi18n-callback-helper.js';
 
 // Component
-import '../../../../core/client/components/loading.js';
-import '../../../../core/client/components/column-action.js';
-import '../../../../core/client/components/form-footer.js';
+import '../../../../../core/client/components/loading.js';
+import '../../../../../core/client/components/column-action.js';
+import '../../../../../core/client/components/form-footer.js';
 
 // Collection
-import {ReceiveItems} from '../../api/collections/receiveItem.js';
-import {PrepaidOrders} from '../../api/collections/prepaidOrder.js';
-import {LendingStocks} from '../../api/collections/lendingStock.js';
-import {PrepaidOrderDeletedItem} from './receiveItem-items.js';
+import {ReceiveItems} from '../../../api/collections/receiveItem.js';
+import {PrepaidOrders} from '../../../api/collections/prepaidOrder.js';
+import {LendingStocks} from '../../../api/collections/lendingStock.js';
+import {ReceiveTypeDeletedItem} from './receiveItem-items.js';
 import {LendingStockDeletedItem} from './receiveItem-items.js';
-import {Item} from '../../api/collections/item';
-import {vendorBillCollection} from '../../api/collections/tmpCollection';
+import {Item} from '../../../api/collections/item';
+import {vendorBillCollection} from '../../../api/collections/tmpCollection';
 // Tabular
-import {ReceiveItemTabular} from '../../../common/tabulars/receiveItem.js';
+import {ReceiveItemTabular} from '../../../../common/tabulars/receiveItem.js';
 
 // Page
 import './receiveItem.html';
 import './receiveItem-items.js';
-import './info-tab.html';
+import '../info-tab.html';
+import './lendingStock.js'
 //methods
-import {ReceiveItemInfo} from '../../../common/methods/receiveItem.js'
-import {vendorInfo} from '../../../common/methods/vendor.js';
-//Tracker for vendor infomation
+import {ReceiveItemInfo} from '../../../../common/methods/receiveItem.js'
+import {vendorInfo} from '../../../../common/methods/vendor.js';
+//import receive item tracker
+import '../../../../imports/api/tracker/receiveItem';
 //Tracker for vendor infomation
 Tracker.autorun(function () {
     if (Session.get("getVendorId")) {
@@ -50,9 +52,17 @@ Tracker.autorun(function () {
                 Session.set('vendorInfo', result);
             })
     }
-    if (Session.get('prepaidOrderItems')) {
-        Meteor.subscribe('pos.item', {_id: {$in: Session.get('prepaidOrderItems')}});
+    if (Session.get('prepaidOrderItems') || Session.get('lendingStockItems')) {
+        let query = FlowRouter.query;
+        var data;
+        if(query.get('type') == 'activeLendingStocks') {
+            data = Session.get('lendingStockItems');
+        }else if(query.get('type') == 'activePrepaidOrder') {
+            data = Session.get('prepaidOrderItems');
+        }
+        Meteor.subscribe('pos.item', {_id: {$in: data}});
     }
+
 });
 // Declare template
 let indexTmpl = Template.Pos_receiveItem,
@@ -63,17 +73,9 @@ let indexTmpl = Template.Pos_receiveItem,
     listPrepaidOrder = Template.listPrepaidOrder,
     listLendingStock = Template.listLendingStock;
 // Local collection
-let itemsCollection = new Mongo.Collection(null);
+import {itemsCollection} from '../../../api/collections/tmpCollection';
 
 // Index
-Tracker.autorun(function () {
-    if (Session.get('vendorId')) {
-        vendorInfo.callPromise({_id: Session.get('vendorId')})
-            .then(function (result) {
-                Session.set('vendorInfo', result);
-            })
-    }
-});
 
 indexTmpl.onCreated(function () {
     // Create new  alertify
@@ -129,6 +131,7 @@ indexTmpl.events({
 });
 indexTmpl.onDestroyed(function () {
     vendorBillCollection.remove({});
+    FlowRouter.query.unset();
 });
 newTmpl.onCreated(function () {
     this.repOptions = new ReactiveVar();
@@ -138,55 +141,22 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
-    'change .enable-prepaid-order'(event, instance){
-        debugger;
-        itemsCollection.remove({});
-        let vendorId = $('[name="vendorId"]').val();
-        if ($(event.currentTarget).prop('checked')) {
-            if (vendorId != '') {
-                FlowRouter.query.set('vendorId', vendorId);
-                $('.prepaid-order').addClass('toggle-list');
-                setTimeout(function () {
-                    // alertify.listLendingStock(fa('', 'Lending Stock'), renderTemplate(listLendingStock));
-                    alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
-                }, 700)
-            } else {
-                displayError('Please select vendor');
-                $(event.currentTarget).prop('checked', false);
-            }
-
-        } else {
-            FlowRouter.query.unset();
-            $('.prepaid-order').removeClass('toggle-list');
-        }
-    },
     'click .toggle-list'(event, instance){
         let receiveType = $('#receive-type').val();
-        if (receiveType == 'PrepaidOrder') {
-            alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
-        }
-        else if (receiveType == 'LendingStock') {
-            alertify.listLendingStock(fa('', 'Lending Stock'), renderTemplate(listLendingStock));
-        }
-        else if (receiveType == 'RingPull') {
-
-        } else if (receiveType == 'Gratis') {
-
-        } else {
-            alertify.warning('Please Select Receive Type');
-        }
+        let vendor = Session.get('getVendorId');
+        receiveTypeFn({receiveType, vendor});
     },
 
     'change [name=vendorId]'(event, instance){
-        debugger;
+        $('#receive-type').val('');
         if (event.currentTarget.value != '') {
+            $('.toggle-list').addClass('hidden')
             Session.set('getVendorId', event.currentTarget.value);
-            if (FlowRouter.query.get('vendorId')) {
-                FlowRouter.query.set('vendorId', event.currentTarget.value);
-            }
+        } else {
+            Session.set('getVendorId', undefined);
+            FlowRouter.query.unset();
         }
         Session.set('totalOrder', undefined);
-
     },
     'click .go-to-pay-bill'(event, instance){
         alertify.receiveItem().close();
@@ -199,6 +169,12 @@ newTmpl.events({
     },
     'click #btn-pay'(event, instance){
         Session.set('btnType', 'pay');
+    },
+    'change #receive-type'(event, instance){
+        let receiveType = event.currentTarget.value;
+        let vendor = Session.get('getVendorId');
+        $('.toggle-list').removeClass('hidden')
+        receiveTypeFn({receiveType, vendor});
     }
 });
 newTmpl.helpers({
@@ -244,6 +220,8 @@ newTmpl.helpers({
     },
     totalReceiveItem(){
         let total = 0;
+        console.log(itemsCollection.find().fetch());
+
         itemsCollection.find().forEach(function (item) {
             total += item.amount;
         });
@@ -305,6 +283,12 @@ newTmpl.helpers({
             }
         }
         return date;
+    },
+    enableReceiveType(){
+        if (Session.get('getVendorId')) {
+            return false
+        }
+        return true;
     }
 });
 
@@ -317,6 +301,7 @@ newTmpl.onDestroyed(function () {
     FlowRouter.query.unset();
     Session.set('prepaidOrderItems', undefined);
     Session.set('totalOrder', undefined);
+    Session.set('getVendorId', undefined);
 });
 // Edit
 editTmpl.onCreated(function () {
@@ -611,8 +596,8 @@ listPrepaidOrder.helpers({
     prepaidOrders(){
         let item = [];
         let prepaidOrders = PrepaidOrders.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
-        if (PrepaidOrderDeletedItem.find().count() > 0) {
-            PrepaidOrderDeletedItem.find().forEach(function (item) {
+        if (ReceiveTypeDeletedItem.find().count() > 0) {
+            ReceiveTypeDeletedItem.find().forEach(function (item) {
                 console.log(item);
                 prepaidOrders.forEach(function (prepaidOrder) {
                     prepaidOrder.items.forEach(function (prepaidOrderItem) {
@@ -759,129 +744,6 @@ function excuteEditForm(doc) {
 }
 
 
-//listPrepaidOrder
-listLendingStock.helpers({
-    lendingStocks(){
-        let item = [];
-        let lendingStocks = LendingStocks.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
-        if (LendingStockDeletedItem.find().count() > 0) {
-            LendingStockDeletedItem.find().forEach(function (item) {
-                console.log(item);
-                lendingStocks.forEach(function (lendingStock) {
-                    lendingStock.items.forEach(function (lendingStockItem) {
-                        if (lendingStockItem.itemId == item.itemId) {
-                            lendingStockItem.remainQty += item.qty;
-                            lendingStock.sumRemainQty += item.qty;
-                        }
-                    });
-                });
-            });
-        }
-        lendingStocks.forEach(function (lendingStock) {
-            lendingStock.items.forEach(function (lendingStockItem) {
-                item.push(lendingStockItem.itemId);
-            });
-        });
-        Session.set('lendingStockItems', item);
-        return lendingStocks;
-    },
-    hasLendingStocks(){
-        let count = LendingStocks.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).count();
-        return count > 0;
-    },
-    getItemName(itemId){
-        try {
-            return Item.findOne(itemId).name;
-        } catch (e) {
-
-        }
-
-    }
-});
-listLendingStock.events({
-    'click .add-item'(event, instance){
-        event.preventDefault();
-        let remainQty = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.remain-qty').val();
-        let lendingStockId = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.lendingStockId').text().trim();
-        let tmpCollection = itemsCollection.find().fetch();
-        if (remainQty != '' && remainQty != '0') {
-            if (this.remainQty > 0) {
-                if (tmpCollection.length > 0) {
-                    let lendingStockIdExist = _.find(tmpCollection, function (o) {
-                        return o.lendingStockId == lendingStockId;
-                    });
-                    if (lendingStockIdExist) {
-                        insertLendingStockItem({
-                            self: this,
-                            remainQty: parseFloat(remainQty),
-                            lendingStockItem: lendingStockIdExist,
-                            lendingStockId: lendingStockId
-                        });
-                    } else {
-                        swal("Retry!", "Item Must be in the same lendingStockId", "warning")
-                    }
-                } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
-                        this.lendingStockId = lendingStockId;
-                        this.qty = parseFloat(remainQty);
-                        this.name = result.name;
-                        itemsCollection.insert(this);
-                    });
-                    displaySuccess('Added!')
-                }
-            } else {
-                swal("ប្រកាស!", "មុខទំនិញនេះត្រូវបានកាត់កងរួចរាល់", "info");
-            }
-        } else {
-            swal("Retry!", "ចំនួនមិនអាចអត់មានឬស្មើសូន្យ", "warning");
-        }
-    },
-    'change .remain-qty'(event, instance){
-        event.preventDefault();
-        let remainQty = $(event.currentTarget).val();
-        let lendingStockId = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.lendingStockId').text().trim();
-        let tmpCollection = itemsCollection.find().fetch();
-        if (remainQty != '' && remainQty != '0') {
-            if (this.remainQty > 0) {
-                if (parseFloat(remainQty) > this.remainQty) {
-                    remainQty = this.remainQty;
-                    $(event.currentTarget).val(this.remainQty);
-                }
-                if (tmpCollection.length > 0) {
-                    let lendingStockIdExist = _.find(tmpCollection, function (o) {
-                        return o.lendingStockId == lendingStockId;
-                    });
-                    if (lendingStockIdExist) {
-                        insertLendingStockItem({
-                            self: this,
-                            remainQty: parseFloat(remainQty),
-                            lendingStockItem: lendingStockIdExist,
-                            lendingStockId: lendingStockId
-                        });
-                    } else {
-                        swal("Retry!", "Item Must be in the same lendingStockId", "warning")
-                    }
-                } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
-                        this.lendingStockId = lendingStockId;
-                        this.qty = parseFloat(remainQty);
-                        this.name = result.name;
-                        this.amount = this.qty * this.price;
-                        itemsCollection.insert(this);
-                    });
-                    displaySuccess('Added!')
-                }
-            } else {
-                swal("ប្រកាស!", "មុខទំនិញនេះត្រូវបានកាត់កងរួចរាល់", "info");
-            }
-        } else {
-            swal("Retry!", "ចំនួនមិនអាចអត់មានឬស្មើសូន្យ", "warning");
-        }
-
-    }
-});
-
-
 //insert lendingStock order item to itemsCollection
 let insertLendingStockItem = ({self, remainQty, lendingStockItem, lendingStockId}) => {
     Meteor.call('getItem', self.itemId, (err, result)=> {
@@ -909,4 +771,25 @@ function excuteEditForm(doc) {
         text: "Getting Invoices....", showConfirmButton: false
     });
     alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editTmpl, doc)).maximize();
+}
+
+function receiveTypeFn({receiveType, vendor}) {
+    let label = '';
+    if (receiveType == 'PrepaidOrder') {
+        label = 'Prepaid Order';
+        FlowRouter.query.set({vendorId: vendor, type: 'activePrepaidOrder'});
+        alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
+    }
+    else if (receiveType == 'LendingStock') {
+        label = 'Lending Stock';
+        FlowRouter.query.set({vendorId: vendor, type: 'activeLendingStocks'});
+        alertify.listLendingStock(fa('', 'Lending Stock'), renderTemplate(listLendingStock));
+    }
+    else if (receiveType == 'RingPull') {
+        label = "Ring Pull";
+    } else if (receiveType == 'Gratis') {
+        label = "Gratis";
+    }
+    $('.receive-type-label').text(label);
+
 }

@@ -385,22 +385,19 @@ let hooksObject = {
     before: {
         insert: function (doc) {
             let items = [];
-
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
-                if (obj.saleId) {
-                    doc.saleId = obj.saleId;
-                }
+                obj.remainQty = obj.qty
                 items.push(obj);
             });
             doc.items = items;
-
             return doc;
         },
         update: function (doc) {
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
+                obj.remainQty = obj.qty
                 items.push(obj);
             });
             doc.$set.items = items;

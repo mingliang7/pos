@@ -18,6 +18,11 @@ CompanyExchangeRingPulls.itemsSchema = new SimpleSchema({
         type: Number,
         min: 1
     },
+    remainQty: {
+        type: Number,
+        decimal: true
+
+    }
     /*price: {
         type: Number,
         decimal: true,
