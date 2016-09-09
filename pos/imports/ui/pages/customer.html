@@ -118,3 +118,23 @@
         {{> loading}}
     {{/if}}
 </template>
+
+<template name="Pos_customerNewDropDownForm">
+    <h4 class="text-blue"><i class="fa fa-user"></i> Add New Customer</h4>
+    <hr>
+    {{#autoForm collection=collection id="Pos_customerNew" type="insert"}}
+        {{> afQuickField name='name' label="Customer"}}<br><br>
+        {{> afQuickField name='repId' label="Rep"}}
+        {{> afQuickField name='creditLimit'}}<br><br>
+        {{> afQuickField name='gender'}}
+        {{> afQuickField name='paymentType'}}
+        {{#if isTerm}}
+            {{> afQuickField name='termId'}}
+        {{/if}}
+        {{#if isGroup}}
+            {{> afQuickField name='paymentGroupId'}}
+        {{/if}}
+        {{> afQuickField type="hidden" name='branchId' value=currentBranch}}
+        {{> formFooterWithButton}}
+    {{/autoForm}}
+</template>

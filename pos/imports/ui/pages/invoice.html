@@ -28,10 +28,13 @@
     <div class="box-body">
         {{#autoForm collection=collection id="Pos_invoiceNew" type="insert"}}
             <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
-                <div class="col-md-3">
-                    <label for="email">Customer:<span style="color: red;">*</span> (<a href="" class="add-new-customer">Add
-                        New</a>) </label>
-                    {{> afQuickField name="customerId" label=false }}
+                <div class="col-md-3 ">
+                    <div class="input-group">
+                        <label for="email" class="input-group">Customer:<span style="color: red;">*</span></label>
+                        {{> afFieldInput name="customerId" }}
+                        <br>
+                        {{>customerDropDown}}
+                    </div>
                 </div>
                 <div class="col-md-3">
                     <br>
@@ -415,4 +418,19 @@
         {{/if}}
         </tbody>
     </table>
+</template>
+
+
+<template name="customerDropDown">
+    <div class="input-group-btn">
+        <div class="btn-group" role="group">
+            <div class="dropdown dropdown-lg">
+                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                   aria-expanded="false"><span class="text-blue">+</span></a>
+                <div class="dropdown-menu dropdown-menu-left dropdown-form-shadow" role="menu">
+                    {{>Pos_customerNewDropDownForm}}
+                </div>
+            </div>
+        </div>
+    </div>
 </template>

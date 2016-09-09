@@ -26,7 +26,8 @@ Customers.schema = new SimpleSchema({
         }
     },
     address: {
-        type: String
+        type: String,
+        optional: true
     },
     telephone: {
         type: String,
