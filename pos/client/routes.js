@@ -565,3 +565,18 @@ PosRoutes.route('/white-list-customer', {
     }
 });
 
+import '../imports/ui/pages/exchangeGratis.js';
+PosRoutes.route('/prepaid-order', {
+    name: 'pos.exchangeGratis',
+    title: __('pos.exchangeGratis.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_exchangeGratis');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.exchangeGratis.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});
