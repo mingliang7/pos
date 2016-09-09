@@ -204,9 +204,10 @@ newTmpl.helpers({
         return '';
     },
     repId(){
-        if (Session.get('vendorInfo')) {
+        let {vendorInfo} = Session.get('vendorInfo');
+        if (vendorInfo) {
             try {
-                return Session.get('vendorInfo').repId;
+                return vendorInfo.repId;
             } catch (e) {
 
             }
@@ -214,9 +215,10 @@ newTmpl.helpers({
         return '';
     },
     termId(){
-        if (Session.get('vendorInfo')) {
+        let {vendorInfo} = Session.get('vendorInfo');
+        if (vendorInfo) {
             try {
-                return Session.get('vendorInfo').termId;
+                return vendorInfo.termId;
             } catch (e) {
 
             }
@@ -268,8 +270,8 @@ newTmpl.helpers({
         return {};
     },
     isTerm(){
-        if (Session.get('vendorInfo')) {
-            let vendorInfo = Session.get('vendorInfo');
+        let {vendorInfo} = Session.get('vendorInfo');
+        if (vendorInfo) {
             if (vendorInfo._term) {
                 return true;
             }
@@ -278,9 +280,10 @@ newTmpl.helpers({
     },
     dueDate(){
         let date = AutoForm.getFieldValue('enterBillDate');
-        if (Session.get('vendorInfo')) {
-            if (Session.get('vendorInfo')._term) {
-                let term = Session.get('vendorInfo')._term;
+        let {vendorInfo} = Session.get('vendorInfo');
+        if (vendorInfo) {
+            if (vendorInfo._term) {
+                let term = vendorInfo._term;
 
                 let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
                 console.log(dueDate);
@@ -385,9 +388,10 @@ editTmpl.helpers({
         return {};
     },
     repId(){
-        if (Session.get('vendorInfo')) {
+        let {vendorInfo} = Session.get('vendorInfo');
+        if (vendorInfo) {
             try {
-                return Session.get('vendorInfo').repId;
+                return vendorInfo.repId;
             } catch (e) {
 
             }
@@ -395,9 +399,10 @@ editTmpl.helpers({
         return '';
     },
     termId(){
-        if (Session.get('vendorInfo')) {
+        let {vendorInfo} = Session.get('vendorInfo');
+        if (vendorInfo) {
             try {
-                return Session.get('vendorInfo').termId;
+                return vendorInfo.termId;
             } catch (e) {
 
             }
@@ -432,7 +437,7 @@ editTmpl.helpers({
         return {total};
     },
     vendorInfo() {
-        let vendorInfo = Session.get('vendorInfo');
+        let {vendorInfo} = Session.get('vendorInfo');
         if (!vendorInfo) {
             return {empty: true, message: 'No data available'}
         }
@@ -444,27 +449,21 @@ editTmpl.helpers({
               <li>Prepaid Order to be invoice: <span class="label label-primary">0</span>`
         };
     },
-    repId(){
-        if (Session.get('vendorInfo')) {
-            return Session.get('vendorInfo').repId;
-        }
-    },
     dueDate(){
         let date = AutoForm.getFieldValue('enterBillDate');
-        if (Session.get('vendorInfo')) {
-            if (Session.get('vendorInfo')._term) {
-                let term = Session.get('vendorInfo')._term;
-
+        let {vendorInfo} = Session.get('vendorInfo');
+        if (vendorInfo) {
+            if (vendorInfo._term) {
+                let term = vendorInfo._term;
                 let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
-                console.log(dueDate);
                 return dueDate;
             }
         }
         return date;
     },
     isTerm(){
-        if (Session.get('vendorInfo')) {
-            let vendorInfo = Session.get('vendorInfo');
+        let {vendorInfo} = Session.get('vendorInfo');
+        if (vendorInfo) {
             if (vendorInfo._term) {
                 return true;
             }
