@@ -39,6 +39,7 @@ import './receiveItem.html';
 import './receiveItem-items.js';
 import '../info-tab.html';
 import './lendingStock.js'
+import './companyExchangeRingPull.js'
 //methods
 import {ReceiveItemInfo} from '../../../../common/methods/receiveItem.js'
 import {vendorInfo} from '../../../../common/methods/vendor.js';
@@ -71,6 +72,7 @@ let indexTmpl = Template.Pos_receiveItem,
     editTmpl = Template.Pos_receiveItemEdit,
     showTmpl = Template.Pos_receiveItemShow,
     listPrepaidOrder = Template.listPrepaidOrder,
+    listCompanyExchangeRingPull = Template.listCompanyExchangeRingPull,
     listLendingStock = Template.listLendingStock;
 // Local collection
 import {itemsCollection} from '../../../api/collections/tmpCollection';
@@ -83,6 +85,7 @@ indexTmpl.onCreated(function () {
     createNewAlertify('receiveItemShow');
     createNewAlertify('listPrepaidOrder', {size: 'lg'});
     createNewAlertify('listLendingStock', {size: 'lg'});
+    createNewAlertify('listCompanyExchangeRingPull', {size: 'lg'});
     createNewAlertify('vendor');
 });
 
@@ -148,9 +151,10 @@ newTmpl.events({
     },
 
     'change [name=vendorId]'(event, instance){
+        itemsCollection.remove({});
         $('#receive-type').val('');
         if (event.currentTarget.value != '') {
-            $('.toggle-list').addClass('hidden')
+            $('.toggle-list').addClass('hidden');
             Session.set('getVendorId', event.currentTarget.value);
         } else {
             Session.set('getVendorId', undefined);
@@ -744,34 +748,6 @@ function excuteEditForm(doc) {
 }
 
 
-//insert lendingStock order item to itemsCollection
-let insertLendingStockItem = ({self, remainQty, lendingStockItem, lendingStockId}) => {
-    Meteor.call('getItem', self.itemId, (err, result)=> {
-        self.lendingStockId = lendingStockId;
-        self.qty = remainQty;
-        self.name = result.name;
-        self.amount = self.qty * self.price;
-        let getItem = itemsCollection.findOne({itemId: self.itemId});
-        if (getItem) {
-            if (getItem.qty + remainQty <= self.remainQty) {
-                itemsCollection.update(getItem._id, {$inc: {qty: self.qty, amount: self.qty * getItem.price}});
-                displaySuccess('Added!')
-            } else {
-                swal("Retry!", `ចំនួនបញ្ចូលចាស់(${getItem.qty}) នឹងបញ្ចូលថ្មី(${remainQty}) លើសពីចំនួនកម្ម៉ង់ទិញចំនួន ${(self.remainQty)}`, "error");
-            }
-        } else {
-            itemsCollection.insert(self);
-            displaySuccess('Added!')
-        }
-    });
-};
-function excuteEditForm(doc) {
-    swal({
-        title: "Pleas Wait",
-        text: "Getting Invoices....", showConfirmButton: false
-    });
-    alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editTmpl, doc)).maximize();
-}
 
 function receiveTypeFn({receiveType, vendor}) {
     let label = '';
@@ -787,6 +763,9 @@ function receiveTypeFn({receiveType, vendor}) {
     }
     else if (receiveType == 'RingPull') {
         label = "Ring Pull";
+        FlowRouter.query.set({vendorId: vendor, type: 'activeCompanyExchangeRingPulls'});
+        alertify.listCompanyExchangeRingPull(fa('', 'Exchange Ring Pull'), renderTemplate(listCompanyExchangeRingPull));
+
     } else if (receiveType == 'Gratis') {
         label = "Gratis";
     }
