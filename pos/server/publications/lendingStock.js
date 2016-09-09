@@ -27,6 +27,7 @@ Meteor.publish('pos.activeLendingStocks', function activeLendingStocks(selector)
     if (this.userId) {
         Meteor._sleepForMs(200);
         let data = LendingStocks.find(selector);
+        console.log(data.fetch());
         return data;
     }
     return this.ready();

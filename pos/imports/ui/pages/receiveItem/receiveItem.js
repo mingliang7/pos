@@ -12,34 +12,39 @@ import 'meteor/tap:i18n-ui';
 
 
 // Lib
-import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
-import {renderTemplate} from '../../../../core/client/libs/render-template.js';
-import {destroyAction} from '../../../../core/client/libs/destroy-action.js';
-import {displaySuccess, displayError} from '../../../../core/client/libs/display-alert.js';
-import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
+import {createNewAlertify} from '../../../../../core/client/libs/create-new-alertify.js';
+import {renderTemplate} from '../../../../../core/client/libs/render-template.js';
+import {destroyAction} from '../../../../../core/client/libs/destroy-action.js';
+import {displaySuccess, displayError} from '../../../../../core/client/libs/display-alert.js';
+import {__} from '../../../../../core/common/libs/tapi18n-callback-helper.js';
 
 // Component
-import '../../../../core/client/components/loading.js';
-import '../../../../core/client/components/column-action.js';
-import '../../../../core/client/components/form-footer.js';
+import '../../../../../core/client/components/loading.js';
+import '../../../../../core/client/components/column-action.js';
+import '../../../../../core/client/components/form-footer.js';
 
 // Collection
-import {ReceiveItems} from '../../api/collections/receiveItem.js';
-import {PrepaidOrders} from '../../api/collections/prepaidOrder.js';
-import {PrepaidOrderDeletedItem} from './receiveItem-items.js';
-import {Item} from '../../api/collections/item';
-import {vendorBillCollection} from '../../api/collections/tmpCollection';
+import {ReceiveItems} from '../../../api/collections/receiveItem.js';
+import {PrepaidOrders} from '../../../api/collections/prepaidOrder.js';
+import {LendingStocks} from '../../../api/collections/lendingStock.js';
+import {ReceiveTypeDeletedItem} from './receiveItem-items.js';
+import {LendingStockDeletedItem} from './receiveItem-items.js';
+import {Item} from '../../../api/collections/item';
+import {vendorBillCollection} from '../../../api/collections/tmpCollection';
 // Tabular
-import {ReceiveItemTabular} from '../../../common/tabulars/receiveItem.js';
+import {ReceiveItemTabular} from '../../../../common/tabulars/receiveItem.js';
 
 // Page
 import './receiveItem.html';
 import './receiveItem-items.js';
-import './info-tab.html';
+import '../info-tab.html';
+import './lendingStock.js'
+import './companyExchangeRingPull.js'
 //methods
-import {ReceiveItemInfo} from '../../../common/methods/receiveItem.js'
-import {vendorInfo} from '../../../common/methods/vendor.js';
-//Tracker for vendor infomation
+import {ReceiveItemInfo} from '../../../../common/methods/receiveItem.js'
+import {vendorInfo} from '../../../../common/methods/vendor.js';
+//import receive item tracker
+import '../../../../imports/api/tracker/receiveItem';
 //Tracker for vendor infomation
 Tracker.autorun(function () {
     if (Session.get("getVendorId")) {
@@ -48,35 +53,39 @@ Tracker.autorun(function () {
                 Session.set('vendorInfo', result);
             })
     }
-    if (Session.get('prepaidOrderItems')) {
-        Meteor.subscribe('pos.item', {_id: {$in: Session.get('prepaidOrderItems')}});
+    if (Session.get('prepaidOrderItems') || Session.get('lendingStockItems')) {
+        let query = FlowRouter.query;
+        var data;
+        if(query.get('type') == 'activeLendingStocks') {
+            data = Session.get('lendingStockItems');
+        }else if(query.get('type') == 'activePrepaidOrder') {
+            data = Session.get('prepaidOrderItems');
+        }
+        Meteor.subscribe('pos.item', {_id: {$in: data}});
     }
+
 });
 // Declare template
 let indexTmpl = Template.Pos_receiveItem,
     actionTmpl = Template.Pos_receiveItemAction,
     newTmpl = Template.Pos_receiveItemNew,
     editTmpl = Template.Pos_receiveItemEdit,
-    showTmpl = Template.Pos_receiveItemShow;
-listPrepaidOrder = Template.listPrepaidOrder;
+    showTmpl = Template.Pos_receiveItemShow,
+    listPrepaidOrder = Template.listPrepaidOrder,
+    listCompanyExchangeRingPull = Template.listCompanyExchangeRingPull,
+    listLendingStock = Template.listLendingStock;
 // Local collection
-let itemsCollection = new Mongo.Collection(null);
+import {itemsCollection} from '../../../api/collections/tmpCollection';
 
 // Index
-Tracker.autorun(function () {
-    if (Session.get('vendorId')) {
-        vendorInfo.callPromise({_id: Session.get('vendorId')})
-            .then(function (result) {
-                Session.set('vendorInfo', result);
-            })
-    }
-});
 
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('receiveItem', {size: 'lg'});
     createNewAlertify('receiveItemShow');
     createNewAlertify('listPrepaidOrder', {size: 'lg'});
+    createNewAlertify('listLendingStock', {size: 'lg'});
+    createNewAlertify('listCompanyExchangeRingPull', {size: 'lg'});
     createNewAlertify('vendor');
 });
 
@@ -125,6 +134,7 @@ indexTmpl.events({
 });
 indexTmpl.onDestroyed(function () {
     vendorBillCollection.remove({});
+    FlowRouter.query.unset();
 });
 newTmpl.onCreated(function () {
     this.repOptions = new ReactiveVar();
@@ -134,42 +144,23 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
-    'change .enable-prepaid-order'(event, instance){
-        debugger;
-        itemsCollection.remove({});
-        let vendorId = $('[name="vendorId"]').val();
-        if ($(event.currentTarget).prop('checked')) {
-            if (vendorId != '') {
-                FlowRouter.query.set('vendorId', vendorId);
-                $('.prepaid-order').addClass('toggle-list');
-                setTimeout(function () {
-                    alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
-                }, 700)
-            } else {
-                displayError('Please select vendor');
-                $(event.currentTarget).prop('checked', false);
-            }
-
-        } else {
-            FlowRouter.query.unset();
-            $('.prepaid-order').removeClass('toggle-list');
-        }
-    },
     'click .toggle-list'(event, instance){
-        debugger;
-        alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
+        let receiveType = $('#receive-type').val();
+        let vendor = Session.get('getVendorId');
+        receiveTypeFn({receiveType, vendor});
     },
 
     'change [name=vendorId]'(event, instance){
-        debugger;
+        itemsCollection.remove({});
+        $('#receive-type').val('');
         if (event.currentTarget.value != '') {
+            $('.toggle-list').addClass('hidden');
             Session.set('getVendorId', event.currentTarget.value);
-            if (FlowRouter.query.get('vendorId')) {
-                FlowRouter.query.set('vendorId', event.currentTarget.value);
-            }
+        } else {
+            Session.set('getVendorId', undefined);
+            FlowRouter.query.unset();
         }
         Session.set('totalOrder', undefined);
-
     },
     'click .go-to-pay-bill'(event, instance){
         alertify.receiveItem().close();
@@ -182,6 +173,12 @@ newTmpl.events({
     },
     'click #btn-pay'(event, instance){
         Session.set('btnType', 'pay');
+    },
+    'change #receive-type'(event, instance){
+        let receiveType = event.currentTarget.value;
+        let vendor = Session.get('getVendorId');
+        $('.toggle-list').removeClass('hidden')
+        receiveTypeFn({receiveType, vendor});
     }
 });
 newTmpl.helpers({
@@ -227,6 +224,8 @@ newTmpl.helpers({
     },
     totalReceiveItem(){
         let total = 0;
+        console.log(itemsCollection.find().fetch());
+
         itemsCollection.find().forEach(function (item) {
             total += item.amount;
         });
@@ -288,6 +287,12 @@ newTmpl.helpers({
             }
         }
         return date;
+    },
+    enableReceiveType(){
+        if (Session.get('getVendorId')) {
+            return false
+        }
+        return true;
     }
 });
 
@@ -300,6 +305,7 @@ newTmpl.onDestroyed(function () {
     FlowRouter.query.unset();
     Session.set('prepaidOrderItems', undefined);
     Session.set('totalOrder', undefined);
+    Session.set('getVendorId', undefined);
 });
 // Edit
 editTmpl.onCreated(function () {
@@ -492,9 +498,9 @@ showTmpl.helpers({
         return `<label class="label label-success">G</label>`
     },
     colorizeStatus(status){
-        if(status == 'active') {
+        if (status == 'active') {
             return `<label class="label label-info">A</label>`
-        }else if(status == 'partial') {
+        } else if (status == 'partial') {
             return `<label class="label label-danger">P</label>`
         }
         return `<label class="label label-success">C</label>`
@@ -594,8 +600,8 @@ listPrepaidOrder.helpers({
     prepaidOrders(){
         let item = [];
         let prepaidOrders = PrepaidOrders.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
-        if (PrepaidOrderDeletedItem.find().count() > 0) {
-            PrepaidOrderDeletedItem.find().forEach(function (item) {
+        if (ReceiveTypeDeletedItem.find().count() > 0) {
+            ReceiveTypeDeletedItem.find().forEach(function (item) {
                 console.log(item);
                 prepaidOrders.forEach(function (prepaidOrder) {
                     prepaidOrder.items.forEach(function (prepaidOrderItem) {
@@ -739,4 +745,30 @@ function excuteEditForm(doc) {
         text: "Getting Invoices....", showConfirmButton: false
     });
     alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editTmpl, doc)).maximize();
+}
+
+
+
+function receiveTypeFn({receiveType, vendor}) {
+    let label = '';
+    if (receiveType == 'PrepaidOrder') {
+        label = 'Prepaid Order';
+        FlowRouter.query.set({vendorId: vendor, type: 'activePrepaidOrder'});
+        alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
+    }
+    else if (receiveType == 'LendingStock') {
+        label = 'Lending Stock';
+        FlowRouter.query.set({vendorId: vendor, type: 'activeLendingStocks'});
+        alertify.listLendingStock(fa('', 'Lending Stock'), renderTemplate(listLendingStock));
+    }
+    else if (receiveType == 'RingPull') {
+        label = "Ring Pull";
+        FlowRouter.query.set({vendorId: vendor, type: 'activeCompanyExchangeRingPulls'});
+        alertify.listCompanyExchangeRingPull(fa('', 'Exchange Ring Pull'), renderTemplate(listCompanyExchangeRingPull));
+
+    } else if (receiveType == 'Gratis') {
+        label = "Gratis";
+    }
+    $('.receive-type-label').text(label);
+
 }

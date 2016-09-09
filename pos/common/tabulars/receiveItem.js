@@ -14,7 +14,7 @@ import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 import {ReceiveItems} from '../../imports/api/collections/receiveItem.js';
 import {vendorBillCollection} from '../../imports/api/collections/tmpCollection';
 // Page
-Meteor.isClient && require('../../imports/ui/pages/receiveItem.html');
+Meteor.isClient && require('../../imports/ui/pages/receiveItem/receiveItem.html');
 
 tabularOpts.name = 'pos.receiveItem';
 tabularOpts.collection = ReceiveItems;

@@ -30,22 +30,27 @@
                     <label for="vendorId">Vendor:<span style="color: red;">*</span> </label>
                     {{> afQuickField name="vendorId" label=false}}
                 </div>
-                <div class="col-md-2">
-                    <label for="receive-type">Receive From:<span style="color: red;">*</span> </label>
-                    <select class="form-control" id="receive-type">
-                        <option value="PrepaidOrder">Prepaid Order</option>
-                        <option value="StockBorrowing">Stock Borrowing</option>
-                        <option value="RingPull">Ring Pull</option>
-                        <option value="Gratis">Gratis</option>
-                    </select>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label for="receive-type">Receive From:<span style="color: red;">*</span> </label>
+                        <select class="form-control" id="receive-type" disabled="{{enableReceiveType}}">
+                            <option value="">(Select One)</option>
+                            <option value="PrepaidOrder">Prepaid Order</option>
+                            <option value="LendingStock">Lending Stock</option>
+                            <option value="RingPull">Ring Pull</option>
+                            <option value="Gratis">Gratis</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <br>
+                        <a href="" class="hidden toggle-list btn btn-default">
+                            <label class="receive-type-label"></label> <i class="fa fa-list " aria-hidden="true"></i>
+                        </a>
+                    </div>
+
                 </div>
-                <div class="col-md-2">
-                    <span>
-                        <input type="checkbox" class="filled-in enable-prepaid-order">
-                       <a href="" class="prepaid-order btn btn-default">
-                           Prepaid Order <i class="fa fa-list " aria-hidden="true"></i>
-                       </a>
-                    </span>
+                <!-- <div class="col-md-2">
+
                 </div>
                 <div class="col-md-5">
                     <p class="pull-right ">
@@ -58,7 +63,7 @@
                         </a>
                     {{/if}}
                     </p>
-                </div>
+                </div>-->
             </div>
             <hr>
 
@@ -276,7 +281,7 @@
     </div>
 </template>
 
-<!--
+
 <template name="listPrepaidOrder">
     <table class="table table-stripe table-responsive">
         <thead>
@@ -291,7 +296,7 @@
         </thead>
         <tbody>
         {{#if hasPrepaidOrders}}
-    {{#each prepaidOrder in prepaidOrders}}
+            {{#each prepaidOrder in prepaidOrders}}
                 <tr class="prepaid-order-doc">
                     <td><a href="">{{prepaidOrder._id}}</a></td>
                     <td>{{moFormat prepaidOrder.orderDate 'YYYY-MM-DD HH:mm'}}</td>
@@ -319,12 +324,13 @@
                         <td><a href="" class="add-item"><i class="fa fa-plus-circle"></i>Add</a></td>
                     </tr>
                 {{/each}}
-    {{/each}}
-{{else}}
+            {{/each}}
+        {{else}}
             <h4>
                 <bold>No prepaid orders available..</bold>
             </h4>
         {{/if}}
         </tbody>
     </table>
-</template>-->
+</template>
+
