@@ -14,7 +14,6 @@
             <div class="col-md-2" align="center">PRICE</div>
             <div class="col-md-2" align="center">AMOUNT</div>
         </div>
-        <hr>
         {{#if notActivatedSaleOrder}}
             {{#autoForm schema=schema id="Pos_invoiceItems"}}
                 <div class="row">
@@ -22,7 +21,11 @@
                         {{> afQuickField name="itemId" label=false}}
                     </div>
                     <div class="col-sm-2">
-                        {{> afQuickField name="qty" label=false}}
+                        <div class="input-group" style="z-index: 99">
+                            {{> afFieldInput name="qty" label=false }}
+                            <br>
+                            {{>unitConvert}}
+                        </div>
                     </div>
                     <div class="col-sm-2">
                         {{> afQuickField name="price" label=false}}

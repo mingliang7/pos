@@ -27,8 +27,12 @@
         {{#autoForm collection=collection id="Pos_enterBillNew" type="insert"}}
             <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
                 <div class="col-md-3">
-                    <label for="email">Vendor:<span style="color: red;">*</span> </label>
-                    {{> afQuickField name="vendorId" label=false}}
+                    <div class="input-group">
+                        <label for="email" class="input-group">Vendor:<span style="color: red;">*</span></label>
+                        {{> afFieldInput name="vendorId" label=false}}
+                        <br>
+                        {{>vendorNewDropDown}}
+                    </div>
                 </div>
                 <div class="col-md-3">
                     <br>
@@ -224,7 +228,8 @@
                             <strong>Vendor: </strong> {{customer}}<br>
                             <span><strong>Bill Date: </strong>{{moFormat enterBillDate 'YYYY-MM-DD HH:mm:ss'}}</span>,
                             <span><strong>Due Date: </strong>{{moFormat dueDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>
-                            <span><strong>Status: </strong>{{{colorizeStatus status}}}, <strong>Type: {{{colorizeType invoiceType}}}</strong></span><br>
+                            <span><strong>Status: </strong>{{{colorizeStatus status}}}
+                                , <strong>Type: {{{colorizeType invoiceType}}}</strong></span><br>
                         </div>
                     </div>
                 </div>

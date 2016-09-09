@@ -187,7 +187,7 @@ newTmpl.events({
         alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
     },
     'change [name="termId"]'(event, instance){
-        let customerInfo = Session.get('customerInfo');
+        let {customerInfo} = Session.get('customerInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
             customerInfo._term.netDueIn = result.netDueIn;
             Session.set('customerInfo', customerInfo);
@@ -196,9 +196,10 @@ newTmpl.events({
 });
 newTmpl.helpers({
     repId(){
-        if (Session.get('customerInfo')) {
+        let {customerInfo} = Session.get('customerInfo');
+        if (customerInfo) {
             try {
-                return Session.get('customerInfo').repId;
+                return customerInfo.repId;
             } catch (e) {
 
             }
@@ -206,9 +207,10 @@ newTmpl.helpers({
         return '';
     },
     termId(){
-        if (Session.get('customerInfo')) {
+        let {customerInfo} = Session.get('customerInfo');
+        if (customerInfo) {
             try {
-                return Session.get('customerInfo').termId;
+                return customerInfo.termId;
             } catch (e) {
 
             }
@@ -258,11 +260,7 @@ newTmpl.helpers({
               <li><i class="fa fa-home"></i> Address: <b>${customerInfo.address ? customerInfo.address : 'None'}</b>`
         };
     },
-    repId(){
-        if (Session.get('customerInfo')) {
-            return Session.get('customerInfo').repId;
-        }
-    },
+
     collection(){
         return Invoices;
     },
@@ -279,9 +277,10 @@ newTmpl.helpers({
     },
     dueDate(){
         let date = AutoForm.getFieldValue('invoiceDate');
-        if (Session.get('customerInfo')) {
-            if (Session.get('customerInfo')._term) {
-                let term = Session.get('customerInfo')._term;
+        let {customerInfo} = Session.get('customerInfo');
+        if (customerInfo) {
+            if (customerInfo._term) {
+                let term = customerInfo._term;
 
                 let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
                 return dueDate;
@@ -290,8 +289,8 @@ newTmpl.helpers({
         return date;
     },
     isTerm(){
-        if (Session.get('customerInfo')) {
-            let customerInfo = Session.get('customerInfo');
+        let {customerInfo} = Session.get('customerInfo');
+        if (customerInfo) {
             if (customerInfo._term) {
                 return true;
             }
@@ -347,7 +346,7 @@ editTmpl.events({
         alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
     },
     'change [name="termId"]'(event, instance){
-        let customerInfo = Session.get('customerInfo');
+        let {customerInfo} = Session.get('customerInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
             try {
                 customerInfo._term.netDueIn = result.netDueIn;
@@ -393,9 +392,10 @@ editTmpl.helpers({
         return {};
     },
     repId(){
-        if (Session.get('customerInfo')) {
+        let {customerInfo} = Session.get('customerInfo');
+        if (customerInfo) {
             try {
-                return Session.get('customerInfo').repId;
+                return customerInfo.repId;
             } catch (e) {
 
             }
@@ -403,9 +403,10 @@ editTmpl.helpers({
         return '';
     },
     termId(){
-        if (Session.get('customerInfo')) {
+        let {customerInfo} = Session.get('customerInfo');
+        if (customerInfo) {
             try {
-                return Session.get('customerInfo').termId;
+                return customerInfo.termId;
             } catch (e) {
 
             }
@@ -440,7 +441,7 @@ editTmpl.helpers({
         return {total};
     },
     customerInfo() {
-        let customerInfo = Session.get('customerInfo');
+        let {customerInfo} = Session.get('customerInfo');
         if (!customerInfo) {
             return {empty: true, message: 'No data available'}
         }
@@ -453,8 +454,9 @@ editTmpl.helpers({
         };
     },
     repId(){
-        if (Session.get('customerInfo')) {
-            return Session.get('customerInfo').repId;
+        let {customerInfo} = Session.get('customerInfo');
+        if (customerInfo) {
+            return customerInfo.repId;
         }
     },
     collection(){
@@ -465,9 +467,10 @@ editTmpl.helpers({
     },
     dueDate(){
         let date = AutoForm.getFieldValue('invoiceDate');
-        if (Session.get('customerInfo')) {
-            if (Session.get('customerInfo')._term) {
-                let term = Session.get('customerInfo')._term;
+        let {customerInfo} = Session.get('customerInfo');
+        if (customerInfo) {
+            if (customerInfo._term) {
+                let term = customerInfo._term;
 
                 let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
                 return dueDate;
@@ -476,8 +479,8 @@ editTmpl.helpers({
         return date;
     },
     isTerm(){
-        if (Session.get('customerInfo')) {
-            let customerInfo = Session.get('customerInfo');
+        let {customerInfo} = Session.get('customerInfo');
+        if (customerInfo) {
             if (customerInfo._term) {
                 return true;
             }
@@ -732,6 +735,7 @@ let hooksObject = {
         // Remove items collection
         itemsCollection.remove({});
         deletedItem.remove({});
+        Session.set('customerInfo', undefined);
         // }
         displaySuccess();
     },

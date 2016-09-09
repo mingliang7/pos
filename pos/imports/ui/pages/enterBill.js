@@ -36,6 +36,7 @@ import {EnterBillTabular} from '../../../common/tabulars/enterBill.js';
 import './enterBill.html';
 import './enterBill-items.js';
 import './info-tab.html';
+import './vendor.html'
 //methods
 import {EnterBillInfo} from '../../../common/methods/enterBill.js'
 import {vendorInfo} from '../../../common/methods/vendor.js';

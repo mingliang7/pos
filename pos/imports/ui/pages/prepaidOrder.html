@@ -30,7 +30,13 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">Order</div>
                         <div class="panel-body">
-                            {{> afQuickField name="vendorId"}}
+                            <div class="input-group">
+                                <label for="email" class="input-group">Vendor:<span
+                                        style="color: red;">*</span></label>
+                                {{> afFieldInput name="vendorId" }}
+                                <br>
+                                {{>vendorNewDropDown}}
+                            </div>
                             {{> afQuickField name="prepaidOrderDate"}}
                             {{> afQuickField name="des"}}
 
@@ -60,9 +66,9 @@
                 </div>
             </div>
             <!--<div class="row">-->
-                <!--<div class="col-md-5">-->
-                    <!--{{>infoTab data=vendorInfo info="Vendor"}}-->
-                <!--</div>-->
+            <!--<div class="col-md-5">-->
+            <!--{{>infoTab data=vendorInfo info="Vendor"}}-->
+            <!--</div>-->
             <!--</div>-->
         {{/autoForm}}
     </div>

@@ -35,6 +35,7 @@ import './vendor.html';
 let indexTmpl = Template.Pos_vendor,
     actionTmpl = Template.Pos_vendorAction,
     newTmpl = Template.Pos_vendorNew,
+    newTmplDropDown = Template.Pos_vendorNewDropDownForm,
     editTmpl = Template.Pos_vendorEdit,
     showTmpl = Template.Pos_vendorShow,
     buttonActiomTmpl = Template.Pos_vendorButtonAction;
@@ -150,6 +151,26 @@ newTmpl.helpers({
     }
 });
 newTmpl.events({
+    'change [name="paymentType"]'(event, instance){
+        instance.paymentType.set($(event.currentTarget).val());
+    }
+});
+newTmplDropDown.onCreated(function () {
+    this.paymentType = new ReactiveVar();
+});
+
+newTmplDropDown.helpers({
+    collection(){
+        return Vendors;
+    },
+    isTerm(){
+        return Template.instance().paymentType.get() == "Term";
+    },
+    isGroup(){
+        return Template.instance().paymentType.get() == "Group";
+    }
+});
+newTmplDropDown.events({
     'change [name="paymentType"]'(event, instance){
         instance.paymentType.set($(event.currentTarget).val());
     }

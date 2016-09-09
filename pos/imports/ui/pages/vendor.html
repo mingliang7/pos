@@ -117,3 +117,34 @@
     <a class="btn btn-success go-to-pay-bill"><i class="fa fa-check"></i> Pay Bills</a>
   </span>
 </template>
+<template name="Pos_vendorNewDropDownForm">
+    <h4 class="text-blue"><i class="fa fa-user"></i> Add New Vendor</h4>
+    <hr>
+    {{#autoForm collection=collection id="Pos_vendorNew" type="insert"}}
+        {{> afQuickField name='name' label="Vendor"}}<br><br>
+        {{> afQuickField name='repId' label="Rep"}}
+        {{> afQuickField name='gender'}}
+        {{> afQuickField name='paymentType'}}
+        {{#if isTerm}}
+            {{> afQuickField name='termId'}}
+        {{/if}}
+        {{#if isGroup}}
+            {{> afQuickField name='paymentGroupId'}}
+        {{/if}}
+        {{> afQuickField type="hidden" name='branchId' value=currentBranch}}
+        {{> formFooterWithButton}}
+    {{/autoForm}}
+</template>
+<template name="vendorNewDropDown">
+    <div class="input-group-btn" style="z-index: 999">
+        <div class="btn-group" role="group">
+            <div class="dropdown dropdown-lg">
+                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                   aria-expanded="false"><span class="text-blue">+</span></a>
+                <div class="dropdown-menu dropdown-menu-left dropdown-form-shadow" role="menu">
+                    {{>Pos_vendorNewDropDownForm}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

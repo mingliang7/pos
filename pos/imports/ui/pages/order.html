@@ -30,7 +30,15 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">Order</div>
                         <div class="panel-body">
-                            {{> afQuickField name="customerId"}}
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <label for="email" class="input-group">Customer:<span
+                                            style="color: red;">*</span></label>
+                                    {{> afFieldInput name="customerId" }}
+                                    <br>
+                                    {{>customerDropDown}}
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-12">
                                     {{#with customerInfo}}
@@ -40,10 +48,15 @@
                                     {{/with}}
                                 </div>
                             </div>
-                            {{> afQuickField name="orderDate"}}
-                            {{> afQuickField name="des"}}
-
-                            {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                            <div class="col-md-12">
+                                {{> afQuickField name="orderDate"}}
+                            </div>
+                            <div class="col-md-12">
+                                {{> afQuickField name="des"}}
+                            </div>
+                            <div class="col-md-12">
+                                {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -69,9 +82,9 @@
                 </div>
             </div>
             <!--<div class="row">-->
-                <!--<div class="col-md-5">-->
-                    <!--{{>infoTab data=customerInfo info="Customer"}}-->
-                <!--</div>-->
+            <!--<div class="col-md-5">-->
+            <!--{{>infoTab data=customerInfo info="Customer"}}-->
+            <!--</div>-->
             <!--</div>-->
         {{/autoForm}}
     </div>

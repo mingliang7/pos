@@ -14,14 +14,17 @@
             <div class="col-md-2" align="center">PRICE</div>
             <div class="col-md-2" align="center">AMOUNT</div>
         </div>
-        <hr>
         {{#autoForm schema=schema id="Pos_orderItems"}}
             <div class="row">
                 <div class="col-sm-4">
                     {{> afQuickField name="itemId" label=false}}
                 </div>
                 <div class="col-sm-2">
-                    {{> afQuickField name="qty" label=false}}
+                    <div class="input-group">
+                        {{> afFieldInput name="qty" label=false }}
+                        <br>
+                        {{>unitConvert}}
+                    </div>
                 </div>
                 <div class="col-sm-2">
                     {{> afQuickField name="price" label=false}}
@@ -73,4 +76,34 @@
 
         {{> formFooterWithButton}}
     {{/autoForm}}
+</template>
+<template name="unitConvert">
+    <div class="input-group-btn">
+        <div class="btn-group" role="group">
+            <div class="dropdown dropdown-lg">
+                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                   aria-expanded="false"><span class="text-blue"><i class="fa fa-exchange"></i></span></a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-form-shadow" role="menu">
+                    <h4 class="text-blue"><i class="fa fa-exchange"></i> Unit Convert</h4>
+                    <hr>
+                    <form role="form" action="javascript:;" method="post" id="login-form" autocomplete="off">
+                        <div class="form-group">
+                            <label for="email" class="sr-only">Email</label>
+                            <input type="email" name="email" id="email" class="form-control" placeholder="somebody@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="key" class="sr-only">Password</label>
+                            <input type="password" name="key" id="key" class="form-control" placeholder="Password">
+                        </div>
+                        <div class="checkbox">
+                            <span class="character-checkbox" onclick="showPassword()"></span>
+                            <span class="label">Show password</span>
+                        </div>
+                        <input type="submit" id="btn-login" class="btn btn-custom btn-lg btn-block" value="Log in">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </template>
