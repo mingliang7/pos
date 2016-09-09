@@ -484,7 +484,7 @@ PosRoutes.route('/ring-pull-transfer', {
     }
 });
 
-import '../imports/ui/pages/receiveItem.js';
+import '../imports/ui/pages/receiveItem/receiveItem';
 PosRoutes.route('/receive-item', {
     name: 'pos.receiveItem',
     title: 'Receive Item',

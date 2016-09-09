@@ -383,50 +383,29 @@ let hooksObject = {
     before: {
         insert: function (doc) {
             let items = [];
+            let sumRemainQty = 0;
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
-                if(obj.prepaidOrderId) {
-                    doc.prepaidOrderId = obj.prepaidOrderId;
-                }
+                obj.remainQty = obj.qty;
+                sumRemainQty += obj.qty;
                 items.push(obj);
             });
-            var btnType = Session.get('btnType');
-            if (btnType == "save" || btnType == "save-print") {
-                doc.status = "partial";
-                doc.paidAmount = 0;
-                doc.dueAmount = math.round(doc.total, 2);
-            } else if (btnType == "pay") {
-                doc.dueAmount = math.round((doc.total - doc.paidAmount), 2);
-                if (doc.dueAmount <= 0) {
-                    doc.status = "close";
-                } else {
-                    doc.status = "partial";
-                }
-
-            }
+            doc.sumRemainQty = sumRemainQty;
             doc.items = items;
+            doc.status = 'active';
             return doc;
         },
         update: function (doc) {
             let items = [];
+            let sumRemainQty = 0;
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
+                obj.remainQty = obj.qty;
+                sumRemainQty += obj.qty;
                 items.push(obj);
             });
+            doc.$set.sumRemainQty = sumRemainQty;
             doc.$set.items = items;
-            var btnType = Session.get('btnType');
-            if (btnType == "save" || btnType == "save-print") {
-                doc.$set.status = "partial";
-                doc.$set.paidAmount = 0;
-                doc.$set.dueAmount = math.round(doc.$set.total, 2);
-            } else if (btnType == "pay") {
-                doc.$set.dueAmount = math.round((doc.$set.total - doc.$set.paidAmount), 2);
-                if (doc.$set.dueAmount <= 0) {
-                    doc.$set.status = "close";
-                } else {
-                    doc.$set.status = "partial";
-                }
-            }
             delete doc.$unset;
             return doc;
         }

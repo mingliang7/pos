@@ -18,7 +18,7 @@ ExchangeRingPulls.itemsSchema = new SimpleSchema({
         type: Number,
         min: 1
     },
-    /*price: {
+    price: {
         type: Number,
         decimal: true,
         autoform: {
@@ -37,7 +37,7 @@ ExchangeRingPulls.itemsSchema = new SimpleSchema({
                 return inputmaskOptions.currency();
             }
         }
-    }*/
+    }
 });
 
 // ExchangeRingPulls schema
@@ -80,7 +80,7 @@ ExchangeRingPulls.schema = new SimpleSchema({
     staffId: {
         type: String,
         autoValue(){
-            if(this.isInsert) {
+            if (this.isInsert) {
                 return Meteor.user()._id;
             }
         }
@@ -109,15 +109,15 @@ ExchangeRingPulls.schema = new SimpleSchema({
         type: [ExchangeRingPulls.itemsSchema]
     },
     /*total: {
-        type: Number,
-        decimal: true,
-        autoform: {
-            type: 'inputmask',
-            inputmaskOptions: function () {
-                return inputmaskOptions.currency();
-            }
-        }
-    },*/
+     type: Number,
+     decimal: true,
+     autoform: {
+     type: 'inputmask',
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     },*/
     branchId: {
         type: String
     },

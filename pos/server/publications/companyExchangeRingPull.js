@@ -21,5 +21,18 @@ Meteor.publish('pos.companyExchangeRingPull', function posExchangeRingPull(selec
     return this.ready();
 });
 
+Meteor.publish('pos.activeCompanyExchangeRingPulls', function activeCompanyExchangeRingPulls(selector) {
+    this.unblock();
+    new SimpleSchema({
+        selector: {type: Object, blackbox: true}
+    }).validate({selector});
+    if (this.userId) {
+        Meteor._sleepForMs(200);
+        let data = CompanyExchangeRingPulls.find(selector);
+        console.log(data.fetch());
+        return data;
+    }
+    return this.ready();
+});
 // Reactive Table
 // ReactiveTable.publish("pos.reactiveTable.companyExchangeRingPull", ExchangeRingPulls);

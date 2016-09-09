@@ -55,7 +55,7 @@ let indexTmpl = Template.Pos_exchangeRingPull,
     actionTmpl = Template.Pos_exchangeRingPullAction,
     newTmpl = Template.Pos_exchangeRingPullNew,
     editTmpl = Template.Pos_exchangeRingPullEdit,
-    showTmpl = Template.Pos_exchangeRingPullShow
+    showTmpl = Template.Pos_exchangeRingPullShow;
 // Local collection
 let itemsCollection = nullCollection;
 
@@ -388,9 +388,6 @@ let hooksObject = {
 
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
-                if (obj.saleId) {
-                    doc.saleId = obj.saleId;
-                }
                 items.push(obj);
             });
             doc.items = items;

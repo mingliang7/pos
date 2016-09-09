@@ -38,6 +38,10 @@ LendingStocks.itemsSchema = new SimpleSchema({
                 return inputmaskOptions.currency();
             }
         }
+    },
+    remainQty: {
+        type: Number,
+        decimal: true
     }
 });
 
@@ -155,6 +159,10 @@ LendingStocks.schema = new SimpleSchema({
     branchId: {
         type: String
     },
+    sumRemainQty: {
+        type: Number,
+        decimal: true
+    }
 });
 
 Meteor.startup(function () {

@@ -13,21 +13,21 @@ import {ReactiveTable} from 'meteor/aslagle:reactive-table';
 import 'meteor/theara:template-states';
 
 // Lib
-import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
-import {renderTemplate} from '../../../../core/client/libs/render-template.js';
-import {destroyAction} from '../../../../core/client/libs/destroy-action.js';
-import {displaySuccess, displayError} from '../../../../core/client/libs/display-alert.js';
-import {reactiveTableSettings} from '../../../../core/client/libs/reactive-table-settings.js';
-import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
+import {createNewAlertify} from '../../../../../core/client/libs/create-new-alertify.js';
+import {renderTemplate} from '../../../../../core/client/libs/render-template.js';
+import {destroyAction} from '../../../../../core/client/libs/destroy-action.js';
+import {displaySuccess, displayError} from '../../../../../core/client/libs/display-alert.js';
+import {reactiveTableSettings} from '../../../../../core/client/libs/reactive-table-settings.js';
+import {__} from '../../../../../core/common/libs/tapi18n-callback-helper.js';
 
 // Component
-import '../../../../core/client/components/loading.js';
-import '../../../../core/client/components/column-action.js';
-import '../../../../core/client/components/form-footer.js';
+import '../../../../../core/client/components/loading.js';
+import '../../../../../core/client/components/column-action.js';
+import '../../../../../core/client/components/form-footer.js';
 
 // Collection
-import {ItemsSchema} from '../../api/collections/order-items.js';
-import {ReceiveItems} from '../../api/collections/receiveItem.js';
+import {ItemsSchema} from '../../../api/collections/order-items.js';
+import {ReceiveItems} from '../../../api/collections/receiveItem.js';
 
 // Declare template
 var itemsTmpl = Template.Pos_receiveItemItems,
@@ -37,26 +37,9 @@ var itemsTmpl = Template.Pos_receiveItemItems,
 
 // Local collection
 var itemsCollection;
-export const PrepaidOrderDeletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
-Tracker.autorun(function () {
-    if (FlowRouter.query.get('vendorId')) {
-        let sub = Meteor.subscribe('pos.activePrepaidOrder', {
-            vendorId: FlowRouter.query.get('vendorId'),
-            status: 'active'
-        });
-        if (!sub.ready()) {
-            swal({
-                title: "Pleas Wait",
-                text: "Getting Order....", showConfirmButton: false
-            });
-        } else {
-            setTimeout(function () {
-                swal.close();
-            }, 500);
-        }
+export const LendingStockDeletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
+export const ReceiveTypeDeletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
 
-    }
-});
 // Page
 import './receiveItem-items.html';
 
@@ -220,6 +203,7 @@ itemsTmpl.events({
                 }
             });
         } else {
+            debugger
             itemsCollection.insert({
                 itemId: itemId,
                 qty: qty,
@@ -256,8 +240,8 @@ itemsTmpl.events({
                     closeOnConfirm: false
                 },
                 function () {
-                    if (!PrepaidOrderDeletedItem.findOne({itemId: itemDoc.itemId})) {
-                        PrepaidOrderDeletedItem.insert(itemDoc);
+                    if (!ReceiveTypeDeletedItem.findOne({itemId: itemDoc.itemId})) {
+                        ReceiveTypeDeletedItem.insert(itemDoc);
                     }
                     itemsCollection.remove({itemId: itemDoc.itemId});
                     swal.close();

@@ -348,3 +348,36 @@ function recalculatePaymentAfterRemoved({doc}) {
         }
     }
 }
+
+/*receive item type
+
+ ----PrepaidOrder-----
+ insert: increase AverageInventory and reduce from PrepaidOrder(doc)
+ Note: (update the remain qty of prepaidOrder);
+ update: reduce AverageInventory and increase the PrepaidOrder back(previous doc);
+ increase AverageInventory and reduce from PrepaidOrder( doc)
+ remove: reduce AverageInventory and Increase the PrepaidOrder back(doc)
+
+ ----LendingStock-----
+ insert: increase AverageInventory and reduce from LendingStock(doc)
+ update: reduce AverageInventory and increase the LendingStock(previous doc)
+ increase AverageInventory and reduce from LendingStock(doc)
+ remove: reduce AverageInventory and increase the LendingStock(doc)
+
+ ----Ring Pull----
+ insert: increase AverageInventory and reduce from Ring Pull (doc)
+ update: reduce AverageInventory and increase the Ring Pull(previous doc)
+ increase AverageInventory and reduce from Ring Pull(doc)
+ remove: reduce AverageInventory and increase teh Ring Pull(doc)
+
+ ----Gratis----
+ insert: increase AverageInventory and reduce from Gratis (doc)
+ update: reduce AverageInventory and increase the Gratis(previous doc)
+ increase AverageInventory and reduce from Gratis(doc)
+ remove: reduce AverageInventory and increase the Gratis(doc)
+
+ */
+
+
+
+

@@ -18,26 +18,26 @@ RingPullTransfers.itemsSchema = new SimpleSchema({
         type: Number,
         min: 1
     },
-    /*price: {
-     type: Number,
-     decimal: true,
-     autoform: {
-     type: 'inputmask',
-     inputmaskOptions: function () {
-     return inputmaskOptions.currency();
-     }
-     }
-     },
-     amount: {
-     type: Number,
-     decimal: true,
-     autoform: {
-     type: 'inputmask',
-     inputmaskOptions: function () {
-     return inputmaskOptions.currency();
-     }
-     }
-     }*/
+    price: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
+    amount: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    }
 });
 
 // RingPullTransfers schema
@@ -125,7 +125,7 @@ RingPullTransfers.schema = new SimpleSchema({
     status: {
         type: String,
         autoValue(){
-            if(this.isInsert) {
+            if (this.isInsert) {
                 return 'active';
             }
         }
