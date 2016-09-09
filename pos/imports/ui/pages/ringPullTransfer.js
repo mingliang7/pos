@@ -380,9 +380,6 @@ let hooksObject = {
 
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
-                if (obj.saleId) {
-                    doc.saleId = obj.saleId;
-                }
                 items.push(obj);
             });
             doc.items = items;

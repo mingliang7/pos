@@ -22,8 +22,8 @@ CompanyExchangeRingPulls.itemsSchema = new SimpleSchema({
         type: Number,
         decimal: true
 
-    }
-    /*price: {
+    },
+    price: {
         type: Number,
         decimal: true,
         autoform: {
@@ -42,7 +42,7 @@ CompanyExchangeRingPulls.itemsSchema = new SimpleSchema({
                 return inputmaskOptions.currency();
             }
         }
-    }*/
+    }
 });
 
 // CompanyExchangeRingPulls schema
@@ -85,7 +85,7 @@ CompanyExchangeRingPulls.schema = new SimpleSchema({
     staffId: {
         type: String,
         autoValue(){
-            if(this.isInsert) {
+            if (this.isInsert) {
                 return Meteor.user()._id;
             }
         }
@@ -114,15 +114,15 @@ CompanyExchangeRingPulls.schema = new SimpleSchema({
         type: [CompanyExchangeRingPulls.itemsSchema]
     },
     /*total: {
-        type: Number,
-        decimal: true,
-        autoform: {
-            type: 'inputmask',
-            inputmaskOptions: function () {
-                return inputmaskOptions.currency();
-            }
-        }
-    },*/
+     type: Number,
+     decimal: true,
+     autoform: {
+     type: 'inputmask',
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     },*/
     branchId: {
         type: String
     },
@@ -154,7 +154,7 @@ CompanyExchangeRingPulls.schema = new SimpleSchema({
                 }
             }
         }
-    },
+    }
 });
 
 Meteor.startup(function () {

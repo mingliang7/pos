@@ -10,9 +10,9 @@
                     <option value="scheme">Scheme</option>
                 </select></div>-->
             <div class="col-md-4" align="left">PRODUCT</div>
-            <div class="col-md-4" align="center">QTY</div><!--
+            <div class="col-md-2" align="center">QTY</div>
             <div class="col-md-2" align="center">PRICE</div>
-            <div class="col-md-2" align="center">AMOUNT</div>-->
+            <div class="col-md-3" align="center">AMOUNT</div>
         </div>
         <hr>
         {{#if notActivatedSaleOrder}}
@@ -21,15 +21,15 @@
                     <div class="col-sm-4">
                         {{> afQuickField name="itemId" label=false}}
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-2">
                         {{> afQuickField name="qty" label=false}}
                     </div>
-                   <!-- <div class="col-sm-2">
+                   <div class="col-sm-2">
                         {{> afQuickField name="price" label=false}}
                     </div>
                     <div class="col-sm-3">
                         {{> afQuickField name="amount" value=amount label=false readonly=true}}
-                    </div>-->
+                    </div>
                     <div class="col-sm-1">
                         <button type="button" class="btn btn-default js-add-item" {{disabledAddItemBtn}}>+</button>
                     </div>
@@ -71,8 +71,8 @@
             <div class="col-md-12">
                 {{> afQuickField name="itemId" readonly="true"}}
                 {{> afQuickField name="qty"}}
-               <!-- {{> afQuickField name="price"}}
-                {{> afQuickField name="amount" value=amount readonly="true"}}-->
+                {{> afQuickField name="price"}}
+                {{> afQuickField name="amount" value=amount readonly="true"}}
             </div>
         </div>
 

@@ -31,8 +31,8 @@ import {ExchangeRingPulls} from '../../api/collections/exchangeRingPull.js';
 import {Order} from '../../api/collections/order';
 // Declare template
 var itemsTmpl = Template.Pos_exchangeRingPullItems,
-    actionItemsTmpl = Template.Pos_exchangeRingPullItemsAction;
-editItemsTmpl = Template.Pos_exchangeRingPullItemsEdit;
+    actionItemsTmpl = Template.Pos_exchangeRingPullItemsAction,
+    editItemsTmpl = Template.Pos_exchangeRingPullItemsEdit;
 
 //methods
 import {removeItemInSaleOrder} from '../../../common/methods/sale-order';
@@ -106,19 +106,19 @@ itemsTmpl.helpers({
             fn(value, obj, key){
                 return FlowRouter.query.get('customerId') ? value : Spacebars.SafeString(`<input type="text" value=${value} class="item-qty">`);
             }
-        }, /*{
-         key: 'price',
-         label: __(`${i18nPrefix}.price.label`),
-         fn(value, object, key) {
-         return numeral(value).format('0,0.00');
-         }
-         }, {
-         key: 'amount',
-         label: __(`${i18nPrefix}.amount.label`),
-         fn(value, object, key) {
-         return numeral(value).format('0,0.00');
-         }
-         },*/ {
+        }, {
+            key: 'price',
+            label: __(`${i18nPrefix}.price.label`),
+            fn(value, object, key) {
+                return numeral(value).format('0,0.00');
+            }
+        }, {
+            key: 'amount',
+            label: __(`${i18nPrefix}.amount.label`),
+            fn(value, object, key) {
+                return numeral(value).format('0,0.00');
+            }
+        }, {
             key: '_id',
             label() {
                 return fa('bars', '', true);
@@ -178,10 +178,11 @@ itemsTmpl.events({
 
     },
     'change [name="itemId"]': function (event, instance) {
+        debugger;
         instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
         instance.$('[name="qty"]').val('');
-        // instance.$('[name="price"]').val('');
-        // instance.$('[name="amount"]').val('');
+        //instance.$('[name="price"]').val('');
+        instance.$('[name="amount"]').val('');
     },
     /*'keyup [name="qty"],[name="price"]': function (event, instance) {
      let qty = instance.$('[name="qty"]').val();
@@ -196,25 +197,32 @@ itemsTmpl.events({
         let itemId = instance.$('[name="itemId"]').val();
         let qty = instance.$('[name="qty"]').val();
         qty = qty == '' ? 1 : parseInt(qty);
+        let price = 0;
+        let amount = 0;
         //let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         //let amount = math.round(qty * price, 2);
         // Check exist
         Meteor.call('addScheme', {itemId}, function (err, result) {
             if (!_.isEmpty(result[0])) {
                 result.forEach(function (item) {
-                    // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
-                    // if(schemeItem) {
-                    //     let amount = item.price * item.quantity;
-                    //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
-                    // }else{
-                    itemsCollection.insert({
-                        itemId: item.itemId,
-                        qty: item.quantity * qty,
-                        // price: item.price,
-                        // amount: (item.price * item.quantity) * qty,
-                        name: item.itemName
-                    });
-                    // }
+                    let schemeItem = itemsCollection.findOne({itemId: item.itemId});
+                    if (schemeItem) {
+                        let amount = item.price * item.quantity;
+                        itemsCollection.update({itemId: schemeItem.itemId}, {
+                            $inc: {
+                                qty: item.quantity,
+                                amount: amount
+                            }
+                        });
+                    } else {
+                        itemsCollection.insert({
+                            itemId: item.itemId,
+                            qty: item.quantity * qty,
+                            price: item.price,
+                            amount: (item.price * item.quantity) * qty,
+                            name: item.itemName
+                        });
+                    }
                 });
             } else {
                 let exist = itemsCollection.findOne({
@@ -222,23 +230,23 @@ itemsTmpl.events({
                 });
                 if (exist) {
                     qty += parseInt(exist.qty);
-                    //amount = math.round(qty * price, 2);
+                    amount = math.round(qty * price, 2);
 
                     itemsCollection.update({
                         _id: exist._id
                     }, {
                         $set: {
                             qty: qty,
-                            //price: price,
-                            //amount: amount
+                            price: price,
+                            amount: amount
                         }
                     });
                 } else {
                     itemsCollection.insert({
                         itemId: itemId,
                         qty: qty,
-                        // price: price,
-                        // amount: amount,
+                        price: price,
+                        amount: amount,
                         name: instance.name
                     });
                 }

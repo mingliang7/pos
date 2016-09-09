@@ -386,8 +386,8 @@ let hooksObject = {
             let sumRemainQty = 0;
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
-                obj.remainQty = obj.qty
-                sumRemainQty += obj.qty
+                obj.remainQty = obj.qty;
+                sumRemainQty += obj.qty;
                 items.push(obj);
             });
             doc.sumRemainQty = sumRemainQty;
@@ -400,8 +400,8 @@ let hooksObject = {
             let sumRemainQty = 0;
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
-                obj.remainQty = obj.qty
-                doc.sumRemainQty += sumRemainQty;
+                obj.remainQty = obj.qty;
+                sumRemainQty += obj.qty;
                 items.push(obj);
             });
             doc.$set.sumRemainQty = sumRemainQty;
