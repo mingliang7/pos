@@ -62,28 +62,6 @@ let accountMapping =new SimpleSchema({
                 return SelectOpts.chartAccountLiability();
             }
         }
-    },
-    purchaseDiscount: {
-        type: String,
-        optional: true,
-        autoform: {
-            type: "select2",
-            placeholder: "Chart Of Account",
-            options: function () {
-                return SelectOpts.chartAccountExpense();
-            }
-        }
-    },
-    saleDiscount: {
-        type: String,
-        optional: true,
-        autoform: {
-            type: "select2",
-            placeholder: "Chart Of Account",
-            options: function () {
-                return SelectOpts.chartAccountIncome();
-            }
-        }
     }
 });
 Item.schema = new SimpleSchema({
