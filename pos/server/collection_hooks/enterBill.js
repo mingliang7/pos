@@ -60,6 +60,33 @@ EnterBills.after.insert(function (userId, doc) {
                 doc.items.forEach(function (item) {
                     averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
                 });
+
+                //Integration to Account System
+                if (true) {
+                    let transaction = [];
+                    let data=doc;
+                    data.type="EnterBill";
+                    data.items.forEach(function (item) {
+                        let itemDoc = Item.findOne(item.itemId);
+                        transaction.push({
+                            account: itemDoc.accountMapping.inventoryAsset,
+                            dr: item.amount,
+                            cr: 0,
+                            drcr: item.amount,
+
+                        }, {
+                            account: itemDoc.accountMapping.accountPayable,
+                            dr: 0,
+                            cr: item.amount,
+                            drcr: -item.amount,
+                        })
+                    });
+                    data.transaction=transaction;
+                    Meteor.call('insertAccountJournal',data);
+
+                }
+
+
             }
         }
     });
@@ -144,10 +171,10 @@ EnterBills.after.remove(function (userId, doc) {
             let groupBill = GroupBill.findOne(doc.paymentGroupId);
             if (groupBill.invoices.length <= 0) {
                 GroupBill.direct.remove(doc.paymentGroupId);
-            }else{
+            } else {
                 recalculatePaymentAfterRemoved({doc});
             }
-        }else if (type.term) {
+        } else if (type.term) {
             reduceFromInventory(doc);
             Meteor.call('insertRemovedBill', doc);
         }
@@ -221,7 +248,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         nextInventory.stockLocationId = stockLocationId;
         nextInventory.itemId = item.itemId;
         nextInventory.qty = item.qty;
-        nextInventory.price = math.round(price,2);
+        nextInventory.price = math.round(price, 2);
         nextInventory.remainQty = totalQty;
         nextInventory.type = type;
         nextInventory.coefficient = 1;
@@ -315,7 +342,7 @@ function pushBillFromGroup(doc) {
     GroupBill.update({_id: doc.paymentGroupId}, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
 }
 //update payment
-function recalculatePayment({doc,preDoc}) {
+function recalculatePayment({doc, preDoc}) {
     let totalChanged = doc.total - preDoc.total;
     if (totalChanged != 0) {
         let billId = doc.paymentGroupId || doc._id;
