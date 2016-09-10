@@ -566,7 +566,7 @@ PosRoutes.route('/white-list-customer', {
 });
 
 import '../imports/ui/pages/exchangeGratis.js';
-PosRoutes.route('/prepaid-order', {
+PosRoutes.route('/exchange-gratis', {
     name: 'pos.exchangeGratis',
     title: __('pos.exchangeGratis.title'),
     action: function (params, queryParams) {

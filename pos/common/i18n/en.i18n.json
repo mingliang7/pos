@@ -695,6 +695,42 @@
           "label":"To User"
         }
       }
+    },
+    "exchangeGratis": {
+      "title": "Exchange Gratis",
+      "invoiceAction": "Exchange Gratis",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "orderDate": {
+          "label": "Date"
+        },
+        "vendorId": {
+          "label": "Vendor"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
     }
   }
 }
