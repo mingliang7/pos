@@ -5,9 +5,87 @@ import {Units} from './units.js';
 import {Meteor} from 'meteor/meteor';
 // Lib
 import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
-import {SelectOpts} from '../../ui/libs/select-opts.js';
+import {SelectOpts} from '../../../../acc/imports/ui/libs/select-opts';
 export const Item = new Mongo.Collection("pos_item");
-
+let accountMapping =new SimpleSchema({
+    inventoryAsset: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: "select2",
+            placeholder: "Chart Of Account",
+            options: function () {
+                return SelectOpts.chartAccountAsset();
+            }
+        }
+    },
+    incomeAccount: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: "select2",
+            placeholder: "Chart Of Account",
+            options: function () {
+                return SelectOpts.chartAccountIncome();
+            }
+        }
+    },
+    expenseAccount: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: "select2",
+            placeholder: "Chart Of Account",
+            options: function () {
+                return SelectOpts.chartAccountExpense();
+            }
+        }
+    },
+    accountReceivable: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: "select2",
+            placeholder: "Chart Of Account",
+            options: function () {
+                return SelectOpts.chartAccountAsset();
+            }
+        }
+    },
+    accountPayable:{
+        type: String,
+        optional: true,
+        autoform: {
+            type: "select2",
+            placeholder: "Chart Of Account",
+            options: function () {
+                return SelectOpts.chartAccountLiability();
+            }
+        }
+    },
+    purchaseDiscount: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: "select2",
+            placeholder: "Chart Of Account",
+            options: function () {
+                return SelectOpts.chartAccountExpense();
+            }
+        }
+    },
+    saleDiscount: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: "select2",
+            placeholder: "Chart Of Account",
+            options: function () {
+                return SelectOpts.chartAccountIncome();
+            }
+        }
+    }
+});
 Item.schema = new SimpleSchema({
     name: {
         type: String,
@@ -159,9 +237,8 @@ Item.schema = new SimpleSchema({
         type: String,
         optional: true
     },
-    accountId: {
-        type: String,
-        optional: true
+    accountMapping: {
+        type: accountMapping
     }
 });
 

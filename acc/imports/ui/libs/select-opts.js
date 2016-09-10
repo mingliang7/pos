@@ -10,6 +10,7 @@ import {ChartAccountNBC} from '../../api/collections/chartAccountNBC.js';
 import {ChartAccountNBCKH} from '../../api/collections/chartAccountNBCKH.js';
 import {Currency} from '../../api/collections/currency.js';
 import {ExchangeNBC} from '../../api/collections/exchangeNBC';
+import {PaymentReceiveMethod} from '../../api/collections/paymentReceiveMethod';
 
 import {Exchange} from '../../../../core/imports/api/collections/exchange.js';
 
@@ -158,9 +159,50 @@ export const SelectOpts = {
                 })
             });
         return list;
-    },chartAccount: function () {
+    },
+    chartAccount: function () {
         var list = [{label: "(Select One)", value: ""}];
         ChartAccount.find({}, {sort: {code: 1}})
+            .forEach(function (obj) {
+                list.push({
+                    label:  Spacebars.SafeString(SpaceChar.space(obj.level * 6) +obj.code).string+ " | " + obj.name,
+                    value: Spacebars.SafeString(SpaceChar.space(obj.level * 6) +obj.code).string+" | "+obj.name
+                })
+            });
+        return list;
+    },chartAccountAsset: function () {
+        var list = [{label: "(Select One)", value: ""}];
+        ChartAccount.find({accountTypeId: {$in: ['10','11','12']}}, {sort: {code: 1}})
+            .forEach(function (obj) {
+                list.push({
+                    label:  Spacebars.SafeString(SpaceChar.space(obj.level * 6) +obj.code).string+ " | " + obj.name,
+                    value: Spacebars.SafeString(SpaceChar.space(obj.level * 6) +obj.code).string+" | "+obj.name
+                })
+            });
+        return list;
+    },chartAccountIncome: function () {
+        var list = [{label: "(Select One)", value: ""}];
+        ChartAccount.find({accountTypeId: {$in: ['40','41']}}, {sort: {code: 1}})
+            .forEach(function (obj) {
+                list.push({
+                    label:  Spacebars.SafeString(SpaceChar.space(obj.level * 6) +obj.code).string+ " | " + obj.name,
+                    value: Spacebars.SafeString(SpaceChar.space(obj.level * 6) +obj.code).string+" | "+obj.name
+                })
+            });
+        return list;
+    },chartAccountExpense: function () {
+        var list = [{label: "(Select One)", value: ""}];
+        ChartAccount.find({accountTypeId: {$in: ['50','51']}}, {sort: {code: 1}})
+            .forEach(function (obj) {
+                list.push({
+                    label:  Spacebars.SafeString(SpaceChar.space(obj.level * 6) +obj.code).string+ " | " + obj.name,
+                    value: Spacebars.SafeString(SpaceChar.space(obj.level * 6) +obj.code).string+" | "+obj.name
+                })
+            });
+        return list;
+    },chartAccountLiability: function () {
+        var list = [{label: "(Select One)", value: ""}];
+        ChartAccount.find({accountTypeId: {$in: ['20','21']}}, {sort: {code: 1}})
             .forEach(function (obj) {
                 list.push({
                     label:  Spacebars.SafeString(SpaceChar.space(obj.level * 6) +obj.code).string+ " | " + obj.name,
@@ -195,7 +237,17 @@ export const SelectOpts = {
                 list.push({label: obj._id, value: obj._id});
             });
         return list;
-    }, branchForUser: function (selectOne, userId) {
+    },
+    paymentReceiveMethod: function () {
+        Meteor.subscribe('acc.paymentReceiveMethod');
+        let list=[];
+        list.push({label: "(Select One)", value: ""});
+        PaymentReceiveMethod.find().forEach(function (obj) {
+            list.push({label: obj.chartAccountCompare, value: Spacebars.SafeString(SpaceChar.space(obj.accountDoc.level * 6) +obj.accountDoc.code).string+" | "+obj.accountDoc.name})
+        })
+        return list;
+    }
+    , branchForUser: function (selectOne, userId) {
         Meteor.subscribe('core.branch');
 
         var list = [];

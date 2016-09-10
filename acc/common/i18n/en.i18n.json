@@ -25,7 +25,9 @@
       "trialBalanceReport": "Trial Balance",
       "currencyClosingReport": "Currency Closing",
       "chartNetIncome": "Net Income",
-      "chartProfitLostComparation": "Profit Lost Comparation"
+      "accountComparation": "Account Comparation",
+      "companySnapshot": "Company Snapshot",
+      "paymentReceiveMethod": "Payment/Receive Method"
     },
     "home": {
       "title": "Home",
@@ -179,8 +181,14 @@
     "chartNetIncome": {
       "title": "Net Income"
     },
-    "chartProfitLostComparation": {
-      "title": "Profit Lost Comparation"
+    "accountComparation": {
+      "title": "Account Comparation"
+    },
+    "companySnapshot": {
+      "title": "Company Snapshot"
+    },
+    "paymentReceiveMethod": {
+      "title": "Payment/Receive Method"
     }
   }
 }

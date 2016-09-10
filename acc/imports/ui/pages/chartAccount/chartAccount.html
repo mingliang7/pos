@@ -81,3 +81,20 @@
         </dl>
     </div>
 </template>
+
+
+<template name="acc_chartAccountInsertDropDown">
+    {{#autoForm collection=collection id="acc_chartAccountInsert" type="insert"}}
+        <h4 class="text-blue"><i class="fa fa-plus"></i> Add Chart Account</h4>
+        <hr>
+        <div class="col-md-12">
+            {{> afQuickField name='parentId' id='parentId'}}
+        </div>
+        <br><br>
+        {{> afQuickField name='accountTypeId' id='accountTypeId' options=accountTypeOpt value=accountTypeValue}}<br>
+        {{> afQuickField name='code' id='code'}}<br><br>
+        {{> afQuickField name='name'}}<br><br>
+        <button type="submit" class="btn btn-primary preventDef">{{fa "floppy-o"}} Save</button>
+        <button type="reset" class="btn btn-default">{{fa "refresh"}} Reset</button>
+    {{/autoForm}}
+</template>

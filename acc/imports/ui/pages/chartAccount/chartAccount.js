@@ -105,6 +105,12 @@ Template.acc_chartAccountInsert.helpers({
         return ChartAccount;
     }
 });
+//New Chart account dropdown
+Template.acc_chartAccountInsertDropDown.helpers({
+    collection(){
+        return ChartAccount;
+    }
+});
 // Update
 Template.acc_chartAccountUpdate.helpers({
     collection(){
@@ -188,6 +194,47 @@ Template.acc_chartAccountInsert.helpers({
 });
 
 Template.acc_chartAccountInsert.events({
+    'change #parentId': function () {
+
+        var parent = ChartAccount.findOne($('#parentId').val());
+        if (parent == null) {
+            Session.set('accountTypeId', null);
+        } else {
+            Session.set('accountTypeId', parent.accountTypeId);
+        }
+
+    },
+    'submit .preventDef': function (evt, t) {
+        evt.preventDefault();
+    }
+});
+Template.acc_chartAccountInsertDropDown.helpers({
+    accountTypeOpt: function () {
+        if (Session.get('accountTypeId') == null) {
+            return AccountType.find()
+                .map(function (obj) {
+                    return {
+                        label: obj._id + " | " + obj.name,
+                        value: obj._id
+                    };
+                });
+
+        } else {
+            var obj = AccountType.findOne(Session.get(
+                'accountTypeId'));
+            return [{
+                label: obj._id + " | " + obj.name,
+                value: obj._id
+            }];
+            //return Acc.List.accountType();
+        }
+    },
+    accountTypeValue: function () {
+        return Session.get('accountTypeId');
+    }
+});
+
+Template.acc_chartAccountInsertDropDown.events({
     'change #parentId': function () {
 
         var parent = ChartAccount.findOne($('#parentId').val());
