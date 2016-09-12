@@ -261,7 +261,7 @@ itemsTmpl.events({
                     confirmButtonColor: "#DD6B55",
                     confirmButtonText: "Yes, delete it!",
                     closeOnConfirm: false
-                },
+                }).then(
                 function () {
                     if (!deletedItem.findOne({itemId: itemDoc.itemId})) {
                         deletedItem.insert(itemDoc);

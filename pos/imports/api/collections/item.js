@@ -62,6 +62,14 @@ let accountMapping =new SimpleSchema({
                 return SelectOpts.chartAccountLiability();
             }
         }
+    },
+    saleDiscount: {
+        type: String,
+        optional: true
+    },
+    purchaseDiscount: {
+        type: String,
+        optional: true
     }
 });
 Item.schema = new SimpleSchema({
