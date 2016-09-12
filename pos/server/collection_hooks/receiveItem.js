@@ -144,10 +144,10 @@ ReceiveItems.after.remove(function (userId, doc) {
             let groupBill = GroupBill.findOne(doc.paymentGroupId);
             if (groupBill.invoices.length <= 0) {
                 GroupBill.direct.remove(doc.paymentGroupId);
-            }else{
+            } else {
                 recalculatePaymentAfterRemoved({doc});
             }
-        }else if (type.term) {
+        } else if (type.term) {
             reduceFromInventory(doc);
             Meteor.call('insertRemovedBill', doc);
         }
@@ -221,7 +221,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         nextInventory.stockLocationId = stockLocationId;
         nextInventory.itemId = item.itemId;
         nextInventory.qty = item.qty;
-        nextInventory.price = math.round(price,2);
+        nextInventory.price = math.round(price, 2);
         nextInventory.remainQty = totalQty;
         nextInventory.type = type;
         nextInventory.coefficient = 1;
@@ -315,7 +315,7 @@ function pushBillFromGroup(doc) {
     GroupBill.update({_id: doc.paymentGroupId}, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
 }
 //update payment
-function recalculatePayment({doc,preDoc}) {
+function recalculatePayment({doc, preDoc}) {
     let totalChanged = doc.total - preDoc.total;
     if (totalChanged != 0) {
         let billId = doc.paymentGroupId || doc._id;
@@ -377,6 +377,27 @@ function recalculatePaymentAfterRemoved({doc}) {
  remove: reduce AverageInventory and increase the Gratis(doc)
 
  */
+
+function reducePrepaidOrder(doc) {
+    doc.items.forEach(function (item) {
+        PrepaidOrders.direct.update(
+            {
+                _id: doc.prepaidOrderId,
+                "items.itemId": item.itemId
+            },
+            {
+                $inc: {
+                    sumRemainQty: -item.qty,
+                    "items.$.remainQty": -item.qty
+                }
+            });
+    });
+    let prepaidOrder = PrepaidOrders.findOne(doc.prepaidOrderId);
+    if (prepaidOrder.sumRemainQty == 0) {
+        PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'closed'}});
+    }
+}
+
 
 
 
