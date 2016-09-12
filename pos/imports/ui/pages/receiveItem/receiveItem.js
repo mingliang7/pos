@@ -26,6 +26,7 @@ import '../../../../../core/client/components/form-footer.js';
 // Collection
 import {ReceiveItems} from '../../../api/collections/receiveItem.js';
 import {PrepaidOrders} from '../../../api/collections/prepaidOrder.js';
+import {ExchangeGratis} from '../../../api/collections/exchangeGratis.js';
 import {LendingStocks} from '../../../api/collections/lendingStock.js';
 import {ReceiveTypeDeletedItem} from './receiveItem-items.js';
 import {LendingStockDeletedItem} from './receiveItem-items.js';
@@ -38,8 +39,9 @@ import {ReceiveItemTabular} from '../../../../common/tabulars/receiveItem.js';
 import './receiveItem.html';
 import './receiveItem-items.js';
 import '../info-tab.html';
-import './lendingStock.js'
-import './companyExchangeRingPull.js'
+import './lendingStock.js';
+import './exchangeGratis.js';
+import './companyExchangeRingPull.js';
 //methods
 import {ReceiveItemInfo} from '../../../../common/methods/receiveItem.js'
 import {vendorInfo} from '../../../../common/methods/vendor.js';
@@ -53,13 +55,21 @@ Tracker.autorun(function () {
                 Session.set('vendorInfo', result);
             })
     }
-    if (Session.get('prepaidOrderItems') || Session.get('lendingStockItems')) {
+    if (Session.get('prepaidOrderItems')
+        || Session.get('lendingStockItems')
+        || Session.get('companyExchangeRingPullItems')
+        || Session.get('exchangeGratisItems')
+    ) {
         let query = FlowRouter.query;
         var data;
-        if(query.get('type') == 'activeLendingStocks') {
+        if (query.get('type') == 'activeLendingStocks') {
             data = Session.get('lendingStockItems');
-        }else if(query.get('type') == 'activePrepaidOrder') {
+        } else if (query.get('type') == 'activePrepaidOrder') {
             data = Session.get('prepaidOrderItems');
+        } else if (query.get('type') == 'activeCompanyExchangeRingPulls') {
+            data = Session.get('companyExchangeRingPullItems');
+        } else if (query.get('type') == 'activeExchangeGratis') {
+            data = Session.get('exchangeGratisItems');
         }
         Meteor.subscribe('pos.item', {_id: {$in: data}});
     }
@@ -73,6 +83,7 @@ let indexTmpl = Template.Pos_receiveItem,
     showTmpl = Template.Pos_receiveItemShow,
     listPrepaidOrder = Template.listPrepaidOrder,
     listCompanyExchangeRingPull = Template.listCompanyExchangeRingPull,
+    listExchangeGratis = Template.listExchangeGratis,
     listLendingStock = Template.listLendingStock;
 // Local collection
 import {itemsCollection} from '../../../api/collections/tmpCollection';
@@ -86,6 +97,7 @@ indexTmpl.onCreated(function () {
     createNewAlertify('listPrepaidOrder', {size: 'lg'});
     createNewAlertify('listLendingStock', {size: 'lg'});
     createNewAlertify('listCompanyExchangeRingPull', {size: 'lg'});
+    createNewAlertify('listExchangeGratis', {size: 'lg'});
     createNewAlertify('vendor');
 });
 
@@ -748,7 +760,6 @@ function excuteEditForm(doc) {
 }
 
 
-
 function receiveTypeFn({receiveType, vendor}) {
     let label = '';
     if (receiveType == 'PrepaidOrder') {
@@ -768,6 +779,9 @@ function receiveTypeFn({receiveType, vendor}) {
 
     } else if (receiveType == 'Gratis') {
         label = "Gratis";
+        FlowRouter.query.set({vendorId: vendor, type: 'activeExchangeGratis'});
+        alertify.listExchangeGratis(fa('', 'Exchange Gratis'), renderTemplate(listExchangeGratis));
+
     }
     $('.receive-type-label').text(label);
 

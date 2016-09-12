@@ -202,7 +202,7 @@ editTmpl.onDestroyed(function () {
 showTmpl.onCreated(function () {
     this.prepaidOrder = new ReactiveVar();
     this.autorun(()=> {
-        prepaidOrderInfo.callPromise({_id: this.data._id})
+        PrepaidOrderInfo.callPromise({_id: this.data._id})
             .then((result) => {
                 this.prepaidOrder.set(result);
             }).catch(function (err) {
