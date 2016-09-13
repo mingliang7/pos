@@ -25,13 +25,13 @@ ReceiveItems.after.insert(function (userId, doc) {
         Meteor._sleepForMs(200);
         if (doc.prepaidOrderId) {
             reducePrepaidOrder(doc);
-        } else if(doc.lendingStockId){
+        } else if (doc.lendingStockId) {
             reduceLendingStock(doc);
-        }else if(doc.exchangeGratisId){
+        } else if (doc.exchangeGratisId) {
             reduceExchangeGratis(doc);
-        }else if(doc.companyExchangeRingPullId){
+        } else if (doc.companyExchangeRingPullId) {
             reduceCompanyExchangeRingPull(doc);
-        }else{
+        } else {
             throw Meteor.Error('Require Receive Item type');
         }
         doc.items.forEach(function (item) {
@@ -42,91 +42,46 @@ ReceiveItems.after.insert(function (userId, doc) {
 
 ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) {
     let preDoc = this.previous;
-    let type = {
-        prepaidOrder: doc.billType == 'prepaidOrder',
-        term: doc.billType == 'term',
-        group: doc.billType == 'group'
-    };
-    if (type.prepaidOrder) {
-        Meteor.defer(function () {
-            recalculateQty(preDoc);
-            updateQtyInPrepaidOrder(doc);
-            let prepaidOrder = PrepaidOrders.aggregate([{$match: {_id: doc.prepaidOrderId}}, {$projection: {sumRemainQty: 1}}]);
-            if (prepaidOrder.sumRemainQty == 0) {
-                PrepaidOrders.direct.update(doc.prepaidOrderId, {$set: {status: 'closed'}});
-            } else {
-                PrepaidOrders.direct.update(doc.prepaidOrderId, {$set: {status: 'active'}});
-            }
-        });
-    } else if (type.group) {
-        Meteor.defer(function () {
-            removeBillFromGroup(preDoc);
-            pushBillFromGroup(doc);
-            recalculatePayment({preDoc, doc});
-            // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
-        });
-        //////////
-        if (doc.status == "active") {
+    Meteor.defer(function () {
+        Meteor._sleepForMs(200);
+        if (doc.prepaidOrderId) {
+            increasePrepaidOrder(preDoc);
+            reducePrepaidOrder(doc);
+        } else if (doc.lendingStockId) {
+            increaseLendingStock(preDoc);
+            reduceLendingStock(doc);
+        } else if (doc.exchangeGratisId) {
+            increaseExchangeGratis(preDoc);
+            reduceExchangeGratis(doc);
+        } else if (doc.companyExchangeRingPullId) {
+            increaseCompanyExchangeRingPull(preDoc);
+            reduceCompanyExchangeRingPull(doc);
         } else {
-            Meteor.defer(function () {
-                Meteor._sleepForMs(200);
-                reduceFromInventory(preDoc);
-                doc.items.forEach(function (item) {
-                    averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'receiveItem', doc._id);
-                });
-
-            });
+            throw Meteor.Error('Require Receive Item type');
         }
-        //////////
-
-    } else {
-        Meteor.defer(function () {
-            Meteor._sleepForMs(200);
-            recalculatePayment({preDoc, doc});
+        reduceFromInventory(preDoc, 'receive-item-return');
+        doc.items.forEach(function (item) {
+            averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'receiveItem', doc._id);
         });
-        //////////
-        if (doc.status == "active") {
-        } else {
-            Meteor.defer(function () {
-                Meteor._sleepForMs(200);
-                reduceFromInventory(preDoc);
-                doc.items.forEach(function (item) {
-                    averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'receiveItem', doc._id);
-                });
-
-            });
-        }
-        //////////
-    }
-
+    });
 });
 
 ReceiveItems.after.remove(function (userId, doc) {
-
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        let type = {
-            prepaidOrder: doc.billType == 'prepaidOrder',
-            term: doc.billType == 'term',
-            group: doc.billType == 'group'
-        };
-        if (type.prepaidOrder) {
-            recalculateQty(doc);
-            PrepaidOrders.direct.update(doc.prepaidOrderId, {$set: {status: 'active'}});
-        } else if (type.group) {
-            reduceFromInventory(doc);
-            removeBillFromGroup(doc);
-            let groupBill = GroupBill.findOne(doc.paymentGroupId);
-            if (groupBill.invoices.length <= 0) {
-                GroupBill.direct.remove(doc.paymentGroupId);
-            } else {
-                recalculatePaymentAfterRemoved({doc});
-            }
-        } else if (type.term) {
-            reduceFromInventory(doc);
-            Meteor.call('insertRemovedBill', doc);
-        }
+        if (doc.prepaidOrderId) {
+            increasePrepaidOrder(doc);
+        } else if (doc.lendingStockId) {
+            increaseLendingStock(doc);
+        } else if (doc.exchangeGratisId) {
+            increaseExchangeGratis(doc);
+        } else if (doc.companyExchangeRingPullId) {
+            increaseCompanyExchangeRingPull(doc);
 
+        } else {
+            throw Meteor.Error('Require Receive Item type');
+        }
+        reduceFromInventory(doc, 'receive-item-return');
     });
 });
 
@@ -257,7 +212,6 @@ function increaseCompanyExchangeRingPull(preDoc) {
 }
 
 
-
 function reduceExchangeGratis(doc) {
     doc.items.forEach(function (item) {
         ExchangeGratis.direct.update(
@@ -370,7 +324,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
     setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
     Item.direct.update(item.itemId, setModifier);
 }
-function reduceFromInventory(receiveItem) {
+function reduceFromInventory(receiveItem, type) {
     //let receiveItem = ReceiveItems.findOne(receiveItemId);
     let prefix = receiveItem.stockLocationId + '-';
     receiveItem.items.forEach(function (item) {
@@ -390,7 +344,7 @@ function reduceFromInventory(receiveItem) {
                 price: inventory.price,
                 remainQty: inventory.remainQty - item.qty,
                 coefficient: -1,
-                type: 'enter-return',
+                type: type,
                 refId: receiveItem._id
             };
             AverageInventories.insert(newInventory);
@@ -405,7 +359,7 @@ function reduceFromInventory(receiveItem) {
                 price: thisItem.purchasePrice,
                 remainQty: 0 - item.qty,
                 coefficient: -1,
-                type: 'enter-return',
+                type: type,
                 refId: receiveItem._id
             };
             AverageInventories.insert(newInventory);

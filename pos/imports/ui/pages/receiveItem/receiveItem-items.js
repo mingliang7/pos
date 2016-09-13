@@ -127,25 +127,15 @@ itemsTmpl.helpers({
 
         return {};
     },
-    subTotal: function () {
-        let subTotal = 0;
+    total: function () {
+        let total = 0;
         let getItems = itemsCollection.find();
         getItems.forEach((obj) => {
-            subTotal += obj.amount;
+            total += obj.amount;
         });
-        return FlowRouter.query.get('vendorId') ? 0 : subTotal;
+        return FlowRouter.query.get('vendorId') ? 0 : total;
         // return Session.get('subTotal')
     },
-    total(){
-        let subTotal = 0;
-        let getItems = itemsCollection.find();
-        getItems.forEach((obj) => {
-            subTotal += obj.amount;
-        });
-        let discount = $('#discount').val();
-        discount = discount == "" ? 0 : parseFloat(discount);
-        return FlowRouter.query.get('vendorId') ? 0 : subTotal * (1 - discount / 100);
-    }
 });
 
 

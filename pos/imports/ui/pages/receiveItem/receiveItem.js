@@ -332,15 +332,6 @@ editTmpl.onCreated(function () {
     }
 });
 editTmpl.events({
-    'click #btn-save-print'(event, instance){
-        Session.set('btnType', 'save-print');
-    },
-    'click #btn-save'(event, instance){
-        Session.set('btnType', 'save');
-    },
-    'click #btn-pay'(event, instance){
-        Session.set('btnType', 'pay');
-    },
     'click .add-new-vendor'(event, instance){
         alertify.vendor(fa('plus', 'New Vendor'), renderTemplate(Template.Pos_vendorNew));
     },
@@ -527,28 +518,21 @@ showTmpl.events({
 let hooksObject = {
     before: {
         insert: function (doc) {
+            debugger;
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
                 if (obj.prepaidOrderId) {
                     doc.prepaidOrderId = obj.prepaidOrderId;
+                }else if(obj.lendingStockId){
+                    doc.lendingStockId=obj.lendingStockId;
+                }else if(obj.exchangeGratisId){
+                    doc.exchangeGratisId=obj.exchangeGratisId;
+                }else if(obj.companyExchangeRingPullId){
+                    doc.companyExchangeRingPullId=obj.companyExchangeRingPullId;
                 }
                 items.push(obj);
             });
-            var btnType = Session.get('btnType');
-            if (btnType == "save" || btnType == "save-print") {
-                doc.status = "partial";
-                doc.paidAmount = 0;
-                doc.dueAmount = math.round(doc.total, 2);
-            } else if (btnType == "pay") {
-                doc.dueAmount = math.round((doc.total - doc.paidAmount), 2);
-                if (doc.dueAmount <= 0) {
-                    doc.status = "close";
-                } else {
-                    doc.status = "partial";
-                }
-
-            }
             doc.items = items;
             return doc;
         },
