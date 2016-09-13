@@ -6,62 +6,37 @@ import {ReceiveItems} from '../../imports/api/collections/receiveItem.js';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {Item} from '../../imports/api/collections/item.js';
 import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder';
+import {LendingStocks} from '../../imports/api/collections/lendingStock.js';
+import {CompanyExchangeRingPulls} from '../../imports/api/collections/companyExchangeRingPull.js';
+import {ExchangeGratis} from '../../imports/api/collections/exchangeGratis.js';
 //import state
 import {receiveItemState} from '../../common/globalState/receiveItem';
 import {GroupBill} from '../../imports/api/collections/groupBill.js'
-import {PayBills} from '../../imports/api/collections/payBill.js';
 ReceiveItems.before.insert(function (userId, doc) {
-    if (doc.total == 0) {
-        doc.status = 'closed';
-        doc.billType = 'prepaidOrder'
-    } else if (doc.termId) {
-        doc.status = 'partial';
-        doc.billType = 'term';
-    } else {
-        doc.status = 'partial';
-        doc.billType = 'group';
-    }
+
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
     let tmpBillId = doc._id;
     doc._id = idGenerator.genWithPrefix(ReceiveItems, prefix, 4);
-    receiveItemState.set(tmpBillId, {vendorId: doc.vendorId, billId: doc._id, total: doc.total});
-
 });
 
 ReceiveItems.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        if (doc.billType == 'group') {
-            Meteor.call('pos.generateInvoiceGroup', {doc});
-        }
         if (doc.prepaidOrderId) {
-            doc.items.forEach(function (item) {
-                PrepaidOrders.direct.update(
-                    {
-                        _id: doc.prepaidOrderId,
-                        "items.itemId": item.itemId
-                    },
-                    {
-                        $inc: {
-                            sumRemainQty: -item.qty,
-                            "items.$.remainQty": -item.qty
-                        }
-                    });
-            });
-            let prepaidOrder = PrepaidOrders.findOne(doc.prepaidOrderId);
-            if (prepaidOrder.sumRemainQty == 0) {
-                PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'closed'}});
-            }
-        } else {
-            if (doc.status == "active") {
-            } else {
-                console.log('from receiveItem after insert');
-                doc.items.forEach(function (item) {
-                    averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'receiveItem', doc._id);
-                });
-            }
+            reducePrepaidOrder(doc);
+        } else if(doc.lendingStockId){
+            reduceLendingStock(doc);
+        }else if(doc.exchangeGratisId){
+            reduceExchangeGratis(doc);
+        }else if(doc.companyExchangeRingPullId){
+            reduceCompanyExchangeRingPull(doc);
+        }else{
+            throw Meteor.Error('Require Receive Item type');
         }
+        doc.items.forEach(function (item) {
+            averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'receiveItem', doc._id);
+        });
     });
 });
 
@@ -154,6 +129,166 @@ ReceiveItems.after.remove(function (userId, doc) {
 
     });
 });
+
+/*receive item type
+
+ ----PrepaidOrder-----
+ insert: increase AverageInventory and reduce from PrepaidOrder(doc)
+ Note: (update the remain qty of prepaidOrder);
+ update: reduce AverageInventory and increase the PrepaidOrder back(previous doc);
+ increase AverageInventory and reduce from PrepaidOrder( doc)
+ remove: reduce AverageInventory and Increase the PrepaidOrder back(doc)
+
+ ----LendingStock-----
+ insert: increase AverageInventory and reduce from LendingStock(doc)
+ update: reduce AverageInventory and increase the LendingStock(previous doc)
+ increase AverageInventory and reduce from LendingStock(doc)
+ remove: reduce AverageInventory and increase the LendingStock(doc)
+
+ ----Ring Pull----
+ insert: increase AverageInventory and reduce from Ring Pull (doc)
+ update: reduce AverageInventory and increase the Ring Pull(previous doc)
+ increase AverageInventory and reduce from Ring Pull(doc)
+ remove: reduce AverageInventory and increase teh Ring Pull(doc)
+
+ ----Gratis----
+ insert: increase AverageInventory and reduce from Gratis (doc)
+ update: reduce AverageInventory and increase the Gratis(previous doc)
+ increase AverageInventory and reduce from Gratis(doc)
+ remove: reduce AverageInventory and increase the Gratis(doc)
+
+ */
+
+function reducePrepaidOrder(doc) {
+    doc.items.forEach(function (item) {
+        PrepaidOrders.direct.update(
+            {
+                _id: doc.prepaidOrderId,
+                "items.itemId": item.itemId
+            },
+            {
+                $inc: {
+                    sumRemainQty: -item.qty,
+                    "items.$.remainQty": -item.qty
+                }
+            });
+    });
+    let prepaidOrder = PrepaidOrders.findOne(doc.prepaidOrderId);
+    if (prepaidOrder.sumRemainQty == 0) {
+        PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'closed'}});
+    } else {
+        PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'active'}});
+    }
+}
+
+function increasePrepaidOrder(preDoc) {
+    let updatedFlag;
+    preDoc.items.forEach(function (item) {
+        PrepaidOrders.direct.update(
+            {_id: preDoc.prepaidOrderId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
+        ); //re sum remain qty
+    });
+}
+
+function reduceLendingStock(doc) {
+    doc.items.forEach(function (item) {
+        LendingStocks.direct.update(
+            {
+                _id: doc.lendingStockId,
+                "items.itemId": item.itemId
+            },
+            {
+                $inc: {
+                    sumRemainQty: -item.qty,
+                    "items.$.remainQty": -item.qty
+                }
+            });
+    });
+    let lendingStock = LendingStocks.findOne(doc.lendingStockId);
+    if (lendingStock.sumRemainQty == 0) {
+        LendingStocks.direct.update(lendingStock._id, {$set: {status: 'closed'}});
+    } else {
+        LendingStocks.direct.update(lendingStock._id, {$set: {status: 'active'}});
+    }
+}
+
+function increaseLendingStock(preDoc) {
+    //let updatedFlag;
+    preDoc.items.forEach(function (item) {
+        LendingStocks.direct.update(
+            {_id: preDoc.lendingStockId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
+        ); //re sum remain qty
+    });
+}
+
+
+function reduceCompanyExchangeRingPull(doc) {
+    doc.items.forEach(function (item) {
+        CompanyExchangeRingPulls.direct.update(
+            {
+                _id: doc.companyExchangeRingPullId,
+                "items.itemId": item.itemId
+            },
+            {
+                $inc: {
+                    sumRemainQty: -item.qty,
+                    "items.$.remainQty": -item.qty
+                }
+            });
+    });
+    let companyExchangeRingPull = CompanyExchangeRingPulls.findOne(doc.companyExchangeRingPullId);
+    if (companyExchangeRingPull.sumRemainQty == 0) {
+        CompanyExchangeRingPulls.direct.update(companyExchangeRingPull._id, {$set: {status: 'closed'}});
+    } else {
+        CompanyExchangeRingPulls.direct.update(companyExchangeRingPull._id, {$set: {status: 'active'}});
+    }
+}
+
+function increaseCompanyExchangeRingPull(preDoc) {
+    //let updatedFlag;
+    preDoc.items.forEach(function (item) {
+        CompanyExchangeRingPulls.direct.update(
+            {_id: preDoc.companyExchangeRingPullId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
+        ); //re sum remain qty
+    });
+}
+
+
+
+function reduceExchangeGratis(doc) {
+    doc.items.forEach(function (item) {
+        ExchangeGratis.direct.update(
+            {
+                _id: doc.exchangeGratisId,
+                "items.itemId": item.itemId
+            },
+            {
+                $inc: {
+                    sumRemainQty: -item.qty,
+                    "items.$.remainQty": -item.qty
+                }
+            });
+    });
+    let exchangeGratis = ExchangeGratis.findOne(doc.exchangeGratisId);
+    if (exchangeGratis.sumRemainQty == 0) {
+        ExchangeGratis.direct.update(exchangeGratis._id, {$set: {status: 'closed'}});
+    } else {
+        ExchangeGratis.direct.update(exchangeGratis._id, {$set: {status: 'active'}});
+    }
+}
+
+function increaseExchangeGratis(preDoc) {
+    //let updatedFlag;
+    preDoc.items.forEach(function (item) {
+        ExchangeGratis.direct.update(
+            {_id: preDoc.exchangeGratisId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
+        ); //re sum remain qty
+    });
+}
 
 
 function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
@@ -279,126 +414,3 @@ function reduceFromInventory(receiveItem) {
     });
 
 }
-/*
- function payBillInsert(doc){
- let payObj={};
- payObj._id=idGenerator.genWithPrefix()
- }*/
-//recalculate qty
-function recalculateQty(preDoc) {
-    Meteor._sleepForMs(200);
-    let updatedFlag;
-    preDoc.items.forEach(function (item) {
-        PrepaidOrders.direct.update(
-            {_id: preDoc.prepaidOrderId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
-        ); //re sum remain qty
-    });
-}
-//update qty
-function updateQtyInPrepaidOrder(doc) {
-    Meteor._sleepForMs(200);
-    doc.items.forEach(function (item) {
-        PrepaidOrders.direct.update(
-            {_id: doc.prepaidOrderId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': -item.qty, sumRemainQty: -item.qty}}
-        )
-    });
-}
-// update group invoice
-function removeBillFromGroup(doc) {
-    Meteor._sleepForMs(200);
-    GroupBill.update({_id: doc.paymentGroupId}, {$pull: {invoices: {_id: doc._id}}, $inc: {total: -doc.total}});
-}
-function pushBillFromGroup(doc) {
-    Meteor._sleepForMs(200);
-    GroupBill.update({_id: doc.paymentGroupId}, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
-}
-//update payment
-function recalculatePayment({doc, preDoc}) {
-    let totalChanged = doc.total - preDoc.total;
-    if (totalChanged != 0) {
-        let billId = doc.paymentGroupId || doc._id;
-        let receivePayment = PayBills.find({billId: billId});
-        if (receivePayment.count() > 0) {
-            PayBills.update({billId: billId}, {
-                $inc: {
-                    dueAmount: totalChanged,
-                    balanceAmount: totalChanged
-                }
-            }, {multi: true});
-            PayBills.remove({billId: billId, dueAmount: {$lte: 0}});
-        }
-    }
-}
-//update payment after remove
-function recalculatePaymentAfterRemoved({doc}) {
-    let totalChanged = -doc.total;
-    if (totalChanged != 0) {
-        let billId = doc.paymentGroupId;
-        let receivePayment = PayBills.find({billId: billId});
-        if (receivePayment.count() > 0) {
-            PayBills.update({billId: billId}, {
-                $inc: {
-                    dueAmount: totalChanged,
-                    balanceAmount: totalChanged
-                }
-            }, {multi: true});
-            PayBills.direct.remove({billId: billId, dueAmount: {$lte: 0}});
-        }
-    }
-}
-
-/*receive item type
-
- ----PrepaidOrder-----
- insert: increase AverageInventory and reduce from PrepaidOrder(doc)
- Note: (update the remain qty of prepaidOrder);
- update: reduce AverageInventory and increase the PrepaidOrder back(previous doc);
- increase AverageInventory and reduce from PrepaidOrder( doc)
- remove: reduce AverageInventory and Increase the PrepaidOrder back(doc)
-
- ----LendingStock-----
- insert: increase AverageInventory and reduce from LendingStock(doc)
- update: reduce AverageInventory and increase the LendingStock(previous doc)
- increase AverageInventory and reduce from LendingStock(doc)
- remove: reduce AverageInventory and increase the LendingStock(doc)
-
- ----Ring Pull----
- insert: increase AverageInventory and reduce from Ring Pull (doc)
- update: reduce AverageInventory and increase the Ring Pull(previous doc)
- increase AverageInventory and reduce from Ring Pull(doc)
- remove: reduce AverageInventory and increase teh Ring Pull(doc)
-
- ----Gratis----
- insert: increase AverageInventory and reduce from Gratis (doc)
- update: reduce AverageInventory and increase the Gratis(previous doc)
- increase AverageInventory and reduce from Gratis(doc)
- remove: reduce AverageInventory and increase the Gratis(doc)
-
- */
-
-function reducePrepaidOrder(doc) {
-    doc.items.forEach(function (item) {
-        PrepaidOrders.direct.update(
-            {
-                _id: doc.prepaidOrderId,
-                "items.itemId": item.itemId
-            },
-            {
-                $inc: {
-                    sumRemainQty: -item.qty,
-                    "items.$.remainQty": -item.qty
-                }
-            });
-    });
-    let prepaidOrder = PrepaidOrders.findOne(doc.prepaidOrderId);
-    if (prepaidOrder.sumRemainQty == 0) {
-        PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'closed'}});
-    }
-}
-
-
-
-
-
