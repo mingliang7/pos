@@ -40,21 +40,22 @@ import {reactiveTableSettings} from '../../../../core/client/libs/reactive-table
 // Page
 import './item.html';
 import './unit.js'
-
+import '../../../../acc/imports/ui/pages/chartAccount/chartAccount';
 // Declare template
 let indexTmpl = Template.Pos_item,
     actionTmpl = Template.Pos_itemAction,
     newTmpl = Template.Pos_itemNew,
     editTmpl = Template.Pos_itemEdit,
-    showTmpl = Template.Pos_itemShow;
-
+    showTmpl = Template.Pos_itemShow,
+    newChartAccount = Template.acc_chartAccountInsert;
 
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('item', {size: 'lg'});
     createNewAlertify('addOn');
-    createNewAlertify('tmpItem')
+    createNewAlertify('tmpItem');
+    createNewAlertify('addNewChartAccount');
 });
 
 indexTmpl.helpers({
@@ -309,8 +310,8 @@ Template.schemeItem.events({
             itemId: itemId,
             quantity: qty,
             price: price,
-                name: instance.name
-            });
+            name: instance.name
+        });
         // }
     },
     // Reactive table for item
@@ -356,7 +357,11 @@ let hooksObject = {
         displayError(error.message);
     }
 };
-
+Template.chartAccountDropDown.events({
+    'click .add-new-chart-account'(event, instance){
+        alertify.addNewChartAccount(fa('plus', 'Add New Chart Account'), renderTemplate(newChartAccount));
+    }
+});
 AutoForm.addHooks([
     'Pos_itemNew',
     'Pos_itemEdit'

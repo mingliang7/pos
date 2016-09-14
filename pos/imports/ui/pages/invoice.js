@@ -196,24 +196,26 @@ newTmpl.events({
 });
 newTmpl.helpers({
     repId(){
-        let {customerInfo} = Session.get('customerInfo');
-        if (customerInfo) {
-            try {
+        try {
+            let {customerInfo} = Session.get('customerInfo');
+            if (customerInfo) {
+
                 return customerInfo.repId;
-            } catch (e) {
 
             }
-        }
+        } catch (e) {
+
+            }
         return '';
     },
     termId(){
-        let {customerInfo} = Session.get('customerInfo');
-        if (customerInfo) {
-            try {
-                return customerInfo.termId;
-            } catch (e) {
-
+        try {
+            let {customerInfo} = Session.get('customerInfo');
+            if (customerInfo) {
+                    return customerInfo.termId;
             }
+        } catch (e) {
+
         }
         return '';
     },
@@ -245,20 +247,22 @@ newTmpl.helpers({
         return {total};
     },
     customerInfo() {
-        let {customerInfo, totalAmountDue, whiteListCustomer} = Session.get('customerInfo');
-        let allowOverAmountDue = whiteListCustomer ? whiteListCustomer.limitTimes : 'Not set';
-        if (!customerInfo) {
-            return {empty: true, message: 'No data available'}
-        }
+        try {
+            let {customerInfo, totalAmountDue, whiteListCustomer} = Session.get('customerInfo');
+            let allowOverAmountDue = whiteListCustomer ? whiteListCustomer.limitTimes : 'Not set';
+            if (!customerInfo) {
+                return {empty: true, message: 'No data available'}
+            }
 
-        return {
-            fields: `<li><i class="fa fa-phone-square"></i> Phone: <b><span class="label label-success">${customerInfo.telephone ? customerInfo.telephone : ''}</span></b> | </li>
+            return {
+                fields: `<li><i class="fa fa-phone-square"></i> Phone: <b><span class="label label-success">${customerInfo.telephone ? customerInfo.telephone : ''}</span></b> | </li>
               <!--<li>Opening Balance: <span class="label label-success">0</span></li>-->
               <li><i class="fa fa-credit-card" aria-hidden="true"></i> Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span> | </li>
               <li><i class="fa fa-money"></i> Balance: <span class="label label-primary">${numeral(totalAmountDue).format('0,0.00')}</span> | 
               <li><i class="fa fa-flag"></i> Allow over amount due: <b class="label label-danger">${allowOverAmountDue}</b> | 
               <li><i class="fa fa-home"></i> Address: <b>${customerInfo.address ? customerInfo.address : 'None'}</b>`
-        };
+            };
+        }catch (e){};
     },
 
     collection(){
@@ -276,6 +280,7 @@ newTmpl.helpers({
         return {};
     },
     dueDate(){
+        try{
         let date = AutoForm.getFieldValue('invoiceDate');
         let {customerInfo} = Session.get('customerInfo');
         if (customerInfo) {
@@ -287,15 +292,18 @@ newTmpl.helpers({
             }
         }
         return date;
+        }catch(e){}
     },
     isTerm(){
-        let {customerInfo} = Session.get('customerInfo');
-        if (customerInfo) {
-            if (customerInfo._term) {
-                return true;
+        try {
+            let {customerInfo} = Session.get('customerInfo');
+            if (customerInfo) {
+                if (customerInfo._term) {
+                    return true;
+                }
+                return false;
             }
-            return false;
-        }
+        }catch (e){}
     }
 });
 
@@ -441,23 +449,27 @@ editTmpl.helpers({
         return {total};
     },
     customerInfo() {
-        let {customerInfo} = Session.get('customerInfo');
-        if (!customerInfo) {
-            return {empty: true, message: 'No data available'}
-        }
+        try {
+            let {customerInfo} = Session.get('customerInfo');
+            if (!customerInfo) {
+                return {empty: true, message: 'No data available'}
+            }
 
-        return {
-            fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
+            return {
+                fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
               <li>Opening Balance: <span class="label label-success">0</span></li>
               <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
               <li>Sale Order to be invoice: <span class="label label-primary">0</span>`
-        };
+            };
+        }catch(e){}
     },
     repId(){
+        try{
         let {customerInfo} = Session.get('customerInfo');
         if (customerInfo) {
             return customerInfo.repId;
         }
+        }catch (e){}
     },
     collection(){
         return Invoices;
@@ -466,6 +478,7 @@ editTmpl.helpers({
         return itemsCollection;
     },
     dueDate(){
+        try{
         let date = AutoForm.getFieldValue('invoiceDate');
         let {customerInfo} = Session.get('customerInfo');
         if (customerInfo) {
@@ -477,15 +490,18 @@ editTmpl.helpers({
             }
         }
         return date;
+        }catch (e){}
     },
     isTerm(){
-        let {customerInfo} = Session.get('customerInfo');
-        if (customerInfo) {
-            if (customerInfo._term) {
-                return true;
+        try {
+            let {customerInfo} = Session.get('customerInfo');
+            if (customerInfo) {
+                if (customerInfo._term) {
+                    return true;
+                }
+                return false;
             }
-            return false;
-        }
+        }catch (e){}
     }
 });
 

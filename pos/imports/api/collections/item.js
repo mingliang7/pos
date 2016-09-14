@@ -65,11 +65,25 @@ let accountMapping =new SimpleSchema({
     },
     saleDiscount: {
         type: String,
-        optional: true
+        optional: true,
+        autoform: {
+            type: "select2",
+            placeholder: "Chart Of Account",
+            options: function () {
+                return SelectOpts.chartAccountIncome();
+            }
+        }
     },
     purchaseDiscount: {
         type: String,
-        optional: true
+        optional: true,
+        autoform: {
+            type: "select2",
+            placeholder: "Chart Of Account",
+            options: function () {
+                return SelectOpts.chartAccountExpense();
+            }
+        }
     }
 });
 Item.schema = new SimpleSchema({
