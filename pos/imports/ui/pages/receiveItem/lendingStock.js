@@ -7,15 +7,15 @@ import './lendingStock.html';
 import {destroyAction} from '../../../../../core/client/libs/destroy-action.js';
 import {displaySuccess, displayError} from '../../../../../core/client/libs/display-alert.js';
 import {vendorInfo} from '../../../../common/methods/vendor.js';
-import {ReceiveTypeDeletedItem} from './receiveItem-items.js'
+import {ReceiveDeletedItem} from './receiveItem-items.js'
 var lendingStockTmpl = Template.listLendingStock;
 
 lendingStockTmpl.helpers({
     lendingStocks(){
         let item = [];
         let lendingStocks = LendingStocks.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
-        if (ReceiveTypeDeletedItem.find().count() > 0) {
-            ReceiveTypeDeletedItem.find().forEach(function (item) {
+        if (ReceiveDeletedItem.find().count() > 0) {
+            ReceiveDeletedItem.find().forEach(function (item) {
                 console.log(item);
                 lendingStock.forEach(function (lendingStock) {
                     lendingStock.items.forEach(function (lendingStockItem) {

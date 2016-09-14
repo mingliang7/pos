@@ -21,6 +21,7 @@ ReceiveItems.before.insert(function (userId, doc) {
 });
 
 ReceiveItems.after.insert(function (userId, doc) {
+    console.log(doc);
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
         if (doc.type=='PrepaidOrder') {
@@ -67,6 +68,8 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
 });
 
 ReceiveItems.after.remove(function (userId, doc) {
+    console.log('-------------from receive item after remove--------------');
+    console.log(doc);
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
         if (doc.type=='PrepaidOrder') {

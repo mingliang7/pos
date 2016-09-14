@@ -27,9 +27,7 @@ import '../../../../../core/client/components/form-footer.js';
 import {ReceiveItems} from '../../../api/collections/receiveItem.js';
 import {PrepaidOrders} from '../../../api/collections/prepaidOrder.js';
 import {ExchangeGratis} from '../../../api/collections/exchangeGratis.js';
-import {LendingStocks} from '../../../api/collections/lendingStock.js';
-import {ReceiveTypeDeletedItem} from './receiveItem-items.js';
-import {LendingStockDeletedItem} from './receiveItem-items.js';
+import {ReceiveDeletedItem} from './receiveItem-items.js';
 import {Item} from '../../../api/collections/item';
 import {vendorBillCollection} from '../../../api/collections/tmpCollection';
 // Tabular
@@ -227,8 +225,6 @@ newTmpl.helpers({
     },
     totalReceiveItem(){
         let total = 0;
-        console.log(itemsCollection.find().fetch());
-
         itemsCollection.find().forEach(function (item) {
             total += item.amount;
         });
@@ -474,6 +470,7 @@ editTmpl.onDestroyed(function () {
     debugger;
     // Remove items collection
     itemsCollection.remove({});
+    ReceiveDeletedItem.remove({});
 });
 
 // Show
@@ -533,19 +530,6 @@ let hooksObject = {
                 items.push(obj);
             });
             doc.$set.items = items;
-            var btnType = Session.get('btnType');
-            if (btnType == "save" || btnType == "save-print") {
-                doc.$set.status = "partial";
-                doc.$set.paidAmount = 0;
-                doc.$set.dueAmount = math.round(doc.$set.total, 2);
-            } else if (btnType == "pay") {
-                doc.$set.dueAmount = math.round((doc.$set.total - doc.$set.paidAmount), 2);
-                if (doc.$set.dueAmount <= 0) {
-                    doc.$set.status = "close";
-                } else {
-                    doc.$set.status = "partial";
-                }
-            }
             delete doc.$unset;
             return doc;
         }
@@ -586,8 +570,8 @@ listPrepaidOrder.helpers({
     prepaidOrders(){
         let item = [];
         let prepaidOrders = PrepaidOrders.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
-        if (ReceiveTypeDeletedItem.find().count() > 0) {
-            ReceiveTypeDeletedItem.find().forEach(function (item) {
+        if (ReceiveDeletedItem.find().count() > 0) {
+            ReceiveDeletedItem.find().forEach(function (item) {
                 console.log(item);
                 prepaidOrders.forEach(function (prepaidOrder) {
                     prepaidOrder.items.forEach(function (prepaidOrderItem) {
@@ -626,6 +610,7 @@ listPrepaidOrder.events({
         let remainQty = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.remain-qty').val();
         let prepaidOrderId = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.prepaidOrderId').text().trim();
         let tmpCollection = itemsCollection.find().fetch();
+        debugger
         if (remainQty != '' && remainQty != '0') {
             if (this.remainQty > 0) {
                 if (tmpCollection.length > 0) {

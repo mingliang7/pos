@@ -7,15 +7,15 @@ import './companyExchangeRingPull.html';
 import {destroyAction} from '../../../../../core/client/libs/destroy-action.js';
 import {displaySuccess, displayError} from '../../../../../core/client/libs/display-alert.js';
 import {vendorInfo} from '../../../../common/methods/vendor.js';
-import {ReceiveTypeDeletedItem} from './receiveItem-items.js'
+import {ReceiveDeletedItem} from './receiveItem-items.js'
 var companyExchangeRingPullTmpl = Template.listCompanyExchangeRingPull;
 
 companyExchangeRingPullTmpl.helpers({
     companyExchangeRingPulls(){
         let item = [];
         let companyExchangeRingPulls = CompanyExchangeRingPulls.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
-        if (ReceiveTypeDeletedItem.find().count() > 0) {
-            ReceiveTypeDeletedItem.find().forEach(function (item) {
+        if (ReceiveDeletedItem.find().count() > 0) {
+            ReceiveDeletedItem.find().forEach(function (item) {
                 console.log(item);
                 companyExchangeRingPull.forEach(function (companyExchangeRingPull) {
                     companyExchangeRingPull.items.forEach(function (companyExchangeRingPullItem) {
