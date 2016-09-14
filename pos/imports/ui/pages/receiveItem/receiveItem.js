@@ -62,11 +62,11 @@ Tracker.autorun(function () {
     ) {
         let query = FlowRouter.query;
         var data;
-        if (query.get('type') == 'activeLendingStocks') {
+        if (query.get('type') == 'activeLendingStock') {
             data = Session.get('lendingStockItems');
         } else if (query.get('type') == 'activePrepaidOrder') {
             data = Session.get('prepaidOrderItems');
-        } else if (query.get('type') == 'activeCompanyExchangeRingPulls') {
+        } else if (query.get('type') == 'activeCompanyExchangeRingPull') {
             data = Session.get('companyExchangeRingPullItems');
         } else if (query.get('type') == 'activeExchangeGratis') {
             data = Session.get('exchangeGratisItems');
@@ -158,7 +158,7 @@ newTmpl.onCreated(function () {
 newTmpl.events({
     'click .toggle-list'(event, instance){
         let receiveType = $('#receive-type').val();
-        let vendor = Session.get('getVendorId');
+        let vendor = $('[name="vendorId"]').val();
         receiveTypeFn({receiveType, vendor});
     },
 
@@ -177,19 +177,10 @@ newTmpl.events({
     'click .go-to-pay-bill'(event, instance){
         alertify.receiveItem().close();
     },
-    'click #btn-save-print'(event, instance){
-        Session.set('btnType', 'save-print');
-    },
-    'click #btn-save'(event, instance){
-        Session.set('btnType', 'save');
-    },
-    'click #btn-pay'(event, instance){
-        Session.set('btnType', 'pay');
-    },
     'change #receive-type'(event, instance){
         let receiveType = event.currentTarget.value;
-        let vendor = Session.get('getVendorId');
-        $('.toggle-list').removeClass('hidden')
+        let vendor = $('[name="vendorId"]').val();
+        $('.toggle-list').removeClass('hidden');
         receiveTypeFn({receiveType, vendor});
     }
 });
@@ -322,14 +313,9 @@ newTmpl.onDestroyed(function () {
 // Edit
 editTmpl.onCreated(function () {
     this.repOptions = new ReactiveVar();
-    this.isPrepaidOrder = new ReactiveVar(false);
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
     });
-    if (this.data.billType == 'prepaidOrder') {
-        FlowRouter.query.set('vendorId', this.data.vendorId);
-        this.isPrepaidOrder.set(true);
-    }
 });
 editTmpl.events({
     'click .add-new-vendor'(event, instance){
@@ -348,7 +334,9 @@ editTmpl.events({
         Session.set('totalOrder', undefined);
     },
     'click .toggle-list'(event, instance){
-        alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
+        let receiveType = $('#receive-type').val();
+        let vendor = $('[name="vendorId"]').val();
+        receiveTypeFn({receiveType, vendor});
     },
     'change [name="termId"]'(event, instance){
         let vendorInfo = Session.get('vendorInfo');
@@ -524,15 +512,17 @@ let hooksObject = {
                 delete obj._id;
                 if (obj.prepaidOrderId) {
                     doc.prepaidOrderId = obj.prepaidOrderId;
-                }else if(obj.lendingStockId){
-                    doc.lendingStockId=obj.lendingStockId;
-                }else if(obj.exchangeGratisId){
-                    doc.exchangeGratisId=obj.exchangeGratisId;
-                }else if(obj.companyExchangeRingPullId){
-                    doc.companyExchangeRingPullId=obj.companyExchangeRingPullId;
+                } else if (obj.lendingStockId) {
+                    doc.lendingStockId = obj.lendingStockId;
+                } else if (obj.exchangeGratisId) {
+                    doc.exchangeGratisId = obj.exchangeGratisId;
+                } else if (obj.companyExchangeRingPullId) {
+                    doc.companyExchangeRingPullId = obj.companyExchangeRingPullId;
                 }
                 items.push(obj);
             });
+            doc.type = $('#receive-type').val();
+            doc.status = 'closed';
             doc.items = items;
             return doc;
         },
@@ -753,15 +743,15 @@ function receiveTypeFn({receiveType, vendor}) {
     }
     else if (receiveType == 'LendingStock') {
         label = 'Lending Stock';
-        FlowRouter.query.set({vendorId: vendor, type: 'activeLendingStocks'});
+        FlowRouter.query.set({vendorId: vendor, type: 'activeLendingStock'});
         alertify.listLendingStock(fa('', 'Lending Stock'), renderTemplate(listLendingStock));
     }
-    else if (receiveType == 'RingPull') {
+    else if (receiveType == 'CompanyExchangeRingPull') {
         label = "Ring Pull";
-        FlowRouter.query.set({vendorId: vendor, type: 'activeCompanyExchangeRingPulls'});
+        FlowRouter.query.set({vendorId: vendor, type: 'activeCompanyExchangeRingPull'});
         alertify.listCompanyExchangeRingPull(fa('', 'Exchange Ring Pull'), renderTemplate(listCompanyExchangeRingPull));
 
-    } else if (receiveType == 'Gratis') {
+    } else if (receiveType == 'ExchangeGratis') {
         label = "Gratis";
         FlowRouter.query.set({vendorId: vendor, type: 'activeExchangeGratis'});
         alertify.listExchangeGratis(fa('', 'Exchange Gratis'), renderTemplate(listExchangeGratis));

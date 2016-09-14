@@ -23,13 +23,13 @@ ReceiveItems.before.insert(function (userId, doc) {
 ReceiveItems.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        if (doc.prepaidOrderId) {
+        if (doc.type=='PrepaidOrder') {
             reducePrepaidOrder(doc);
-        } else if (doc.lendingStockId) {
+        } else if (doc.type=='LendingStock') {
             reduceLendingStock(doc);
-        } else if (doc.exchangeGratisId) {
+        } else if (doc.type=='ExchangeGratis') {
             reduceExchangeGratis(doc);
-        } else if (doc.companyExchangeRingPullId) {
+        } else if (doc.type=='CompanyExchangeRingPull') {
             reduceCompanyExchangeRingPull(doc);
         } else {
             throw Meteor.Error('Require Receive Item type');
@@ -44,16 +44,16 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
     let preDoc = this.previous;
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        if (doc.prepaidOrderId) {
+        if (doc.type=='PrepaidOrder') {
             increasePrepaidOrder(preDoc);
             reducePrepaidOrder(doc);
-        } else if (doc.lendingStockId) {
+        } else if (doc.type=='LendingStock') {
             increaseLendingStock(preDoc);
             reduceLendingStock(doc);
-        } else if (doc.exchangeGratisId) {
+        } else if (doc.type=='ExchangeGratis') {
             increaseExchangeGratis(preDoc);
             reduceExchangeGratis(doc);
-        } else if (doc.companyExchangeRingPullId) {
+        } else if (doc.type=='CompanyExchangeRingPull') {
             increaseCompanyExchangeRingPull(preDoc);
             reduceCompanyExchangeRingPull(doc);
         } else {
@@ -69,13 +69,13 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
 ReceiveItems.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        if (doc.prepaidOrderId) {
+        if (doc.type=='PrepaidOrder') {
             increasePrepaidOrder(doc);
-        } else if (doc.lendingStockId) {
+        } else if (doc.type=='LendingStock') {
             increaseLendingStock(doc);
-        } else if (doc.exchangeGratisId) {
+        } else if (doc.type=='ExchangeGratis') {
             increaseExchangeGratis(doc);
-        } else if (doc.companyExchangeRingPullId) {
+        } else if (doc.type=='CompanyExchangeRingPull') {
             increaseCompanyExchangeRingPull(doc);
 
         } else {

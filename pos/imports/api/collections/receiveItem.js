@@ -187,11 +187,23 @@ ReceiveItems.schema = new SimpleSchema({
     branchId: {
         type: String
     },
-    billType: {
+    type: {
         type: String,
         optional: true
     },
     prepaidOrderId: {
+        type: String,
+        optional: true
+    },
+    companyExchangeRingPullId: {
+        type: String,
+        optional: true
+    },
+    exchangeGratisId: {
+        type: String,
+        optional: true
+    },
+    lendingStockId: {
         type: String,
         optional: true
     }

@@ -21,7 +21,7 @@ Meteor.publish('pos.companyExchangeRingPull', function posExchangeRingPull(selec
     return this.ready();
 });
 
-Meteor.publish('pos.activeCompanyExchangeRingPulls', function activeCompanyExchangeRingPulls(selector) {
+Meteor.publish('pos.activeCompanyExchangeRingPull', function activeCompanyExchangeRingPulls(selector) {
     this.unblock();
     new SimpleSchema({
         selector: {type: Object, blackbox: true}
