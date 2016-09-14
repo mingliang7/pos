@@ -101,9 +101,11 @@ indexTmpl.rendered = function () {
 };
 indexTmpl.helpers({
     getPenalty(_id){
-        let invoice = countLateInvoice.get();
-        let penalty = invoice.calculatePenalty[_id] || 0;
-        return (_.isEmpty(invoice.calculatePenalty) || !isPenalty.get()) ? 0 : numeral(penalty).format('0,0.00');
+        try {
+            let invoice = countLateInvoice.get();
+            let penalty = invoice.calculatePenalty[_id] || 0;
+            return (_.isEmpty(invoice.calculatePenalty) || !isPenalty.get()) ? 0 : numeral(penalty).format('0,0.00');
+        }catch(e){}
     },
     checkLate(_id){
         let invoice = countLateInvoice.get();
@@ -272,11 +274,13 @@ indexTmpl.helpers({
         return Session.get('balance');
     },
     total(){
-        let discount = this.status == 'active' ? checkTerm(this) : 0;
-        let penalty = isPenalty.get() ? countLateInvoice.get().calculatePenalty[this._id] || 0 : 0;
-        let valueAfterDiscount = this.total * (1 - (discount / 100));
-        let lastPayment = getLastPayment(this._id);
-        return lastPayment == 0 ? numeral(valueAfterDiscount + penalty).format('0,0.00') : numeral(lastPayment + penalty).format('0,0.00');
+        try {
+            let discount = this.status == 'active' ? checkTerm(this) : 0;
+            let penalty = isPenalty.get() ? countLateInvoice.get().calculatePenalty[this._id] || 0 : 0;
+            let valueAfterDiscount = this.total * (1 - (discount / 100));
+            let lastPayment = getLastPayment(this._id);
+            return lastPayment == 0 ? numeral(valueAfterDiscount + penalty).format('0,0.00') : numeral(lastPayment + penalty).format('0,0.00');
+        }catch(e){}
     },
     originAmount(){
         return numeral(this.total).format('0,0.00');

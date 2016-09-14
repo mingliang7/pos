@@ -31,11 +31,16 @@ tabularOpts.columns = [
         data: "_id",
         title: "Amount Due",
         render: function (val) {
-            Meteor.call('getCustomerBalance', {customerId: val}, function (err, result) {
-                balanceTmpCollection.insert({_id: val, balanceAmount: result});
-            });
-            let balanceAmount = balanceTmpCollection.findOne(val).balanceAmount;
-            return numeral(balanceAmount).format('0,0.00');
+            try {
+                Meteor.call('getCustomerBalance', {customerId: val}, function (err, result) {
+                    let balanceAmount = balanceTmpCollection.findOne(val);
+                    if (!balanceAmount) {
+                        balanceTmpCollection.insert({_id: val, balanceAmount: result});
+                    }
+                });
+                let balanceAmount = balanceTmpCollection.findOne(val).balanceAmount;
+                return numeral(balanceAmount).format('0,0.00');
+            }catch(e){};
         }
     },
     {title: '', tmpl: Meteor.isClient && Template.Pos_customerButtonAction}

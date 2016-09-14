@@ -30,11 +30,18 @@ tabularOpts.columns = [
         data: "_id",
         title: "Amount Due",
         render: function (val) {
-            Meteor.call('getVendorBalance', {vendorId: val}, function (err, result) {
-                balanceTmpCollection.insert({_id: val, balanceAmount: result});
-            });
-            let balanceAmount = balanceTmpCollection.findOne(val).balanceAmount;
-            return numeral(balanceAmount).format('0,0.00');
+            try {
+                Meteor.call('getVendorBalance', {vendorId: val}, function (err, result) {
+                    let vendorBalance = balanceTmpCollection.findOne(val);
+                    if (!vendorBalance) {
+                        balanceTmpCollection.insert({_id: val, balanceAmount: result});
+                    }
+                });
+                let balanceAmount = balanceTmpCollection.findOne(val).balanceAmount;
+                return numeral(balanceAmount).format('0,0.00');
+            }catch(e){
+
+            }
         }
     },
     {title: '', tmpl: Meteor.isClient && Template.Pos_vendorButtonAction}
