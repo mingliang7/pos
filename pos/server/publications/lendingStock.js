@@ -19,7 +19,7 @@ Meteor.publish('pos.lendingStock', function posLendingStock(selector, options) {
 
     return this.ready();
 });
-Meteor.publish('pos.activeLendingStocks', function activeLendingStocks(selector) {
+Meteor.publish('pos.activeLendingStock', function activeLendingStocks(selector) {
     this.unblock();
     new SimpleSchema({
         selector: {type: Object, blackbox: true}

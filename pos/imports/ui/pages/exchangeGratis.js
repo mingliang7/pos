@@ -202,7 +202,7 @@ editTmpl.onDestroyed(function () {
 showTmpl.onCreated(function () {
     this.exchangeGratis = new ReactiveVar();
     this.autorun(()=> {
-        exchangeGratisInfo.callPromise({_id: this.data._id})
+        ExchangeGratisInfo.callPromise({_id: this.data._id})
             .then((result) => {
                 this.exchangeGratis.set(result);
             }).catch(function (err) {

@@ -13,8 +13,7 @@ Meteor.publish('pos.exchangeGratis', function posExchangeGratis(selector, option
     }).validate({selector, options});
 
     if (this.userId) {
-        let exchangeGratis = ExchangeGratis.find(selector, options);
-        return exchangeGratis;
+        return ExchangeGratis.find(selector, options);
     }
 
     return this.ready();
@@ -24,8 +23,7 @@ Meteor.publish('pos.exchangeGratis', function posExchangeGratis(selector, option
 Meteor.publish('pos.activeExchangeGratis', function posActiveSaleOrder(selector) {
     if (this.userId) {
         Meteor._sleepForMs(200);
-        let exchangeGratis = ExchangeGratis.find(selector);
-        return exchangeGratis;
+        return ExchangeGratis.find(selector);
     }
     return this.ready();
 });

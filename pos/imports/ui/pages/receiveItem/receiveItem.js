@@ -26,9 +26,8 @@ import '../../../../../core/client/components/form-footer.js';
 // Collection
 import {ReceiveItems} from '../../../api/collections/receiveItem.js';
 import {PrepaidOrders} from '../../../api/collections/prepaidOrder.js';
-import {LendingStocks} from '../../../api/collections/lendingStock.js';
-import {ReceiveTypeDeletedItem} from './receiveItem-items.js';
-import {LendingStockDeletedItem} from './receiveItem-items.js';
+import {ExchangeGratis} from '../../../api/collections/exchangeGratis.js';
+import {ReceiveDeletedItem} from './receiveItem-items.js';
 import {Item} from '../../../api/collections/item';
 import {vendorBillCollection} from '../../../api/collections/tmpCollection';
 // Tabular
@@ -38,8 +37,9 @@ import {ReceiveItemTabular} from '../../../../common/tabulars/receiveItem.js';
 import './receiveItem.html';
 import './receiveItem-items.js';
 import '../info-tab.html';
-import './lendingStock.js'
-import './companyExchangeRingPull.js'
+import './lendingStock.js';
+import './exchangeGratis.js';
+import './companyExchangeRingPull.js';
 //methods
 import {ReceiveItemInfo} from '../../../../common/methods/receiveItem.js'
 import {vendorInfo} from '../../../../common/methods/vendor.js';
@@ -53,13 +53,21 @@ Tracker.autorun(function () {
                 Session.set('vendorInfo', result);
             })
     }
-    if (Session.get('prepaidOrderItems') || Session.get('lendingStockItems')) {
+    if (Session.get('prepaidOrderItems')
+        || Session.get('lendingStockItems')
+        || Session.get('companyExchangeRingPullItems')
+        || Session.get('exchangeGratisItems')
+    ) {
         let query = FlowRouter.query;
         var data;
-        if(query.get('type') == 'activeLendingStocks') {
+        if (query.get('type') == 'activeLendingStock') {
             data = Session.get('lendingStockItems');
-        }else if(query.get('type') == 'activePrepaidOrder') {
+        } else if (query.get('type') == 'activePrepaidOrder') {
             data = Session.get('prepaidOrderItems');
+        } else if (query.get('type') == 'activeCompanyExchangeRingPull') {
+            data = Session.get('companyExchangeRingPullItems');
+        } else if (query.get('type') == 'activeExchangeGratis') {
+            data = Session.get('exchangeGratisItems');
         }
         Meteor.subscribe('pos.item', {_id: {$in: data}});
     }
@@ -73,6 +81,7 @@ let indexTmpl = Template.Pos_receiveItem,
     showTmpl = Template.Pos_receiveItemShow,
     listPrepaidOrder = Template.listPrepaidOrder,
     listCompanyExchangeRingPull = Template.listCompanyExchangeRingPull,
+    listExchangeGratis = Template.listExchangeGratis,
     listLendingStock = Template.listLendingStock;
 // Local collection
 import {itemsCollection} from '../../../api/collections/tmpCollection';
@@ -86,6 +95,7 @@ indexTmpl.onCreated(function () {
     createNewAlertify('listPrepaidOrder', {size: 'lg'});
     createNewAlertify('listLendingStock', {size: 'lg'});
     createNewAlertify('listCompanyExchangeRingPull', {size: 'lg'});
+    createNewAlertify('listExchangeGratis', {size: 'lg'});
     createNewAlertify('vendor');
 });
 
@@ -146,7 +156,7 @@ newTmpl.onCreated(function () {
 newTmpl.events({
     'click .toggle-list'(event, instance){
         let receiveType = $('#receive-type').val();
-        let vendor = Session.get('getVendorId');
+        let vendor = $('[name="vendorId"]').val();
         receiveTypeFn({receiveType, vendor});
     },
 
@@ -165,19 +175,10 @@ newTmpl.events({
     'click .go-to-pay-bill'(event, instance){
         alertify.receiveItem().close();
     },
-    'click #btn-save-print'(event, instance){
-        Session.set('btnType', 'save-print');
-    },
-    'click #btn-save'(event, instance){
-        Session.set('btnType', 'save');
-    },
-    'click #btn-pay'(event, instance){
-        Session.set('btnType', 'pay');
-    },
     'change #receive-type'(event, instance){
         let receiveType = event.currentTarget.value;
-        let vendor = Session.get('getVendorId');
-        $('.toggle-list').removeClass('hidden')
+        let vendor = $('[name="vendorId"]').val();
+        $('.toggle-list').removeClass('hidden');
         receiveTypeFn({receiveType, vendor});
     }
 });
@@ -224,8 +225,6 @@ newTmpl.helpers({
     },
     totalReceiveItem(){
         let total = 0;
-        console.log(itemsCollection.find().fetch());
-
         itemsCollection.find().forEach(function (item) {
             total += item.amount;
         });
@@ -310,25 +309,11 @@ newTmpl.onDestroyed(function () {
 // Edit
 editTmpl.onCreated(function () {
     this.repOptions = new ReactiveVar();
-    this.isPrepaidOrder = new ReactiveVar(false);
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
     });
-    if (this.data.billType == 'prepaidOrder') {
-        FlowRouter.query.set('vendorId', this.data.vendorId);
-        this.isPrepaidOrder.set(true);
-    }
 });
 editTmpl.events({
-    'click #btn-save-print'(event, instance){
-        Session.set('btnType', 'save-print');
-    },
-    'click #btn-save'(event, instance){
-        Session.set('btnType', 'save');
-    },
-    'click #btn-pay'(event, instance){
-        Session.set('btnType', 'pay');
-    },
     'click .add-new-vendor'(event, instance){
         alertify.vendor(fa('plus', 'New Vendor'), renderTemplate(Template.Pos_vendorNew));
     },
@@ -345,7 +330,9 @@ editTmpl.events({
         Session.set('totalOrder', undefined);
     },
     'click .toggle-list'(event, instance){
-        alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
+        let receiveType = $('#receive-type').val();
+        let vendor = $('[name="vendorId"]').val();
+        receiveTypeFn({receiveType, vendor});
     },
     'change [name="termId"]'(event, instance){
         let vendorInfo = Session.get('vendorInfo');
@@ -483,6 +470,7 @@ editTmpl.onDestroyed(function () {
     debugger;
     // Remove items collection
     itemsCollection.remove({});
+    ReceiveDeletedItem.remove({});
 });
 
 // Show
@@ -515,28 +503,23 @@ showTmpl.events({
 let hooksObject = {
     before: {
         insert: function (doc) {
+            debugger;
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
                 if (obj.prepaidOrderId) {
                     doc.prepaidOrderId = obj.prepaidOrderId;
+                } else if (obj.lendingStockId) {
+                    doc.lendingStockId = obj.lendingStockId;
+                } else if (obj.exchangeGratisId) {
+                    doc.exchangeGratisId = obj.exchangeGratisId;
+                } else if (obj.companyExchangeRingPullId) {
+                    doc.companyExchangeRingPullId = obj.companyExchangeRingPullId;
                 }
                 items.push(obj);
             });
-            var btnType = Session.get('btnType');
-            if (btnType == "save" || btnType == "save-print") {
-                doc.status = "partial";
-                doc.paidAmount = 0;
-                doc.dueAmount = math.round(doc.total, 2);
-            } else if (btnType == "pay") {
-                doc.dueAmount = math.round((doc.total - doc.paidAmount), 2);
-                if (doc.dueAmount <= 0) {
-                    doc.status = "close";
-                } else {
-                    doc.status = "partial";
-                }
-
-            }
+            doc.type = $('#receive-type').val();
+            doc.status = 'closed';
             doc.items = items;
             return doc;
         },
@@ -547,19 +530,6 @@ let hooksObject = {
                 items.push(obj);
             });
             doc.$set.items = items;
-            var btnType = Session.get('btnType');
-            if (btnType == "save" || btnType == "save-print") {
-                doc.$set.status = "partial";
-                doc.$set.paidAmount = 0;
-                doc.$set.dueAmount = math.round(doc.$set.total, 2);
-            } else if (btnType == "pay") {
-                doc.$set.dueAmount = math.round((doc.$set.total - doc.$set.paidAmount), 2);
-                if (doc.$set.dueAmount <= 0) {
-                    doc.$set.status = "close";
-                } else {
-                    doc.$set.status = "partial";
-                }
-            }
             delete doc.$unset;
             return doc;
         }
@@ -600,8 +570,8 @@ listPrepaidOrder.helpers({
     prepaidOrders(){
         let item = [];
         let prepaidOrders = PrepaidOrders.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
-        if (ReceiveTypeDeletedItem.find().count() > 0) {
-            ReceiveTypeDeletedItem.find().forEach(function (item) {
+        if (ReceiveDeletedItem.find().count() > 0) {
+            ReceiveDeletedItem.find().forEach(function (item) {
                 console.log(item);
                 prepaidOrders.forEach(function (prepaidOrder) {
                     prepaidOrder.items.forEach(function (prepaidOrderItem) {
@@ -640,6 +610,7 @@ listPrepaidOrder.events({
         let remainQty = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.remain-qty').val();
         let prepaidOrderId = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.prepaidOrderId').text().trim();
         let tmpCollection = itemsCollection.find().fetch();
+        debugger
         if (remainQty != '' && remainQty != '0') {
             if (this.remainQty > 0) {
                 if (tmpCollection.length > 0) {
@@ -748,7 +719,6 @@ function excuteEditForm(doc) {
 }
 
 
-
 function receiveTypeFn({receiveType, vendor}) {
     let label = '';
     if (receiveType == 'PrepaidOrder') {
@@ -758,16 +728,19 @@ function receiveTypeFn({receiveType, vendor}) {
     }
     else if (receiveType == 'LendingStock') {
         label = 'Lending Stock';
-        FlowRouter.query.set({vendorId: vendor, type: 'activeLendingStocks'});
+        FlowRouter.query.set({vendorId: vendor, type: 'activeLendingStock'});
         alertify.listLendingStock(fa('', 'Lending Stock'), renderTemplate(listLendingStock));
     }
-    else if (receiveType == 'RingPull') {
+    else if (receiveType == 'CompanyExchangeRingPull') {
         label = "Ring Pull";
-        FlowRouter.query.set({vendorId: vendor, type: 'activeCompanyExchangeRingPulls'});
+        FlowRouter.query.set({vendorId: vendor, type: 'activeCompanyExchangeRingPull'});
         alertify.listCompanyExchangeRingPull(fa('', 'Exchange Ring Pull'), renderTemplate(listCompanyExchangeRingPull));
 
-    } else if (receiveType == 'Gratis') {
+    } else if (receiveType == 'ExchangeGratis') {
         label = "Gratis";
+        FlowRouter.query.set({vendorId: vendor, type: 'activeExchangeGratis'});
+        alertify.listExchangeGratis(fa('', 'Exchange Gratis'), renderTemplate(listExchangeGratis));
+
     }
     $('.receive-type-label').text(label);
 

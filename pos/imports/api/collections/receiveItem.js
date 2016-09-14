@@ -169,41 +169,9 @@ ReceiveItems.schema = new SimpleSchema({
     items: {
         type: [ReceiveItems.itemsSchema],
     },
-    discount: {
-        type: Number,
-        decimal: true,
-        defaultValue:0,
-        autoform: {
-            type: 'inputmask',
-            inputmaskOptions: function () {
-                return inputmaskOptions.percentage();
-            }
-        }
-    },
-    subTotal: {
-        type: Number,
-        decimal: true,
-        autoform: {
-            type: 'inputmask',
-            inputmaskOptions: function () {
-                return inputmaskOptions.currency();
-            }
-        }
-    },
     total: {
         type: Number,
         decimal: true,
-        autoform: {
-            type: 'inputmask',
-            inputmaskOptions: function () {
-                return inputmaskOptions.currency();
-            }
-        }
-    },
-    paidAmount: {
-        type: Number,
-        decimal: true,
-        optional: true,
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
@@ -219,11 +187,23 @@ ReceiveItems.schema = new SimpleSchema({
     branchId: {
         type: String
     },
-    billType: {
+    type: {
         type: String,
         optional: true
     },
     prepaidOrderId: {
+        type: String,
+        optional: true
+    },
+    companyExchangeRingPullId: {
+        type: String,
+        optional: true
+    },
+    exchangeGratisId: {
+        type: String,
+        optional: true
+    },
+    lendingStockId: {
         type: String,
         optional: true
     }

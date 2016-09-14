@@ -46,29 +46,12 @@
         {{> reactiveTable settings=tableSettings}}
         <div class="row">
             <div class="col-sm-8">
-                <div class="pull-right">SubTotal:</div>
-            </div>
-            <div class="col-sm-4">
-                {{> afQuickField name="subTotal" id="sub-total" value=subTotal label=false readonly="true"}}
-            </div>
-            <div class="col-sm-8">
-                <div class="pull-right">Discount:</div>
-            </div>
-            <div class="col-sm-4">
-                {{> afQuickField name="discount" id="discount" value=discount label=false}}
-            </div>
-            <div class="col-sm-8">
                 <div class="pull-right">Total:</div>
             </div>
             <div class="col-sm-4">
                 {{> afQuickField name="total" id="total" value=total label=false readonly="true"}}
             </div>
-            <div class="col-sm-8">
-                <div class="pull-right">Pay:</div>
-            </div>
-            <div class="col-sm-4">
-                {{> afQuickField name="paidAmount" id="pay-amount" label=false}}
-            </div>
+
         </div>
     </div>
 </template>

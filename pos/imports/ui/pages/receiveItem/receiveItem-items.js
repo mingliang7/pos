@@ -37,8 +37,7 @@ var itemsTmpl = Template.Pos_receiveItemItems,
 
 // Local collection
 var itemsCollection;
-export const LendingStockDeletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
-export const ReceiveTypeDeletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
+export const ReceiveDeletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
 
 // Page
 import './receiveItem-items.html';
@@ -127,25 +126,15 @@ itemsTmpl.helpers({
 
         return {};
     },
-    subTotal: function () {
-        let subTotal = 0;
+    total: function () {
+        let total = 0;
         let getItems = itemsCollection.find();
         getItems.forEach((obj) => {
-            subTotal += obj.amount;
+            total += obj.amount;
         });
-        return FlowRouter.query.get('vendorId') ? 0 : subTotal;
+        return FlowRouter.query.get('vendorId') ? 0 : total;
         // return Session.get('subTotal')
     },
-    total(){
-        let subTotal = 0;
-        let getItems = itemsCollection.find();
-        getItems.forEach((obj) => {
-            subTotal += obj.amount;
-        });
-        let discount = $('#discount').val();
-        discount = discount == "" ? 0 : parseFloat(discount);
-        return FlowRouter.query.get('vendorId') ? 0 : subTotal * (1 - discount / 100);
-    }
 });
 
 
@@ -230,7 +219,8 @@ itemsTmpl.events({
     'click .js-destroy-item': function (event, instance) {
         event.preventDefault();
         let itemDoc = this;
-        if (AutoForm.getFormId() == "Pos_invoiceUpdate") { //check if update form
+        console.log('fuck you bitch swal');
+        if (AutoForm.getFormId() == "Pos_receiveItemEdit") { //check if update form
             swal({
                     title: "Are you sure?",
                     text: "លុបទំនិញមួយនេះ?",
@@ -238,10 +228,10 @@ itemsTmpl.events({
                     confirmButtonColor: "#DD6B55",
                     confirmButtonText: "Yes, delete it!",
                     closeOnConfirm: false
-                },
+                }).then(
                 function () {
-                    if (!ReceiveTypeDeletedItem.findOne({itemId: itemDoc.itemId})) {
-                        ReceiveTypeDeletedItem.insert(itemDoc);
+                    if (!ReceiveDeletedItem.findOne({itemId: itemDoc.itemId})) {
+                        ReceiveDeletedItem.insert(itemDoc);
                     }
                     itemsCollection.remove({itemId: itemDoc.itemId});
                     swal.close();

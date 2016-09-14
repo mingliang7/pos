@@ -33,12 +33,12 @@
                 <div class="row">
                     <div class="col-md-2">
                         <label for="receive-type">Receive From:<span style="color: red;">*</span> </label>
-                        <select class="form-control" id="receive-type" disabled="{{enableReceiveType}}">
+                        <select name="type" class="form-control" id="receive-type" disabled="{{enableReceiveType}}">
                             <option value="">(Select One)</option>
                             <option value="PrepaidOrder">Prepaid Order</option>
                             <option value="LendingStock">Lending Stock</option>
-                            <option value="RingPull">Ring Pull</option>
-                            <option value="Gratis">Gratis</option>
+                            <option value="CompanyExchangeRingPull">Ring Pull</option>
+                            <option value="ExchangeGratis">Gratis</option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -97,12 +97,6 @@
                         <!--{{> formFooterWithButton}}-->
 
                         {{#formFooter}}
-                            <button type="submit" class="btn btn-success" id="btn-pay" {{disabledSubmitBtn}}>
-                                <i class="fa fa-money"></i> {{_ "pos.custom.pay"}}
-                            </button>
-                            <button type="submit" class="btn btn-warning" id="btn-save-print" {{disabledSubmitBtn}}>
-                                <i class="fa fa-print"></i> {{_ "pos.custom.saveAndPrint"}}
-                            </button>
                             <button type="submit" class="btn btn-primary" id="btn-save" {{disabledSubmitBtn}}>
                                 <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
                             </button>
@@ -129,6 +123,18 @@
                     <div class="col-md-3">
                         <label for="email">Vendor:<span style="color: red;">*</span> </label>
                         {{> afQuickField name="vendorId" label=false}}
+                    </div>
+
+                    <div class="col-md-3">
+                        <br>
+                            <!--{{#if isPrepaidOrder}}-->
+                        <input type="text" value="{{type}}" class="hidden" id="receive-type">
+                        <span> <a href="" class="toggle-list btn btn-default">
+                                <label class="receive-type-label">{{type}}</label> <i class="fa fa-list "
+                                                                                      aria-hidden="true"></i>
+                            </a>
+                            </span>
+                            <!--{{/if}}-->
                     </div>
 
                     <div class="col-md-9">
@@ -216,7 +222,7 @@
                 <div class="col-xs-12">
                     <div class="row">
                         <div class="col-xs-6 pull-left">
-                            <h2>BILL</h2>
+                            <h2>Receive Item</h2>
                         </div>
                         <div class="col-xs-6 pull-left">
                             <h3 class="pull-right">#{{_id}}</h3>

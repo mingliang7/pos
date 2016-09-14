@@ -1,42 +1,42 @@
 //Collections
-import {CompanyExchangeRingPulls} from '../../../api/collections/companyExchangeRingPull';
+import {ExchangeGratis} from '../../../api/collections/exchangeGratis';
 import {Item} from '../../../api/collections/item';
 import {itemsCollection} from '../../../api/collections/tmpCollection';
 //pages
-import './companyExchangeRingPull.html';
+import './exchangeGratis.html';
 import {destroyAction} from '../../../../../core/client/libs/destroy-action.js';
 import {displaySuccess, displayError} from '../../../../../core/client/libs/display-alert.js';
 import {vendorInfo} from '../../../../common/methods/vendor.js';
 import {ReceiveDeletedItem} from './receiveItem-items.js'
-var companyExchangeRingPullTmpl = Template.listCompanyExchangeRingPull;
+var exchangeGratisTmpl = Template.listExchangeGratis;
 
-companyExchangeRingPullTmpl.helpers({
-    companyExchangeRingPulls(){
+exchangeGratisTmpl.helpers({
+    exchangeGratises(){
         let item = [];
-        let companyExchangeRingPulls = CompanyExchangeRingPulls.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
+        let exchangeGratises = ExchangeGratis.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
         if (ReceiveDeletedItem.find().count() > 0) {
             ReceiveDeletedItem.find().forEach(function (item) {
                 console.log(item);
-                companyExchangeRingPull.forEach(function (companyExchangeRingPull) {
-                    companyExchangeRingPull.items.forEach(function (companyExchangeRingPullItem) {
-                        if (companyExchangeRingPullItem.itemId == item.itemId) {
-                            companyExchangeRingPullItem.remainQty += item.qty;
-                            companyExchangeRingPull.sumRemainQty += item.qty;
+                exchangeGratis.forEach(function (exchangeGratis) {
+                    exchangeGratis.items.forEach(function (exchangeGratisItem) {
+                        if (exchangeGratisItem.itemId == item.itemId) {
+                            exchangeGratisItem.remainQty += item.qty;
+                            exchangeGratis.sumRemainQty += item.qty;
                         }
                     });
                 });
             });
         }
-        companyExchangeRingPulls.forEach(function (companyExchangeRingPull) {
-            companyExchangeRingPull.items.forEach(function (companyExchangeRingPullItem) {
-                item.push(companyExchangeRingPullItem.itemId);
+        exchangeGratises.forEach(function (exchangeGratis) {
+            exchangeGratis.items.forEach(function (exchangeGratisItem) {
+                item.push(exchangeGratisItem.itemId);
             });
         });
-        Session.set('companyExchangeRingPullItems', item);
-        return companyExchangeRingPulls;
+        Session.set('exchangeGratisItems', item);
+        return exchangeGratises;
     },
-    hasCompanyExchangeRingPulls(){
-        let count = CompanyExchangeRingPulls.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).count();
+    hasExchangeGratises(){
+        let count = ExchangeGratis.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).count();
         return count > 0;
     },
     getItemName(itemId){
@@ -50,31 +50,31 @@ companyExchangeRingPullTmpl.helpers({
     }
 });
 
-companyExchangeRingPullTmpl.events({
+exchangeGratisTmpl.events({
     'click .add-item'(event, instance){
         event.preventDefault();
         let remainQty = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.remain-qty').val();
-        let companyExchangeRingPullId = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.companyExchangeRingPullId').text().trim();
+        let exchangeGratisId = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.exchangeGratisId').text().trim();
         let tmpCollection = itemsCollection.find().fetch();
         if (remainQty != '' && remainQty != '0') {
             if (this.remainQty > 0) {
                 if (tmpCollection.length > 0) {
-                    let companyExchangeRingPullIdExist = _.find(tmpCollection, function (o) {
-                        return o.companyExchangeRingPullId == companyExchangeRingPullId;
+                    let exchangeGratisIdExist = _.find(tmpCollection, function (o) {
+                        return o.exchangeGratisId == exchangeGratisId;
                     });
-                    if (companyExchangeRingPullIdExist) {
-                        insertCompanyExchangeRingPullItem({
+                    if (exchangeGratisIdExist) {
+                        insertExchangeGratisItem({
                             self: this,
                             remainQty: parseFloat(remainQty),
-                            companyExchangeRingPullItem: companyExchangeRingPullIdExist,
-                            companyExchangeRingPullId: companyExchangeRingPullId
+                            exchangeGratisItem: exchangeGratisIdExist,
+                            exchangeGratisId: exchangeGratisId
                         });
                     } else {
-                        swal("Retry!", "Item Must be in the same companyExchangeRingPullId", "warning")
+                        swal("Retry!", "Item Must be in the same exchangeGratisId", "warning")
                     }
                 } else {
                     Meteor.call('getItem', this.itemId, (err, result)=> {
-                        this.companyExchangeRingPullId = companyExchangeRingPullId;
+                        this.exchangeGratisId = exchangeGratisId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
                         itemsCollection.insert(this);
@@ -91,7 +91,7 @@ companyExchangeRingPullTmpl.events({
     'change .remain-qty'(event, instance){
         event.preventDefault();
         let remainQty = $(event.currentTarget).val();
-        let companyExchangeRingPullId = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.companyExchangeRingPullId').text().trim();
+        let exchangeGratisId = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.exchangeGratisId').text().trim();
         let tmpCollection = itemsCollection.find().fetch();
         if (remainQty != '' && remainQty != '0') {
             if (this.remainQty > 0) {
@@ -100,22 +100,22 @@ companyExchangeRingPullTmpl.events({
                     $(event.currentTarget).val(this.remainQty);
                 }
                 if (tmpCollection.length > 0) {
-                    let companyExchangeRingPullIdExist = _.find(tmpCollection, function (o) {
-                        return o.companyExchangeRingPullId == companyExchangeRingPullId;
+                    let exchangeGratisIdExist = _.find(tmpCollection, function (o) {
+                        return o.exchangeGratisId == exchangeGratisId;
                     });
-                    if (companyExchangeRingPullIdExist) {
-                        insertCompanyExchangeRingPullItem({
+                    if (exchangeGratisIdExist) {
+                        insertExchangeGratisItem({
                             self: this,
                             remainQty: parseFloat(remainQty),
-                            companyExchangeRingPullItem: companyExchangeRingPullIdExist,
-                            companyExchangeRingPullId: companyExchangeRingPullId
+                            exchangeGratisItem: exchangeGratisIdExist,
+                            exchangeGratisId: exchangeGratisId
                         });
                     } else {
-                        swal("Retry!", "Item Must be in the same companyExchangeRingPullId", "warning")
+                        swal("Retry!", "Item Must be in the same exchangeGratisId", "warning")
                     }
                 } else {
                     Meteor.call('getItem', this.itemId, (err, result)=> {
-                        this.companyExchangeRingPullId = companyExchangeRingPullId;
+                        this.exchangeGratisId = exchangeGratisId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
                         this.amount = this.qty * this.price;
@@ -132,10 +132,10 @@ companyExchangeRingPullTmpl.events({
 
     }
 });
-//insert companyExchagneRingPull order item to itemsCollection
-let insertCompanyExchangeRingPullItem = ({self, remainQty, companyExchagneRingPullItem, companyExchagneRingPullId}) => {
+//insert exchangeGratis order item to itemsCollection
+let insertExchangeGratisItem = ({self, remainQty, exchangeGratisItem, exchangeGratisId}) => {
     Meteor.call('getItem', self.itemId, (err, result)=> {
-        self.companyExchagneRingPullId = companyExchagneRingPullId;
+        self.exchangeGratisId = exchangeGratisId;
         self.qty = remainQty;
         self.name = result.name;
         self.amount = self.qty * self.price;

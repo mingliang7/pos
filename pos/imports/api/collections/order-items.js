@@ -60,9 +60,6 @@ export const ItemsSchema = new SimpleSchema({
         optional: true,
         defaultValue: function () {
             let id = AutoForm.getFieldValue('itemId');
-
-            console.log(id);
-
             if (id) {
                 itemInfo.callPromise({
                     _id: id
@@ -134,9 +131,6 @@ export const RingPullItemsSchema = new SimpleSchema({
      optional: true,
      defaultValue: function () {
      let id = AutoForm.getFieldValue('itemId');
-
-     console.log(id);
-
      if (id) {
      itemInfo.callPromise({
      _id: id
