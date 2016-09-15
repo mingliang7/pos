@@ -46,6 +46,9 @@ indexTmpl.helpers({
                 label: 'Prepaid Order', value: 'prepaidOrder'
             },
             {
+                label: 'Exchange Gratis', value: 'exchangeGratis'
+            },
+            {
                 label: 'Exchange Ring Pull', value: 'exchangeRingPull'
             },
             {
@@ -120,6 +123,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'prepaidOrder':
             params = `/pos/report/prepaidOrderReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
+            break;
+        case 'exchangeGratis':
+            params = `/pos/report/exchangeGratisReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
             break;
         case 'exchangeRingPull':
             params = `/pos/report/exchangeRingPullReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;

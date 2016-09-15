@@ -254,6 +254,21 @@ PosRoutes.route('/report/exchangeRingPullReport', {
     }
 });
 
+import '../imports/ui/reports/exchangeGratis';
+PosRoutes.route('/report/exchangeGratisReport', {
+    name: 'pos.exchangeGratisReport',
+    title: 'Exchange Gratis Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_exchangeGratisReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Exchange Gratis Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
+
 import '../imports/ui/reports/saleOrderReport';
 PosRoutes.route('/report/saleOrderReport', {
     name: 'pos.saleOrderReport',
