@@ -58,12 +58,12 @@ export const exchangeRingPullReport = new ValidatedMethod({
                 project = {
                     '_id': '$_id',
                     'exchangeRingPullDate': '$exchangeRingPullDate',
-                    'customer': '$customerDoc.name',
+                    'customer': '$customerDoc',
                     'status': '$status',
                     'sumRemainQty': '$sumRemainQty',
                 };
-                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Customer'}];
-                data.displayFields = [{field: '_id'}, {field: 'exchangeRingPullDate'}, {field: 'customer'}];
+                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Customer'}, {field: 'Telephone'}];
+                data.displayFields = [{field: '_id'}, {field: 'exchangeRingPullDate'}, {field: 'customerName'}, {field: 'customerTelephone'}];
             }
 
             /****** Title *****/

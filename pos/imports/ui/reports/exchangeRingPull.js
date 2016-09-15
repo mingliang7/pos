@@ -68,10 +68,10 @@ invoiceDataTmpl.helpers({
         this.displayFields.forEach(function (obj) {
             if (obj.field == 'exchangeRingPullDate') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
-            } else if (obj.field == 'customerId') {
-                data += `<td>${col._customer.name}</td>`
-            } else if (obj.field == 'total') {
-                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
+            } else if (obj.field == 'customerName') {
+                data += `<td>${col.customer.name}</td>`
+            } else if (obj.field == 'customerTelephone') {
+                data += `<td>${col.customer.telephone}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
