@@ -11,10 +11,7 @@ import {billState} from '../../common/globalState/enterBill';
 import {GroupBill} from '../../imports/api/collections/groupBill.js'
 import {PayBills} from '../../imports/api/collections/payBill.js';
 EnterBills.before.insert(function (userId, doc) {
-    if (doc.total == 0) {
-        doc.status = 'closed';
-        doc.billType = 'prepaidOrder'
-    } else if (doc.termId) {
+    if (doc.termId) {
         doc.status = 'partial';
         doc.billType = 'term';
     } else {
@@ -35,137 +32,80 @@ EnterBills.after.insert(function (userId, doc) {
         if (doc.billType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
         }
-        if (doc.prepaidOrderId) {
-            doc.items.forEach(function (item) {
-                PrepaidOrders.direct.update(
-                    {
-                        _id: doc.prepaidOrderId,
-                        "items.itemId": item.itemId
-                    },
-                    {
-                        $inc: {
-                            sumRemainQty: -item.qty,
-                            "items.$.remainQty": -item.qty
-                        }
-                    });
+        doc.items.forEach(function (item) {
+            averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
+        });
+
+        //Integration to Account System
+        if (true) {
+            let transaction = [];
+            let data = doc;
+            data.type = "EnterBill";
+            data.items.forEach(function (item) {
+                let itemDoc = Item.findOne(item.itemId);
+                transaction.push({
+                    account: itemDoc.accountMapping.inventoryAsset,
+                    dr: item.amount,
+                    cr: 0,
+                    drcr: item.amount,
+
+                }, {
+                    account: itemDoc.accountMapping.accountPayable,
+                    dr: 0,
+                    cr: item.amount,
+                    drcr: -item.amount,
+                })
             });
-            let prepaidOrder = PrepaidOrders.findOne(doc.prepaidOrderId);
-            if (prepaidOrder.sumRemainQty == 0) {
-                PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'closed'}});
-            }
-        } else {
-            if (doc.status == "active") {
-            } else {
-                console.log('from enterBill after insert');
-                doc.items.forEach(function (item) {
-                    averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
-                });
-
-                //Integration to Account System
-                if (true) {
-                    let transaction = [];
-                    let data=doc;
-                    data.type="EnterBill";
-                    data.items.forEach(function (item) {
-                        let itemDoc = Item.findOne(item.itemId);
-                        transaction.push({
-                            account: itemDoc.accountMapping.inventoryAsset,
-                            dr: item.amount,
-                            cr: 0,
-                            drcr: item.amount,
-
-                        }, {
-                            account: itemDoc.accountMapping.accountPayable,
-                            dr: 0,
-                            cr: item.amount,
-                            drcr: -item.amount,
-                        })
-                    });
-                    data.transaction=transaction;
-                    Meteor.call('insertAccountJournal',data);
-
-                }
-
-
-            }
+            data.transaction = transaction;
+            Meteor.call('insertAccountJournal', data);
         }
+
     });
 });
 
 EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
     let preDoc = this.previous;
     let type = {
-        prepaidOrder: doc.billType == 'prepaidOrder',
         term: doc.billType == 'term',
         group: doc.billType == 'group'
     };
-    if (type.prepaidOrder) {
-        Meteor.defer(function () {
-            recalculateQty(preDoc);
-            updateQtyInPrepaidOrder(doc);
-            let prepaidOrder = PrepaidOrders.aggregate([{$match: {_id: doc.prepaidOrderId}}, {$projection: {sumRemainQty: 1}}]);
-            if (prepaidOrder.sumRemainQty == 0) {
-                PrepaidOrders.direct.update(doc.prepaidOrderId, {$set: {status: 'closed'}});
-            } else {
-                PrepaidOrders.direct.update(doc.prepaidOrderId, {$set: {status: 'active'}});
-            }
-        });
-    } else if (type.group) {
+    if (type.group) {
         Meteor.defer(function () {
             removeBillFromGroup(preDoc);
             pushBillFromGroup(doc);
             recalculatePayment({preDoc, doc});
             // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
         });
-        //////////
-        if (doc.status == "active") {
-        } else {
-            Meteor.defer(function () {
-                Meteor._sleepForMs(200);
-                reduceFromInventory(preDoc);
-                doc.items.forEach(function (item) {
-                    averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
-                });
-
+        Meteor.defer(function () {
+            Meteor._sleepForMs(200);
+            reduceFromInventory(preDoc);
+            doc.items.forEach(function (item) {
+                averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
             });
-        }
-        //////////
-
+        });
     } else {
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
             recalculatePayment({preDoc, doc});
         });
-        //////////
-        if (doc.status == "active") {
-        } else {
-            Meteor.defer(function () {
-                Meteor._sleepForMs(200);
-                reduceFromInventory(preDoc);
-                doc.items.forEach(function (item) {
-                    averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
-                });
-
+        Meteor.defer(function () {
+            Meteor._sleepForMs(200);
+            reduceFromInventory(preDoc);
+            doc.items.forEach(function (item) {
+                averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
             });
-        }
-        //////////
+        });
     }
-
 });
 
 EnterBills.after.remove(function (userId, doc) {
-
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
         let type = {
-            prepaidOrder: doc.billType == 'prepaidOrder',
             term: doc.billType == 'term',
             group: doc.billType == 'group'
         };
-        if (type.prepaidOrder) {
-            recalculateQty(doc);
-            PrepaidOrders.direct.update(doc.prepaidOrderId, {$set: {status: 'active'}});
-        } else if (type.group) {
+        if (type.group) {
             reduceFromInventory(doc);
             removeBillFromGroup(doc);
             let groupBill = GroupBill.findOne(doc.paymentGroupId);

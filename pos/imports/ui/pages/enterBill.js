@@ -40,7 +40,7 @@ import './vendor.html'
 //methods
 import {EnterBillInfo} from '../../../common/methods/enterBill.js'
 import {vendorInfo} from '../../../common/methods/vendor.js';
-//Tracker for vendor infomation
+
 //Tracker for vendor infomation
 Tracker.autorun(function () {
     if (Session.get("getVendorId")) {
@@ -49,9 +49,6 @@ Tracker.autorun(function () {
                 Session.set('vendorInfo', result);
             })
     }
-    if (Session.get('prepaidOrderItems')) {
-        Meteor.subscribe('pos.item', {_id: {$in: Session.get('prepaidOrderItems')}});
-    }
 });
 // Declare template
 let indexTmpl = Template.Pos_enterBill,
@@ -59,7 +56,6 @@ let indexTmpl = Template.Pos_enterBill,
     newTmpl = Template.Pos_enterBillNew,
     editTmpl = Template.Pos_enterBillEdit,
     showTmpl = Template.Pos_enterBillShow;
-listPrepaidOrder = Template.listPrepaidOrder;
 // Local collection
 let itemsCollection = new Mongo.Collection(null);
 
@@ -77,7 +73,6 @@ indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('enterBill', {size: 'lg'});
     createNewAlertify('enterBillShow');
-    createNewAlertify('listPrepaidOrder', {size: 'lg'});
     createNewAlertify('vendor');
 });
 
@@ -135,30 +130,6 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
-
-    'change .enable-prepaid-order'(event, instance){
-        itemsCollection.remove({});
-        let vendorId = $('[name="vendorId"]').val();
-        if ($(event.currentTarget).prop('checked')) {
-            if (vendorId != '') {
-                FlowRouter.query.set('vendorId', vendorId);
-                $('.prepaid-order').addClass('toggle-list');
-                setTimeout(function () {
-                    alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
-                }, 700)
-            } else {
-                displayError('Please select vendor');
-                $(event.currentTarget).prop('checked', false);
-            }
-
-        } else {
-            FlowRouter.query.unset();
-            $('.prepaid-order').removeClass('toggle-list');
-        }
-    },
-    'click .toggle-list'(event, instance){
-        alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
-    },
     'change [name=vendorId]'(event, instance){
         if (event.currentTarget.value != '') {
             Session.set('getVendorId', event.currentTarget.value);
@@ -167,19 +138,9 @@ newTmpl.events({
             }
         }
         Session.set('totalOrder', undefined);
-
     },
     'click .go-to-pay-bill'(event, instance){
         alertify.enterBill().close();
-    },
-    'click #btn-save-print'(event, instance){
-        Session.set('btnType', 'save-print');
-    },
-    'click #btn-save'(event, instance){
-        Session.set('btnType', 'save');
-    },
-    'click #btn-pay'(event, instance){
-        Session.set('btnType', 'pay');
     }
 });
 newTmpl.helpers({
@@ -301,31 +262,17 @@ newTmpl.onDestroyed(function () {
     Session.set('vendorInfo', undefined);
     Session.set('vendorId', undefined);
     FlowRouter.query.unset();
-    Session.set('prepaidOrderItems', undefined);
     Session.set('totalOrder', undefined);
 });
 // Edit
 editTmpl.onCreated(function () {
     this.repOptions = new ReactiveVar();
-    this.isPrepaidOrder = new ReactiveVar(false);
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
     });
-    if (this.data.billType == 'prepaidOrder') {
-        FlowRouter.query.set('vendorId', this.data.vendorId);
-        this.isPrepaidOrder.set(true);
-    }
 });
 editTmpl.events({
-    'click #btn-save-print'(event, instance){
-        Session.set('btnType', 'save-print');
-    },
-    'click #btn-save'(event, instance){
-        Session.set('btnType', 'save');
-    },
-    'click #btn-pay'(event, instance){
-        Session.set('btnType', 'pay');
-    },
+
     'click .add-new-vendor'(event, instance){
         alertify.vendor(fa('plus', 'New Vendor'), renderTemplate(Template.Pos_vendorNew));
     },
@@ -341,9 +288,6 @@ editTmpl.events({
         }
         Session.set('totalOrder', undefined);
     },
-    'click .toggle-list'(event, instance){
-        alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
-    },
     'change [name="termId"]'(event, instance){
         let vendorInfo = Session.get('vendorInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
@@ -357,9 +301,6 @@ editTmpl.helpers({
         setTimeout(function () {
             swal.close();
         }, 500);
-    },
-    isPrepaidOrder(){
-        return Template.instance().isPrepaidOrder.get();
     },
     collection(){
         return EnterBills;
@@ -513,6 +454,7 @@ let hooksObject = {
                 delete obj._id;
                 items.push(obj);
             });
+            doc.status='active';
             doc.items = items;
             return doc;
         },

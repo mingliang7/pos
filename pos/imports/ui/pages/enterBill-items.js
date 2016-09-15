@@ -37,7 +37,6 @@ var itemsTmpl = Template.Pos_enterBillItems,
 
 // Local collection
 var itemsCollection;
-export const PrepaidOrderDeletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
 Tracker.autorun(function () {
     if (FlowRouter.query.get('vendorId')) {
         let sub = Meteor.subscribe('pos.activePrepaidOrder', {
@@ -144,24 +143,13 @@ itemsTmpl.helpers({
 
         return {};
     },
-    subTotal: function () {
-        let subTotal = 0;
+    total: function () {
+        let total = 0;
         let getItems = itemsCollection.find();
         getItems.forEach((obj) => {
-            subTotal += obj.amount;
+            total += obj.amount;
         });
-        return FlowRouter.query.get('vendorId') ? 0 : subTotal;
-        // return Session.get('subTotal')
-    },
-    total(){
-        let subTotal = 0;
-        let getItems = itemsCollection.find();
-        getItems.forEach((obj) => {
-            subTotal += obj.amount;
-        });
-        let discount = $('#discount').val();
-        discount = discount == "" ? 0 : parseFloat(discount);
-        return FlowRouter.query.get('vendorId') ? 0 : subTotal * (1 - discount / 100);
+        return FlowRouter.query.get('vendorId') ? 0 : total;
     }
 });
 
@@ -254,11 +242,8 @@ itemsTmpl.events({
                     confirmButtonColor: "#DD6B55",
                     confirmButtonText: "Yes, delete it!",
                     closeOnConfirm: false
-                },
+                }).then(
                 function () {
-                    if (!PrepaidOrderDeletedItem.findOne({itemId: itemDoc.itemId})) {
-                        PrepaidOrderDeletedItem.insert(itemDoc);
-                    }
                     itemsCollection.remove({itemId: itemDoc.itemId});
                     swal.close();
                 });
