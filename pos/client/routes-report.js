@@ -239,6 +239,21 @@ PosRoutes.route('/report/prepaidOrderReport', {
     }
 });
 
+import '../imports/ui/reports/exchangeRingPull';
+PosRoutes.route('/report/exchangeRingPullReport', {
+    name: 'pos.exchangeRingPullReport',
+    title: 'Exchange Ring Pull Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_exchangeRingPullReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Exchange Ring Pull Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
+
 import '../imports/ui/reports/saleOrderReport';
 PosRoutes.route('/report/saleOrderReport', {
     name: 'pos.saleOrderReport',
@@ -308,6 +323,20 @@ PosRoutes.route('/report/groupCustomerBalance', {
     breadcrumb:{
         // params:['vendorId'],
         title: 'Group Customer Balance Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
+import '../imports/ui/reports/receiveItemSummary';
+PosRoutes.route('/report/receiveItemSummary', {
+    name: 'pos.receiveItemSummary',
+    title: 'Receive Item Summary',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_receiveItemSummary');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Receive Item Summary Report',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }

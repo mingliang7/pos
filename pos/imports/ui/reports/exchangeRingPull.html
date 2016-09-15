@@ -1,0 +1,101 @@
+<template name="Pos_exchangeRingPullReport">
+    <div class="inbox-head report-header">
+        {{#autoForm schema=schema id='exchangeRingPullReport'}}
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="label label-default">From Date<span class="text-red">*</span></label>
+                    {{> afFieldInput name="fromDate"}}
+                </div>
+                <div class="col-md-2">
+                    <label class="label label-default">To Date<span class="text-red">*</span></label>
+                    {{> afFieldInput name="toDate"}}
+                </div>
+                <div class="col-md-2">
+                    <label class="label label-default">Customer<span class="text-red">*</span></label>
+                    {{> afFieldInput name="customer"}}
+                </div>
+                <!--<div class="col-md-4">-->
+                <!--{{> afQuickField name="filter" label="Custom Fields"}}-->
+                <!--</div>-->
+
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <span>
+                        <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+                        <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run</button>
+                    </span>
+                </div>
+            </div>
+        {{/autoForm}}
+    </div>
+    {{>exchangeRingPullReportData}}
+</template>
+
+<template name="exchangeRingPullReportData">
+    <div class="container-fluid well report-body-shadow" id="to-print">
+        <div class="col-md-12" align="center"><h3>EXCHANGE RINGPULL REPORT</h3></div>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-3">
+                        <address class="label-report">
+                            <strong>Date:</strong>
+                            {{data.title.date}}
+                        </address>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <!-- <address>
+                             <strong>Order Date:</strong><br>
+                             March 7, 2014<br><br>
+                         </address>-->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                {{#each data.fields }}
+                    <th>{{field}}</th>
+                {{/each}}
+
+            </tr>
+            </thead>
+            <tbody>
+            {{#with data}}
+                {{#each col in content}}
+                    {{#each field in col.data}}
+                        <tr style="background: #dddddd">
+                            {{{display field}}}
+                        </tr>
+                    {{/each}}
+                    <tr>
+                        {{{reduceField}}}
+                        <th>ITEM</th>
+                        <th>PRICE</th>
+                        <th>QTY</th>
+                        <th>AMOUNT</th>
+                    </tr>
+                    {{#each item in col.items}}
+
+                        <tr>
+                            {{{reduceField}}}
+                            <td>{{item.itemName}}</td>
+                            <td>{{item.price}}</td>
+                            <td>{{item.qty}}</td>
+                            <td>{{item.amount}}</td>
+                        </tr>
+                    {{/each}}
+                    <tr>
+                        {{{getTotal col.total}}}
+                    </tr>
+                {{/each}}
+            {{/with}}
+            </tbody>
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

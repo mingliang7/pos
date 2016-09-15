@@ -46,6 +46,9 @@ indexTmpl.helpers({
                 label: 'Prepaid Order', value: 'prepaidOrder'
             },
             {
+                label: 'Exchange Ring Pull', value: 'exchangeRingPull'
+            },
+            {
                 label: 'Sale Order', value: 'saleOrder'
             },
             {
@@ -59,6 +62,9 @@ indexTmpl.helpers({
             },
             {
                 label: 'Customer Group Balance Report', value: 'groupCustomerBalance'
+            },
+            {
+                label: 'Receive Item Summary', value: 'receiveItemSummary'
             }
 
         ]
@@ -115,6 +121,9 @@ function getDefaultReportParams(reportName) {
         case 'prepaidOrder':
             params = `/pos/report/prepaidOrderReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
             break;
+        case 'exchangeRingPull':
+            params = `/pos/report/exchangeRingPullReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
+            break;
         case 'saleOrder':
             params = `/pos/report/saleOrderReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
             break;
@@ -123,6 +132,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'groupBillReport':
             params = `/pos/report/groupBillReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 00:00:00')}&branch=${Session.get('currentBranch')}`;
+            break;
+        case 'receiveItemSummary':
+            params = `/pos/report/receiveItemSummary?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
             break;
     }
     return params;
