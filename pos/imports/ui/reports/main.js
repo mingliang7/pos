@@ -46,6 +46,9 @@ indexTmpl.helpers({
                 label: 'Prepaid Order', value: 'prepaidOrder'
             },
             {
+                label: 'Lending Stock', value: 'lendingStock'
+            },
+            {
                 label: 'Exchange Gratis', value: 'exchangeGratis'
             },
             {
@@ -141,6 +144,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'receiveItemSummary':
             params = `/pos/report/receiveItemSummary?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
+            break;
+        case 'lendingStock':
+            params = `/pos/report/lendingStockReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
             break;
     }
     return params;

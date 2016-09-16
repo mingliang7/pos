@@ -253,6 +253,20 @@ PosRoutes.route('/report/exchangeRingPullReport', {
         parent: 'pos.mainReport'
     }
 });
+import '../imports/ui/reports/lendingStockReport';
+PosRoutes.route('/report/lendingStockReport', {
+    name: 'pos.lendingStockReport',
+    title: 'Lending Stock Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_lendingStockReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Lending Stock Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
 
 import '../imports/ui/reports/exchangeGratis';
 PosRoutes.route('/report/exchangeGratisReport', {
