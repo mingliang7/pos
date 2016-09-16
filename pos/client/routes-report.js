@@ -267,6 +267,20 @@ PosRoutes.route('/report/lendingStockReport', {
         parent: 'pos.mainReport'
     }
 });
+import '../imports/ui/reports/companyExchangeRingPullReport';
+PosRoutes.route('/report/companyExchangeRingPullReport', {
+    name: 'pos.companyExchangeRingPullReport',
+    title: 'Company Exchange Ring Pull Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_companyExchangeRingPullReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Company Exchange Ring Pull Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
 
 import '../imports/ui/reports/exchangeGratis';
 PosRoutes.route('/report/exchangeGratisReport', {

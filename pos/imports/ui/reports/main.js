@@ -49,6 +49,9 @@ indexTmpl.helpers({
                 label: 'Lending Stock', value: 'lendingStock'
             },
             {
+                label: 'Company Exchange Ring Pull', value: 'companyExchangeRingPull'
+            },
+            {
                 label: 'Exchange Gratis', value: 'exchangeGratis'
             },
             {
@@ -129,6 +132,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'exchangeGratis':
             params = `/pos/report/exchangeGratisReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
+            break;
+        case 'companyExchangeRingPull':
+            params = `/pos/report/companyExchangeRingPullReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
             break;
         case 'exchangeRingPull':
             params = `/pos/report/exchangeRingPullReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
