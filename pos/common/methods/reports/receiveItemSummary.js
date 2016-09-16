@@ -56,7 +56,6 @@ export const receiveItemSummary = new ValidatedMethod({
             /****** Title *****/
             data.title.company = Company.findOne();
             /****** Content *****/
-            console.log(selector)
             let receiveItems = ReceiveItems.aggregate([
                 {$match: selector},
                 {
@@ -105,12 +104,18 @@ export const receiveItemSummary = new ValidatedMethod({
                         total: {$sum: '$itemAmount'}
                     }
                 },
-                {$sort: {_id: 1}}
-            ]);
+                {$sort: {_id: 1}},
+                {
+                    $group: {
+                        _id: null,
+                        data: {$addToSet: '$$ROOT'},
+                        total: {$sum: '$total'}
+                    }
+                }]);
             if (receiveItems.length > 0) {
-                data.content = receiveItems;
+                data.content = receiveItems[0].data;
+                data.footer.total = receiveItems[0].total;
             }
-            console.log(data.content);
             return data;
         }
     }
