@@ -21,15 +21,14 @@ export const receivePaymentSchema = new SimpleSchema({
     },
     paymentDate: {
         type: Date,
-        defaultValue: moment().toDate(),
-        label: 'Date',
         autoform: {
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY HH:mm:ss'
+                    format: 'DD/MM/YYYY HH:mm:ss',
                 }
             }
+
         }
     },
     accountReceivable: {
