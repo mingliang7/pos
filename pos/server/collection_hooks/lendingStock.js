@@ -165,7 +165,7 @@ function lendingStockManageStock(lendingStock) {
         //--- End Inventory type block "Average Inventory"---
 
         //Manage Lending Stock
-        let lendingInventory = LendingInventories.findOne({
+        /*let lendingInventory = LendingInventories.findOne({
             itemId: item.itemId,
             vendorId: lendingStock.vendorId,
             branchId: lendingStock.branchId
@@ -186,6 +186,7 @@ function lendingStockManageStock(lendingStock) {
             };
             LendingInventories.insert(newLendingStock);
         }
+        */
     });
 }
 function returnToInventoryAndLendingStock(lendingStock) {
@@ -201,8 +202,9 @@ function returnToInventoryAndLendingStock(lendingStock) {
             lendingStock._id
         );
         //--- End Inventory type block "Average Inventory"---
+
         //-- reduceFromLendingStock to lending stock---
-        let lendingInventory = LendingInventories.findOne({
+       /* let lendingInventory = LendingInventories.findOne({
             itemId: item.itemId,
             vendorId: lendingStock.vendorId,
             branchId: lendingStock.branchId
@@ -224,6 +226,7 @@ function returnToInventoryAndLendingStock(lendingStock) {
             };
             LendingInventories.insert(newLendingStock);
         }
+        */
 
     });
 

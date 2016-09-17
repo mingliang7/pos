@@ -43,18 +43,20 @@ EnterBills.after.insert(function (userId, doc) {
             data.type = "EnterBill";
             data.items.forEach(function (item) {
                 let itemDoc = Item.findOne(item.itemId);
-                transaction.push({
-                    account: itemDoc.accountMapping.inventoryAsset,
-                    dr: item.amount,
-                    cr: 0,
-                    drcr: item.amount,
+                if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
+                    transaction.push({
+                        account: itemDoc.accountMapping.inventoryAsset,
+                        dr: item.amount,
+                        cr: 0,
+                        drcr: item.amount,
 
-                }, {
-                    account: itemDoc.accountMapping.accountPayable,
-                    dr: 0,
-                    cr: item.amount,
-                    drcr: -item.amount,
-                })
+                    }, {
+                        account: itemDoc.accountMapping.accountPayable,
+                        dr: 0,
+                        cr: item.amount,
+                        drcr: -item.amount,
+                    })
+                }
             });
             data.transaction = transaction;
             Meteor.call('insertAccountJournal', data);
