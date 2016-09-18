@@ -204,26 +204,28 @@ newTmpl.helpers({
         return '';
     },
     repId(){
-        let {vendorInfo} = Session.get('vendorInfo');
-        if (vendorInfo) {
-            try {
+        try {
+            let {vendorInfo} = Session.get('vendorInfo');
+            if (vendorInfo) {
                 return vendorInfo.repId;
-            } catch (e) {
-
             }
+            return '';
+        } catch (e) {
+
         }
-        return '';
     },
     termId(){
-        let {vendorInfo} = Session.get('vendorInfo');
-        if (vendorInfo) {
-            try {
+        try {
+            let {vendorInfo} = Session.get('vendorInfo');
+            if (vendorInfo) {
+
                 return vendorInfo.termId;
-            } catch (e) {
 
             }
+            return '';
+        } catch (e) {
+
         }
-        return '';
     },
     totalEnterBill(){
         let total = 0;
@@ -233,19 +235,22 @@ newTmpl.helpers({
         return total;
     },
     vendorInfo() {
-        let {vendorInfo, totalAmountDue} = Session.get('vendorInfo');
-        if (!vendorInfo) {
-            return {empty: true, message: 'No data available'}
-        }
+        try {
+            let {vendorInfo, totalAmountDue} = Session.get('vendorInfo');
+            if (!vendorInfo) {
+                return {empty: true, message: 'No data available'}
+            }
 
-        return {
-            // <li><i class="fa fa-credit-card" aria-hidden="true"></i> Credit Limit: <span class="label label-warning">${vendorInfo.creditLimit ? numeral(vendorInfo.creditLimit).format('0,0.00') : 0}</span> | </li>
-            fields: `<li><i class="fa fa-phone-square"></i> Phone: <b><span class="label label-success">${vendorInfo.telephone ? vendorInfo.telephone : ''}</span></b> | </li>
+            return {
+                // <li><i class="fa fa-credit-card" aria-hidden="true"></i> Credit Limit: <span class="label label-warning">${vendorInfo.creditLimit ? numeral(vendorInfo.creditLimit).format('0,0.00') : 0}</span> | </li>
+                fields: `<li><i class="fa fa-phone-square"></i> Phone: <b><span class="label label-success">${vendorInfo.telephone ? vendorInfo.telephone : ''}</span></b> | </li>
               <!--<li>Opening Balance: <span class="label label-success">0</span></li>-->
               <li><i class="fa fa-money"></i> Balance: <span class="label label-primary">${numeral(totalAmountDue).format('0,0.00')}</span> | 
               <li><i class="fa fa-home"></i> Address: <b>${vendorInfo.address ? vendorInfo.address : 'None'}</b>`
 
-        };
+            };
+        } catch (e) {
+        }
     },
     collection(){
         return EnterBills;
@@ -270,27 +275,33 @@ newTmpl.helpers({
         return {};
     },
     isTerm(){
-        let {vendorInfo} = Session.get('vendorInfo');
-        if (vendorInfo) {
-            if (vendorInfo._term) {
-                return true;
+        try {
+            let {vendorInfo} = Session.get('vendorInfo');
+            if (vendorInfo) {
+                if (vendorInfo._term) {
+                    return true;
+                }
+                return false;
             }
-            return false;
+        } catch (e) {
         }
     },
     dueDate(){
-        let date = AutoForm.getFieldValue('enterBillDate');
-        let {vendorInfo} = Session.get('vendorInfo');
-        if (vendorInfo) {
-            if (vendorInfo._term) {
-                let term = vendorInfo._term;
+        try {
+            let date = AutoForm.getFieldValue('enterBillDate');
+            let {vendorInfo} = Session.get('vendorInfo');
+            if (vendorInfo) {
+                if (vendorInfo._term) {
+                    let term = vendorInfo._term;
 
-                let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
-                console.log(dueDate);
-                return dueDate;
+                    let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
+                    console.log(dueDate);
+                    return dueDate;
+                }
             }
+            return date;
+        } catch (e) {
         }
-        return date;
     }
 });
 
@@ -300,6 +311,7 @@ newTmpl.onDestroyed(function () {
     itemsCollection.remove({});
     Session.set('vendorInfo', undefined);
     Session.set('vendorId', undefined);
+    Session.set('getVendorId', undefined);
     FlowRouter.query.unset();
     Session.set('prepaidOrderItems', undefined);
     Session.set('totalOrder', undefined);
@@ -491,9 +503,9 @@ showTmpl.helpers({
         return `<label class="label label-success">G</label>`
     },
     colorizeStatus(status){
-        if(status == 'active') {
+        if (status == 'active') {
             return `<label class="label label-info">A</label>`
-        }else if(status == 'partial') {
+        } else if (status == 'partial') {
             return `<label class="label label-danger">P</label>`
         }
         return `<label class="label label-success">C</label>`
@@ -575,6 +587,7 @@ let hooksObject = {
             alertify.enterBill().close();
         }
         // }
+        Session.set('getVendorId', undefined);
         displaySuccess();
     },
     onError (formType, error) {

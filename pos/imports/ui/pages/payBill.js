@@ -16,6 +16,7 @@ import './payBill.html';
 //methods
 
 let indexTmpl = Template.Pos_payBill;
+let currentPaymentDate = new ReactiveVar(moment().toDate());
 Tracker.autorun(function () {
     if (Session.get('vendorIdState')) {
         swal({
@@ -68,6 +69,9 @@ indexTmpl.onCreated(function () {
         count: 0
     });
     Session.set('balance', 0)
+});
+indexTmpl.onRendered(function () {
+    paymentDate($('[name="paymentDate"]'));
 });
 indexTmpl.onDestroyed(function () {
     Session.set('vendorIdState', undefined);
@@ -146,33 +150,72 @@ indexTmpl.helpers({
         return false;
     },
     hasAmount() {
-        let _id = Session.get('billId');
-        let discount = this.status == 'active' ? checkTerm(this) : 0;
-        var lastPayment = getLastPayment(this._id);
-        if (this.status == 'active' && (this._id == _id || this.voucherId == _id)) { //match _id with status active
-            let saleInvoices = {
-                count: 0
-            };
-            saleInvoices.count += 1;
-            let valueAfterDiscount = this.total * (1 - (discount / 100));
-            this.receivedPay = valueAfterDiscount;
-            this.discount = discount;
-            saleInvoices[this._id] = this;
-            saleInvoices[this._id].dueAmount = lastPayment == 0 ? valueAfterDiscount : lastPayment;
-            Session.set('enterBillsObj', saleInvoices);
-            return true;
+        try {
+            let _id = Session.get('billId');
+            let discount = this.status == 'active' ? checkTerm(this) : 0;
+            var lastPayment = getLastPayment(this._id);
+            var currentSelectDate = currentPaymentDate.get();
+            var lastPaymentDate = getLastPaymentDate(_id);
+            if (this.status == 'active' && (this._id == _id || this.voucherId == _id)) { //match _id with status active
+                let saleInvoices = {
+                    count: 0
+                };
+                saleInvoices.count += 1;
+                let valueAfterDiscount = this.total * (1 - (discount / 100));
+                this.receivedPay = valueAfterDiscount;
+                this.discount = discount;
+                saleInvoices[this._id] = this;
+                saleInvoices[this._id].dueAmount = lastPayment == 0 ? valueAfterDiscount : lastPayment;
+                Session.set('enterBillsObj', saleInvoices);
+                return true;
+            }
+            if (this.status == 'partial' && (this._id == _id || this.voucherId == _id)) { //match _id with status partial
+                if (!lastPaymentDate || (lastPaymentDate && moment(currentSelectDate).isAfter(lastPaymentDate))) {
+
+                    let saleInvoices = {
+                        count: 0
+                    };
+                    saleInvoices.count += 1;
+                    this.receivedPay = lastPayment;
+                    this.discount = 0;
+                    saleInvoices[this._id] = this;
+                    saleInvoices[this._id].dueAmount = lastPayment == 0 ? this.total : lastPayment;
+                    Session.set('enterBillsObj', saleInvoices);
+                    return true;
+                } else {
+                    swal(
+                        'ច្រានចោល!',
+                        `វិក័យប័ត្រលេខ #${_id} បានបង់ប្រាក់ថ្ងៃចុងក្រោយ ${moment(lastPaymentDate).format('YYYY-MM-DD HH:mm:ss')} ប៉ុន្តែអ្នកបានជ្រើសរើសថ្ងៃទី ${moment(currentSelectDate).format('YYYY-MM-DD HH:mm:ss')}`,
+                        'error'
+                    );
+                    return false;
+                }
+            }
+            return false;
+        } catch (e) {
         }
-        if (this.status == 'partial' && (this._id == _id || this.voucherId == _id)) { //match _id with status partial
-            let saleInvoices = {
-                count: 0
-            };
-            saleInvoices.count += 1;
-            this.receivedPay = lastPayment;
-            this.discount = 0;
-            saleInvoices[this._id] = this;
-            saleInvoices[this._id].dueAmount = lastPayment == 0 ? this.total : lastPayment;
-            Session.set('enterBillsObj', saleInvoices);
-            return true;
+    },
+    isLastPaymentDateGreaterThanCurrentSelectDate(){
+        let lastPaymentDate = getLastPaymentDate(this._id);
+        let currentSelectDate = currentPaymentDate.get();
+        if (lastPaymentDate) {
+            if (moment(currentSelectDate).isBefore(lastPaymentDate)) {
+                return `<input type="checkbox" name="name" class="select-invoice" disabled>`;
+            } else {
+                return `<input type="checkbox" name="name" class="select-invoice">`;
+            }
+        }
+        return `<input type="checkbox" name="name" class="select-invoice">`;
+    },
+    disableInputIfLastPaymentDateGreaterThanCurrentSelectDate(){
+        let lastPaymentDate = getLastPaymentDate(this._id);
+        let currentSelectDate = currentPaymentDate.get();
+        if (lastPaymentDate) {
+            if (moment(currentSelectDate).isBefore(lastPaymentDate)) {
+                return true;
+            } else {
+                return false;
+            }
         }
         return false;
     },
@@ -255,6 +298,16 @@ indexTmpl.helpers({
             let endDate = moment(this.endDate).format('YYYY-MM-DD');
             return `${startDate} to ${endDate}`;
         }
+    },
+    lastPaymentDate(){
+        var lastPaymentDate = getLastPaymentDate(this._id);
+        if(lastPaymentDate) {
+            return `<br><span class="label label-danger"><i class="fa fa-money"></i> Last Paid: ${moment(lastPaymentDate).format('YYYY-MM-DD HH:mm:ss')}</span>`;
+        }
+        return '';
+    },
+    defaultDate(){
+        return moment().toDate();
     }
 });
 
@@ -270,7 +323,7 @@ indexTmpl.events({
     'change [name="vendorId"]' (event, instance) {
         if (event.currentTarget.value != '') {
             clearChecbox();
-            Session.set('vendorIdState', event.currentTarget.value);
+            Session.set('vendorIdState', event.currentTarget.value.trim());
         }
     },
     'change [name="billId"]' (event, instance) {
@@ -299,6 +352,7 @@ indexTmpl.events({
             let saleObj = Session.get('enterBillsObj');
             let total = [];
             let index = 0;
+            let currentSelectDate = currentPaymentDate.get();
             let vendor = getVendorInfo(Session.get('vendorIdState'));
             let enterBillsObj;
             if (vendor.termId) {
@@ -311,18 +365,24 @@ indexTmpl.events({
                 enterBillsObj = GroupBill.find({}, {sort: {_id: 1}});
             }
             enterBillsObj.forEach((sale) => {
-                let lastPayment = getLastPayment(sale._id);
-                sale.dueAmount = lastPayment == 0 ? sale.total : lastPayment;
-                sale.receivedPay = lastPayment == 0 ? sale.total : lastPayment; //receive amount of pay
-                saleObj[sale._id] = sale;
-                total.push(sale.dueAmount);
+                let lastPaymentDate = getLastPaymentDate(sale._id);
+                //check if current select date is not smaller than last paymentDate
+                if (!lastPaymentDate || (lastPaymentDate && moment(currentSelectDate).isAfter(lastPaymentDate))) {
+                    let lastPayment = getLastPayment(sale._id);
+                    sale.dueAmount = lastPayment == 0 ? sale.total : lastPayment;
+                    sale.receivedPay = lastPayment == 0 ? sale.total : lastPayment; //receive amount of pay
+                    saleObj[sale._id] = sale;
+                    total.push(sale.dueAmount);
+                }
             });
             saleObj.count = enterBillsObj.count();
             Session.set('enterBillsObj', saleObj);
             $('.select-invoice').each(function () {
-                $(this).prop('checked', true);
-                $(this).parents('.invoice-parents').find('.total').val(total[index]).change()
-                index++;
+                if (!$(this).prop('disabled')) {
+                    $(this).prop('checked', true);
+                    $(this).parents('.invoice-parents').find('.total').val(total[index]).change()
+                    index++;
+                }
             })
         } else {
             clearChecbox()
@@ -391,6 +451,7 @@ function clearChecbox() {
     Session.set('enterBillsObj', {
         count: 0
     }); //set obj to empty on keychange
+
     $(".disable-term").prop('checked', false);
     $(".select-invoice").each(function () {
         $(this).prop('checked', false);
@@ -402,6 +463,14 @@ function getLastPayment(billId) {
     if (receivePayments.count() > 0) {
         let lastPayment = _.last(receivePayments.fetch());
         return lastPayment.balanceAmount;
+    }
+    return 0;
+}
+function getLastPaymentDate(billId) {
+    let receivePayments = PayBills.find({billId: billId}, {sort: {_id: 1, paymentDate: 1}});
+    if (receivePayments.count() > 0) {
+        let lastPayment = _.last(receivePayments.fetch());
+        return lastPayment.paymentDate;
     }
     return 0;
 }
@@ -498,7 +567,12 @@ let hooksObject = {
         return false;
     },
 };
-
+function paymentDate(element) {
+    element.on("dp.change", (e)=> {
+        clearChecbox();
+        currentPaymentDate.set(e.date.toDate());
+    });
+}
 AutoForm.addHooks([
     'Pos_payBill'
 ], hooksObject);

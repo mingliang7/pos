@@ -27,7 +27,7 @@
                         <div class="row">
 
                             <div class="col-xs-3">
-                                {{> afQuickField name="paymentDate"}}
+                                {{> afQuickField name="paymentDate" value=defaultDate}}
                             </div>
                             <div class="col-xs-3">
                                 {{> afQuickField name="exchangeRate" readonly=true}}
@@ -96,22 +96,27 @@
                                                                 <input type="checkbox" name="name" checked
                                                                        class="select-invoice">
                                                             {{else}}
-                                                                <input type="checkbox" name="name"
-                                                                       class="select-invoice">
+                                                                {{{isLastPaymentDateGreaterThanCurrentSelectDate}}}
+
+                                                                <!--<input type="checkbox" name="name"-->
+                                                                <!--class="select-invoice">-->
                                                             {{/if}}
                                                         </td>
                                                         <td class="text-center">{{_id}}</td>
-                                                        <td class="text-center">{{isInvoiceDate}}</td>
+                                                        <td class="text-center">{{isInvoiceDate}}{{{lastPaymentDate}}}</td>
                                                         <td class="text-center">{{voucherId}}</td>
                                                         <td class="text-right">{{originAmount}}</td>
                                                         <td class="text-right">{{dueAmount}}</td>
                                                         <td class="text-right"><input type="text" class="discount"
-                                                                                      value="{{discount}}"></td>
-                                                        <td class="text-right"><input class="text-right actual-pay" value="{{total}}" style="background: none; border: none;" readonly="true">
+                                                                                      value="{{discount}}" readonly="{{disableInputIfLastPaymentDateGreaterThanCurrentSelectDate}}"></td>
+                                                        <td class="text-right"><input class="text-right actual-pay"
+                                                                                      value="{{total}}"
+                                                                                      style="background: none; border: none;"
+                                                                                      readonly="true">
                                                         </td>
                                                         <td class="text-right"><input type="text"
                                                                                       value="{{#if hasAmount}}{{total}}{{/if}}"
-                                                                                      class="total"></td>
+                                                                                      class="total" readonly="{{disableInputIfLastPaymentDateGreaterThanCurrentSelectDate}}"></td>
                                                     </tr>
                                                 {{else}}
                                                     <small><i class="fa fa-spinner fa-spin fa-1x fa-fw"></i>Loading...

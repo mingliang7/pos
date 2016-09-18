@@ -752,6 +752,7 @@ let hooksObject = {
         itemsCollection.remove({});
         deletedItem.remove({});
         Session.set('customerInfo', undefined);
+        Session.set("getCustomerId", undefined);
         // }
         displaySuccess();
     },
