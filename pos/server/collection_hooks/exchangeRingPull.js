@@ -17,21 +17,23 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
         ExchangeRingPullManageStock(doc);
     });
 });
-ExchangeRingPulls.after.update(function(userId,doc){
+ExchangeRingPulls.after.update(function (userId, doc) {
     let preDoc = this.previous;
-    Meteor.defer(function(){
+    Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        returnToInventory(preDoc);
+        returnToInventory(preDoc, 'exchangeRingPull-return');
         ExchangeRingPullManageStock(doc);
     })
 });
 
-ExchangeRingPulls.after.remove(function(userId,doc){
-    Meteor.defer(function(){
+ExchangeRingPulls.after.remove(function (userId, doc) {
+    Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        returnToInventory(doc);
-    })
+        returnToInventory(doc, 'exchangeRingPull-return');
+    });
 });
+
+
 
 // after.insert: reduceForInventory and Add to RingPull Inventory
 
@@ -125,10 +127,9 @@ function ExchangeRingPullManageStock(exchangeRingPull) {
     //--- End Inventory type block "Average Inventory"---
 
 
-
 }
 //update inventory
-function returnToInventory(exchangeRingPull) {
+function returnToInventory(exchangeRingPull, type) {
     //---Open Inventory type block "Average Inventory"---
     // let exchangeRingPull = Invoices.findOne(exchangeRingPullId);
     exchangeRingPull.items.forEach(function (item) {
@@ -137,7 +138,7 @@ function returnToInventory(exchangeRingPull) {
             exchangeRingPull.branchId,
             item,
             exchangeRingPull.stockLocationId,
-            'exchangeRingPull-return',
+            type,
             exchangeRingPull._id
         );
 
@@ -156,7 +157,7 @@ function returnToInventory(exchangeRingPull) {
             RingPullInventories.insert({
                 itemId: item.itemId,
                 branchId: exchangeRingPull.branchId,
-                qty: 0-item.qty
+                qty: 0 - item.qty
             })
         }
     });
@@ -228,7 +229,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         nextInventory.stockLocationId = stockLocationId;
         nextInventory.itemId = item.itemId;
         nextInventory.qty = item.qty;
-        nextInventory.price = math.round(price,2);
+        nextInventory.price = math.round(price, 2);
         nextInventory.remainQty = totalQty;
         nextInventory.type = type;
         nextInventory.coefficient = 1;
