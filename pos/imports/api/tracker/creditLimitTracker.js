@@ -4,7 +4,7 @@ import {RequirePassword} from '../collections/requirePassword';
 import {nullCollection} from '../collections/tmpCollection';
 var itemsCollection = nullCollection;
 Tracker.autorun(function () {
-    if (Session.get('creditLimitAmount' || Session.get('getCustomerId') || Session.get('saleOrderCustomerId'))) {
+    if (Session.get('creditLimitAmount') || Session.get('getCustomerId') || Session.get('saleOrderCustomerId')) {
         let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
         checkCreditLimit.callPromise({
             customerId: customerId,

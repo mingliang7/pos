@@ -1,3 +1,70 @@
 <template name="Pos_home">
-    <h1>{{_ "pos.home.info"}}</h1>
+    <div class="box-body">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6"><h4>ចំណូល(Income)</h4></div>
+                <div class="col-md-6 text-right"><h4>អំឡុងពេល ៣៦៥ថ្ងៃ (Last 365 days)</h4></div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="info-box bg-yellow">
+                        <span class="info-box-icon"><i class="fa fa-file-text"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">វិក័យប័ត្រដែលបានលក់សរុប(OPEN INVOICE)</span>
+                            <span class="info-box-number">$5,200</span>
+
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 100%"></div>
+                            </div>
+                            <span class="progress-description">
+                    50% Increase in 30 Days
+                  </span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-box bg-red">
+                        <span class="info-box-icon"><i class="fa fa-circle-o"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">វិក័យប័ត្រមិនទាន់បានបង់អស់សរុប(OVERDUE)</span>
+                            <span class="info-box-number">$5,200</span>
+
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 100%"></div>
+                            </div>
+                            <span class="progress-description">
+                    50% Increase in 30 Days
+                  </span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-box bg-green">
+                        <span class="info-box-icon"><i class="fa fa-credit-card"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">បានបង់លុយសរុបក្នុងរយៈពេល៣០ថ្ងៃ(PAID LAST 30 DAYS)</span>
+                            <span class="info-box-number">$5,200</span>
+
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 100%"></div>
+                            </div>
+                            <span class="progress-description">
+                    50% Increase in 30 Days
+                  </span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="box-body">
+        <div id="container" style="width:100%; height:400px;"></div>
+    </div>
 </template>
