@@ -176,27 +176,6 @@ EnterBills.schema = new SimpleSchema({
     items: {
         type: [EnterBills.itemsSchema],
     },
-    discount: {
-        type: Number,
-        decimal: true,
-        defaultValue:0,
-        autoform: {
-            type: 'inputmask',
-            inputmaskOptions: function () {
-                return inputmaskOptions.percentage();
-            }
-        }
-    },
-    subTotal: {
-        type: Number,
-        decimal: true,
-        autoform: {
-            type: 'inputmask',
-            inputmaskOptions: function () {
-                return inputmaskOptions.currency();
-            }
-        }
-    },
     total: {
         type: Number,
         decimal: true,
@@ -207,30 +186,10 @@ EnterBills.schema = new SimpleSchema({
             }
         }
     },
-    paidAmount: {
-        type: Number,
-        decimal: true,
-        optional: true,
-        autoform: {
-            type: 'inputmask',
-            inputmaskOptions: function () {
-                return inputmaskOptions.currency();
-            }
-        }
-    },
-    dueAmount: {
-        type: Number,
-        decimal: true,
-        optional: true
-    },
     branchId: {
         type: String
     },
     billType: {
-        type: String,
-        optional: true
-    },
-    prepaidOrderId: {
         type: String,
         optional: true
     }

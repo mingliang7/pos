@@ -40,7 +40,7 @@ import './vendor.html'
 //methods
 import {EnterBillInfo} from '../../../common/methods/enterBill.js'
 import {vendorInfo} from '../../../common/methods/vendor.js';
-//Tracker for vendor infomation
+
 //Tracker for vendor infomation
 Tracker.autorun(function () {
     if (Session.get("getVendorId")) {
@@ -49,9 +49,6 @@ Tracker.autorun(function () {
                 Session.set('vendorInfo', result);
             })
     }
-    if (Session.get('prepaidOrderItems')) {
-        Meteor.subscribe('pos.item', {_id: {$in: Session.get('prepaidOrderItems')}});
-    }
 });
 // Declare template
 let indexTmpl = Template.Pos_enterBill,
@@ -59,7 +56,6 @@ let indexTmpl = Template.Pos_enterBill,
     newTmpl = Template.Pos_enterBillNew,
     editTmpl = Template.Pos_enterBillEdit,
     showTmpl = Template.Pos_enterBillShow;
-listPrepaidOrder = Template.listPrepaidOrder;
 // Local collection
 let itemsCollection = new Mongo.Collection(null);
 
@@ -77,7 +73,6 @@ indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('enterBill', {size: 'lg'});
     createNewAlertify('enterBillShow');
-    createNewAlertify('listPrepaidOrder', {size: 'lg'});
     createNewAlertify('vendor');
 });
 
@@ -135,30 +130,6 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
-
-    'change .enable-prepaid-order'(event, instance){
-        itemsCollection.remove({});
-        let vendorId = $('[name="vendorId"]').val();
-        if ($(event.currentTarget).prop('checked')) {
-            if (vendorId != '') {
-                FlowRouter.query.set('vendorId', vendorId);
-                $('.prepaid-order').addClass('toggle-list');
-                setTimeout(function () {
-                    alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
-                }, 700)
-            } else {
-                displayError('Please select vendor');
-                $(event.currentTarget).prop('checked', false);
-            }
-
-        } else {
-            FlowRouter.query.unset();
-            $('.prepaid-order').removeClass('toggle-list');
-        }
-    },
-    'click .toggle-list'(event, instance){
-        alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
-    },
     'change [name=vendorId]'(event, instance){
         if (event.currentTarget.value != '') {
             Session.set('getVendorId', event.currentTarget.value);
@@ -167,19 +138,9 @@ newTmpl.events({
             }
         }
         Session.set('totalOrder', undefined);
-
     },
     'click .go-to-pay-bill'(event, instance){
         alertify.enterBill().close();
-    },
-    'click #btn-save-print'(event, instance){
-        Session.set('btnType', 'save-print');
-    },
-    'click #btn-save'(event, instance){
-        Session.set('btnType', 'save');
-    },
-    'click #btn-pay'(event, instance){
-        Session.set('btnType', 'pay');
     }
 });
 newTmpl.helpers({
@@ -313,31 +274,17 @@ newTmpl.onDestroyed(function () {
     Session.set('vendorId', undefined);
     Session.set('getVendorId', undefined);
     FlowRouter.query.unset();
-    Session.set('prepaidOrderItems', undefined);
     Session.set('totalOrder', undefined);
 });
 // Edit
 editTmpl.onCreated(function () {
     this.repOptions = new ReactiveVar();
-    this.isPrepaidOrder = new ReactiveVar(false);
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
     });
-    if (this.data.billType == 'prepaidOrder') {
-        FlowRouter.query.set('vendorId', this.data.vendorId);
-        this.isPrepaidOrder.set(true);
-    }
 });
 editTmpl.events({
-    'click #btn-save-print'(event, instance){
-        Session.set('btnType', 'save-print');
-    },
-    'click #btn-save'(event, instance){
-        Session.set('btnType', 'save');
-    },
-    'click #btn-pay'(event, instance){
-        Session.set('btnType', 'pay');
-    },
+
     'click .add-new-vendor'(event, instance){
         alertify.vendor(fa('plus', 'New Vendor'), renderTemplate(Template.Pos_vendorNew));
     },
@@ -353,9 +300,6 @@ editTmpl.events({
         }
         Session.set('totalOrder', undefined);
     },
-    'click .toggle-list'(event, instance){
-        alertify.listPrepaidOrder(fa('', 'Prepaid Order'), renderTemplate(listPrepaidOrder));
-    },
     'change [name="termId"]'(event, instance){
         let vendorInfo = Session.get('vendorInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
@@ -369,9 +313,6 @@ editTmpl.helpers({
         setTimeout(function () {
             swal.close();
         }, 500);
-    },
-    isPrepaidOrder(){
-        return Template.instance().isPrepaidOrder.get();
     },
     collection(){
         return EnterBills;
@@ -523,25 +464,9 @@ let hooksObject = {
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
-                if (obj.prepaidOrderId) {
-                    doc.prepaidOrderId = obj.prepaidOrderId;
-                }
                 items.push(obj);
             });
-            var btnType = Session.get('btnType');
-            if (btnType == "save" || btnType == "save-print") {
-                doc.status = "partial";
-                doc.paidAmount = 0;
-                doc.dueAmount = math.round(doc.total, 2);
-            } else if (btnType == "pay") {
-                doc.dueAmount = math.round((doc.total - doc.paidAmount), 2);
-                if (doc.dueAmount <= 0) {
-                    doc.status = "close";
-                } else {
-                    doc.status = "partial";
-                }
-
-            }
+            doc.status='active';
             doc.items = items;
             return doc;
         },
@@ -552,19 +477,6 @@ let hooksObject = {
                 items.push(obj);
             });
             doc.$set.items = items;
-            var btnType = Session.get('btnType');
-            if (btnType == "save" || btnType == "save-print") {
-                doc.$set.status = "partial";
-                doc.$set.paidAmount = 0;
-                doc.$set.dueAmount = math.round(doc.$set.total, 2);
-            } else if (btnType == "pay") {
-                doc.$set.dueAmount = math.round((doc.$set.total - doc.$set.paidAmount), 2);
-                if (doc.$set.dueAmount <= 0) {
-                    doc.$set.status = "close";
-                } else {
-                    doc.$set.status = "partial";
-                }
-            }
             delete doc.$unset;
             return doc;
         }
@@ -601,151 +513,6 @@ AutoForm.addHooks([
 ], hooksObject);
 
 
-// //listPrepaidOrder
-// listPrepaidOrder.helpers({
-//     prepaidOrders(){
-//         let item = [];
-//         let prepaidOrders = PrepaidOrders.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
-//         if (PrepaidOrderDeletedItem.find().count() > 0) {
-//             PrepaidOrderDeletedItem.find().forEach(function (item) {
-//                 console.log(item);
-//                 prepaidOrders.forEach(function (prepaidOrder) {
-//                     prepaidOrder.items.forEach(function (prepaidOrderItem) {
-//                         if (prepaidOrderItem.itemId == item.itemId) {
-//                             prepaidOrderItem.remainQty += item.qty;
-//                             prepaidOrder.sumRemainQty += item.qty;
-//                         }
-//                     });
-//                 });
-//             });
-//         }
-//         prepaidOrders.forEach(function (prepaidOrder) {
-//             prepaidOrder.items.forEach(function (prepaidOrderItem) {
-//                 item.push(prepaidOrderItem.itemId);
-//             });
-//         });
-//         Session.set('prepaidOrderItems', item);
-//         return prepaidOrders;
-//     },
-//     hasPrepaidOrders(){
-//         let count = PrepaidOrders.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).count();
-//         return count > 0;
-//     },
-//     getItemName(itemId){
-//         try {
-//             return Item.findOne(itemId).name;
-//         } catch (e) {
-//
-//         }
-//
-//     }
-// });
-// listPrepaidOrder.events({
-//     'click .add-item'(event, instance){
-//         event.preventDefault();
-//         console.log('in enter bill');
-//         let remainQty = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.remain-qty').val();
-//         let prepaidOrderId = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.prepaidOrderId').text().trim();
-//         let tmpCollection = itemsCollection.find().fetch();
-//         if (remainQty != '' && remainQty != '0') {
-//             if (this.remainQty > 0) {
-//                 if (tmpCollection.length > 0) {
-//                     let prepaidOrderIdExist = _.find(tmpCollection, function (o) {
-//                         return o.prepaidOrderId == prepaidOrderId;
-//                     });
-//                     if (prepaidOrderIdExist) {
-//                         insertPrepaidOrderItem({
-//                             self: this,
-//                             remainQty: parseFloat(remainQty),
-//                             prepaidOrderItem: prepaidOrderIdExist,
-//                             prepaidOrderId: prepaidOrderId
-//                         });
-//                     } else {
-//                         swal("Retry!", "Item Must be in the same prepaidOrderId", "warning")
-//                     }
-//                 } else {
-//                     Meteor.call('getItem', this.itemId, (err, result)=> {
-//                         this.prepaidOrderId = prepaidOrderId;
-//                         this.qty = parseFloat(remainQty);
-//                         this.name = result.name;
-//                         itemsCollection.insert(this);
-//                     });
-//                     displaySuccess('Added!')
-//                 }
-//             } else {
-//                 swal("ប្រកាស!", "មុខទំនិញនេះត្រូវបានកាត់កងរួចរាល់", "info");
-//             }
-//         } else {
-//             swal("Retry!", "ចំនួនមិនអាចអត់មានឬស្មើសូន្យ", "warning");
-//         }
-//     },
-//     'change .remain-qty'(event, instance){
-//         event.preventDefault();
-//         let remainQty = $(event.currentTarget).val();
-//         let prepaidOrderId = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.prepaidOrderId').text().trim();
-//         let tmpCollection = itemsCollection.find().fetch();
-//         if (remainQty != '' && remainQty != '0') {
-//             if (this.remainQty > 0) {
-//                 if (parseFloat(remainQty) > this.remainQty) {
-//                     remainQty = this.remainQty;
-//                     $(event.currentTarget).val(this.remainQty);
-//                 }
-//                 if (tmpCollection.length > 0) {
-//                     let prepaidOrderIdExist = _.find(tmpCollection, function (o) {
-//                         return o.prepaidOrderId == prepaidOrderId;
-//                     });
-//                     if (prepaidOrderIdExist) {
-//                         insertPrepaidOrderItem({
-//                             self: this,
-//                             remainQty: parseFloat(remainQty),
-//                             prepaidOrderItem: prepaidOrderIdExist,
-//                             prepaidOrderId: prepaidOrderId
-//                         });
-//                     } else {
-//                         swal("Retry!", "Item Must be in the same prepaidOrderId", "warning")
-//                     }
-//                 } else {
-//                     Meteor.call('getItem', this.itemId, (err, result)=> {
-//                         this.prepaidOrderId = prepaidOrderId;
-//                         this.qty = parseFloat(remainQty);
-//                         this.name = result.name;
-//                         this.amount = this.qty * this.price;
-//                         itemsCollection.insert(this);
-//                     });
-//                     displaySuccess('Added!')
-//                 }
-//             } else {
-//                 swal("ប្រកាស!", "មុខទំនិញនេះត្រូវបានកាត់កងរួចរាល់", "info");
-//             }
-//         } else {
-//             swal("Retry!", "ចំនួនមិនអាចអត់មានឬស្មើសូន្យ", "warning");
-//         }
-//
-//     }
-// });
-//
-//
-// //insert prepaidOrder order item to itemsCollection
-// let insertPrepaidOrderItem = ({self, remainQty, prepaidOrderItem, prepaidOrderId}) => {
-//     Meteor.call('getItem', self.itemId, (err, result)=> {
-//         self.prepaidOrderId = prepaidOrderId;
-//         self.qty = remainQty;
-//         self.name = result.name;
-//         self.amount = self.qty * self.price;
-//         let getItem = itemsCollection.findOne({itemId: self.itemId});
-//         if (getItem) {
-//             if (getItem.qty + remainQty <= self.remainQty) {
-//                 itemsCollection.update(getItem._id, {$inc: {qty: self.qty, amount: self.qty * getItem.price}});
-//                 displaySuccess('Added!')
-//             } else {
-//                 swal("Retry!", `ចំនួនបញ្ចូលចាស់(${getItem.qty}) នឹងបញ្ចូលថ្មី(${remainQty}) លើសពីចំនួនកម្ម៉ង់ទិញចំនួន ${(self.remainQty)}`, "error");
-//             }
-//         } else {
-//             itemsCollection.insert(self);
-//             displaySuccess('Added!')
-//         }
-//     });
-// };
 function excuteEditForm(doc) {
     swal({
         title: "Pleas Wait",
