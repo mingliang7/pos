@@ -7,61 +7,81 @@
             </div>
         </div>
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="info-box bg-yellow">
-                        <span class="info-box-icon"><i class="fa fa-file-text"></i></span>
+            {{#with income}}
+                <div class="row animated">
+                    <div class="col-md-4">
+                        <div class="info-box bg-yellow">
+                            <span class="info-box-icon"><i class="fa fa-file-text"></i></span>
 
-                        <div class="info-box-content">
-                            <span class="info-box-text">វិក័យប័ត្រដែលបានលក់សរុប(OPEN INVOICE)</span>
-                            <span class="info-box-number">$5,200</span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">វិក័យប័ត្រដែលបានលក់សរុប(OPEN INVOICE)</span>
+                                <span class="info-box-number">{{baseCurrency}}{{numFormat totalInvoice '0,0.00'}}</span>
 
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 100%"></div>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: 100%"></div>
+                                </div>
+                                <span class="progress-description">{{countInvoice}} វិក័យប័ត្រ</span>
                             </div>
-                            <span class="progress-description">
-                    50% Increase in 30 Days
-                  </span>
+                            <!-- /.info-box-content -->
                         </div>
-                        <!-- /.info-box-content -->
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-box bg-red">
+                            <span class="info-box-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+</span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">វិក័យប័ត្រផុតកំណត់(OVERDUE)</span>
+                                <span class="info-box-number">{{baseCurrency}}{{totalOverdueInvoice}}</span>
+
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: 100%"></div>
+                                </div>
+                                <span class="progress-description">
+                   {{countOverdueInvoice}} វិក័យប័ត្រ
+                  </span>
+                            </div>
+                            <!-- /.info-box-content -->
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-box bg-green">
+                            <span class="info-box-icon"><i class="fa fa-credit-card"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">បានបង់លុយសរុបក្នុងរយៈពេល៣០ថ្ងៃ(PAID LAST 30 DAYS)</span>
+                                <span class="info-box-number">{{baseCurrency}}{{totalPaymentInLast30Days}}</span>
+
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: 100%"></div>
+                                </div>
+                                <span class="progress-description">
+                   {{countPaymentInLast30Days}} វិក័យប័ត្រ
+                  </span>
+                            </div>
+                            <!-- /.info-box-content -->
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="info-box bg-red">
-                        <span class="info-box-icon"><i class="fa fa-circle-o"></i></span>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="info-box bg-aqua">
+                            <span class="info-box-icon"><i class="fa fa-cart-arrow-down"></i></span>
 
-                        <div class="info-box-content">
-                            <span class="info-box-text">វិក័យប័ត្រមិនទាន់បានបង់អស់សរុប(OVERDUE)</span>
-                            <span class="info-box-number">$5,200</span>
+                            <div class="info-box-content">
+                                {{#with income}}
+                                    <span class="info-box-text">វិក័យប័ត្រដែលបានកម្ម៉ង់ទុកសរុប(OPEN INVOICE)</span>
+                                    <span class="info-box-number">{{baseCurrency}}{{numFormat totalSaleOrder '0,0.00'}}</span>
 
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 100%"></div>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width: 100%"></div>
+                                    </div>
+                                    <span class="progress-description">{{countSaleOrder}} វិក័យប័ត្រ</span>
+                                {{/with}}
                             </div>
-                            <span class="progress-description">
-                    50% Increase in 30 Days
-                  </span>
+                            <!-- /.info-box-content -->
                         </div>
-                        <!-- /.info-box-content -->
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="info-box bg-green">
-                        <span class="info-box-icon"><i class="fa fa-credit-card"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">បានបង់លុយសរុបក្នុងរយៈពេល៣០ថ្ងៃ(PAID LAST 30 DAYS)</span>
-                            <span class="info-box-number">$5,200</span>
-
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 100%"></div>
-                            </div>
-                            <span class="progress-description">
-                    50% Increase in 30 Days
-                  </span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                </div>
-            </div>
+            {{/with}}
         </div>
     </div>
     <div class="box-body">

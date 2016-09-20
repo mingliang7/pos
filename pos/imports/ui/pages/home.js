@@ -16,72 +16,79 @@ import './home.html';
 
 // Declare template
 let indexTmpl = Template.Pos_home;
-
+let income = new ReactiveVar();
 indexTmpl.onCreated(function () {
     this.isLoading = new ReactiveVar(true);
 });
 
 indexTmpl.onRendered(function () {
     this.autorun(()=> {
-        Meteor.call('posChart', {} ,function(err,result){
-                // let orders =[
-                //     {name: 'Mon', y: 1900},
-                //     {name: 'Tue', y: 1500},
-                //     {name: 'Wed', y: 2200},
-                //     {name: 'Thu', y: 1700},
-                //     {name: 'Fri', y: 3000},
-                //     {name: 'Sat', y: 2500}
-                // ];
+        Meteor.call('posChart', {}, (err, result)=> {
+            // let orders =[
+            //     {name: 'Mon', y: 1900},
+            //     {name: 'Tue', y: 1500},
+            //     {name: 'Wed', y: 2200},
+            //     {name: 'Thu', y: 1700},
+            //     {name: 'Fri', y: 3000},
+            //     {name: 'Sat', y: 2500}
+            // ];
 
-                let chartOpts = {
-                    chart: {
-                        type: 'column'
-                    },
+            let chartOpts = {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'វិក័យប័ត្រលក់សរុបប្រចាំខែ(Monthly Invoice)'
+                },
+                subtitle: {
+                    text: `${result.company}`
+                },
+                xAxis: {
+                    type: 'category'
+                },
+                yAxis: {
                     title: {
-                        text: 'Monthly Invoice'
-                    },
-                    subtitle: {
-                        text: `${result.company}`
-                    },
-                    xAxis: {
-                        type: 'category'
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Amount'
+                        text: 'Amount'
+                    }
+
+                },
+                legend: {
+                    enabled: false
+                },
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.y:.2f}$'
                         }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                    pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}$</b><br/>'
+                },
 
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    plotOptions: {
-                        series: {
-                            borderWidth: 0,
-                            dataLabels: {
-                                enabled: true,
-                                format: '{point.y:.2f}$'
-                            }
-                        }
-                    },
-                    tooltip: {
-                        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}$</b><br/>'
-                    },
+                series: [{
+                    name: 'AMOUNT',
+                    colorByPoint: true,
+                    data: result.invoices
+                }],
+            };
 
-                    series: [{
-                        name: 'AMOUNT',
-                        colorByPoint: true,
-                        data: result.invoices
-                    }],
-                };
+            this.$('#container').highcharts(chartOpts);
 
-                this.$('#container').highcharts(chartOpts);
-
-                // Stop loading
-                this.isLoading.set(false);
+            // Stop loading
+            this.isLoading.set(false);
 
 
+        });
+        Meteor.call('incomeFn', function (err, result) {
+            if (result) {
+                income.set(result);
+            } else {
+                console.log(err);
+            }
         });
     });
 
@@ -128,9 +135,11 @@ indexTmpl.onRendered(function () {
 indexTmpl.helpers({
     isLoading(){
         return Template.instance().isLoading.get();
+    },
+    income(){
+        let incomeObj = income.get();
+        return incomeObj;
     }
 });
 
-indexTmpl.events({
-
-});
+indexTmpl.events({});
