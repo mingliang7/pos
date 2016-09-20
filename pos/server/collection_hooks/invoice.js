@@ -8,6 +8,7 @@ import {Order} from '../../imports/api/collections/order';
 import {GroupInvoice} from '../../imports/api/collections/groupInvoice';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {Item} from '../../imports/api/collections/item.js'
+import {GratisInventories} from '../../imports/api/collections/gratisInventory.js'
 //import invoice state
 import {invoiceState} from '../../common/globalState/invoice';
 //import methods
@@ -121,12 +122,12 @@ Invoices.after.remove(function (userId, doc) {
             let groupInvoice = GroupInvoice.findOne(doc.paymentGroupId);
             if (groupInvoice.invoices.length <= 0) {
                 GroupInvoice.direct.remove(doc.paymentGroupId);
-            }else{
+            } else {
                 recalculatePaymentAfterRemoved({doc});
             }
             //average inventory calculation
             returnToInventory(doc);
-        }else if (type.term) {
+        } else if (type.term) {
             Meteor.call('insertRemovedInvoice', doc);
 
             //average inventory calculation
@@ -312,7 +313,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         nextInventory.stockLocationId = stockLocationId;
         nextInventory.itemId = item.itemId;
         nextInventory.qty = item.qty;
-        nextInventory.price = math.round(price,2);
+        nextInventory.price = math.round(price, 2);
         nextInventory.remainQty = totalQty;
         nextInventory.type = type;
         nextInventory.coefficient = 1;
@@ -328,7 +329,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
 }
 
 //update payment
-function recalculatePayment({doc,preDoc}) {
+function recalculatePayment({doc, preDoc}) {
     let totalChanged = doc.total - preDoc.total;
     if (totalChanged != 0) {
         let invoiceId = doc.paymentGroupId || doc._id
@@ -363,3 +364,53 @@ function recalculatePaymentAfterRemoved({doc}) {
     }
 }
 
+
+function increaseGratisInventory(branchId, item, stockLocationId) {
+    let prefix = stockLocationId + '-';
+    let gratisInventory = GratisInventories.findOne({
+        branchId: branchId,
+        itemId: item.itemId,
+        stockLocationId: stockLocationId
+    }, {sort: {createdAt: -1}});
+    if (gratisInventory == null) {
+        let gratisInventoryObj = {};
+        gratisInventoryObj._id = idGenerator.genWithPrefix(GratisInventories, prefix, 13);
+        gratisInventoryObj.branchId = branchId;
+        gratisInventoryObj.stockLocationId = stockLocationId;
+        gratisInventoryObj.itemId = item.itemId;
+        gratisInventoryObj.qty = item.qty;
+        GratisInventories.insert(gratisInventoryObj);
+    }
+    else {
+        GratisInventories.update(
+            gratisInventory._id,
+            {
+                $inc: {qty: item.qty}
+            });
+    }
+}
+function reduceGratisInventory(branchId, item, stockLocationId) {
+    let prefix = stockLocationId + '-';
+    let gratisInventory = GratisInventories.findOne({
+        branchId: branchId,
+        itemId: item.itemId,
+        stockLocationId: stockLocationId
+    }, {sort: {createdAt: -1}});
+    if (gratisInventory) {
+        GratisInventories.update(
+            gratisInventory._id,
+            {
+                $inc: {qty: -item.qty}
+            }
+        );
+    }
+    else {
+        let gratisInventoryObj = {};
+        gratisInventoryObj._id = idGenerator.genWithPrefix(GratisInventories, prefix, 13);
+        gratisInventoryObj.branchId = branchId;
+        gratisInventoryObj.stockLocationId = stockLocationId;
+        gratisInventoryObj.itemId = item.itemId;
+        gratisInventoryObj.qty = -item.qty;
+        GratisInventories.insert(gratisInventoryObj);
+    }
+}
