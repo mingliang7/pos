@@ -55,6 +55,11 @@ Invoices.after.insert(function (userId, doc) {
             }
         } else {
             invoiceManageStock(doc);
+            doc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                }
+            });
         }
         if (doc.invoiceType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
@@ -85,10 +90,20 @@ Invoices.after.update(function (userId, doc) {
             removeInvoiceFromGroup(preDoc);
             pushInvoiceFromGroup(doc);
             recalculatePayment({preDoc, doc});
+            preDoc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    reduceGratisInventory(item, preDoc.branchId, preDoc.stockLocationId);
+                }
+            });
 
             //average inventory calculate
             returnToInventory(preDoc);
             invoiceManageStock(doc);
+            doc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                }
+            });
 
             // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
         });
@@ -97,10 +112,20 @@ Invoices.after.update(function (userId, doc) {
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
             recalculatePayment({preDoc, doc});
+            preDoc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    reduceGratisInventory(item, preDoc.branchId, preDoc.stockLocationId);
+                }
+            });
 
             //average inventory calculate
             returnToInventory(preDoc);
             invoiceManageStock(doc);
+            doc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                }
+            });
         })
     }
 });
@@ -127,11 +152,21 @@ Invoices.after.remove(function (userId, doc) {
             }
             //average inventory calculation
             returnToInventory(doc);
+            doc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    reduceGratisInventory(item, doc.branchId, doc.stockLocationId);
+                }
+            });
         } else if (type.term) {
             Meteor.call('insertRemovedInvoice', doc);
 
             //average inventory calculation
             returnToInventory(doc);
+            doc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    reduceGratisInventory(item, doc.branchId, doc.stockLocationId);
+                }
+            });
         }
 
     });
@@ -365,7 +400,7 @@ function recalculatePaymentAfterRemoved({doc}) {
 }
 
 
-function increaseGratisInventory(branchId, item, stockLocationId) {
+function increaseGratisInventory(item, branchId, stockLocationId) {
     let prefix = stockLocationId + '-';
     let gratisInventory = GratisInventories.findOne({
         branchId: branchId,
@@ -389,7 +424,7 @@ function increaseGratisInventory(branchId, item, stockLocationId) {
             });
     }
 }
-function reduceGratisInventory(branchId, item, stockLocationId) {
+function reduceGratisInventory(item, branchId, stockLocationId) {
     let prefix = stockLocationId + '-';
     let gratisInventory = GratisInventories.findOne({
         branchId: branchId,
