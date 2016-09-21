@@ -157,9 +157,7 @@ Invoices.after.remove(function (userId, doc) {
                     reduceGratisInventory(item, doc.branchId, doc.stockLocationId);
                 }
             });
-        } else if (type.term) {
-            Meteor.call('insertRemovedInvoice', doc);
-
+        } else {
             //average inventory calculation
             returnToInventory(doc);
             doc.items.forEach(function (item) {
@@ -168,6 +166,7 @@ Invoices.after.remove(function (userId, doc) {
                 }
             });
         }
+        Meteor.call('insertRemovedInvoice', doc);
 
     });
 });
