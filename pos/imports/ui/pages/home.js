@@ -8,21 +8,41 @@ import Chart from 'chart.js';
 import Highcharts from 'highcharts';
 // Load module after Highcharts is loaded
 require('highcharts/modules/exporting')(Highcharts);
-
+// collection
+import {EnterBills} from '../../api/collections/enterBill';
+import {PayBills} from '../../api/collections/payBill';
+import {Invoices} from '../../api/collections/invoice';
+import {GroupInvoice} from '../../api/collections/groupInvoice';
+import {ReceivePayment} from '../../api/collections/receivePayment';
+import {GroupBill} from '../../api/collections/groupBill';
 // Method
-
 // Page
 import './home.html';
 
 // Declare template
 let indexTmpl = Template.Pos_home;
 let income = new ReactiveVar();
+let dashboardTransactionType = new ReactiveVar('invoice');
+let dashboardTransactionData = new ReactiveVar(false);
 indexTmpl.onCreated(function () {
+    dashboardTransactionType.set('invoice');
     this.isLoading = new ReactiveVar(true);
+    this.autorun(()=> {
+        let type = dashboardTransactionType.get();
+        if (type == 'invoice' || type == 'receivePayment' || type == 'groupInvoice' || type == 'enterBill' || type == 'payBill' || type == 'groupBill') {
+            this.subscription = Meteor.subscribe(`pos.${type}TransactionIn7days`, {limit: 10});
+        }
+    });
 });
 
 indexTmpl.onRendered(function () {
     this.autorun(()=> {
+        if (this.subscription.ready()) {
+            dashboardTransactionData.set(true);
+        }
+    });
+    this.autorun(()=> {
+
         Meteor.call('posChart', {}, (err, result)=> {
             // let orders =[
             //     {name: 'Mon', y: 1900},
@@ -139,7 +159,73 @@ indexTmpl.helpers({
     income(){
         let incomeObj = income.get();
         return incomeObj;
+    },
+    data(){
+        let getDate = dashboardTransactionData.get();
+        if (getDate) {
+            let type = dashboardTransactionType.get();
+            let data;
+            switch (type) {
+                case 'invoice':
+                    data = Invoices.find({}, {sort: {invoiceDate: -1}});
+                    break;
+                case 'enterBill':
+                    data = EnterBills.find({}, {sort: {enterBillDate: -1}});
+                    break;
+                case 'receivePayment':
+                    data = ReceivePayment.find({}, {sort: {paymentDate: -1}});
+                    break;
+                case 'payBill':
+                    data = PayBills.find({}, {sort: {paymentDate: -1}});
+                    break;
+                case 'groupInvoice':
+                    data = GroupInvoice.find({}, {sort: {startDate: -1}});
+                    break;
+                case 'groupBill':
+                    data = GroupBill.find({}, {sort: {startDate: -1}});
+                    break;
+            }
+            return data;
+        }
+        return false;
+    },
+    isData(data){
+        return data.count() > 0;
+    },
+    checkTypeOfDate(){
+        let type = dashboardTransactionType.get();
+        let date;
+        switch (type) {
+            case 'invoice':
+                date = moment(this.invoiceDate).format('YYYY-MM-DD HH:mm:ss');
+                break;
+            case 'enterBill':
+                date = moment(this.enterBillDate).format('YYYY-MM-DD HH:mm:ss');
+                break;
+            case 'receivePayment':
+                date = moment(this.paymentDate).format('YYYY-MM-DD HH:mm:ss')
+                break;
+            case 'payBill':
+                date = moment(this.paymentDate).format('YYYY-MM-DD HH:mm:ss');
+                break;
+            case 'groupInvoice':
+                date = moment(this.startDate).format('YYYY-MM-DD') + ' to ' + moment(this.endDate).format('YYYY-MM-DD');
+                break;
+            case 'groupBill':
+                date = moment(this.startDate).format('YYYY-MM-DD') + ' to ' + moment(this.endDate).format('YYYY-MM-DD');
+                break;
+
+        }
+        return date;
+    }
+
+});
+indexTmpl.onDestroyed(function () {
+    dashboardTransactionData.set(false);
+});
+indexTmpl.events({
+    'change .select-transaction'(event, instance){
+        dashboardTransactionData.set(false);
+        dashboardTransactionType.set(event.currentTarget.value);
     }
 });
-
-indexTmpl.events({});

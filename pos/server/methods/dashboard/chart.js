@@ -3,13 +3,15 @@ import {Invoices} from '../../../imports/api/collections/invoice';
 import {Order} from '../../../imports/api/collections/order';
 import {Setting} from '../../../../core/imports/api/collections/setting';
 import {ReceivePayment} from '../../../imports/api/collections/receivePayment';
+import {GroupInvoice} from '../../../imports/api/collections/groupInvoice';
 Meteor.methods({
     posChart(){
         let coreCompany = Company.findOne();
         let startOfMonth = moment().startOf('month').toDate();
         let endOfMonth = moment().endOf('month').toDate()
         let selector = {
-            invoiceDate: {$gte: startOfMonth, $lte: endOfMonth}
+            invoiceDate: {$gte: startOfMonth, $lte: endOfMonth},
+            invoiceType: 'term'
         };
         let data = Invoices.aggregate([
             {$match: selector},
@@ -48,12 +50,17 @@ Meteor.methods({
             countOverdueInvoice: 0,
             totalOverdueInvoice: 0,
             countPaymentInLast30Days: 0,
-            totalPaymentInLast30Days: 0
+            totalPaymentInLast30Days: 0,
+            countGroupInvoice: 0,
+            totalGroupInvoice: 0,
+            countOverdueGroupInvoice: 0,
+            totalOverdueGroupInvoice: 0
         };
         let selector = {
             invoice: {
                 invoiceDate: {$gte: startOfYear, $lte: endOfYear},
-                invoiceType: 'term'
+                invoiceType: 'term',
+                status: {$in: ["active", "partial"]}
             },
             saleOrder: {
                 orderDate: {$gte: startOfYear, $lte: endOfYear}
@@ -61,10 +68,18 @@ Meteor.methods({
             overdueInvoice: {
                 dueDate: {$lt: moment().toDate()}
             },
+            overdueGroupInvoice: {
+                dueDate: {$lt: moment().toDate()}
+            },
             paymentInLast30Days: {
                 paymentDate: {
                     $gte: startOfMonth,
                     $lte: endOfMonth
+                }
+            },
+            groupInvoice: {
+                endDate: {
+                    $lte: endOfYear
                 }
             }
         };
@@ -72,6 +87,8 @@ Meteor.methods({
         let saleOrders = aggregateSaleOrder(selector);
         let overdueInvoices = aggregateOverdueInvoice(selector);
         let paymentInLast30Days = aggregatePaymentInLast30Days(selector);
+        let groupInvoices = aggregateGroupInvoice(selector);
+        let overdueGroupInvoices = aggregateOverdueGroupInvoice(selector);
         if (invoices.length > 0) {
             data.countInvoice = invoices[0].count;
             data.totalInvoice = invoices[0].total
@@ -84,9 +101,17 @@ Meteor.methods({
             data.countOverdueInvoice = overdueInvoices[0].count;
             data.totalOverdueInvoice = overdueInvoices[0].total;
         }
-        if(paymentInLast30Days.length > 0) {
+        if (paymentInLast30Days.length > 0) {
             data.countPaymentInLast30Days = paymentInLast30Days[0].count;
             data.totalPaymentInLast30Days = paymentInLast30Days[0].total;
+        }
+        if (groupInvoices.length > 0) {
+            data.countGroupInvoice = groupInvoices[0].count;
+            data.totalGroupInvoice = groupInvoices[0].total;
+        }
+        if (overdueGroupInvoices.length > 0) {
+            data.countOverdueGroupInvoice = overdueGroupInvoices[0].count;
+            data.totalOverdueGroupInvoice = overdueGroupInvoices[0].total;
         }
         return data;
     }
@@ -142,9 +167,7 @@ function aggregateOverdueInvoice(selector) {
         },
         {
             $group: {
-                _id: {
-                    year: {$year: '$dueDate'}
-                },
+                _id: null,
                 total: {
                     $sum: '$total'
                 },
@@ -180,6 +203,41 @@ function aggregatePaymentInLast30Days(selector) {
         }
     ]);
     return paymentInLast30Days;
+}
+function aggregateGroupInvoice(selector) {
+    let groupInvoice = GroupInvoice.aggregate([
+        {
+            $match: selector.groupInvoice
+        },
+        {
+            $group: {
+                _id: null,
+                total: {$sum: '$total'},
+                count: {$sum: 1}
+            }
+        }
+    ]);
+    return groupInvoice;
+}
+function aggregateOverdueGroupInvoice(selector) {
+    let overdueGroupInvoice = GroupInvoice.aggregate([
+        {
+            $match: selector.overdueGroupInvoice
+
+        },
+        {
+            $group: {
+                _id: null,
+                total: {
+                    $sum: '$total'
+                },
+                count: {
+                    $sum: 1
+                }
+            }
+        }
+    ]);
+    return overdueGroupInvoice;
 }
 function currencySymbol(baseCurrency) {
     let currencySymbol = '';
