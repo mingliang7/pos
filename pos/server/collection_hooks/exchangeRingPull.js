@@ -56,7 +56,7 @@ function ExchangeRingPullManageStock(exchangeRingPull) {
             branchId: exchangeRingPull.branchId,
             itemId: item.itemId,
             stockLocationId: exchangeRingPull.stockLocationId
-        }, {sort: {_id: 1}});
+        }, {sort: {_id: -1}});
         if (inventory) {
             item.cost = inventory.price;
             //item.amountCost = inventory.price * item.qty;

@@ -232,7 +232,7 @@ function invoiceManageStock(invoice) {
             branchId: invoice.branchId,
             itemId: item.itemId,
             stockLocationId: invoice.stockLocationId
-        }, {sort: {_id: 1}});
+        }, {sort: {_id: -1}});
         if (inventory) {
             item.cost = inventory.price;
             item.amountCost = inventory.price * item.qty;
