@@ -25,8 +25,6 @@ import '../../../../core/client/components/form-footer.js';
 
 // Collection
 import {EnterBills} from '../../api/collections/enterBill.js';
-import {PrepaidOrders} from '../../api/collections/prepaidOrder.js';
-import {PrepaidOrderDeletedItem} from './enterBill-items.js';
 import {Item} from '../../api/collections/item';
 import {vendorBillCollection} from '../../api/collections/tmpCollection';
 // Tabular
