@@ -6,7 +6,7 @@ import 'meteor/tap:i18n-ui';
 import './sidebar-menu.html';
 
 Tracker.autorun(function () {
-    if(Meteor.userId()) {
+    if(Meteor.userId() && Session.get('currentBranch')) {
         Meteor.call('currentUserStockAndAccountMappingDoc', {userId: Meteor.userId()}, function (err, result) {
             Session.set('currentUserStockAndAccountMappingDoc', result);
         });

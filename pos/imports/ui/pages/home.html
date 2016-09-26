@@ -4,8 +4,9 @@
             <div class="box-body">
                 <div class="col-md-12">
                     <div class="row">
-                        <div class="col-md-6"><h4>ចំណូល(Income)</h4></div>
-                        <div class="col-md-6 text-right"><h4>អំឡុងពេល ៣៦៥ថ្ងៃ (Last 365 days)</h4></div>
+                        <div class="col-md-6"><h4 style="font-family: 'Khmer OS Battambang';">ចំណូល(Income)</h4></div>
+                        <div class="col-md-6 text-right"><h4 style="font-family:'Khmer OS Battambang';">អំឡុងពេល ៣៦៥ថ្ងៃ
+                            (Last 365 days)</h4></div>
                     </div>
                 </div>
                 <div class="container-fluid">
@@ -146,13 +147,14 @@
                 <div id="container" style="width:100%; height:400px;"></div>
             </div>
         </div>
-        <div class="col-md-3" style="border-left: 1px solid #ddd;">
+        <div class="col-md-3" style="border-left: 1px solid #ddd;
+">
             <!-- Box Comment -->
             <div class="box box-widget">
                 <div class="box-header with-border">
                     <div class="row">
                         <div class="col-md-5">
-                            <h4 class="text-info"><i class="fa fa-exchange"></i> ប្រតិបត្តិការ
+                            <h4 class="text-info"> ប្រតិបត្តិការ
                             </h4>
                         </div>
                         <div class="col-md-6">
@@ -183,31 +185,69 @@
                 <!-- /.box-header -->
                 <div class="box-body">
                     <!-- post text -->
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search...">
-                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                    </div>
+                    <!--<div class="input-group">-->
+                        <!--<input type="text" class="form-control" placeholder="Search...">-->
+                        <!--<span class="input-group-addon"><i class="fa fa-search"></i></span>-->
+                    <!--</div>-->
 
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer box-comments">
                     {{#if data}}
-                        {{#if isData data}}
-                            {{#each data }}
-                                <div class="box-comment animated bounceInRight">
-                                    <!-- User image -->
-                                    <div class="comment-text">
-                      <span class="text-blue"><a style="cursor: pointer; text-decoration: underline;">{{_id}}</a>
-                          <span class="text-muted pull-right">{{checkTypeOfDate}}</span>
-                      </span><!-- /.username -->
-                                        <br>
-                                        <b>Status:</b> <u class="label label-success">{{status}}</u><br>
+                        {{#if isData data.collection}}
+                            <ul class="timeline animated fadeIn" style="overflow: auto; height: 500px;">
+                                {{#each data.collection}}
+                                    <!-- timeline time label -->
+                                    <li class="time-label">
+                                 <span class="bg-aqua">
+                                    <i class="fa fa-calendar-o"></i> {{checkTypeOfDate}}
+                                  </span>
+                                    </li>
+                                    <!-- /.timeline-label -->
 
-                                        <b>Total:</b> <u>${{numFormat total '0,0.00'}}</u>
-                                    </div>
-                                    <!-- /.comment-text -->
-                                </div>
-                            {{/each}}
+                                    <!-- timeline item -->
+                                    <li>
+                                        <!-- timeline icon -->
+                                        <i class="fa fa-file-o bg-blue"></i>
+                                        <div class="timeline-item">
+                                            <span class="time"><i
+                                                    class="fa fa-clock-o"></i> {{livestamp checkTypeOfDate}}</span>
+                                            <h3 class="timeline-header"><a href="#">{{_id}}</a></h3>
+
+                                            <div class="timeline-body">
+                                                Customer: {{customerOrVendorObj.name}} | Tel: {{customerOrVendorObj.telephone}} <br>
+                                                Voucher: {{voucherId}}<br>
+                                                Status: <span class="label label-warning">{{status}}</span><br>
+                                                {{{isReceivePayment}}}
+                                            </div>
+
+                                            <!--<div class="timeline-footer">-->
+                                            <!--<a class="btn btn-primary btn-xs">...</a>-->
+                                            <!--</div>-->
+                                        </div>
+                                    </li>
+                                    <!-- END timeline item -->
+
+                                {{/each}}
+
+                            </ul>
+                            <table>
+                                <tr>
+                                    <td colspan="10">
+                                        {{#if Template.subscriptionsReady}}
+                                            {{#if hasMore data.collectionCount}}
+                                                <button class="btn btn-primary load-more col-xs-12"
+                                                        id="get-checked-data">
+                                                    Load More({{data.collectionCount}})
+                                                </button>
+                                            {{/if}}
+                                        {{else}}
+                                            {{> loading}}
+                                            <!--<div class="loading">{{>spinner}}</div>-->
+                                        {{/if}}
+                                    </td>
+                                </tr>
+                            </table>
                         {{else}}
                             <h5 class="text-center" style="font-family: 'Khmer OS Fasthand';">
                                 មិនទាន់មានទិន្នន័យ</h5>
