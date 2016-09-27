@@ -1,0 +1,14 @@
+<!--Index-->
+<template name="Pos_accountIntegrationSetting">
+    <div class="box-body">
+        {{#autoForm collection=collection doc=data id="Pos_accountIntegrationSettingEdit" type="update"}}
+            <div class="row">
+                <div class="col-md-12">
+                    {{> afQuickField name='integrate'}}
+                </div>
+            </div>
+
+            {{> formFooterWithButton}}
+        {{/autoForm}}
+    </div>
+</template>

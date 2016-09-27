@@ -580,3 +580,19 @@ PosRoutes.route('/exchange-gratis', {
         parent: 'pos.home'
     }
 });
+
+//accountIntegrationSetting
+import '../imports/ui/pages/accountIntegrationSetting';
+PosRoutes.route('/account-integration-setting', {
+    name: 'pos.accountIntegrationSetting',
+    title: 'Account Integration Setting',
+    action: function (params, queryParams) {
+        Layout.main('Pos_accountIntegrationSetting');
+    },
+    breadcrumb: {
+        title: 'Account Integration Setting',
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+
+});
