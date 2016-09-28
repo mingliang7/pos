@@ -9,7 +9,7 @@ import {moment} from  'meteor/momentjs:moment';
 import {DateEndOfProcess} from '../../imports/api/collections/dateEndOfProcess';
 
 Meteor.methods({
-   getDateEndOfProcess: function(selector){
-       return DateEndOfProcess.findOne(selector, {sort: {closeDate: -1}});
-   }
+    getDateEndOfProcess: function (selector) {
+        return DateEndOfProcess.findOne(selector, {sort: {closeDate: -1}});
+    }
 });

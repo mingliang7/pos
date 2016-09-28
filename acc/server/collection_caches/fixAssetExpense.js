@@ -1,4 +1,3 @@
-
 import 'meteor/theara:collection-cache';
 
 // Collection

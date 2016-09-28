@@ -21,8 +21,8 @@ Meteor.isClient && require('../../imports/ui/pages/journal/journal.html');
 
 tabularOpts.name = 'acc.journal';
 tabularOpts.collection = Journal;
-tabularOpts.order= ['2', 'desc'],
-tabularOpts.extraFields = ['currencyId', 'transactionAsset', 'transaction', 'endId', 'fixAssetExpenseId', 'closingId','refId'];
+tabularOpts.order = ['2', 'desc'],
+    tabularOpts.extraFields = ['currencyId', 'transactionAsset', 'transaction', 'endId', 'fixAssetExpenseId', 'closingId', 'refId'];
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.acc_journalAction},
     {data: "_id", title: "Id"},
@@ -44,15 +44,28 @@ tabularOpts.columns = [
         render: function (val, type, doc) {
             if (val != null) {
                 var currencySymbol = Currency.findOne({_id: doc.currencyId});
-                let symbol="";
-                if(currencySymbol){
-                    symbol=currencySymbol.symbol;
+                let symbol = "";
+                if (currencySymbol) {
+                    symbol = currencySymbol.symbol;
                 }
                 return symbol + numeral(val).format("0,0.00");
             }
         }
     },
-    {data: "currencyId", title: "Currency"}
+    {data: "currencyId", title: "Currency"},
+    {data: "endId", title: "Status",
+        render:function (val,type,doc) {
+            if(doc.endId>0){
+                return "<p class='label label-success'>End Process</p>";
+            }else if(doc.closingId>0){
+                return "<p class='label label-warning'>Currency Closing</p>";
+            }else if(doc.refId!= undefined){
+                return "<p class='label label-info'>Pos Integration</p>";
+            }else if(doc.fixAssetExpenseId){
+                return "<p class='label label-default'>Normal</p>";
+            }
+        }
+    }
 ];
 export const JournalTabular = new Tabular.Table(tabularOpts);
 

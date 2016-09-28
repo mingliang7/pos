@@ -14,7 +14,7 @@ import {NetInCome} from '../../imports/api/collections/netIncome';
 
 
 Meteor.methods({
-    getEndOfProcess: function (selector, branchId, selectorGetLastBalance, lastDate, dateSelect,endId) {
+    getEndOfProcess: function (selector, branchId, selectorGetLastBalance, lastDate, dateSelect, endId) {
 
         var data = [];
         var dataUse = [];
@@ -62,19 +62,17 @@ Meteor.methods({
                 code: ob.code,
                 name: ob.name,
                 value: ob.value,
-                closeDate: moment(ob.closeDate,"DD/MM/YYYY").toDate(),
+                closeDate: moment(ob.closeDate, "DD/MM/YYYY").toDate(),
                 currencyId: ob.currencyId,
                 branchId: ob.branchId,
                 accountTypeId: ob.accountTypeId,
                 level: ob.level,
                 parentId: ob.parentId,
                 endId: endId,
-                year: moment(ob.closeDate,"DD/MM/YYYY").format("YYYY"),
-                month: moment(ob.closeDate,"DD/MM/YYYY").format("MM")
+                year: moment(ob.closeDate, "DD/MM/YYYY").format("YYYY"),
+                month: moment(ob.closeDate, "DD/MM/YYYY").format("MM")
             })
         });
-
-
 
 
         if (lastDate !== null) {
@@ -133,15 +131,15 @@ Meteor.methods({
                 code: ob.code,
                 name: ob.name,
                 value: ob.value,
-                closeDate: moment(ob.closeDate,"DD/MM/YYYY").toDate(),
+                closeDate: moment(ob.closeDate, "DD/MM/YYYY").toDate(),
                 currencyId: ob.currencyId,
                 branchId: ob.branchId,
                 accountTypeId: ob.accountTypeId,
                 level: ob.level,
                 parentId: ob.parentId,
                 endId: endId,
-                year: moment(ob.closeDate,"DD/MM/YYYY").format("YYYY"),
-                month: moment(ob.closeDate,"DD/MM/YYYY").format("MM")
+                year: moment(ob.closeDate, "DD/MM/YYYY").format("YYYY"),
+                month: moment(ob.closeDate, "DD/MM/YYYY").format("MM")
             })
         });
 
@@ -150,7 +148,7 @@ Meteor.methods({
     },
     removeEndOfProcess: function (id) {
         var data = DateEndOfProcess.findOne({_id: id});
-       CloseChartAccount.remove({endId: id}, function (error) {
+        CloseChartAccount.remove({endId: id}, function (error) {
             if (!error) {
                 NetInCome.remove({endId: id});
                 if (moment(data.closeDate).format("MM") == 12) {

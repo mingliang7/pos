@@ -1,4 +1,3 @@
-
 import {MapFixAsset} from '../../imports/api/collections/mapFixAsset';
 import './_init.js';
 /**

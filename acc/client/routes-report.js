@@ -138,7 +138,7 @@ AccRoutes.route('/currencyClosingReport', {
         this.register(
             'accCloseChartAccount',
             Meteor.subscribe('acc.closeChartAccount')
-        ),this.register(
+        ), this.register(
             'accCloseChartAccount',
             Meteor.subscribe('acc.closing')
         ),
@@ -173,7 +173,7 @@ AccRoutes.route('/dateEndOfProcess', {
         this.register(
             'accDateEndOfProcess',
             Meteor.subscribe('accDateEndOfProcess')
-        ),this.register(
+        ), this.register(
             'accCloseChartAccount',
             Meteor.subscribe('accCloseChartAccount')
         );
@@ -278,7 +278,7 @@ AccRoutes.route('/ledgerReport', {
     name: 'acc.ledgerReport',
     title: __('acc.ledgerReport.title'),
     subscriptions: function (params, queryParams) {
-        this.register('cpanel_exchange',Meteor.subscribe('cpanel_exchange'));
+        this.register('cpanel_exchange', Meteor.subscribe('cpanel_exchange'));
     },
     action: function (params, queryParams) {
         Layout.main('acc_ledgerReport');

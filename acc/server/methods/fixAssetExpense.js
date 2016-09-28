@@ -13,8 +13,8 @@ import {FixAssetExpense} from '../../imports/api/collections/fixAssetExpense';
 
 Meteor.methods({
     removeFixAssetExpense: function (id) {
-        var depType=ConfigDep.findOne();
-        DepExpList.update({isDep: true}, {$inc: {increment: -1}},{multi: true});
+        var depType = ConfigDep.findOne();
+        DepExpList.update({isDep: true}, {$inc: {increment: -1}}, {multi: true});
         var depList = DepExpList.find({increment: 0}).fetch();
 
         if (depList.length != 0) {
@@ -27,7 +27,7 @@ Meteor.methods({
                 obj.transactionAsset.forEach(function (ob) {
                     if (i == 1 && ob.month > 0) {
                         ob.month -= depType.depPerTime;
-                        ob.month= ob.month>0 ? ob.month: 0;
+                        ob.month = ob.month > 0 ? ob.month : 0;
                         i++;
 
                         if (ob.month < ob.maxMonth) {

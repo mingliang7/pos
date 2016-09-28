@@ -1,4 +1,3 @@
-
 import {MapClosing} from '../../imports/api/collections/mapCLosing';
 import './_init.js';
 

@@ -9,12 +9,12 @@ import {moment} from  'meteor/momentjs:moment';
 import {Journal} from '../../imports/api/collections/journal';
 
 Meteor.methods({
-   getJournal: function(selector){
-       return Journal.findOne(selector);
-   },
-    getJournalForLedger: function(voucherId,id){
-        var data = Journal.findOne({voucherId: voucherId,_id: id});
-         return data;
+    getJournal: function (selector) {
+        return Journal.findOne(selector);
+    },
+    getJournalForLedger: function (voucherId, id) {
+        var data = Journal.findOne({voucherId: voucherId, _id: id});
+        return data;
     }
 
 });

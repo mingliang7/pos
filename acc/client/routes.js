@@ -32,7 +32,7 @@ AccRoutes.route('/home', {
     name: 'acc.home',
     title: __('acc.home.title'),
     action(param, queryParam){
-        Layout.main('Acc_home');
+        Layout.main('acc_chartDailyIncomeExpense');
     },
     breadcrumb: {
         //params: ['id'],

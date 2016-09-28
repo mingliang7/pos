@@ -27,7 +27,6 @@ let AccRoutes = FlowRouter.group({
 });
 
 
-
 // net Income
 import '../imports/ui/pages/chart/netIncome/netIncome';
 AccRoutes.route('/chartNetIncome', {
@@ -36,7 +35,7 @@ AccRoutes.route('/chartNetIncome', {
     subscriptions: function (params, queryParams) {
         this.register('acc.netIncome', Meteor.subscribe('acc.netIncome'));
     },
-    action: function(params, queryParams) {
+    action: function (params, queryParams) {
         Layout.main('acc_chartNetIncome');
     },
     breadcrumb: {
@@ -52,7 +51,7 @@ import '../imports/ui/pages/chart/accountComparation/accountComparation';
 AccRoutes.route('/chartAccountComparation', {
     name: 'acc.accountComparation',
     title: __('acc.accountComparation.title'),
-    action: function(params, queryParams) {
+    action: function (params, queryParams) {
         Layout.main('acc_accountComparation');
     },
     breadcrumb: {
@@ -68,7 +67,7 @@ import '../imports/ui/pages/chart/companySnapshot/companySnapshot';
 AccRoutes.route('/chartCompanySnapshot', {
     name: 'acc.companySnapshot',
     title: __('acc.companySnapshot.title'),
-    action: function(params, queryParams) {
+    action: function (params, queryParams) {
         Layout.main('acc_companySnapshot');
     },
     breadcrumb: {

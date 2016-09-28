@@ -1,4 +1,3 @@
-
 import {MapNBCIncome} from '../../imports/api/collections/mapNBCIncome';
 import './_init.js';
 /**

@@ -34,6 +34,9 @@ NetInCome.schema = new SimpleSchema({
     year: {
         type: String
     },
+    month: {
+        type: String
+    },
     branchId: {
         type: String,
         label: "Branch"

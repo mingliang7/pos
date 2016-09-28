@@ -30,7 +30,7 @@ Meteor.methods({
         ]);
 
         results.forEach(function (obj) {
-            var re = Meteor.call('exchange',obj._id.currency, baseCurrency, obj.result, exchangeDate);
+            var re = Meteor.call('exchange', obj._id.currency, baseCurrency, obj.result, exchangeDate);
             arr.push({account: obj._id.account, name: obj._id.name, result: re, code: obj._id.code});
         });
         return arr;

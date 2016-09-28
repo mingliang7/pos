@@ -185,7 +185,7 @@ SelectOptMethods.chartAccountId = new ValidatedMethod({
             var list = [{label: "(Select One)", value: ""}];
             ChartAccount.find(selector, {sort: {code: 1}})
                 .forEach(function (obj) {
-                    var accountType =AccountType.findOne(obj.accountTypeId).name;
+                    var accountType = AccountType.findOne(obj.accountTypeId).name;
                     list.push({
                         label: Spacebars.SafeString(SpaceChar.space(obj.level * 6) + obj.code + " | " + obj.name + " | " + accountType),
                         value: obj._id
@@ -197,7 +197,6 @@ SelectOptMethods.chartAccountId = new ValidatedMethod({
 });
 
 
-
 SelectOptMethods.accountType = new ValidatedMethod({
     name: 'acc.selectOptMethods.accountType',
     validate: null,
@@ -207,7 +206,7 @@ SelectOptMethods.accountType = new ValidatedMethod({
 
             var selector = _.isUndefined(selector) ? {} : selector;
             var list = [{label: "(Select One)", value: ""}];
-           AccountType.find(selector)
+            AccountType.find(selector)
                 .forEach(function (obj) {
                     list.push({label: obj._id + " | " + obj.name, value: obj._id})
                 });
@@ -227,7 +226,7 @@ SelectOptMethods.parent = new ValidatedMethod({
             var list = [{label: "(Select One)", value: ""}];
             ChartAccount.find(selector, {sort: {code: 1}})
                 .forEach(function (obj) {
-                    var accountType =AccountType.findOne(obj.accountTypeId).name;
+                    var accountType = AccountType.findOne(obj.accountTypeId).name;
                     list.push({
                         label: Spacebars.SafeString(SpaceChar.space(obj.level * 6) + obj.code + " | " + obj.name + "--" + accountType),
                         value: obj._id
@@ -250,7 +249,7 @@ SelectOptMethods.fixAssetExpenseList = new ValidatedMethod({
                 .forEach(function (obj) {
                     listChartAccount.push({
                         label: Spacebars.SafeString(SpaceChar.space(obj.level * 6) + obj.code + " | " + obj.name),
-                        value:  obj._id
+                        value: obj._id
                     })
                 });
             return listChartAccount;
@@ -290,7 +289,7 @@ SelectOptMethods.fixAssetChatAccount = new ValidatedMethod({
                 .forEach(function (obj) {
                     listChartAccount.push({
                         label: Spacebars.SafeString(SpaceChar.space(obj.level * 6) + obj.code + " | " + obj.name),
-                        value:  obj.code + " | " + obj.name
+                        value: obj.code + " | " + obj.name
                     })
                 });
             return listChartAccount;

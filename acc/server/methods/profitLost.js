@@ -11,7 +11,7 @@ import {CloseChartAccount} from '../../imports/api/collections/closeChartAccount
 import {ChartAccount} from '../../imports/api/collections/chartAccount';
 
 Meteor.methods({
-    getProfitLost: function (selector, baseCurrency, exchangeDate,showNonActive) {
+    getProfitLost: function (selector, baseCurrency, exchangeDate, showNonActive) {
         var arr = [];
         var result = Journal.aggregate([
 
@@ -103,7 +103,7 @@ Meteor.methods({
         return arr;
     },
     getProfitLostYearToDate: function (selector, baseCurrency, exchangeDate,
-                                       selectorMiddle, selectorEndDate,showNonActive) {
+                                       selectorMiddle, selectorEndDate, showNonActive) {
         var arr = [];
         var result = Journal.aggregate([
 
@@ -156,11 +156,17 @@ Meteor.methods({
         });
 
 
-        if(showNonActive=='true' || showNonActive== true){
-            var accountParent=ChartAccount.find({accountTypeId : {$in : ['40','41','50','51']},level: {$gt: 0}}).fetch().map(function (obj) {
+        if (showNonActive == 'true' || showNonActive == true) {
+            var accountParent = ChartAccount.find({
+                accountTypeId: {$in: ['40', '41', '50', '51']},
+                level: {$gt: 0}
+            }).fetch().map(function (obj) {
                 return obj.parentId;
             });
-            ChartAccount.find({accountTypeId : {$in : ['40','41','50','51']},_id : {$nin: accountParent}}).fetch().forEach(function (obj) {
+            ChartAccount.find({
+                accountTypeId: {$in: ['40', '41', '50', '51']},
+                _id: {$nin: accountParent}
+            }).fetch().forEach(function (obj) {
                 arr.push({
                     account: obj._id,
                     name: obj.name,

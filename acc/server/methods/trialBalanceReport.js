@@ -12,7 +12,7 @@ import {ChartAccount} from '../../imports/api/collections/chartAccount';
 
 Meteor.methods({
     getTrialBalance: function (selector, baseCurrency, exchangeDate,
-                               selectorGetLastBalance, lastDate,showNonActive) {
+                               selectorGetLastBalance, lastDate, showNonActive) {
         var arr = [];
         var results = Journal.aggregate([{
             $unwind: "$transaction"
@@ -52,11 +52,11 @@ Meteor.methods({
             }
         });
 
-        if(showNonActive=='true' || showNonActive== true){
-            var accountParent=ChartAccount.find({level: {$gt: 0}}).fetch().map(function (obj) {
+        if (showNonActive == 'true' || showNonActive == true) {
+            var accountParent = ChartAccount.find({level: {$gt: 0}}).fetch().map(function (obj) {
                 return obj.parentId;
             });
-            ChartAccount.find({_id : {$nin: accountParent}}).fetch().forEach(function (obj) {
+            ChartAccount.find({_id: {$nin: accountParent}}).fetch().forEach(function (obj) {
                 arr.push({
                     account: obj._id,
                     name: obj.name,

@@ -29,8 +29,8 @@ tabularOpts.columns = [
         data: "accountDoc",
         title: "Chart Account",
         render: function (val, type, doc) {
-            if(val!=undefined)
-            return result = val.code + " | " + val.name;
+            if (val != undefined)
+                return result = val.code + " | " + val.name;
         }
     }
 

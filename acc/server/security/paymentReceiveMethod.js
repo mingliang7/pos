@@ -1,4 +1,3 @@
-
 import {PaymentReceiveMethod} from '../../imports/api/collections/paymentReceiveMethod';
 import './_init.js';
 

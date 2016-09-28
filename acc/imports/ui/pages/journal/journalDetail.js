@@ -144,11 +144,11 @@ journalDetailTpl.events({
         if (isInsert) {
             Session.set('isTotal', true);
         }
-        $('[name="account"]').select2('val', '');
+        $('[name="account"]').val("").trigger('change');;
+
 
         state.set('dr', 0);
         state.set('cr', 0);
-        state.set('account', "");
 
         Meteor.defer(function () {
             disableSubmit();

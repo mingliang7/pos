@@ -9,7 +9,7 @@ import {moment} from  'meteor/momentjs:moment';
 import {ChartAccount} from '../../imports/api/collections/chartAccount';
 
 Meteor.methods({
-   getChartAccount: function(selector){
-       return ChartAccount.findOne(selector);
-   }
+    getChartAccount: function (selector) {
+        return ChartAccount.findOne(selector);
+    }
 });

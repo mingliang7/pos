@@ -16,6 +16,7 @@ Module.Acc = {
             'accAccountType',
             'accChartAccount',
             'accChartAccountNBC',
+            'accChartAccountNBCKH',
             'acc_currency',
             'acc_exchangeNBC',
             'accMapNBCBalance',
@@ -24,6 +25,8 @@ Module.Acc = {
             'accMapNBCIncomeKH',
             'accMapClosing',
             'accMapFixAsset',
+            'accConfigDep',
+            'accPaymentReceiveMethod',
             'core_exchange'
         ],
         data: [
@@ -32,7 +35,11 @@ Module.Acc = {
             'accDateEndOfProcess',
             'accFixAssetDep',
             'accFixAssetExpense',
-            'acc_netIncome'
+            'acc_netIncome',
+            'accCloseChartAccountPerMonth',
+            'accClosing',
+            'accDepExpList',
+
         ]
     }
 };
