@@ -15,6 +15,7 @@ import {Invoices} from '../../api/collections/invoice';
 import {GroupInvoice} from '../../api/collections/groupInvoice';
 import {ReceivePayment} from '../../api/collections/receivePayment';
 import {GroupBill} from '../../api/collections/groupBill';
+import {tmpCollection} from '../../api/collections/tmpCollection';
 // Method
 // Page
 import './home.html';
@@ -27,10 +28,18 @@ let dashboardTransactionData = new ReactiveVar(false);
 indexTmpl.onCreated(function () {
     dashboardTransactionType.set('invoice');
     this.isLoading = new ReactiveVar(true);
+    this.loaded = new ReactiveVar(0);
+    this.limit = new ReactiveVar(5);
     this.autorun(()=> {
+        tmpCollection.remove({});
+        let limit = this.limit.get();
+        // let query = instance.query.get();
         let type = dashboardTransactionType.get();
         if (type == 'invoice' || type == 'receivePayment' || type == 'groupInvoice' || type == 'enterBill' || type == 'payBill' || type == 'groupBill') {
-            this.subscription = Meteor.subscribe(`pos.${type}TransactionIn7days`, {limit: 10});
+            this.subscription = Meteor.subscribe(`pos.${type}TransactionIn7days`, {branchId: Session.get('currentBranch')},{limit: limit});
+        }
+        if (this.subscription.ready()) {
+            this.loaded.set(limit);
         }
     });
 });
@@ -42,17 +51,7 @@ indexTmpl.onRendered(function () {
         }
     });
     this.autorun(()=> {
-
         Meteor.call('posChart', {}, (err, result)=> {
-            // let orders =[
-            //     {name: 'Mon', y: 1900},
-            //     {name: 'Tue', y: 1500},
-            //     {name: 'Wed', y: 2200},
-            //     {name: 'Thu', y: 1700},
-            //     {name: 'Fri', y: 3000},
-            //     {name: 'Sat', y: 2500}
-            // ];
-
             let chartOpts = {
                 chart: {
                     type: 'column'
@@ -111,45 +110,6 @@ indexTmpl.onRendered(function () {
             }
         });
     });
-
-
-    // var ctx = document.getElementById("myChart");
-    // var myChart = new Chart(ctx, {
-    //     type: 'bar',
-    //     data: {
-    //         labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-    //         datasets: [{
-    //             label: '# of Votes',
-    //             data: [12, 19, 3, 5, 2, 3],
-    //             backgroundColor: [
-    //                 'rgba(255, 99, 132, 0.2)',
-    //                 'rgba(54, 162, 235, 0.2)',
-    //                 'rgba(255, 206, 86, 0.2)',
-    //                 'rgba(75, 192, 192, 0.2)',
-    //                 'rgba(153, 102, 255, 0.2)',
-    //                 'rgba(255, 159, 64, 0.2)'
-    //             ],
-    //             borderColor: [
-    //                 'rgba(255,99,132,1)',
-    //                 'rgba(54, 162, 235, 1)',
-    //                 'rgba(255, 206, 86, 1)',
-    //                 'rgba(75, 192, 192, 1)',
-    //                 'rgba(153, 102, 255, 1)',
-    //                 'rgba(255, 159, 64, 1)'
-    //             ],
-    //             borderWidth: 1
-    //         }]
-    //     },
-    //     options: {
-    //         scales: {
-    //             yAxes: [{
-    //                 ticks: {
-    //                     beginAtZero:true
-    //                 }
-    //             }]
-    //         }
-    //     }
-    // });
 });
 
 indexTmpl.helpers({
@@ -161,8 +121,10 @@ indexTmpl.helpers({
         return incomeObj;
     },
     data(){
-        let getDate = dashboardTransactionData.get();
-        if (getDate) {
+        let getData = dashboardTransactionData.get();
+        if (getData) {
+            let instance = Template.instance();
+            let limit = instance.loaded.get()
             let type = dashboardTransactionType.get();
             let data;
             switch (type) {
@@ -170,22 +132,30 @@ indexTmpl.helpers({
                     data = Invoices.find({}, {sort: {invoiceDate: -1}});
                     break;
                 case 'enterBill':
-                    data = EnterBills.find({}, {sort: {enterBillDate: -1}});
+                    data = EnterBills.find({}, {sort: {enterBillDate: -1}, limit: limit});
                     break;
                 case 'receivePayment':
-                    data = ReceivePayment.find({}, {sort: {paymentDate: -1}});
+                    data = ReceivePayment.find({}, {sort: {paymentDate: -1}, limit: limit});
                     break;
                 case 'payBill':
-                    data = PayBills.find({}, {sort: {paymentDate: -1}});
+                    data = PayBills.find({}, {sort: {paymentDate: -1}, limit: limit});
                     break;
                 case 'groupInvoice':
-                    data = GroupInvoice.find({}, {sort: {startDate: -1}});
+                    data = GroupInvoice.find({}, {sort: {startDate: -1}, limit: limit});
                     break;
                 case 'groupBill':
-                    data = GroupBill.find({}, {sort: {startDate: -1}});
+                    data = GroupBill.find({}, {sort: {startDate: -1}, limit: limit});
                     break;
             }
-            return data;
+            if(data.count() > 0) {
+                data.forEach(function (obj) {
+                    Meteor.call('getCustomerOrVendorInfo', {obj}, function (err, result) {
+                        tmpCollection.insert(result, function (err, result) {
+                        });
+                    });
+                });
+            }
+            return {collection: tmpCollection.find(), collectionCount: tmpCollection.find().count()};
         }
         return false;
     },
@@ -203,7 +173,7 @@ indexTmpl.helpers({
                 date = moment(this.enterBillDate).format('YYYY-MM-DD HH:mm:ss');
                 break;
             case 'receivePayment':
-                date = moment(this.paymentDate).format('YYYY-MM-DD HH:mm:ss')
+                date = moment(this.paymentDate).format('YYYY-MM-DD HH:mm:ss');
                 break;
             case 'payBill':
                 date = moment(this.paymentDate).format('YYYY-MM-DD HH:mm:ss');
@@ -217,15 +187,52 @@ indexTmpl.helpers({
 
         }
         return date;
+    },
+    convertDate(date){
+        return moment(date).toDate();
+    },
+    isReceivePayment(){
+        let type = dashboardTransactionType.get();
+        let concat;
+        switch (type) {
+            case 'receivePayment':
+                concat = `Due Amount: <b><u>$${formatNumber(this.dueAmount)}</u></b>, <br>Paid Amount: <b><u>$${formatNumber(this.paidAmount)}</u></b>, <br>Balance: <b><u>$${formatNumber(this.balanceAmount)}</u></b>`;
+                break;
+            case 'payBill':
+                concat = `Due Amount: <b><u>$${formatNumber(this.dueAmount)}</u></b>, <br>Paid Amount: <b><u>$${formatNumber(this.paidAmount)}</u></b>, <br>Balance: <b><u>$${formatNumber(this.balanceAmount)}</u></b>`;
+                break;
+            default:
+                concat = `Total: <b><u>$${formatNumber(this.total)}</u></b>`;
+                break;
+        }
+        return concat;
+    },
+    hasMore(count){
+        return count >= Template.instance().limit.get();
     }
 
 });
 indexTmpl.onDestroyed(function () {
     dashboardTransactionData.set(false);
+    tmpCollection.remove({});
 });
 indexTmpl.events({
     'change .select-transaction'(event, instance){
         dashboardTransactionData.set(false);
         dashboardTransactionType.set(event.currentTarget.value);
-    }
+        instance.limit.set(5);
+        instance.loaded.set(0);
+    },
+    'click .load-more': function (event, instance) {
+        event.preventDefault();
+        // get current value for limit, i.e. how many customer are currently displayed
+        let limit = instance.limit.get();
+        // increase limit by 5 and update it
+        limit += 5;
+        instance.limit.set(limit);
+    },
 });
+
+function formatNumber(val) {
+    return numeral(val).format('0,0.00');
+}

@@ -63,7 +63,8 @@ Meteor.methods({
                 status: {$in: ["active", "partial"]}
             },
             saleOrder: {
-                orderDate: {$gte: startOfYear, $lte: endOfYear}
+                orderDate: {$gte: startOfYear, $lte: endOfYear},
+                status: 'active'
             },
             overdueInvoice: {
                 dueDate: {$lt: moment().toDate()}
