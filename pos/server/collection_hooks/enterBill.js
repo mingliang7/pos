@@ -177,6 +177,10 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
                     }
                 })
             });
+            preDoc.items.forEach(function (preItem) {
+                let id = minusAverageInventoryInsert(preDoc.branchId, preItem, preDoc.stockLocationId, 'reduce-from-bill', doc._id);
+                inventoryIdList.push(id);
+            });
             /*
              reduceFromInventory(preDoc);
              doc.items.forEach(function (item) {
@@ -380,6 +384,7 @@ function minusAverageInventoryInsert(branchId, item, stockLocationId, type, refI
         };
         id = AverageInventories.insert(newInventory);
     }
+    return id;
 }
 
 function reduceFromInventory(enterBill) {
