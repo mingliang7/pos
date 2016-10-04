@@ -580,3 +580,18 @@ PosRoutes.route('/exchange-gratis', {
         parent: 'pos.home'
     }
 });
+import '../imports/ui/pages/itemPriceForCustomer.js';
+PosRoutes.route('/itemPriceForCustomer', {
+    name: 'pos.itemPriceForCustomer',
+    title: __('pos.itemPriceForCustomer.title'),
+    action: function (params, queryParams) {
+        Layout.main('Pos_itemPriceForCustomer');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('pos.itemPriceForCustomer.title'),
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+});

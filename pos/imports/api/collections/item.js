@@ -7,7 +7,7 @@ import {Meteor} from 'meteor/meteor';
 import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 import {SelectOpts} from '../../../../acc/imports/ui/libs/select-opts';
 export const Item = new Mongo.Collection("pos_item");
-let accountMapping =new SimpleSchema({
+let accountMapping = new SimpleSchema({
     inventoryAsset: {
         type: String,
         optional: true,
@@ -52,7 +52,7 @@ let accountMapping =new SimpleSchema({
             }
         }
     },
-    accountPayable:{
+    accountPayable: {
         type: String,
         optional: true,
         autoform: {
@@ -238,7 +238,8 @@ Item.schema = new SimpleSchema({
         optional: true
     },
     accountMapping: {
-        type: accountMapping
+        type: accountMapping,
+        optional: true
     }
 });
 

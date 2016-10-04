@@ -15,7 +15,8 @@
       "enterBill": "Enter Bill",
       "lendingStock": "Lending Stock",
       "exchangeRingPull": "Exchange Ring Pull",
-      "ringPullTransfer": "Ring Pull Transfer"
+      "ringPullTransfer": "Ring Pull Transfer",
+      "itemPriceForCustomer": "Special Price For Customer"
     },
     "home": {
       "title": "Home",
@@ -731,6 +732,9 @@
           "label": "Branch"
         }
       }
+    },
+    "itemPriceForCustomer": {
+      "title": "Special Price For Customer"
     }
   }
 }
