@@ -8,6 +8,7 @@ import {Order} from '../../imports/api/collections/order';
 import {GroupInvoice} from '../../imports/api/collections/groupInvoice';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {Item} from '../../imports/api/collections/item.js'
+import {GratisInventories} from '../../imports/api/collections/gratisInventory.js'
 //import invoice state
 import {invoiceState} from '../../common/globalState/invoice';
 //import methods
@@ -54,6 +55,11 @@ Invoices.after.insert(function (userId, doc) {
             }
         } else {
             invoiceManageStock(doc);
+            doc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                }
+            });
         }
         if (doc.invoiceType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
@@ -84,10 +90,20 @@ Invoices.after.update(function (userId, doc) {
             removeInvoiceFromGroup(preDoc);
             pushInvoiceFromGroup(doc);
             recalculatePayment({preDoc, doc});
+            preDoc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    reduceGratisInventory(item, preDoc.branchId, preDoc.stockLocationId);
+                }
+            });
 
             //average inventory calculate
             returnToInventory(preDoc);
             invoiceManageStock(doc);
+            doc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                }
+            });
 
             // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
         });
@@ -96,10 +112,20 @@ Invoices.after.update(function (userId, doc) {
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
             recalculatePayment({preDoc, doc});
+            preDoc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    reduceGratisInventory(item, preDoc.branchId, preDoc.stockLocationId);
+                }
+            });
 
             //average inventory calculate
             returnToInventory(preDoc);
             invoiceManageStock(doc);
+            doc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                }
+            });
         })
     }
 });
@@ -121,17 +147,26 @@ Invoices.after.remove(function (userId, doc) {
             let groupInvoice = GroupInvoice.findOne(doc.paymentGroupId);
             if (groupInvoice.invoices.length <= 0) {
                 GroupInvoice.direct.remove(doc.paymentGroupId);
-            }else{
+            } else {
                 recalculatePaymentAfterRemoved({doc});
             }
             //average inventory calculation
             returnToInventory(doc);
-        }else if (type.term) {
-            Meteor.call('insertRemovedInvoice', doc);
-
+            doc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    reduceGratisInventory(item, doc.branchId, doc.stockLocationId);
+                }
+            });
+        } else {
             //average inventory calculation
             returnToInventory(doc);
+            doc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    reduceGratisInventory(item, doc.branchId, doc.stockLocationId);
+                }
+            });
         }
+        Meteor.call('insertRemovedInvoice', doc);
 
     });
 });
@@ -197,7 +232,7 @@ function invoiceManageStock(invoice) {
             branchId: invoice.branchId,
             itemId: item.itemId,
             stockLocationId: invoice.stockLocationId
-        }, {sort: {_id: 1}});
+        }, {sort: {_id: -1}});
         if (inventory) {
             item.cost = inventory.price;
             item.amountCost = inventory.price * item.qty;
@@ -312,7 +347,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         nextInventory.stockLocationId = stockLocationId;
         nextInventory.itemId = item.itemId;
         nextInventory.qty = item.qty;
-        nextInventory.price = math.round(price,2);
+        nextInventory.price = math.round(price, 2);
         nextInventory.remainQty = totalQty;
         nextInventory.type = type;
         nextInventory.coefficient = 1;
@@ -328,7 +363,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
 }
 
 //update payment
-function recalculatePayment({doc,preDoc}) {
+function recalculatePayment({doc, preDoc}) {
     let totalChanged = doc.total - preDoc.total;
     if (totalChanged != 0) {
         let invoiceId = doc.paymentGroupId || doc._id
@@ -363,3 +398,53 @@ function recalculatePaymentAfterRemoved({doc}) {
     }
 }
 
+
+function increaseGratisInventory(item, branchId, stockLocationId) {
+    let prefix = stockLocationId + '-';
+    let gratisInventory = GratisInventories.findOne({
+        branchId: branchId,
+        itemId: item.itemId,
+        stockLocationId: stockLocationId
+    }, {sort: {createdAt: -1}});
+    if (gratisInventory == null) {
+        let gratisInventoryObj = {};
+        gratisInventoryObj._id = idGenerator.genWithPrefix(GratisInventories, prefix, 13);
+        gratisInventoryObj.branchId = branchId;
+        gratisInventoryObj.stockLocationId = stockLocationId;
+        gratisInventoryObj.itemId = item.itemId;
+        gratisInventoryObj.qty = item.qty;
+        GratisInventories.insert(gratisInventoryObj);
+    }
+    else {
+        GratisInventories.update(
+            gratisInventory._id,
+            {
+                $inc: {qty: item.qty}
+            });
+    }
+}
+function reduceGratisInventory(item, branchId, stockLocationId) {
+    let prefix = stockLocationId + '-';
+    let gratisInventory = GratisInventories.findOne({
+        branchId: branchId,
+        itemId: item.itemId,
+        stockLocationId: stockLocationId
+    }, {sort: {createdAt: -1}});
+    if (gratisInventory) {
+        GratisInventories.update(
+            gratisInventory._id,
+            {
+                $inc: {qty: -item.qty}
+            }
+        );
+    }
+    else {
+        let gratisInventoryObj = {};
+        gratisInventoryObj._id = idGenerator.genWithPrefix(GratisInventories, prefix, 13);
+        gratisInventoryObj.branchId = branchId;
+        gratisInventoryObj.stockLocationId = stockLocationId;
+        gratisInventoryObj.itemId = item.itemId;
+        gratisInventoryObj.qty = -item.qty;
+        GratisInventories.insert(gratisInventoryObj);
+    }
+}

@@ -580,6 +580,7 @@ PosRoutes.route('/exchange-gratis', {
         parent: 'pos.home'
     }
 });
+
 import '../imports/ui/pages/itemPriceForCustomer.js';
 PosRoutes.route('/itemPriceForCustomer', {
     name: 'pos.itemPriceForCustomer',
@@ -594,4 +595,19 @@ PosRoutes.route('/itemPriceForCustomer', {
         icon: 'cart-plus',
         parent: 'pos.home'
     }
+});
+
+import '../imports/ui/pages/accountIntegrationSetting';
+PosRoutes.route('/account-integration-setting', {
+    name: 'pos.accountIntegrationSetting',
+    title: 'Account Integration Setting',
+    action: function (params, queryParams) {
+        Layout.main('Pos_accountIntegrationSetting');
+    },
+    breadcrumb: {
+        title: 'Account Integration Setting',
+        icon: 'cart-plus',
+        parent: 'pos.home'
+    }
+
 });

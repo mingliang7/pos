@@ -26,7 +26,7 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {ItemsSchema} from '../../api/collections/order-items.js';
+import {EnterBillItemsSchema} from '../../api/collections/order-items.js';
 import {EnterBills} from '../../api/collections/enterBill.js';
 
 // Declare template
@@ -37,25 +37,6 @@ var itemsTmpl = Template.Pos_enterBillItems,
 
 // Local collection
 var itemsCollection;
-Tracker.autorun(function () {
-    if (FlowRouter.query.get('vendorId')) {
-        let sub = Meteor.subscribe('pos.activePrepaidOrder', {
-            vendorId: FlowRouter.query.get('vendorId'),
-            status: 'active'
-        });
-        if (!sub.ready()) {
-            swal({
-                title: "Pleas Wait",
-                text: "Getting Order....", showConfirmButton: false
-            });
-        } else {
-            setTimeout(function () {
-                swal.close();
-            }, 500);
-        }
-
-    }
-});
 // Page
 import './enterBill-items.html';
 
@@ -131,7 +112,7 @@ itemsTmpl.helpers({
         return reactiveTableSettings;
     },
     schema() {
-        return ItemsSchema;
+        return EnterBillItemsSchema;
     },
     disabledAddItemBtn: function () {
         const instance = Template.instance();
@@ -296,11 +277,10 @@ editItemsTmpl.onCreated(function () {
 
 editItemsTmpl.helpers({
     schema() {
-        return ItemsSchema;
+        return EnterBillItemsSchema;
     },
     data: function () {
-        let data = Template.currentData();
-        return data;
+        return Template.currentData();
     }
 });
 

@@ -94,7 +94,7 @@ Meteor.methods({
             data.countInvoice = invoices[0].count;
             data.totalInvoice = invoices[0].total
         }
-        if (saleOrders) {
+        if (saleOrders.length > 0) {
             data.countSaleOrder = saleOrders[0].count;
             data.totalSaleOrder = saleOrders[0].total;
         }
