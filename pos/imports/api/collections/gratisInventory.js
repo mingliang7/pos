@@ -18,10 +18,6 @@ GratisInventories.schema = new SimpleSchema({
     stockLocationId: {
         type: String
     },
-    price: {
-        type: Number,
-        decimal: true
-    },
     qty: {
         type: Number
     },

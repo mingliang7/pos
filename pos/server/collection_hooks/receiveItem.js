@@ -335,7 +335,7 @@ function reduceFromInventory(receiveItem, type) {
             branchId: receiveItem.branchId,
             itemId: item.itemId,
             stockLocationId: receiveItem.stockLocationId
-        }, {sort: {_id: 1}});
+        }, {sort: {_id: -1}});
 
         if (inventory) {
             let newInventory = {

@@ -130,7 +130,7 @@ function lendingStockManageStock(lendingStock) {
             branchId: lendingStock.branchId,
             itemId: item.itemId,
             stockLocationId: lendingStock.stockLocationId
-        }, {sort: {_id: 1}});
+        }, {sort: {_id: -1}});
         if (inventory) {
             let newInventory = {
                 _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),

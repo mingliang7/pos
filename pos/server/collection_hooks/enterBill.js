@@ -37,7 +37,7 @@ EnterBills.after.insert(function (userId, doc) {
         });
 
         //Integration to Account System
-        if (true) {
+        if (false) {
             let transaction = [];
             let data = doc;
             data.type = "EnterBill";
@@ -108,6 +108,8 @@ EnterBills.after.remove(function (userId, doc) {
             group: doc.billType == 'group'
         };
         if (type.group) {
+            console.log('------------remove group enterBill------------------');
+            console.log(doc);
             reduceFromInventory(doc);
             removeBillFromGroup(doc);
             let groupBill = GroupBill.findOne(doc.paymentGroupId);
@@ -116,11 +118,12 @@ EnterBills.after.remove(function (userId, doc) {
             } else {
                 recalculatePaymentAfterRemoved({doc});
             }
-        } else if (type.term) {
+        } else {
+            console.log('------------remove enterBill -----------------------');
+            console.log(doc);
             reduceFromInventory(doc);
-            Meteor.call('insertRemovedBill', doc);
         }
-
+        Meteor.call('insertRemovedBill', doc);
     });
 });
 
@@ -212,7 +215,7 @@ function reduceFromInventory(enterBill) {
             branchId: enterBill.branchId,
             itemId: item.itemId,
             stockLocationId: enterBill.stockLocationId
-        }, {sort: {_id: 1}});
+        }, {sort: {_id: -1}});
 
         if (inventory) {
             let newInventory = {
