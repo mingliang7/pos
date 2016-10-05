@@ -47,7 +47,10 @@ Tracker.autorun(function () {
         customerInfo.callPromise({_id: Session.get("getCustomerId")})
             .then(function (result) {
                 Session.set('customerInfo', result);
-            });
+            })
+            .catch(function (e) {
+
+        });
     }
     if (Session.get('saleOrderItems')) {
         Meteor.subscribe('pos.item', {_id: {$in: Session.get('saleOrderItems')}});
@@ -63,7 +66,6 @@ let indexTmpl = Template.Pos_invoice,
     listSaleOrder = Template.listSaleOrder;
 // Local collection
 let itemsCollection = nullCollection;
-
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
@@ -195,24 +197,35 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
+    stockLocation(){
+        try {
+            let stockLocationAndAccountMapping = Session.get('currentUserStockAndAccountMappingDoc');
+            if (stockLocationAndAccountMapping) {
+                if (stockLocationAndAccountMapping.stockLocations.length > 0) {
+                    return stockLocationAndAccountMapping.stockLocations[0];
+                }
+            }
+            return false;
+        } catch (e) {
+        }
+
+    },
     repId(){
         try {
             let {customerInfo} = Session.get('customerInfo');
             if (customerInfo) {
-
                 return customerInfo.repId;
-
             }
         } catch (e) {
 
-            }
+        }
         return '';
     },
     termId(){
         try {
             let {customerInfo} = Session.get('customerInfo');
             if (customerInfo) {
-                    return customerInfo.termId;
+                return customerInfo.termId;
             }
         } catch (e) {
 
@@ -262,7 +275,9 @@ newTmpl.helpers({
               <li><i class="fa fa-flag"></i> Allow over amount due: <b class="label label-danger">${allowOverAmountDue}</b> | 
               <li><i class="fa fa-home"></i> Address: <b>${customerInfo.address ? customerInfo.address : 'None'}</b>`
             };
-        }catch (e){};
+        } catch (e) {
+        }
+        ;
     },
 
     collection(){
@@ -280,19 +295,20 @@ newTmpl.helpers({
         return {};
     },
     dueDate(){
-        try{
-        let date = AutoForm.getFieldValue('invoiceDate');
-        let {customerInfo} = Session.get('customerInfo');
-        if (customerInfo) {
-            if (customerInfo._term) {
-                let term = customerInfo._term;
+        try {
+            let date = AutoForm.getFieldValue('invoiceDate');
+            let {customerInfo} = Session.get('customerInfo');
+            if (customerInfo) {
+                if (customerInfo._term) {
+                    let term = customerInfo._term;
 
-                let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
-                return dueDate;
+                    let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
+                    return dueDate;
+                }
             }
+            return date;
+        } catch (e) {
         }
-        return date;
-        }catch(e){}
     },
     isTerm(){
         try {
@@ -303,7 +319,8 @@ newTmpl.helpers({
                 }
                 return false;
             }
-        }catch (e){}
+        } catch (e) {
+        }
     }
 });
 
@@ -461,15 +478,17 @@ editTmpl.helpers({
               <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
               <li>Sale Order to be invoice: <span class="label label-primary">0</span>`
             };
-        }catch(e){}
+        } catch (e) {
+        }
     },
     repId(){
-        try{
-        let {customerInfo} = Session.get('customerInfo');
-        if (customerInfo) {
-            return customerInfo.repId;
+        try {
+            let {customerInfo} = Session.get('customerInfo');
+            if (customerInfo) {
+                return customerInfo.repId;
+            }
+        } catch (e) {
         }
-        }catch (e){}
     },
     collection(){
         return Invoices;
@@ -478,19 +497,20 @@ editTmpl.helpers({
         return itemsCollection;
     },
     dueDate(){
-        try{
-        let date = AutoForm.getFieldValue('invoiceDate');
-        let {customerInfo} = Session.get('customerInfo');
-        if (customerInfo) {
-            if (customerInfo._term) {
-                let term = customerInfo._term;
+        try {
+            let date = AutoForm.getFieldValue('invoiceDate');
+            let {customerInfo} = Session.get('customerInfo');
+            if (customerInfo) {
+                if (customerInfo._term) {
+                    let term = customerInfo._term;
 
-                let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
-                return dueDate;
+                    let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
+                    return dueDate;
+                }
             }
+            return date;
+        } catch (e) {
         }
-        return date;
-        }catch (e){}
     },
     isTerm(){
         try {
@@ -501,7 +521,8 @@ editTmpl.helpers({
                 }
                 return false;
             }
-        }catch (e){}
+        } catch (e) {
+        }
     }
 });
 

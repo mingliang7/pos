@@ -60,9 +60,10 @@ export const ItemsSchema = new SimpleSchema({
         optional: true,
         defaultValue: function () {
             let id = AutoForm.getFieldValue('itemId');
+            let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
             if (id) {
                 itemInfo.callPromise({
-                    _id: id
+                    _id: id, customerId: customerId
                 }).then(function (result) {
                     defaultPrice.set(result.price);
                 }).catch(function (err) {

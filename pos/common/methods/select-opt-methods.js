@@ -74,7 +74,7 @@ SelectOptMethods.stockLocationMapping = new ValidatedMethod({
                 ]
             }
 
-            let data = StockLocations.find(selector, {limit: 10});
+            let data = StockLocations.find(selector, {limit: 20});
             data.forEach(function (value) {
                 let label = value._id + ' : ' + value.name;
                 list.push({label: label, value: value._id});
