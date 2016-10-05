@@ -170,7 +170,10 @@ Invoices.schema = new SimpleSchema({
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
                         let currentUserStockAndAccountMappingDoc = Session.get('currentUserStockAndAccountMappingDoc');
-                        let stockLocations = currentUserStockAndAccountMappingDoc == undefined ? ' ' : currentUserStockAndAccountMappingDoc.stockLocations ;
+                        let stockLocations = [];
+                        if(currentUserStockAndAccountMappingDoc && currentUserStockAndAccountMappingDoc.stockLocations) {
+                            stockLocations = currentUserStockAndAccountMappingDoc.stockLocations ;
+                        }
                         let currentBranch = Session.get('currentBranch');
                         return {
                             branchId: currentBranch,
