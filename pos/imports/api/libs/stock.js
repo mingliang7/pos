@@ -1,6 +1,8 @@
 import  {AverageInventories} from '../collections/inventory'
 import  {Item} from '../collections/item'
 import {RingPullInventories} from '../collections/ringPullInventory.js'
+import {GratisInventories} from '../collections/gratisInventory'
+
 export  default class StockFunction {
     static averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         let id = '';
@@ -168,5 +170,54 @@ export  default class StockFunction {
                 })
             }
         });
+    }
+    static increaseGratisInventory(item, branchId, stockLocationId) {
+        let prefix = stockLocationId + '-';
+        let gratisInventory = GratisInventories.findOne({
+            branchId: branchId,
+            itemId: item.itemId,
+            stockLocationId: stockLocationId
+        }, {sort: {createdAt: -1}});
+        if (gratisInventory == null) {
+            let gratisInventoryObj = {};
+            gratisInventoryObj._id = idGenerator.genWithPrefix(GratisInventories, prefix, 13);
+            gratisInventoryObj.branchId = branchId;
+            gratisInventoryObj.stockLocationId = stockLocationId;
+            gratisInventoryObj.itemId = item.itemId;
+            gratisInventoryObj.qty = item.qty;
+            GratisInventories.insert(gratisInventoryObj);
+        }
+        else {
+            GratisInventories.update(
+                gratisInventory._id,
+                {
+                    $inc: {qty: item.qty}
+                });
+        }
+    }
+    static reduceGratisInventory(item, branchId, stockLocationId) {
+        let prefix = stockLocationId + '-';
+        let gratisInventory = GratisInventories.findOne({
+            branchId: branchId,
+            itemId: item.itemId,
+            stockLocationId: stockLocationId
+        }, {sort: {createdAt: -1}});
+        if (gratisInventory) {
+            GratisInventories.update(
+                gratisInventory._id,
+                {
+                    $inc: {qty: -item.qty}
+                }
+            );
+        }
+        else {
+            let gratisInventoryObj = {};
+            gratisInventoryObj._id = idGenerator.genWithPrefix(GratisInventories, prefix, 13);
+            gratisInventoryObj.branchId = branchId;
+            gratisInventoryObj.stockLocationId = stockLocationId;
+            gratisInventoryObj.itemId = item.itemId;
+            gratisInventoryObj.qty = -item.qty;
+            GratisInventories.insert(gratisInventoryObj);
+        }
     }
 }

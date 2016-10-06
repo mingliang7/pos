@@ -69,7 +69,7 @@ CompanyExchangeRingPulls.after.update(function (userId, doc) {
         if (setting && setting.integrate) {
             let transaction = [];
             let data = doc;
-            data.type = "EnterBill";
+            data.type = "CompanyExchangeRingPull";
             data.items.forEach(function (item) {
                 let itemDoc = Item.findOne(item.itemId);
                 if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
@@ -113,7 +113,7 @@ CompanyExchangeRingPulls.after.remove(function (userId, doc) {
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
-            let data = {_id: doc._id, type: 'EnterBill'};
+            let data = {_id: doc._id, type: 'CompanyExchangeRingPull'};
             Meteor.call('removeAccountJournal', data, function (er, re) {
                 if (er) {
                     StockFunction.reduceRingPullInventory(doc);
