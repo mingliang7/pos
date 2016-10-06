@@ -63,7 +63,7 @@ let itemsCollection = nullCollection;
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('exchangeRingPull', {size: 'lg'});
-    createNewAlertify('exchangeRingPullShow',);
+    createNewAlertify('exchangeRingPullShow', {size: 'lg'});
     createNewAlertify('customer');
 });
 
@@ -116,7 +116,7 @@ indexTmpl.events({
             text: "Getting ExchangeRingPulls....", showConfirmButton: false
         });
         this.customer = CustomerNullCollection.findOne(this.customerId).name;
-        Meteor.call('exchangeRingPullShowItems', {doc: this}, function (err, result) {
+        Meteor.call('exchangeRingPullShow', {_id: this._id}, function (err, result) {
             swal.close();
             alertify.exchangeRingPullShow(fa('eye', TAPi18n.__('pos.exchangeRingPull.title')), renderTemplate(showTmpl, result)).maximize();
         });
@@ -335,18 +335,22 @@ editTmpl.onDestroyed(function () {
 
 // Show
 showTmpl.onCreated(function () {
-    this.exchangeRingPull = new ReactiveVar();
-    this.autorun(()=> {
-        exchangeRingPullInfo.callPromise({_id: this.data._id})
-            .then((result) => {
-                this.exchangeRingPull.set(result);
-            }).catch(function (err) {
-            }
-        );
-    });
+    // this.exchangeRingPull = new ReactiveVar();
+    // this.autorun(()=> {
+    //     exchangeRingPullInfo.callPromise({_id: this.data._id})
+    //         .then((result) => {
+    //             this.exchangeRingPull.set(result);
+    //         }).catch(function (err) {
+    //         }
+    //     );
+    // });
 });
 
 showTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     i18nLabel(label){
         let key = `pos.exchangeRingPull.schema.${label}.label`;
         return TAPi18n.__(key);

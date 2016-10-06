@@ -58,7 +58,7 @@ let itemsCollection = new Mongo.Collection(null);
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('lendingStock', {size: 'lg'});
-    createNewAlertify('lendingStockShow');
+    createNewAlertify('lendingStockShow', {size: 'lg'});
     createNewAlertify('vendor');
 });
 
@@ -87,7 +87,11 @@ indexTmpl.events({
         );
     },
     'click .js-display' (event, instance) {
-        alertify.lendingStockShow(fa('eye', TAPi18n.__('pos.lendingStock.title')), renderTemplate(showTmpl, this));
+        Meteor.call('lendingStockShow', {_id: this._id}, function (err, result) {
+            if (result) {
+                alertify.lendingStockShow(fa('eye', TAPi18n.__('pos.lendingStock.title')), renderTemplate(showTmpl, result));
+            }
+        });
     },
     'click .js-lendingStock' (event, instance) {
         let params = {};
@@ -349,32 +353,27 @@ editTmpl.onDestroyed(function () {
 });
 
 // Show
-showTmpl.onCreated(function () {
-    this.lendingStock = new ReactiveVar();
-    this.autorun(()=> {
-        LendingStockInfo.callPromise({_id: this.data._id})
-            .then((result) => {
-                this.lendingStock.set(result);
-            }).catch(function (err) {
-                console.log(err.message);
-            }
-        );
-    });
-});
-
 showTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     i18nLabel(label){
         let key = `pos.lendingStock.schema.${label}.label`;
         return TAPi18n.__(key);
     },
-    lendingStockInfo () {
-
-        let lendingStockInfo = Template.instance().lendingStock.get();
-
-        // Use jsonview
-        lendingStockInfo.jsonViewOpts = {collapsed: true};
-        //
-        return lendingStockInfo;
+    colorizeStatus(status){
+        if (status == 'active') {
+            return `<label class="label label-info">A</label>`
+        } else if (status == 'partial') {
+            return `<label class="label label-danger">P</label>`
+        }
+        return `<label class="label label-success">C</label>`
+    }
+});
+showTmpl.events({
+    'click .print-invoice-show'(event, instance){
+        $('#to-print').printThis();
     }
 });
 

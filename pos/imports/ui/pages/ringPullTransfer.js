@@ -115,8 +115,7 @@ indexTmpl.events({
             title: "Pleas Wait",
             text: "Getting RingPullTransfers....", showConfirmButton: false
         });
-        this.customer = CustomerNullCollection.findOne(this.customerId).name;
-        Meteor.call('ringPullTransferShowItems', {doc: this}, function (err, result) {
+        Meteor.call('ringPullTransferShowItems', {_id: this._id}, function (err, result) {
             swal.close();
             alertify.ringPullTransferShow(fa('eye', TAPi18n.__('pos.ringPullTransfer.title')), renderTemplate(showTmpl, result)).maximize();
         });
@@ -326,40 +325,32 @@ editTmpl.onDestroyed(function () {
 });
 
 // Show
-showTmpl.onCreated(function () {
-    this.ringPullTransfer = new ReactiveVar();
-    this.autorun(()=> {
-        ringPullTransferInfo.callPromise({_id: this.data._id})
-            .then((result) => {
-                this.ringPullTransfer.set(result);
-            }).catch(function (err) {
-            }
-        );
-    });
-});
 
 showTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     i18nLabel(label){
         let key = `pos.ringPullTransfer.schema.${label}.label`;
         return TAPi18n.__(key);
     },
-    colorizeType(type) {
-        if (type == 'term') {
-            return `<label class="label label-info">T</label>`
+    accepted(){
+        if (!this.pending && this.status == 'closed') {
+            return true;
         }
-        return `<label class="label label-success">G</label>`
     },
-    colorizeStatus(status){
-        if(status == 'active') {
-            return `<label class="label label-info">A</label>`
-        }else if(status == 'partial') {
-            return `<label class="label label-danger">P</label>`
+    declined(){
+        if (!this.pending && this.status == 'declined') {
+            return true;
         }
-        return `<label class="label label-success">C</label>`
+    },
+    capitalize(name){
+        return _.capitalize(name);
     }
 });
 showTmpl.events({
-    'click .print-ringPullTransfer-show'(event,instance){
+    'click .print-ringPullTransfer-show'(event, instance){
         $('#to-print').printThis();
     }
 });

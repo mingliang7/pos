@@ -1,4 +1,5 @@
 import {StockAndAccountMapping} from '../../imports/api/collections/stockAndAccountMapping';
+import {Company} from '../../../core/imports/api/collections/company';
 Meteor.methods({
     stockAndAccountMappingInfo(selector = {}){
         let stockAndAccountMapping = StockAndAccountMapping.aggregate([
@@ -47,7 +48,9 @@ Meteor.methods({
         return stockAndAccountMapping[0];
     },
     currentUserStockAndAccountMappingDoc({userId}){
-        let userDoc = StockAndAccountMapping.findOne({userId: userId});
+        let company = Company.findOne({});
+        let userDoc = StockAndAccountMapping.findOne({userId: userId}) || {};
+        userDoc.company = company;
         return userDoc;
     }
 });

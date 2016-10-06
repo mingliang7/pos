@@ -60,7 +60,7 @@ let itemsCollection = new Mongo.Collection(null);
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('prepaidOrder', {size: 'lg'});
-    createNewAlertify('prepaidOrderShow',);
+    createNewAlertify('prepaidOrderShow', {size: 'lg'});
 });
 
 indexTmpl.helpers({
@@ -100,7 +100,11 @@ indexTmpl.events({
         });
     },
     'click .js-display' (event, instance) {
-        alertify.prepaidOrderShow(fa('eye', TAPi18n.__('pos.prepaidOrder.title')), renderTemplate(showTmpl, this));
+        Meteor.call("prepaidOrderShow", {_id: this._id}, function (err, result) {
+            if(result) {
+                alertify.prepaidOrderShow(fa('eye', TAPi18n.__('pos.prepaidOrder.title')), renderTemplate(showTmpl, result));
+            }
+        });
     },
     'click .js-invoice' (event, instance) {
         let params = {};
@@ -211,20 +215,27 @@ showTmpl.onCreated(function () {
         );
     });
 });
-
 showTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     i18nLabel(label){
         let key = `pos.prepaidOrder.schema.${label}.label`;
         return TAPi18n.__(key);
     },
-    prepaidOrderInfo () {
-
-        let prepaidOrderInfo = Template.instance().prepaidOrder.get();
-
-        // Use jsonview
-        prepaidOrderInfo.jsonViewOpts = {collapsed: true};
-        //
-        return prepaidOrderInfo;
+    colorizeStatus(status){
+        if (status == 'active') {
+            return `<label class="label label-info">A</label>`
+        } else if (status == 'partial') {
+            return `<label class="label label-danger">P</label>`
+        }
+        return `<label class="label label-success">C</label>`
+    }
+});
+showTmpl.events({
+    'click .print-invoice-show'(event, instance){
+        $('#to-print').printThis();
     }
 });
 

@@ -31,6 +31,7 @@ tabularOpts.columns = [
     {data: "total", title: "Total"},
     {data: "sumRemainQty", title: "Remain QTY"},
     {data: "des", title: "Description"},
+    {data: "voucherId", title: "Voucher"},
     {data: "vendorId", title: "Vendor ID"}
     //{
     //    data: "_vendor",

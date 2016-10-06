@@ -60,19 +60,23 @@ PrepaidOrders.schema = new SimpleSchema({
             }
         }
     },
+    voucherId: {
+        type: String,
+        optional: true
+    },
     vendorId: {
-        type:String,
+        type: String,
         autoform: {
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'Select One',
                 optionsMethod: 'pos.selectOptMethods.vendor',
                 optionsMethodParams: function () {
-                   /* if (Meteor.isClient) {
-                      debugger
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }*/
+                    /* if (Meteor.isClient) {
+                     debugger
+                     let currentBranch = Session.get('currentBranch');
+                     return {branchId: currentBranch};
+                     }*/
                 }
             }
         }
@@ -114,14 +118,14 @@ PrepaidOrders.schema = new SimpleSchema({
         type: String
     },
     status: {
-      type: String,
-      autoValue: function(){
-        if(this.isInsert){
-          return 'active';
+        type: String,
+        autoValue: function () {
+            if (this.isInsert) {
+                return 'active';
+            }
         }
-      }
     },
-    sumRemainQty:{
+    sumRemainQty: {
         type: Number,
         decimal: true,
         optional: true

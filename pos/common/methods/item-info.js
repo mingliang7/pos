@@ -14,7 +14,7 @@ export const itemInfo = new ValidatedMethod({
     mixins: [CallPromiseMixin],
     validate: new SimpleSchema({
         _id: {type: String},
-        customerId: {type: String}
+        customerId: {type: String, optional: true}
     }).validator(),
     run({_id, customerId}) {
         if (!this.isSimulation) {
