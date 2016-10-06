@@ -39,8 +39,7 @@ EnterBills.after.insert(function (userId, doc) {
             let id = StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'insert-bill', doc._id);
             inventoryIdList.push(id);
         });
-        console.log(inventoryIdList);
-        //Integration to Account System
+        //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
             let transaction = [];
@@ -67,16 +66,18 @@ EnterBills.after.insert(function (userId, doc) {
             Meteor.call('insertAccountJournal', data, function (er, re) {
                 if (er) {
                     AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                    EnterBills.remove({_id: doc._id});
+                    Meteor.call('insertRemovedBill', doc);
+                    EnterBills.direct.remove({_id: doc._id});
                     throw new Meteor.Error(er.message);
                 } else if (re == null) {
                     AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                    EnterBills.remove({_id: doc._id});
+                    Meteor.call('insertRemovedBill', doc);
+                    EnterBills.direct.remove({_id: doc._id});
                     throw new Meteor.Error("Can't Entry to Account System.");
                 }
             });
         }
-
+        //End Account Integration
     });
 });
 
@@ -91,121 +92,66 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
             removeBillFromGroup(preDoc);
             pushBillFromGroup(doc);
             recalculatePayment({preDoc, doc});
-            // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
         });
-        Meteor.defer(function () {
-            Meteor._sleepForMs(200);
-            let inventoryIdList = [];
-            preDoc.items.forEach(function (preItem) {
-                let id = StockFunction.minusAverageInventoryInsert(preDoc.branchId, preItem, preDoc.stockLocationId, 'reduce-from-bill', doc._id);
-                inventoryIdList.push(id);
-            });
-            //reduceFromInventory(preDoc);
-            doc.items.forEach(function (item) {
-                let id = StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
-                inventoryIdList.push(id);
-            });
-            let setting = AccountIntegrationSetting.findOne();
-            if (setting && setting.integrate) {
-                let transaction = [];
-                let data = doc;
-                data.type = "EnterBill";
-                data.items.forEach(function (item) {
-                    let itemDoc = Item.findOne(item.itemId);
-                    if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
-                        transaction.push({
-                            account: itemDoc.accountMapping.inventoryAsset,
-                            dr: item.amount,
-                            cr: 0,
-                            drcr: item.amount,
-
-                        }, {
-                            account: itemDoc.accountMapping.accountPayable,
-                            dr: 0,
-                            cr: item.amount,
-                            drcr: -item.amount,
-                        })
-                    }
-                });
-                data.transaction = transaction;
-                Meteor.call('updateAccountJournal', data, function (er, re) {
-                    if (er) {
-                        AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                        EnterBills.direct.update(doc._id, {$set: {preDoc}});
-                        throw new Meteor.Error(er.message);
-
-                    } else if (re == false) {
-                        AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                        EnterBills.direct.update(doc._id, {$set: {preDoc}});
-                        throw new Meteor.Error("Can't Update on Account System.");
-                    }
-                });
-            }
-        });
-    } else {
+    }
+    else {
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
             recalculatePayment({preDoc, doc});
         });
-        Meteor.defer(function () {
-            Meteor._sleepForMs(200);
-            let inventoryIdList = [];
-            //reduceFromInventory(preDoc);
-            preDoc.items.forEach(function (preItem) {
-                let id = StockFunction.minusAverageInventoryInsert(preDoc.branchId, preItem, preDoc.stockLocationId, 'reduce-from-bill', doc._id);
-                inventoryIdList.push(id);
-            });
-            doc.items.forEach(function (item) {
-                let id = StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
-                inventoryIdList.push(id);
-            });
-
-
-            let setting = AccountIntegrationSetting.findOne();
-            if (setting && setting.integrate) {
-                let transaction = [];
-                let data = doc;
-                data.type = "EnterBill";
-                data.items.forEach(function (item) {
-                    let itemDoc = Item.findOne(item.itemId);
-                    if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
-                        transaction.push({
-                            account: itemDoc.accountMapping.inventoryAsset,
-                            dr: item.amount,
-                            cr: 0,
-                            drcr: item.amount,
-
-                        }, {
-                            account: itemDoc.accountMapping.accountPayable,
-                            dr: 0,
-                            cr: item.amount,
-                            drcr: -item.amount,
-                        })
-                    }
-                });
-                data.transaction = transaction;
-                Meteor.call('updateAccountJournal', data, function (er, re) {
-                    if (er) {
-                        AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                        EnterBills.direct.remove(doc._id, {$set: preDoc});
-                        throw new Meteor.Error(er.message);
-
-                    } else if (re == false) {
-                        AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                        EnterBills.direct.remove(doc._id, {$set: preDoc});
-                        throw new Meteor.Error("Can't Update on Account System.");
-                    }
-                });
-            }
-        });
-        /* Meteor.defer(function () {
-         Meteor._sleepForMs(200);
-         reduceFromInventory(preDoc);
-         doc.items.forEach(function (item) {
-         StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
-         });
-         });*/
     }
+    Meteor.defer(function () {
+        Meteor._sleepForMs(200);
+        let inventoryIdList = [];
+        preDoc.items.forEach(function (preItem) {
+            let id = StockFunction.minusAverageInventoryInsert(preDoc.branchId, preItem, preDoc.stockLocationId, 'reduce-from-bill', doc._id);
+            inventoryIdList.push(id);
+        });
+        //reduceFromInventory(preDoc);
+        doc.items.forEach(function (item) {
+            let id = StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
+            inventoryIdList.push(id);
+        });
+
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "EnterBill";
+            data.items.forEach(function (item) {
+                let itemDoc = Item.findOne(item.itemId);
+                if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
+                    transaction.push({
+                        account: itemDoc.accountMapping.inventoryAsset,
+                        dr: item.amount,
+                        cr: 0,
+                        drcr: item.amount,
+
+                    }, {
+                        account: itemDoc.accountMapping.accountPayable,
+                        dr: 0,
+                        cr: item.amount,
+                        drcr: -item.amount,
+                    })
+                }
+            });
+            data.transaction = transaction;
+            Meteor.call('updateAccountJournal', data, function (er, re) {
+                if (er) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    EnterBills.direct.update(doc._id, {$set: {preDoc}});
+                    throw new Meteor.Error(er.message);
+
+                } else if (re == false) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    EnterBills.direct.update(doc._id, {$set: {preDoc}});
+                    throw new Meteor.Error("Can't Update on Account System.");
+                }
+            });
+        }
+        //End Account Integration
+    });
 });
 
 EnterBills.after.remove(function (userId, doc) {
@@ -215,10 +161,13 @@ EnterBills.after.remove(function (userId, doc) {
             term: doc.billType == 'term',
             group: doc.billType == 'group'
         };
+        let inventoryIdList = [];
         if (type.group) {
-            console.log('------------remove group enterBill------------------');
-            console.log(doc);
-            reduceFromInventory(doc);
+            //reduceFromInventory(doc);
+            doc.items.forEach(function (item) {
+                let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'reduce-from-bill', doc._id);
+                inventoryIdList.push(id);
+            });
             removeBillFromGroup(doc);
             let groupBill = GroupBill.findOne(doc.paymentGroupId);
             if (groupBill.invoices.length <= 0) {
@@ -227,11 +176,30 @@ EnterBills.after.remove(function (userId, doc) {
                 recalculatePaymentAfterRemoved({doc});
             }
         } else {
-            console.log('------------remove enterBill -----------------------');
-            console.log(doc);
-            reduceFromInventory(doc);
+            //  reduceFromInventory(doc);
+            doc.items.forEach(function (item) {
+                let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'reduce-from-bill', doc._id);
+                inventoryIdList.push(id);
+            });
         }
         Meteor.call('insertRemovedBill', doc);
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let data = {_id: doc._id, type: 'EnterBill'};
+            Meteor.call('removeAccountJournal', data, function (er, re) {
+                if (er) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    EnterBills.direct.insert(doc);
+                    throw new Meteor.Error(er.message);
+                } else if (re == false) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    EnterBills.direct.insert(doc);
+                    throw new Meteor.Error("Can't Remove on Account System.");
+                }
+            })
+        }
+        //End Account Integration
     });
 });
 

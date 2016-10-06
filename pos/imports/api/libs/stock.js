@@ -1,5 +1,6 @@
 import  {AverageInventories} from '../collections/inventory'
 import  {Item} from '../collections/item'
+import {RingPullInventories} from '../collections/ringPullInventory.js'
 export  default class StockFunction {
     static averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         let id = '';
@@ -123,5 +124,49 @@ export  default class StockFunction {
             id = AverageInventories.insert(newInventory);
         }
         return id;
+    }
+    static reduceRingPullInventory(companyExchangeRingPull) {
+        companyExchangeRingPull.items.forEach(function (item) {
+            //---Reduce from Ring Pull Stock---
+            let ringPullInventory = RingPullInventories.findOne({
+                branchId: companyExchangeRingPull.branchId,
+                itemId: item.itemId,
+            });
+            if (ringPullInventory) {
+                RingPullInventories.update(
+                    ringPullInventory._id,
+                    {
+                        $inc: {qty: -item.qty}
+                    });
+            } else {
+                RingPullInventories.insert({
+                    itemId: item.itemId,
+                    branchId: companyExchangeRingPull.branchId,
+                    qty: 0 - item.qty
+                })
+            }
+        });
+    }
+    static increaseRingPullInventory(companyExchangeRingPull) {
+        //---insert to Ring Pull Stock---
+        companyExchangeRingPull.items.forEach(function (item) {
+            let ringPullInventory = RingPullInventories.findOne({
+                branchId: companyExchangeRingPull.branchId,
+                itemId: item.itemId,
+            });
+            if (ringPullInventory) {
+                RingPullInventories.update(
+                    ringPullInventory._id,
+                    {
+                        $inc: {qty: item.qty}
+                    });
+            } else {
+                RingPullInventories.insert({
+                    itemId: item.itemId,
+                    branchId: companyExchangeRingPull.branchId,
+                    qty: item.qty
+                })
+            }
+        });
     }
 }
