@@ -70,7 +70,7 @@ Tracker.autorun(function () {
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('enterBill', {size: 'lg'});
-    createNewAlertify('enterBillShow');
+    createNewAlertify('enterBillShow', {size: 'lg'});
     createNewAlertify('vendor');
 });
 
@@ -424,7 +424,6 @@ editTmpl.helpers({
 });
 
 editTmpl.onDestroyed(function () {
-    debugger;
     // Remove items collection
     itemsCollection.remove({});
 });
@@ -435,6 +434,10 @@ showTmpl.onCreated(function () {
 });
 
 showTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     colorizeType(type) {
         if (type == 'term') {
             return `<label class="label label-info">T</label>`

@@ -479,6 +479,10 @@ showTmpl.onCreated(function () {
 });
 
 showTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     colorizeType(type) {
         if (type == 'term') {
             return `<label class="label label-info">T</label>`

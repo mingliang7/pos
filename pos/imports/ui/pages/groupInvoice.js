@@ -106,7 +106,12 @@ showTmpl.events({
     }
 });
 
-showTmpl.helpers({});
+showTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    }
+});
 
 // Hook
 let hooksObject = {
