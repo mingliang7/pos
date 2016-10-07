@@ -49,7 +49,6 @@ tabularOpts.columns = [
     }
 
 
-
 ];
 export const FixAssetExpenseTabular = new Tabular.Table(tabularOpts);
 

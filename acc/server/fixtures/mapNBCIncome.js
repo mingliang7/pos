@@ -116,7 +116,8 @@ Meteor.startup(function () {
                     accountTypeNBC: "Income"
                 }
             }
-        );MapNBCIncome.insert(
+        );
+        MapNBCIncome.insert(
             {
                 chartAccountNBCId: '0063',
                 accountDocNBC: {

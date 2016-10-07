@@ -44,6 +44,7 @@ import '../../components/style.css';
 
 // Declare template
 var journalDetailPaymentReceiveTpl = Template.acc_journalDetailPaymentReceive;
+var updateTpl = Template.acc_journalDetailPaymentReceiveUpdate;
 
 
 var journalDetailPaymentReceiveCollection;
@@ -59,6 +60,8 @@ journalDetailPaymentReceiveTpl.onCreated(function () {
             journalDetailPaymentReceiveCollection.insert(obj);
         })
     }
+
+    createNewAlertify('journalDetailPaymentReceive');
 })
 
 
@@ -72,9 +75,6 @@ journalDetailPaymentReceiveTpl.helpers({
     },
     keyArgs(index, name){
         return `transaction.${index}.${name}`;
-    },
-    tmpAmount(){
-
     }
 });
 
@@ -82,20 +82,63 @@ journalDetailPaymentReceiveTpl.helpers({
 // Event
 journalDetailPaymentReceiveTpl.events({
     'click .addItem': function (e, t) {
+        debugger;
         var journal = {};
         // journal.account = (t.$('[name="account"]').val()).split('\u00A0')[(t.$('[name="account"]').val()).split('\u00A0').length - 1];
         journal.account = t.$('[name="account"]').val();
         journal.amount = parseFloat(t.$('[name="amount"]').val());
 
         let isInsert = journalDetailPaymentReceiveCollection.insert(journal);
-
-        $('[name="account"]').select2('val', '');
+        state.set('amount',0);
+        $('[name="account"]').val("").trigger('change');
+        $('[name="amount"]').val(0).trigger('change');
     },
     'click .js-destroy-item': function (e, t) {
         let self = this;
         let isRemove = journalDetailPaymentReceiveCollection.remove(self._id);
+    },
+    'click .js-update-item': function (e, t) {
+        var self = this;
+        var doc = journalDetailPaymentReceiveCollection.findOne(self._id);
+        Session.set('accountUpdate',doc.account);
+        alertify.journalDetailPaymentReceive(fa("pencil", "Journal Detail"), renderTemplate(updateTpl, doc));
     }
 });
 
 
+updateTpl.helpers({
+    schema(){
+        return Journal.journalDetalPaymentReceive;
+    }
+});
+
+
+updateTpl.events({
+    'change [name="account"]': function (e,t) {
+        Session.set('accountUpdate',t.$(e.currentTarget).val());
+    }
+})
+
+//Hook
+AutoForm.hooks({
+    acc_journalDetailPaymentReceiveUpdate: {
+        onSubmit: function (insertDoc, updateDoc, currentDoc) {
+            debugger;
+            event.preventDefault();
+            updateDoc.$set.account=Session.get('accountUpdate');
+            journalDetailPaymentReceiveCollection.update(
+                {_id: currentDoc._id},
+                updateDoc
+            );
+            this.done();
+        },
+        onSuccess: function (formType, result) {
+            alertify.journalDetailPaymentReceive().close();
+            alertify.success("Success");
+        },
+        onError: function (formType, error) {
+            alertify.error(error.message);
+        }
+    }
+});
 

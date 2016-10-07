@@ -2,15 +2,12 @@ import 'meteor/matb33:collection-hooks';
 import {idGenerator} from 'meteor/theara:id-generator';
 
 
-
 // Collection
 import {Journal} from '../../imports/api/collections/journal';
 import {ConfigDep} from '../../imports/api/collections/configDep';
 import {ChartAccount} from '../../imports/api/collections/chartAccount';
 import {DepExpList} from '../../imports/api/collections/depExpList';
 import {FixAssetDep} from '../../imports/api/collections/fixAssetDep';
-
-
 
 
 Journal.before.insert(function (userId, doc) {
@@ -34,9 +31,9 @@ Journal.before.insert(function (userId, doc) {
     });
     doc.transaction = transaction;
     var lenArray = doc.transaction.length;
-    var date = moment(doc.journalDate,"DD/MM/YYYY").format("YYMM");
+    var date = moment(doc.journalDate, "DD/MM/YYYY").format("YYMM");
     var prefix = doc.branchId + "-" + date;
-    doc._id = doc.idGiven !=undefined ? doc.idGiven: idGenerator.genWithPrefix(Journal, prefix, 6);
+    doc._id = doc.idGiven != undefined ? doc.idGiven : idGenerator.genWithPrefix(Journal, prefix, 6);
     doc.splitAccount = lenArray > 2 ? doc._id : 0;
 
     var curMonth = moment(doc.journalDate).format("MM");
@@ -68,13 +65,13 @@ Journal.before.insert(function (userId, doc) {
                 if (curMonth != "12") {
                     for (let i = 1; i <= obj.life + 1; i++) {
                         if (i == 1 || i == obj.life + 1) {
-                            var maxMonth=i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
+                            var maxMonth = i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
                             transactionList.push({
                                 year: i,
                                 perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                                perYear: numeral().unformat(numeral((numeral().unformat(depPerYear)/12)* maxMonth).format('0,0.00')),
+                                perYear: numeral().unformat(numeral((numeral().unformat(depPerYear) / 12) * maxMonth).format('0,0.00')),
                                 month: 0,
-                                maxMonth: maxMonth ,
+                                maxMonth: maxMonth,
                                 status: false
                             })
                         } else {
@@ -251,11 +248,11 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
                 if (curMonth != "12") {
                     for (let i = 1; i <= obj.life + 1; i++) {
                         if (i == 1 || i == obj.life + 1) {
-                            var maxMonth= i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
+                            var maxMonth = i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
                             transactionList.push({
                                 year: i,
                                 perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                                perYear: numeral().unformat(numeral((numeral().unformat(depPerYear)/12)* maxMonth).format('0,0.00')),
+                                perYear: numeral().unformat(numeral((numeral().unformat(depPerYear) / 12) * maxMonth).format('0,0.00')),
                                 month: 0,
                                 maxMonth: maxMonth,
                                 status: false
@@ -378,11 +375,11 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
 
 
         FixAssetDep.insert(selectorFixAssetDep);
-    }else{
+    } else {
         FixAssetDep.remove({journalId: doc._id});
         DepExpList.remove({journalId: doc._id});
 
-         modifier.$set.transactionAsset=[];
+        modifier.$set.transactionAsset = [];
     }
 });
 

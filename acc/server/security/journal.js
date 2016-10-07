@@ -1,4 +1,3 @@
-
 import {Journal} from '../../imports/api/collections/journal';
 import './_init.js';
 /**

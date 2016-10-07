@@ -1,19 +1,40 @@
-#format-header{
-  height: 30px;
-  color: white;
-  background-color: #337ab7;
+#format-header {
+    height: 30px;
+    color: white;
+    background-color: #337ab7;
 }
-#scroll-horizontal{
-  overflow-y: auto;
-  height:423px;
-  padding-top: 5px;
+
+#scroll-horizontal {
+    overflow-y: auto;
+    height: 423px;
+    padding-top: 5px;
 }
-#height-field{
-  height: 30px;
+
+#height-field {
+    height: 30px;
 }
-#height-top-header{
-  height: 10px;
+
+#height-top-header {
+    height: 10px;
 }
-.item{
-  text-align:right;
+
+.item {
+    text-align: right;
+}
+
+/* Form Show */
+.dl-horizontal dt {
+    text-align: left;
+    margin-left: 0;
+}
+
+.dl-horizontal dd {
+    margin-left: 0;
+}
+
+.select2-container--default .select2-selection--single, .select2-selection .select2-selection--single {
+    border: 1px solid #d2d6de;
+    border-radius: 0;
+    padding: 6px 12px;
+    height: 30px;
 }

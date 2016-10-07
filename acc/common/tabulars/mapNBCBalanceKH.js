@@ -19,7 +19,7 @@ Meteor.isClient && require('../../imports/ui/pages/mapNBC/mapNBCBalanceKH.html')
 
 tabularOpts.name = 'acc.mapNBCBalanceKH';
 tabularOpts.collection = MapNBCBalanceKH;
-tabularOpts.extraFields= ['chartAccountNBCId'];
+tabularOpts.extraFields = ['chartAccountNBCId'];
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.acc_mapNBCBalanceKHAction},
     {

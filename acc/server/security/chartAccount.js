@@ -1,4 +1,3 @@
-
 import {ChartAccount} from '../../imports/api/collections/chartAccount';
 import './_init.js';
 /**

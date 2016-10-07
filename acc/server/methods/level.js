@@ -9,7 +9,7 @@ import {moment} from  'meteor/momentjs:moment';
 import {ChartAccount} from '../../imports/api/collections/chartAccount';
 
 Meteor.methods({
-    getMaxLevel: function(){
-       return ChartAccount.findOne({$sort: {level: -1}}).level;
+    getMaxLevel: function () {
+        return ChartAccount.findOne({$sort: {level: -1}}).level;
     }
 })

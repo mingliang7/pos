@@ -7,6 +7,7 @@ import {moment} from  'meteor/momentjs:moment';
 
 // Collection
 import {NetInCome} from '../../../imports/api/collections/netIncome';
+import {Journal} from '../../../imports/api/collections/journal';
 import {CloseChartAccount} from '../../../imports/api/collections/closeChartAccount';
 import {CloseChartAccountPerMonth} from '../../../imports/api/collections/closeChartAccountPerMonth';
 import {ChartAccount} from '../../../imports/api/collections/chartAccount';
@@ -15,97 +16,135 @@ Meteor.methods({
     chart_netIncome(param){
         var currentDate = new Date();
 
-        var data = {};
-        /* var startDate = moment(moment(selector.year + "-01-01").toDate()).format("YYYY-MM-DD");
-         var endDate = moment(moment(selector.year + "-12-31").add('days', 1).toDate()).format("YYYY-MM-DD");*/
+        var dataMain = {};
+        var data = [];
+        var monthList = [];
+        var valueList = [];
 
         var selector = {};
         selector.year = param.year;
-        var netIncome = NetInCome.find(selector).fetch();
-        data = {
-            labels: [],
-            datasets: [{
-                label: "My Dollar",
-                fillColor: "teal",
-                strokeColor: "teal",
-                pointColor: "#ffff00",
-                pointStrokeColor: "#e65100",
-                pointHighlightFill: "#e65100",
-                pointHighlightStroke: "#e65100",
-                data: []
-            }]
-        };
+
         var arr = [];
-        if (netIncome.length > 0) {
-
-            netIncome.forEach((obj)=> {
-                var month = moment(obj.date).format("MM");
-                month = parseInt(month);
-                if (param.currency == "usd") {
-                    data.labels.push(getMonthName(month));
-                    arr.push(obj.dollar);
-                } else if (param.currency == "khr") {
-                    data.labels.push(getMonthName(month));
-                    arr.push(obj.riel);
-                } else if (param.currency == "baht") {
-                    data.labels.push(getMonthName(month));
-                    arr.push(obj.baht);
-                }
-            });
-        }
-
-
-        data.datasets[0].data = arr;
-
-        return data;
-
-    },
-    chart_profitLostComparation(param){
-        let currentDate = new Date();
-        let data = {
-            labels: [],
-            datasets: []
-        };
-
-        param.accountTypeId = {$in: ["40", "41", "50", "51"]};
-        let accountList = ChartAccount.find({accountTypeId: {$in: ["40", "41", "50", "51"]}}).fetch();
-
-        let configDataset = {
-            label: "My Dollar",
-            fillColor: "teal",
-            strokeColor: "teal",
-            pointColor: "#ffff00",
-            pointStrokeColor: "#e65100",
-            pointHighlightFill: "#e65100",
-            pointHighlightStroke: "#e65100",
-            data: []
-        };
-        let a = 0;
         for (let i = 1; i < 13; i++) {
-            param.month = s.pad(i, 2, "0");
+            let monthNumber = s.pad(i, 2, "0");
+            selector.month = monthNumber;
 
-            var doc = CloseChartAccount.find(param).fetch();
-            if (doc.length > 0) {
-                accountList.forEach(function (ob) {
-                    if (a == 0) {
-                        data.labels.push(ob.code + " | " + ob.name);
-                    }
+            monthList.push(getMonthName(i));
 
-                    let result = doc.find(obj=> obj.closeChartAccountId === ob._id);
-
-                    if (result != undefined) {
-                        configDataset.data.push(result.value);
-                    } else {
-                        configDataset.data.push(0);
+            var netIncome = NetInCome.find(selector).fetch();
+            if (netIncome.length > 0) {
+                netIncome.forEach((obj)=> {
+                    if (param.currency == "usd") {
+                        valueList.push(obj.dollar)
+                    } else if (param.currency == "khr") {
+                        valueList.push(obj.riel)
+                    } else if (param.currency == "baht") {
+                        valueList.push(obj.baht)
                     }
                 })
-                data.datasets.push(configDataset);
+            } else {
+                valueList.push(0);
             }
-            a++;
         }
+
+        data.push({
+            type: 'column',
+            data: valueList,
+            name: "Net Income"
+        })
+
+        dataMain.data = data;
+        dataMain.monthList = monthList;
+        return dataMain;
+
+    }
+    , chart_dailyIncomeExpense(param){
+        var currentDate = new Date();
+
+        let curMonth = currentDate.getMonth();
+        let curYear = currentDate.getFullYear();
+
+        var dataIncome = Journal.aggregate([{
+            $unwind: "$transaction"
+        }, {
+            $match: {
+                'transaction.accountDoc.accountTypeId': { $in: ['40', '41'] },
+            }
+        },
+            {
+                $project: {
+                    _id: 1,
+                    currencyId: 1,
+                    day: { $dayOfMonth: "$journalDate" },
+                    month: { $month: "$journalDate" },
+                    year: { $year: "$journalDate" },
+                    transaction: {
+                        drcr: 1
+                    },
+                    journalDate: 1,
+
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        day: "$day",
+                        month: "$month",
+                        year: "$year",
+                        currencyId: "$currencyId",
+
+                    },
+                    journalDate: { $last: "$journalDate" },
+                    value: { $sum: '$transaction.drcr' }
+                }
+            },
+            { $sort: { journalDate: -1 } },
+            {
+                $group: {
+                    _id:"$_id.currencyId",
+                    dayList: {
+                        $addToSet: { $dateToString: { format: "%d/%m/%Y", date: "$journalDate" } }
+                    },
+                    value:{
+                        $addToSet: {$multiply: ["$value",-1 ]}
+                    }
+
+                }
+            }
+
+        ]);
+
+
+        var monthList = getDaysInMonth(curMonth, curYear);
+        monthList.forEach(function (obj) {
+            dataIncome.forEach(function (doc) {
+                if (doc._id == "KHR") {
+                    if (doc.dayList.indexOf(moment(obj).format("DD/MM/YYYY")) == -1) {
+                        let index = monthList.indexOf(obj);
+                        doc.dayList.splice(index, 0, moment(obj).format("DD/MM/YYYY"));
+                        doc.value.splice(index, 0, 0);
+                    }
+                }else if (doc._id == "USD") {
+                    if (doc.dayList.indexOf(moment(obj).format("DD/MM/YYYY")) == -1) {
+                        let index = monthList.indexOf(obj);
+                        doc.dayList.splice(index, 0, moment(obj).format("DD/MM/YYYY"));
+                        doc.value.splice(index, 0, 0);
+                    }
+                }else if (doc._id == "THB") {
+                    if (doc.dayList.indexOf(moment(obj).format("DD/MM/YYYY")) == -1) {
+                        let index = monthList.indexOf(obj);
+                        doc.dayList.splice(index, 0, moment(obj).format("DD/MM/YYYY"));
+                        doc.value.splice(index, 0, 0);
+                    }
+                }
+            })
+        })
+
+        console.log(data);
         return data;
-    },
-    chart_accountEveryMonth: function (selector) {
+
+    }
+    , chart_accountEveryMonth: function (selector) {
         let dataMain = {};
         let data = [];
         let chartAccountList = [];
@@ -142,8 +181,8 @@ Meteor.methods({
         dataMain.chartAccountList = chartAccountList;
         dataMain.data = data;
         return dataMain;
-    },
-    chart_accountEveryMonthCombination: function (selector, accountTypeId) {
+    }
+    , chart_accountEveryMonthCombination: function (selector, accountTypeId) {
         let dataMain = {};
         let data = [];
         let monthList = [];
@@ -184,8 +223,8 @@ Meteor.methods({
         dataMain.xData = monthList;
         dataMain.datasets = data;
         return dataMain;
-    },
-    chart_companySnapshot: function (selector) {
+    }
+    , chart_companySnapshot: function (selector) {
 
         let thisSelector = {};
         let valueAccountListIncome = [];
@@ -199,35 +238,32 @@ Meteor.methods({
         let dataExpense = [];
 
 
-
         thisSelector.accountTypeId = {$in: ['40', '41', '50', '51']}
-        thisSelector.year= '2016';
-        thisSelector.month= '06';
-        thisSelector.currencyId= 'USD';
+        thisSelector.year = '2016';
+        thisSelector.month = '06';
+        thisSelector.currencyId = 'USD';
 
         let amountList = CloseChartAccountPerMonth.find(thisSelector).fetch();
 
 
         amountList.forEach(function (obj) {
             if (['40', '41'].indexOf(obj.accountTypeId) != -1) {
-                valueAccountListIncome.push(-1*obj.value);
-                accountListIncome.push(obj.code +" | "+ obj.name);
-            }else if(['50', '51'].indexOf(obj.accountTypeId) != -1){
-                valueAccountListExpense.push(obj.value);
-                accountListExpense.push(obj.code +" | "+ obj.name);
+                valueAccountListIncome.push({y: -1 * math.round(obj.value, 2), name: obj.code + " | " + obj.name});
+                accountListIncome.push(obj.code + " | " + obj.name);
+            } else if (['50', '51'].indexOf(obj.accountTypeId) != -1) {
+                valueAccountListExpense.push({y: math.round(obj.value), name: obj.code + " | " + obj.name});
+                accountListExpense.push(obj.code + " | " + obj.name);
             }
         });
 
         dataIncome.push({
             type: 'pie',
-            data: valueAccountListIncome,
-            name: accountListIncome
+            data: valueAccountListIncome
         })
 
         dataExpense.push({
             type: 'pie',
-            data: valueAccountListExpense,
-            name: accountListExpense
+            data: valueAccountListExpense
         })
         data.dataIncome = dataIncome;
         data.dataExpense = dataExpense;
@@ -280,4 +316,16 @@ let getMonthName = (number) => {
 
     }
     return month;
+}
+
+
+function getDaysInMonth(month, year) {
+    // Since no month has fewer than 28 days
+    var date = new Date(year, month, 1);
+    var days = [];
+    while (date.getMonth() === month) {
+        days.push(moment(date, "DD/MM/YYYY").toDate());
+        date.setDate(date.getDate() + 1);
+    }
+    return days;
 }

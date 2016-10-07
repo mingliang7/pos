@@ -19,19 +19,19 @@ Meteor.isClient && require('../../imports/ui/pages/mapFixAsset/mapFixAsset.html'
 
 tabularOpts.name = 'acc.mapFixAsset';
 tabularOpts.collection = MapFixAsset;
-tabularOpts.extraFields= ['fixAsset','accuFixAsset','fixAssetExpense'],
+tabularOpts.extraFields = ['fixAsset', 'accuFixAsset', 'fixAssetExpense'],
     tabularOpts.columns = [
-      {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.acc_mapFixAssetAction},
-      {
-        data: "fixAssetDoc.name",
-        title: "FixAsset"
-      }, {
-        data: "accuFixAssetDoc.name",
-        title: "FixAsset Accumulated"
-      }, {
-        data: "fixAssetExpenseDoc.name",
-        title: "FixAsset Expense"
-      }
+        {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.acc_mapFixAssetAction},
+        {
+            data: "fixAssetDoc.name",
+            title: "FixAsset"
+        }, {
+            data: "accuFixAssetDoc.name",
+            title: "FixAsset Accumulated"
+        }, {
+            data: "fixAssetExpenseDoc.name",
+            title: "FixAsset Expense"
+        }
 
     ];
 export const MapFixAssetTabular = new Tabular.Table(tabularOpts);

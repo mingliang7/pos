@@ -15,19 +15,20 @@
 <template name="acc_mapNBCBalanceUpdate">
     <div class="box-body">
         {{#autoForm collection=collection id="acc_mapNBCBalanceUpdate" doc=this type="update"}}
-            <div class="row col-md-12">
-                {{> afQuickField name='chartAccountNBCId' type="hidden"}}
-                <label>NBC Account</label>
-                <input type="text" class="form-control" readonly value="{{nbcAccountName}}">
+            <div class="container-fluid ">
+                <div class="row col-md-12">
+                    {{> afQuickField name='chartAccountNBCId' type="hidden"}}
+                    <label>NBC Account</label>
+                    <input type="text" class="form-control" readonly value="{{nbcAccountName}}">
 
-                <div class="col-md-12">
-                    {{> acc_chartAccountDetail chartAccountDetailCollection=chartAccountDetailCollection transaction=this.transaction}}
+                    <div class="col-md-12">
+                        {{> acc_chartAccountDetail chartAccountDetailCollection=chartAccountDetailCollection transaction=this.transaction}}
+                    </div>
                 </div>
+
+                <button type="submit" class="btn btn-primary preventDef">{{fa "floppy-o"}} Save</button>
+                <button type="reset" class="btn btn-default">{{fa "refresh"}} Reset</button>
             </div>
-
-            <button type="submit" class="btn btn-primary preventDef">{{fa "floppy-o"}} Save</button>
-            <button type="reset" class="btn btn-default">{{fa "refresh"}} Reset</button>
-
         {{/autoForm}}
     </div>
 

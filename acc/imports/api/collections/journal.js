@@ -398,6 +398,7 @@ Journal.journalDetalPaymentReceive = new SimpleSchema({
     paymentReceiveMethod: {
         type: String,
         label: "Payment/Receive Method",
+        optional: true,
         autoform: {
             type: "select2",
             options: function () {

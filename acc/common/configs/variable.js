@@ -1,2 +1,2 @@
-GenerateAndEntry=new ReactiveVar();
-Print=new ReactiveVar();
+GenerateAndEntry = new ReactiveVar();
+Print = new ReactiveVar();

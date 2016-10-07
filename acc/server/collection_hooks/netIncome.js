@@ -8,7 +8,7 @@ import {NetInCome} from '../../imports/api/collections/netIncome';
 var module = 'Acc';
 
 NetInCome.before.insert(function (userId, doc) {
-    var date = moment(doc.date,"DD/MM/YYYY").format("YYMM");
+    var date = moment(doc.date, "DD/MM/YYYY").format("YYMM");
     var prefix = doc.branchId + "-" + date;
     doc._id = idGenerator.genWithPrefix(NetInCome, prefix, 6);
 

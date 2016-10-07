@@ -14,7 +14,7 @@ MapFixAsset.before.insert(function (userId, doc) {
     var fixAssetDoc = ChartAccount.findOne({_id: doc.fixAsset});
     doc.fixAssetDoc = fixAssetDoc;
 
-    doc.fixAssetCon=fixAssetDoc.code+ " | "+ fixAssetDoc.name;
+    doc.fixAssetCon = fixAssetDoc.code + " | " + fixAssetDoc.name;
 
     var accuFixAssetDoc = ChartAccount.findOne({_id: doc.accuFixAsset});
     doc.accuFixAssetDoc = accuFixAssetDoc;
@@ -27,11 +27,11 @@ MapFixAsset.before.insert(function (userId, doc) {
 
 
 MapFixAsset.before.update(function (userId, doc, fieldNames,
-                                                   modifier, options) {
+                                    modifier, options) {
     var fixAssetDoc = ChartAccount.findOne({_id: doc.fixAsset});
     modifier.$set.fixAssetDoc = fixAssetDoc;
 
-    modifier.$set.fixAssetCon=fixAssetDoc.code+ " | "+ fixAssetDoc.name;
+    modifier.$set.fixAssetCon = fixAssetDoc.code + " | " + fixAssetDoc.name;
 
     var accuFixAssetDoc = ChartAccount.findOne({_id: doc.accuFixAsset});
     modifier.$set.accuFixAssetDoc = accuFixAssetDoc;

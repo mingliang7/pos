@@ -8,11 +8,11 @@ import {MapClosing} from '../../imports/api/collections/mapCLosing';
 // Customer
 var module = 'Acc';
 
-MapClosing.before.update(function(userId, doc, fieldNames,modifier, options) {
-  modifier.$set = modifier.$set || {};
+MapClosing.before.update(function (userId, doc, fieldNames, modifier, options) {
+    modifier.$set = modifier.$set || {};
 
-  var accountDoc = ChartAccount.findOne({
-    _id: modifier.$set.chartAccount
-  });
-  modifier.$set.accountDoc = accountDoc;
+    var accountDoc = ChartAccount.findOne({
+        _id: modifier.$set.chartAccount
+    });
+    modifier.$set.accountDoc = accountDoc;
 });

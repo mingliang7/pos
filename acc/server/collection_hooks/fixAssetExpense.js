@@ -14,7 +14,7 @@ var module = 'Acc';
 
 FixAssetExpense.before.insert(function (userId, doc) {
 
-    var date = moment(doc.date,"DD/MM/YYYY").format("YYMM");
+    var date = moment(doc.date, "DD/MM/YYYY").format("YYMM");
     var prefix = doc.branchId + "-" + date;
     doc._id = idGenerator.genWithPrefix(FixAssetExpense, prefix, 6);
 
@@ -63,7 +63,7 @@ FixAssetExpense.before.insert(function (userId, doc) {
             selectorJournal.currencyId = obj.currencyId;
             selectorJournal.memo = "Depreciation Expense " + moment(doc.date).format("DD/MM/YYYY");
 
-            var year = moment(doc.date,"DD/MM/YYYY").format("YYYY");
+            var year = moment(doc.date, "DD/MM/YYYY").format("YYYY");
 
             /*var voucher = Meteor.call('getVoucherId', obj.currencyId,startDate);
              if (voucher != null) {

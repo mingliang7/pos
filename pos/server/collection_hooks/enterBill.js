@@ -1,6 +1,7 @@
 import 'meteor/matb33:collection-hooks';
 import {idGenerator} from 'meteor/theara:id-generator';
-
+//lib
+import StockFunction from '../../imports/api/libs/stock';
 // Collection
 import {EnterBills} from '../../imports/api/collections/enterBill.js';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
@@ -10,6 +11,7 @@ import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder';
 import {billState} from '../../common/globalState/enterBill';
 import {GroupBill} from '../../imports/api/collections/groupBill.js'
 import {PayBills} from '../../imports/api/collections/payBill.js';
+import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js';
 EnterBills.before.insert(function (userId, doc) {
     if (doc.termId) {
         doc.status = 'partial';
@@ -29,15 +31,17 @@ EnterBills.before.insert(function (userId, doc) {
 EnterBills.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
+        let inventoryIdList = [];
         if (doc.billType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
         }
         doc.items.forEach(function (item) {
-            averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
+            let id = StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'insert-bill', doc._id);
+            inventoryIdList.push(id);
         });
-
-        //Integration to Account System
-        if (false) {
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
             let transaction = [];
             let data = doc;
             data.type = "EnterBill";
@@ -59,9 +63,21 @@ EnterBills.after.insert(function (userId, doc) {
                 }
             });
             data.transaction = transaction;
-            Meteor.call('insertAccountJournal', data);
+            Meteor.call('insertAccountJournal', data, function (er, re) {
+                if (er) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    Meteor.call('insertRemovedBill', doc);
+                    EnterBills.direct.remove({_id: doc._id});
+                    throw new Meteor.Error(er.message);
+                } else if (re == null) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    Meteor.call('insertRemovedBill', doc);
+                    EnterBills.direct.remove({_id: doc._id});
+                    throw new Meteor.Error("Can't Entry to Account System.");
+                }
+            });
         }
-
+        //End Account Integration
     });
 });
 
@@ -76,28 +92,66 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
             removeBillFromGroup(preDoc);
             pushBillFromGroup(doc);
             recalculatePayment({preDoc, doc});
-            // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
         });
-        Meteor.defer(function () {
-            Meteor._sleepForMs(200);
-            reduceFromInventory(preDoc);
-            doc.items.forEach(function (item) {
-                averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
-            });
-        });
-    } else {
+    }
+    else {
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
             recalculatePayment({preDoc, doc});
         });
-        Meteor.defer(function () {
-            Meteor._sleepForMs(200);
-            reduceFromInventory(preDoc);
-            doc.items.forEach(function (item) {
-                averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
-            });
-        });
     }
+    Meteor.defer(function () {
+        Meteor._sleepForMs(200);
+        let inventoryIdList = [];
+        preDoc.items.forEach(function (preItem) {
+            let id = StockFunction.minusAverageInventoryInsert(preDoc.branchId, preItem, preDoc.stockLocationId, 'reduce-from-bill', doc._id);
+            inventoryIdList.push(id);
+        });
+        //reduceFromInventory(preDoc);
+        doc.items.forEach(function (item) {
+            let id = StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
+            inventoryIdList.push(id);
+        });
+
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "EnterBill";
+            data.items.forEach(function (item) {
+                let itemDoc = Item.findOne(item.itemId);
+                if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
+                    transaction.push({
+                        account: itemDoc.accountMapping.inventoryAsset,
+                        dr: item.amount,
+                        cr: 0,
+                        drcr: item.amount,
+
+                    }, {
+                        account: itemDoc.accountMapping.accountPayable,
+                        dr: 0,
+                        cr: item.amount,
+                        drcr: -item.amount,
+                    })
+                }
+            });
+            data.transaction = transaction;
+            Meteor.call('updateAccountJournal', data, function (er, re) {
+                if (er) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    EnterBills.direct.update(doc._id, {$set: {preDoc}});
+                    throw new Meteor.Error(er.message);
+
+                } else if (re == false) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    EnterBills.direct.update(doc._id, {$set: {preDoc}});
+                    throw new Meteor.Error("Can't Update on Account System.");
+                }
+            });
+        }
+        //End Account Integration
+    });
 });
 
 EnterBills.after.remove(function (userId, doc) {
@@ -107,10 +161,13 @@ EnterBills.after.remove(function (userId, doc) {
             term: doc.billType == 'term',
             group: doc.billType == 'group'
         };
+        let inventoryIdList = [];
         if (type.group) {
-            console.log('------------remove group enterBill------------------');
-            console.log(doc);
-            reduceFromInventory(doc);
+            //reduceFromInventory(doc);
+            doc.items.forEach(function (item) {
+                let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'reduce-from-bill', doc._id);
+                inventoryIdList.push(id);
+            });
             removeBillFromGroup(doc);
             let groupBill = GroupBill.findOne(doc.paymentGroupId);
             if (groupBill.invoices.length <= 0) {
@@ -119,94 +176,34 @@ EnterBills.after.remove(function (userId, doc) {
                 recalculatePaymentAfterRemoved({doc});
             }
         } else {
-            console.log('------------remove enterBill -----------------------');
-            console.log(doc);
-            reduceFromInventory(doc);
+            //  reduceFromInventory(doc);
+            doc.items.forEach(function (item) {
+                let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'reduce-from-bill', doc._id);
+                inventoryIdList.push(id);
+            });
         }
         Meteor.call('insertRemovedBill', doc);
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let data = {_id: doc._id, type: 'EnterBill'};
+            Meteor.call('removeAccountJournal', data, function (er, re) {
+                if (er) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    EnterBills.direct.insert(doc);
+                    throw new Meteor.Error(er.message);
+                } else if (re == false) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    EnterBills.direct.insert(doc);
+                    throw new Meteor.Error("Can't Remove on Account System.");
+                }
+            })
+        }
+        //End Account Integration
     });
 });
 
 
-function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
-    let lastPurchasePrice = 0;
-    let remainQuantity = 0;
-    let prefix = stockLocationId + '-';
-    let inventory = AverageInventories.findOne({
-        branchId: branchId,
-        itemId: item.itemId,
-        stockLocationId: stockLocationId
-    }, {sort: {createdAt: -1}});
-    if (inventory == null) {
-        let inventoryObj = {};
-        inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
-        inventoryObj.branchId = branchId;
-        inventoryObj.stockLocationId = stockLocationId;
-        inventoryObj.itemId = item.itemId;
-        inventoryObj.qty = item.qty;
-        inventoryObj.price = item.price;
-        inventoryObj.remainQty = item.qty;
-        inventoryObj.type = type;
-        inventoryObj.coefficient = 1;
-        inventoryObj.refId = refId;
-        lastPurchasePrice = item.price;
-        remainQuantity = inventoryObj.remainQty;
-        AverageInventories.insert(inventoryObj);
-    }
-    else if (inventory.price == item.price) {
-        let inventoryObj = {};
-        inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
-        inventoryObj.branchId = branchId;
-        inventoryObj.stockLocationId = stockLocationId;
-        inventoryObj.itemId = item.itemId;
-        inventoryObj.qty = item.qty;
-        inventoryObj.price = item.price;
-        inventoryObj.remainQty = item.qty + inventory.remainQty;
-        inventoryObj.type = type;
-        inventoryObj.coefficient = 1;
-        inventoryObj.refId = refId;
-        lastPurchasePrice = item.price;
-        remainQuantity = inventoryObj.remainQty;
-        AverageInventories.insert(inventoryObj);
-        /*
-         let
-         inventorySet = {};
-         inventorySet.qty = item.qty + inventory.qty;
-         inventorySet.remainQty = inventory.remainQty + item.qty;
-         AverageInventories.update(inventory._id, {$set: inventorySet});
-         */
-    }
-    else {
-        let totalQty = inventory.remainQty + item.qty;
-        let price = 0;
-        //should check totalQty or inventory.remainQty
-        if (totalQty <= 0) {
-            price = inventory.price;
-        } else if (inventory.remainQty <= 0) {
-            price = item.price;
-        } else {
-            price = ((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty;
-        }
-        let nextInventory = {};
-        nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
-        nextInventory.branchId = branchId;
-        nextInventory.stockLocationId = stockLocationId;
-        nextInventory.itemId = item.itemId;
-        nextInventory.qty = item.qty;
-        nextInventory.price = math.round(price, 2);
-        nextInventory.remainQty = totalQty;
-        nextInventory.type = type;
-        nextInventory.coefficient = 1;
-        nextInventory.refId = refId;
-        lastPurchasePrice = price;
-        remainQuantity = nextInventory.remainQty;
-        AverageInventories.insert(nextInventory);
-    }
-
-    var setModifier = {$set: {purchasePrice: lastPurchasePrice}};
-    setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
-    Item.direct.update(item.itemId, setModifier);
-}
 function reduceFromInventory(enterBill) {
     //let enterBill = EnterBills.findOne(enterBillId);
     let prefix = enterBill.stockLocationId + '-';
@@ -231,7 +228,8 @@ function reduceFromInventory(enterBill) {
                 refId: enterBill._id
             };
             AverageInventories.insert(newInventory);
-        } else {
+        }
+        else {
             let thisItem = Item.findOne(item.itemId);
             let newInventory = {
                 _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),

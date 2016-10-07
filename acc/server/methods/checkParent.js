@@ -10,7 +10,7 @@ import {ChartAccount} from '../../imports/api/collections/chartAccount';
 
 
 Meteor.methods({
-   checkParent: function(id){
-       return ChartAccount.findOne({_id: id});
-   }
+    checkParent: function (id) {
+        return ChartAccount.findOne({_id: id});
+    }
 });

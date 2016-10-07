@@ -28,12 +28,10 @@ import './netIncome.html';
 
 
 var indexTpl = Template.acc_chartNetIncome;
-var myNewChart=null;
-Tracker.autorun(function () {
-    if (Session.get('chart')) {
-        drawChart(Session.get('chart'));
-    }
-});
+var myNewChart = null;
+
+
+var Highcharts = require('highcharts/highstock');
 
 indexTpl.onRendered(function () {
     if (Session.get('chart') === undefined) {
@@ -41,6 +39,7 @@ indexTpl.onRendered(function () {
         selector.year = moment().format("YYYY");
         selector.currency = "usd";
         Session.set('currency', 'usd');
+        selector.branchId = Session.get('currentBranch');
         Meteor.call('chart_netIncome', selector, function (err, result) {
             Session.set('chart', result);
         });
@@ -57,9 +56,10 @@ indexTpl.events({
         let year = $("#yearpicker").val();
         selector.year = year;
         selector.currency = "usd";
+        selector.branchId = Session.get('currentBranch');
         Session.set('currency', 'usd');
         Meteor.call('chart_netIncome', selector, function (err, result) {
-            Session.set('chart',result);
+            Session.set('chart', result);
         });
     }, 'click #khr': function () {
 
@@ -67,9 +67,10 @@ indexTpl.events({
         let year = $("#yearpicker").val();
         selector.year = year;
         selector.currency = "khr";
+        selector.branchId = Session.get('currentBranch');
         Session.set('currency', 'khr');
         Meteor.call('chart_netIncome', selector, function (err, result) {
-            Session.set('chart',result);
+            Session.set('chart', result);
         });
     }, 'click #baht': function () {
         let selector = {};
@@ -77,8 +78,9 @@ indexTpl.events({
         selector.year = year;
         selector.currency = "baht";
         Session.set('currency', 'baht');
+        selector.branchId = Session.get('currentBranch');
         Meteor.call('chart_netIncome', selector, function (err, result) {
-            Session.set('chart',result);
+            Session.set('chart', result);
         });
     }, 'change #yearpicker': function () {
         let selector = {};
@@ -87,32 +89,75 @@ indexTpl.events({
         let currency = Session.get('currency');
         selector.currency = currency;
         Meteor.call('chart_netIncome', selector, function (err, result) {
-            Session.set('chart',result);
+            Session.set('chart', result);
         });
     }
 })
 
+if (Meteor.isClient) {
+    indexTpl.helpers({
+        createChartNetIncome: function () {
+            let obj = Session.get("chart");
+            if (obj != undefined) {
+                Meteor.defer(function () {
+                    // Create standard Highcharts chart with options:
+                    Highcharts.chart('chartIncome', {
+                        chart: {
+                            type: 'column'
+                        },
+                        title: {
+                            text: 'Net Income'
+                        },
+                        xAxis: {
+                            categories: obj.monthList,
+                            title: {
+                                text: null
+                            }
+                        },
+                        yAxis: {
+                            /*min: 0,
+                             title: {
+                             text: 'Population (millions)',
+                             align: 'high'
+                             },*/
+                            labels: {
+                                overflow: 'justify'
+                            }
+                        },
+                        /*tooltip: {
+                         valueSuffix: ' millions'
+                         },*/
+                        plotOptions: {
+                            column: {
+                                dataLabels: {
+                                    enabled: true
+                                }
+                            }
+                        },
+                        legend: {
+                            layout: 'vertical',
+                            align: 'center',
+                            verticalAlign: 'bottom',
+                            x: -40,
+                            y: 80,
+                            floating: true,
+                            borderWidth: 1,
+                            backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+                            shadow: true
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        series: obj.data
+                    });
+                })
+            }
+        }
+    })
+}
 
 indexTpl.onDestroyed(function () {
     Session.set('chart', undefined);
 });
 
-
-var drawChart=function (data) {
-    let m_data=data;
-
-    $('#bar-chart-container').html(''); //remove canvas from container
-    $('#bar-chart-container').html('<canvas id="myChart" height="400" width="900"></canvas>');
-
-    Meteor.setTimeout(function () {
-        var ctx = $("#myChart").get(0).getContext("2d");
-        myNewChart = new Chart(ctx, {});
-        new Chart(ctx).Bar(m_data, {
-            scaleBeginAtZero: false,
-            scaleLabel: "<%=numeral(value).format('0,0.00')%>",
-            tooltipTemplate: "<%= numeral(value).format('0,0.00') %>"
-        });
-    },300);
-
-}
 

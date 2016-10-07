@@ -12,7 +12,7 @@ import {ChartAccount} from '../../imports/api/collections/chartAccount';
 
 Meteor.methods({
     getBalanceSheet: function (selector, baseCurrency, exchangeDate,
-                               selectorGetLastBalance, lastDate,showNonActive) {
+                               selectorGetLastBalance, lastDate, showNonActive) {
         var arr = [];
         var results = Journal.aggregate([{
             $unwind: "$transaction"
@@ -42,7 +42,7 @@ Meteor.methods({
             }
         ]);
         results.forEach(function (obj) {
-            if (obj.result = 0) {
+            if (obj.result != 0) {
                 var re = Meteor.call('exchange', obj._id.currency, baseCurrency,
                     obj.result, exchangeDate);
                 arr.push({
@@ -60,11 +60,17 @@ Meteor.methods({
         });
 
 
-        if(showNonActive=='true' || showNonActive== true){
-            var accountParent=ChartAccount.find({accountTypeId : {$nin : ['40','41','50','51']},level: {$gt: 0}}).fetch().map(function (obj) {
+        if (showNonActive == 'true' || showNonActive == true) {
+            var accountParent = ChartAccount.find({
+                accountTypeId: {$nin: ['40', '41', '50', '51']},
+                level: {$gt: 0}
+            }).fetch().map(function (obj) {
                 return obj.parentId;
             });
-            ChartAccount.find({accountTypeId : {$nin : ['40','41','50','51']},_id : {$nin: accountParent}}).fetch().forEach(function (obj) {
+            ChartAccount.find({
+                accountTypeId: {$nin: ['40', '41', '50', '51']},
+                _id: {$nin: accountParent}
+            }).fetch().forEach(function (obj) {
                 arr.push({
                     account: obj._id,
                     name: obj.name,

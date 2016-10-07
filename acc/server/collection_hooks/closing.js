@@ -9,7 +9,7 @@ var module = 'Acc';
 
 Closing.before.insert(function (userId, doc) {
 
-    var date = moment(doc.dateFrom,"DD/MM/YYYY").format("YYMM");
+    var date = moment(doc.dateFrom, "DD/MM/YYYY").format("YYMM");
     var prefix = doc.branchId + "-" + date;
     doc._id = idGenerator.genWithPrefix(Closing, prefix, 6);
 

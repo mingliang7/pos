@@ -20,7 +20,7 @@ tabularOpts.name = 'acc.dateEndOfProcess';
 tabularOpts.collection = DateEndOfProcess;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.acc_dateEndOfProcessAction},
-     {
+    {
         data: "closeDate", title: "Date",
         render: function (val, type, doc) {
             return moment(val).format("DD/MM/YYYY");
@@ -29,8 +29,8 @@ tabularOpts.columns = [
     {
         data: "createdBy", title: "User Create",
         render: function (val, type, doc) {
-            let userName= Meteor.users.findOne({_id: val});
-            if(userName){
+            let userName = Meteor.users.findOne({_id: val});
+            if (userName) {
                 return userName.username;
             }
         }

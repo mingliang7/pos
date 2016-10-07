@@ -299,6 +299,7 @@ var getDataForChart = function () {
     let selector = {};
     selector.year = stateSelectorChart.get('yearSelect');
     selector.currencyId = stateSelectorChart.get('currency');
+    selector.branchId = Session.get('currentBranch');
     let accountTypeId = stateSelectorChart.get('accountType');
 
     Meteor.call("chart_accountEveryMonthCombination", selector, accountTypeId, function (err, obj) {

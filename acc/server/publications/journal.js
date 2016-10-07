@@ -1,4 +1,3 @@
-
 import {Meteor} from 'meteor/meteor';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 
@@ -14,12 +13,12 @@ Meteor.publish('acc.journal', function () {
     }
 });
 /*
-Meteor.publish('acc_JournalById', function (selector = {}, options = {}) {
-    if (this.userId) {
-        this.unblock();
-        check(selector, Object);
-        check(options, Object);
-        return Acc.Collection.Journal.findOne(selector, options);
-    }
-});
-*/
+ Meteor.publish('acc_JournalById', function (selector = {}, options = {}) {
+ if (this.userId) {
+ this.unblock();
+ check(selector, Object);
+ check(options, Object);
+ return Acc.Collection.Journal.findOne(selector, options);
+ }
+ });
+ */

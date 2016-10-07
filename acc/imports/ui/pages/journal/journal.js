@@ -67,8 +67,11 @@ state = new ReactiveObj({
     cr: 0,
     totalDr: 0,
     totalCr: 0,
+    amount:0,
     account: "",
-    cssClassForAddMore: 'disabled'
+    cssClassForAddMore: 'disabled',
+    cssClassForSubmit: 'disabled'
+
 });
 
 
@@ -214,7 +217,7 @@ indexTpl.events({
         data.memo = 'test migrate';
         data.refId = "001";
         data.refFrom = "Sale";
-        data.total=300;
+        data.total = 300;
 
         let transaction = [];
 
@@ -235,7 +238,6 @@ indexTpl.events({
         Meteor.call('otherSystem_journalInsert', data);
     },
     'click .otherSystem_journalUpdate': function (e, t) {
-        let journalId = this._id;
 
         let data = {};
         data.journalDate = moment().toDate();
@@ -245,7 +247,7 @@ indexTpl.events({
         data.memo = 'update test migrate';
         data.refId = "001";
         data.refFrom = "Sale";
-        data.total=400;
+        data.total = 400;
 
         let transaction = [];
 
@@ -265,17 +267,13 @@ indexTpl.events({
 
         data.transaction = transaction;
 
-        Meteor.call('otherSystem_journalUpdate', data, journalId);
+        Meteor.call('otherSystem_journalUpdate', data);
     },
-    'click .otherSystem_journalRemove': function (e,t) {
-        let self=this;
+    'click .otherSystem_journalRemove': function (e, t) {
+        let self = this;
 
-        Meteor.call('otherSystem_journalRemove', self._id,"001","Sale");
+        Meteor.call('otherSystem_journalRemove', self._id, "001", "Sale");
     },
-
-
-
-
 
 
     'click .insertPayment': function (e, t) {
@@ -319,7 +317,7 @@ indexTpl.events({
         }
 
         Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
-            if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId != "0" || data.closingId != undefined ) && data.refId==undefined)) {
+            if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId != "0" || data.closingId != undefined ) && data.refId == undefined)) {
                 if (lastDate != null) {
                     if (new Date(lastDate.closeDate) < data.journalDate) {
                         alertify.journal(fa("plus", "Journal"), renderTemplate(Template.acc_journalUpdate, data)).maximize();
@@ -356,7 +354,7 @@ indexTpl.events({
         selectorGetLastDate.branchId = Session.get("currentBranch");
 
         Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
-            if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId != "0" || data.closingId != undefined ) && data.refId==undefined )) {
+            if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId != "0" || data.closingId != undefined ) && data.refId == undefined )) {
                 if (lastDate != undefined) {
                     if (new Date(lastDate.closeDate) < data.journalDate) {
                         alertify.journal(fa("plus", "Journal"), renderTemplate(Template.acc_journalUpdate, data)).maximize();
@@ -380,7 +378,7 @@ indexTpl.events({
         selector._id = this._id;
         Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
             Meteor.call('getJournal', selector, function (err, data) {
-                if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId != "0" || data.closingId != undefined )  && data.refId==undefined)) {
+                if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId != "0" || data.closingId != undefined ) && data.refId == undefined)) {
                     if (lastDate != null) {
                         if (new Date(lastDate.closeDate) < data.journalDate) {
 
@@ -549,6 +547,123 @@ AutoForm.hooks({
             this.done();
         }
     },
+    acc_journalInsertPayment: {
+        before: {
+            insert: function (doc) {
+                debugger;
+                let paymentMethod = $('#paymentReceiveMethod').val();
+                if (paymentMethod != "") {
+                    var currentBranch = Session.get("currentBranch");
+                    doc.branchId = Session.get("currentBranch");
+
+                    let transactionData = journalDetailPaymentReceiveCollection.find().fetch();
+                    var total = 0;
+                    var transactionList = [];
+                    transactionData.forEach(function (obj) {
+                        total += obj.amount;
+                        transactionList.push({account: obj.account, dr: obj.amount, cr: 0, drcr: obj.amount})
+                    });
+
+                    transactionList.push({account: paymentMethod, dr: 0, cr: total, drcr: -total})
+
+                    doc.transaction = transactionList;
+                    let transactionAssetList = [];
+                    let transactionAssetData = fixAssetDepCollection.find().fetch();
+                    transactionAssetData.forEach(function (obj) {
+                        if (obj != undefined) {
+                            delete obj._id;
+                            transactionAssetList.push(obj);
+                        }
+                    })
+
+                    if (transactionAssetList.length > 0) {
+                        doc.transactionAsset = transactionAssetList;
+                    }
+                    var year = moment(doc.journalDate).format("YYYY");
+                    doc.voucherId = currentBranch + "-" + year + s.pad(doc.voucherId, 6, "0");
+                    doc.total = total;
+                    return doc;
+                }
+            }
+        },
+        onSuccess: function (formType, result) {
+            let curDate = Session.get('dobSelect');
+            Session.set('dobSelect', undefined);
+
+            alertify.journal().close();
+
+            stateFixAsset.set('isFixAsset', false);
+            // displaySuccess();
+            alertify.success("Success");
+            fixAssetDepCollection.remove({});
+            journalDetailCollection.remove({});
+        },
+        onError: function (formType, error) {
+            // displayError(error.message);
+            alertify.error(error.message);
+        }, onSubmit: function (insertDoc, updateDoc, currentDoc) {
+            event.preventDefault();
+            this.done();
+        }
+    },
+    acc_journalInsertReceive: {
+        before: {
+            insert: function (doc) {
+                debugger;
+                let paymentMethod = $('#paymentReceiveMethod').val();
+                if (paymentMethod != "") {
+                    var currentBranch = Session.get("currentBranch");
+                    doc.branchId = Session.get("currentBranch");
+
+                    let transactionData = journalDetailPaymentReceiveCollection.find().fetch();
+                    var total = 0;
+                    var transactionList = [];
+                    transactionData.forEach(function (obj) {
+                        total += obj.amount;
+                        transactionList.push({account: obj.account, dr: obj.amount, cr: 0, drcr: obj.amount})
+                    });
+
+                    transactionList.push({account: paymentMethod, dr: 0, cr: total, drcr: -total})
+
+                    doc.transaction = transactionList;
+                    let transactionAssetList = [];
+                    let transactionAssetData = fixAssetDepCollection.find().fetch();
+                    transactionAssetData.forEach(function (obj) {
+                        if (obj != undefined) {
+                            delete obj._id;
+                            transactionAssetList.push(obj);
+                        }
+                    })
+
+                    if (transactionAssetList.length > 0) {
+                        doc.transactionAsset = transactionAssetList;
+                    }
+                    var year = moment(doc.journalDate).format("YYYY");
+                    doc.voucherId = currentBranch + "-" + year + s.pad(doc.voucherId, 6, "0");
+                    doc.total = total;
+                    return doc;
+                }
+            }
+        },
+        onSuccess: function (formType, result) {
+            let curDate = Session.get('dobSelect');
+            Session.set('dobSelect', undefined);
+
+            alertify.journal().close();
+            stateFixAsset.set('isFixAsset', false);
+            // displaySuccess();
+            alertify.success("Success");
+            fixAssetDepCollection.remove({});
+            journalDetailCollection.remove({});
+        },
+        onError: function (formType, error) {
+            // displayError(error.message);
+            alertify.error(error.message);
+        }, onSubmit: function (insertDoc, updateDoc, currentDoc) {
+            event.preventDefault();
+            this.done();
+        }
+    },
     acc_journalUpdate: {
         before: {
             update: function (doc) {
@@ -697,17 +812,23 @@ var disableDate = function () {
     };
 
 
-
-
-
-
-
-
-
 // Receive/Payment
 
 
 insertPaymentTpl.helpers({
+    total(){
+        let amount = 0;
+        let data = journalDetailPaymentReceiveCollection.find().fetch();
+        if (data.length>0) {
+            data.forEach(function (obj) {
+                amount += obj.amount;
+            })
+        }
+        return amount;
+    },
+    cssClassForSubmit: function () {
+        return state.get('cssClassForSubmit');
+    },
     collection(){
         return Journal;
     },
@@ -726,6 +847,19 @@ insertPaymentTpl.helpers({
 });
 
 insertReceiveTpl.helpers({
+    total(){
+        let amount = 0;
+        let data = journalDetailPaymentReceiveCollection.find().fetch();
+        if (data.length>0) {
+            data.forEach(function (obj) {
+                amount += obj.amount;
+            })
+        }
+        return amount;
+    },
+    cssClassForSubmit: function () {
+        return state.get('cssClassForSubmit');
+    },
     collection(){
         return Journal;
     },
@@ -769,6 +903,7 @@ insertReceiveTpl.onDestroyed(function () {
 
 
 insertPaymentTpl.onRendered(function () {
+
     disableDate();
     switcherFun();
 
@@ -809,8 +944,13 @@ insertPaymentTpl.events({
         var elem = document.querySelector('.js-switch');
         stateFixAsset.set("isFixAsset", elem.checked);
     },
-    'click .save-new': function (e, t) {
-        Session.set('saveNew', true);
+    'change #paymentReceiveMethod'(){
+        debugger;
+        if ($("#paymentReceiveMethod").val() != "") {
+            state.set('cssClassForSubmit', '');
+        } else {
+            state.set('cssClassForSubmit', 'disabled');
+        }
     }
 });
 
@@ -836,7 +976,11 @@ insertReceiveTpl.events({
         var elem = document.querySelector('.js-switch');
         stateFixAsset.set("isFixAsset", elem.checked);
     },
-    'click .save-new': function (e, t) {
-        Session.set('saveNew', true);
+    'change #paymentReceiveMethod'(){
+        if ($("#paymentReceiveMethod").val() != "") {
+            state.set('cssClassForSubmit', '');
+        } else {
+            state.set('cssClassForSubmit', 'disabled');
+        }
     }
 });

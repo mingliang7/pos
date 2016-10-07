@@ -1,22 +1,24 @@
 <template name="acc_companySnapshot">
     <div class="box-body">
-        <div class="row" col-md-12>
-            <div class="box-body">
-                <div class="col-sm-3">
-                    <select name="yearpicker" id="yearpicker" class="form-control input-sm"
-                            style="width: 250px"></select>
-                </div>
-                <div class="col-sm-6">
-                    <div class="switch-toggle switch-3 switch-candy" id="currency-toggle">
-                        <input id="khr" value="khr" name="state-d" type="radio" checked="">
-                        <label for="khr" onclick="">KHR</label>
+        <div class="container-fluid ">
+            <div class="row well report-header invoice-body-shadow" col-md-12>
+                <div class="box-body">
+                    <div class="col-sm-3">
+                        <select name="yearpicker" id="yearpicker" class="form-control input-sm"
+                                style="width: 230px"></select>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="switch-toggle switch-3 switch-candy" id="currency-toggle">
+                            <input id="khr" value="khr" name="state-d" type="radio" checked="">
+                            <label for="khr" onclick="">KHR</label>
 
-                        <input id="usd" value="usd" name="state-d" type="radio" checked="checked">
-                        <label for="usd" onclick="">USD</label>
+                            <input id="usd" value="usd" name="state-d" type="radio" checked="checked">
+                            <label for="usd" onclick="">USD</label>
 
-                        <input id="baht" value="baht" name="state-d" type="radio">
-                        <label for="baht" onclick="">Baht</label>
-                        <a></a>
+                            <input id="baht" value="baht" name="state-d" type="radio">
+                            <label for="baht" onclick="">Baht</label>
+                            <a></a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -24,12 +26,13 @@
     </div>
     <br><br>
     <div class="box-body">
-        <div class="animated fadeIn">
-            <div class="row">
-                <div id="chartIncome" class="col-md-6 pull-left"
+        <div class="container-fluid ">
+            <div class="animated fadeIn">
+                <div id="chartIncome" class="col-md-12"
                      style="min-width: 510px; max-width: 900px;  min-height: 510px;max-height: 900px; margin: 0 auto">{{createChartIncome}}
                 </div>
-                <div id="chartExpense" class="col-md-6 pull-right"
+                <li class="divider"></li>
+                <div id="chartExpense" class="col-md-12"
                      style="min-width: 510px; max-width: 900px;  min-height: 510px;max-height: 900px; margin: 0 auto">{{createChartExpense}}
                 </div>
             </div>

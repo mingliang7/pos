@@ -20,16 +20,16 @@ Meteor.isClient && require('../../imports/ui/pages/configDep/configDep.html');
 tabularOpts.name = 'acc.configDep';
 tabularOpts.collection = ConfigDep;
 tabularOpts.columns = [
-  {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.acc_configDepAction},
-  {data: "_id", title: "ID"},
-  {
-    data: "depPerTime",
-    title: "Depreciation Per Time",
-    render: function (val, type, doc) {
-      return val+ " month";
-    }
-  },
-  {data: "depType", title: "Depreciation Type"}
+    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.acc_configDepAction},
+    {data: "_id", title: "ID"},
+    {
+        data: "depPerTime",
+        title: "Depreciation Per Time",
+        render: function (val, type, doc) {
+            return val + " month";
+        }
+    },
+    {data: "depType", title: "Depreciation Type"}
 ];
 export const ConfigDepTabular = new Tabular.Table(tabularOpts);
 

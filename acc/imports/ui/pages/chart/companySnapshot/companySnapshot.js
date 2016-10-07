@@ -72,7 +72,6 @@ if (Meteor.isClient) {
     indexTpl.helpers({
         createChartIncome: function () {
             // Gather data:
-            debugger;
             let obj = Session.get("objCompanySnapshot");
             // Use Meteor.defer() to craete chart after DOM is ready:
             if (obj != undefined) {
@@ -80,7 +79,7 @@ if (Meteor.isClient) {
                     // Create standard Highcharts chart with options:
                     Highcharts.chart('chartIncome', {
                         title: {
-                            text: 'Income'
+                            text: '<b class="label label-default">Income</b>'
                         },
                         xAxis: {
                             categories: obj.accountListIncome,
@@ -98,10 +97,19 @@ if (Meteor.isClient) {
                                 overflow: 'justify'
                             }
                         },
+                        /*tooltip: {
+                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                        },*/
                         plotOptions: {
-                            line: {
+                            pie: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
                                 dataLabels: {
-                                    enabled: true
+                                    enabled: true,
+                                    format: '<b>{point.name}</b>: {point.percentage:.1f}%',
+                                    style: {
+                                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                    }
                                 }
                             }
                         },
@@ -135,7 +143,7 @@ if (Meteor.isClient) {
                     // Create standard Highcharts chart with options:
                     Highcharts.chart('chartExpense', {
                         title: {
-                            text: 'Expense'
+                            text: '<b class="label label-default">Expense</b>'
                         },
                         xAxis: {
                             categories: obj.accountListExpense,
@@ -153,10 +161,19 @@ if (Meteor.isClient) {
                                 overflow: 'justify'
                             }
                         },
+                        /*tooltip: {
+                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                        },*/
                         plotOptions: {
-                            line: {
+                            pie: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
                                 dataLabels: {
-                                    enabled: true
+                                    enabled: true,
+                                    format: '<b>{point.name}</b>: {point.percentage:.1f}%',
+                                    style: {
+                                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                    }
                                 }
                             }
                         },
@@ -188,7 +205,7 @@ var getDataForChart = function () {
     let selector = {};
     selector.year = stateSelectorChart.get('yearSelect');
     selector.currencyId = stateSelectorChart.get('currency');
-
+    selector.branchId = Session.get('currentBranch');
     Meteor.call("chart_companySnapshot", selector, function (err, obj) {
         if (obj != undefined) {
             Session.set("objCompanySnapshot", obj);

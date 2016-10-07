@@ -9,7 +9,7 @@ var module = 'Acc';
 
 DepExpList.before.insert(function (userId, doc) {
 
-    var date = moment(doc.date,"DD/MM/YYYY").format("YYMM");
+    var date = moment(doc.date, "DD/MM/YYYY").format("YYMM");
     var prefix = doc.branchId + "-" + date;
     doc._id = idGenerator.genWithPrefix(DepExpList, prefix, 6);
 
