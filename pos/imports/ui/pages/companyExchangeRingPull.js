@@ -63,7 +63,7 @@ let itemsCollection = nullCollection;
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('companyExchangeRingPull', {size: 'lg'});
-    createNewAlertify('companyExchangeRingPullShow',);
+    createNewAlertify('companyExchangeRingPullShow', {size: 'lg'});
     createNewAlertify('vendor');
 });
 
@@ -115,10 +115,9 @@ indexTmpl.events({
             title: "Pleas Wait",
             text: "Getting CompanyExchangeRingPulls....", showConfirmButton: false
         });
-        this.vendor = VendorNullCollection.findOne(this.vendorId).name;
-        Meteor.call('companyExchangeRingPullShowItems', {doc: this}, function (err, result) {
+        Meteor.call('companyExchangeRingPullShowItem', {_id: this._id}, function (err, result) {
             swal.close();
-            alertify.companyExchangeRingPullShow(fa('eye', TAPi18n.__('pos.companyExchangeRingPull.title')), renderTemplate(showTmpl, result)).maximize();
+            alertify.companyExchangeRingPullShow(fa('eye', TAPi18n.__('pos.companyExchangeRingPull.title')), renderTemplate(showTmpl, result));
         });
     },
     'click .js-companyExchangeRingPull' (event, instance) {
@@ -334,19 +333,11 @@ editTmpl.onDestroyed(function () {
 });
 
 // Show
-showTmpl.onCreated(function () {
-    this.companyExchangeRingPull = new ReactiveVar();
-    this.autorun(()=> {
-        companyExchangeRingPullInfo.callPromise({_id: this.data._id})
-            .then((result) => {
-                this.companyExchangeRingPull.set(result);
-            }).catch(function (err) {
-            }
-        );
-    });
-});
-
 showTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     i18nLabel(label){
         let key = `pos.companyExchangeRingPull.schema.${label}.label`;
         return TAPi18n.__(key);
@@ -367,7 +358,7 @@ showTmpl.helpers({
     }
 });
 showTmpl.events({
-    'click .print-companyExchangeRingPull-show'(event,instance){
+    'click .print-exchange-ring-pull-show'(event,instance){
         $('#to-print').printThis();
     }
 });

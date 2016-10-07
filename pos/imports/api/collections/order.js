@@ -124,6 +124,11 @@ Order.schema = new SimpleSchema({
         type: Number,
         decimal: true,
         optional: true
+    },
+    voucherId: {
+        type: String,
+        label: 'Voucher ID',
+        optional: true
     }
 });
 

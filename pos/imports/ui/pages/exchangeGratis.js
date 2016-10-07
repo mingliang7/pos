@@ -60,7 +60,7 @@ let itemsCollection = new Mongo.Collection(null);
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('exchangeGratis', {size: 'lg'});
-    createNewAlertify('exchangeGratisShow',);
+    createNewAlertify('exchangeGratisShow', {size: 'lg'});
 });
 
 indexTmpl.helpers({
@@ -100,7 +100,17 @@ indexTmpl.events({
         });
     },
     'click .js-display' (event, instance) {
-        alertify.exchangeGratisShow(fa('eye', TAPi18n.__('pos.exchangeGratis.title')), renderTemplate(showTmpl, this));
+        swal({
+            title: 'Please Wait',
+            text: 'Getting Gratis...',
+            showConfirmButton: false
+        });
+        Meteor.call('exchangeGratisShowItem', {_id: this._id}, function (err, result) {
+            setTimeout(function () {
+                swal.close();
+            }, 1000);
+            alertify.exchangeGratisShow(fa('eye', TAPi18n.__('pos.exchangeGratis.title')), renderTemplate(showTmpl, result));
+        });
     },
     'click .js-invoice' (event, instance) {
         let params = {};
@@ -199,32 +209,28 @@ editTmpl.onDestroyed(function () {
 });
 
 // Show
-showTmpl.onCreated(function () {
-    this.exchangeGratis = new ReactiveVar();
-    this.autorun(()=> {
-        ExchangeGratisInfo.callPromise({_id: this.data._id})
-            .then((result) => {
-                this.exchangeGratis.set(result);
-            }).catch(function (err) {
-                console.log(err.message);
-            }
-        );
-    });
-});
-
 showTmpl.helpers({
     i18nLabel(label){
         let key = `pos.exchangeGratis.schema.${label}.label`;
         return TAPi18n.__(key);
     },
-    exchangeGratisInfo () {
-
-        let exchangeGratisInfo = Template.instance().exchangeGratis.get();
-
-        // Use jsonview
-        exchangeGratisInfo.jsonViewOpts = {collapsed: true};
-        //
-        return exchangeGratisInfo;
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
+    colorizeType(type) {
+        if (type == 'term') {
+            return `<label class="label label-info">T</label>`
+        }
+        return `<label class="label label-success">G</label>`
+    },
+    colorizeStatus(status){
+        if(status == 'active') {
+            return `<label class="label label-info">A</label>`
+        }else if(status == 'partial') {
+            return `<label class="label label-danger">P</label>`
+        }
+        return `<label class="label label-success">C</label>`
     }
 });
 

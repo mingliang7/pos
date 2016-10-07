@@ -63,7 +63,7 @@ let itemsCollection = nullCollection;
 indexTmpl.onCreated(function () {
     // Create new  alertify
     createNewAlertify('order', {size: 'lg'});
-    createNewAlertify('orderShow',);
+    createNewAlertify('orderShow', {size: 'lg'});
 });
 
 indexTmpl.helpers({
@@ -103,7 +103,17 @@ indexTmpl.events({
         });
     },
     'click .js-display' (event, instance) {
-        alertify.orderShow(fa('eye', TAPi18n.__('pos.order.title')), renderTemplate(showTmpl, this));
+        swal({
+            title: 'Please Wait',
+            text: 'Getting Sale Order...',
+            showConfirmButton: false
+        });
+        Meteor.call('saleOrderShow', {_id: this._id}, function (err, result) {
+            setTimeout(function () {
+                swal.close();
+            }, 1000);
+            alertify.orderShow(fa('eye', TAPi18n.__('pos.order.title')), renderTemplate(showTmpl, result));
+        });
     },
     'click .js-invoice' (event, instance) {
         let params = {};
@@ -207,32 +217,27 @@ editTmpl.onDestroyed(function () {
     itemsCollection.remove({});
 });
 
-// Show
-showTmpl.onCreated(function () {
-    this.saleOrder = new ReactiveVar();
-    this.autorun(()=> {
-        saleOrderInfo.callPromise({_id: this.data._id})
-            .then((result) => {
-                this.saleOrder.set(result);
-            }).catch(function (err) {
-            }
-        );
-    });
-});
-
 showTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     i18nLabel(label){
         let key = `pos.order.schema.${label}.label`;
         return TAPi18n.__(key);
     },
-    saleOrderInfo () {
-
-        let saleOrderInfo = Template.instance().saleOrder.get();
-
-        // Use jsonview
-        saleOrderInfo.jsonViewOpts = {collapsed: true};
-        //
-        return saleOrderInfo;
+    colorizeStatus(status){
+        if (status == 'active') {
+            return `<label class="label label-info">A</label>`
+        } else if (status == 'partial') {
+            return `<label class="label label-danger">P</label>`
+        }
+        return `<label class="label label-success">C</label>`
+    }
+});
+showTmpl.events({
+    'click .print-invoice-show'(event, instance){
+        $('#to-print').printThis();
     }
 });
 
