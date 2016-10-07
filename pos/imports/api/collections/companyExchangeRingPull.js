@@ -154,6 +154,10 @@ CompanyExchangeRingPulls.schema = new SimpleSchema({
                 }
             }
         }
+    },
+    sumRemainQty: {
+        type: Number,
+        decimal: true
     }
 });
 
