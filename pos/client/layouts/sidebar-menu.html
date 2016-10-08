@@ -26,17 +26,17 @@
                 </li>
                 <li class="{{isActiveRoute name='pos.invoice'}}">
                     <a href="{{pathFor 'pos.invoice'}}">
-                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.invoice"}}</span>
+                        <i class="fa fa-file-text"></i> <span>{{_ "pos.sidebarMenu.invoice"}}</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.groupInvoiceList'}}">
                     <a href="{{pathFor 'pos.groupInvoiceList'}}">
-                        <i class="fa fa-circle-o"></i> <span>Group Invoice List</span>
+                        <i class="fa fa-list-alt"></i> <span>Group Invoice List</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.receivePayment'}}">
                     <a href="{{pathFor 'pos.receivePayment'}}">
-                        <i class="fa fa-circle-o"></i> <span>Receive Payment</span>
+                        <i class="fa fa-money"></i> <span>Receive Payment</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.paymentTransactionList'}}">
@@ -62,12 +62,12 @@
 
                 <li class="{{isActiveRoute name='pos.enterBill'}}">
                     <a href="{{pathFor 'pos.enterBill'}}">
-                        <i class="fa fa-money" aria-hidden="true"></i> <span>{{_ "pos.sidebarMenu.enterBill"}}</span>
+                        <i class="fa fa-file-text" aria-hidden="true"></i> <span>{{_ "pos.sidebarMenu.enterBill"}}</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.groupBillList'}}">
                     <a href="{{pathFor 'pos.groupBillList'}}">
-                        <i class="fa fa-money" aria-hidden="true"></i> <span>Group Bill List</span>
+                        <i class="fa fa-list-alt" aria-hidden="true"></i> <span>Group Bill List</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.prepaidOrder'}}">
@@ -75,14 +75,9 @@
                         <i class="fa fa-cart-arrow-down" aria-hidden="true"></i> <span>Prepaid Order</span>
                     </a>
                 </li>
-                <li class="{{isActiveRoute name='pos.purchaseOrder'}}">
-                    <a href="{{pathFor 'pos.purchaseOrder'}}">
-                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.purchaseOrder"}}</span>
-                    </a>
-                </li>
                 <li class="{{isActiveRoute name='pos.payBill'}}">
                     <a href="{{pathFor 'pos.payBill'}}">
-                        <i class="fa fa-circle-o"></i> <span>Pay Bill</span>
+                        <i class="fa fa-money"></i> <span>Pay Bill</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.payBillTransactionList'}}">
@@ -92,7 +87,7 @@
                 </li>
                 <li class="{{isActiveRoute name='pos.lendingStock'}}">
                     <a href="{{pathFor 'pos.lendingStock'}}">
-                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.lendingStock"}}</span>
+                        <i class="fa fa-share-square-o"></i> <span>{{_ "pos.sidebarMenu.lendingStock"}}</span>
                     </a>
                 </li>
             </ul>
@@ -106,19 +101,19 @@
             <ul class="treeview-menu" style="display: none;">
                 <li class="{{isActiveRoute name='pos.receiveItem'}}">
                     <a href="{{pathFor 'pos.receiveItem'}}">
-                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <i class="fa fa-arrow-circle-o-down" aria-hidden="true"></i>
                         <span>Receive Item</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.stockLocation'}}">
                     <a href="{{pathFor 'pos.stockLocation'}}">
-                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <i class="fa fa-tasks" aria-hidden="true"></i>
                         <span>{{_ "pos.sidebarMenu.stockLocation"}}</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.locationTransfer'}}">
                     <a href="{{pathFor 'pos.locationTransfer'}}">
-                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <i class="fa fa-compress" aria-hidden="true"></i>
                         <span>Location Transfer</span>
                     </a>
                 </li>
@@ -130,31 +125,31 @@
                 </li>
                 <li class="{{isActiveRoute name='pos.ringPullTransfer'}}">
                     <a href="{{pathFor 'pos.ringPullTransfer'}}">
-                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <i class="fa fa-life-ring" aria-hidden="true"></i>
                         <span>Ring Pull Transfer</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.ringPullTransferRequest'}}">
                     <a href="{{pathFor 'pos.ringPullTransferRequest'}}">
-                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <i class="fa fa-life-ring" aria-hidden="true"></i>
                         <span>Ring Pull Transfer Request</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.exchangeRingPull'}}">
                     <a href="{{pathFor 'pos.exchangeRingPull'}}">
-                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <i class="fa fa-building-o" aria-hidden="true"></i>
                         <span>Exchange Ring Pull</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.companyExchangeRingPull'}}">
                     <a href="{{pathFor 'pos.companyExchangeRingPull'}}">
-                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <i class="fa fa-building" aria-hidden="true"></i>
                         <span>Company Exchange Ring Pull</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.exchangeGratis'}}">
                     <a href="{{pathFor 'pos.exchangeGratis'}}">
-                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        <i class="fa fa-gift" aria-hidden="true"></i>
                         <span>Exchange Gratis</span>
                     </a>
                 </li>
@@ -191,64 +186,64 @@
             <ul class="treeview-menu" style="display: none;">
                 <li class="{{isActiveRoute name='pos.rep'}}">
                     <a href="{{pathFor 'pos.rep'}}">
-                        <i class="fa fa-circle-o"></i> <span>Reps</span>
+                        <i class="fa fa-group"></i> <span>Reps</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='core.exchange'}}">
                     <a href="{{pathFor 'core.exchange'}}">
-                        <i class="fa fa-circle-o"></i> <span>{{_ "core.sidebarMenu.exchange"}}</span>
+                        <i class="fa fa-money"></i> <span>{{_ "core.sidebarMenu.exchange"}}</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.categroy'}}">
                     <a href="{{pathFor 'pos.category'}}">
-                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.category"}}</span>
+                        <i class="fa fa-sitemap"></i> <span>{{_ "pos.sidebarMenu.category"}}</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.unit'}}">
                     <a href="{{pathFor 'pos.unit'}}">
-                        <i class="fa fa-circle-o"></i> <span>Unit</span>
+                        <i class="fa fa-beer"></i> <span>Unit</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.item'}}">
                     <a href="{{pathFor 'pos.item'}}">
-                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.item"}}</span>
+                        <i class="fa fa-list-ul"></i> <span>{{_ "pos.sidebarMenu.item"}}</span>
                     </a>
                 </li><li class="{{isActiveRoute name='pos.itemPriceForCustomer'}}">
                     <a href="{{pathFor 'pos.itemPriceForCustomer'}}">
-                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.itemPriceForCustomer"}}</span>
+                        <i class="fa fa-usd"></i> <span>{{_ "pos.sidebarMenu.itemPriceForCustomer"}}</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.term'}}">
                     <a href="{{pathFor 'pos.term'}}">
-                        <i class="fa fa-circle-o"></i> <span>Term</span>
+                        <i class="fa fa-angle-right"></i> <span>Term</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.paymentGroup'}}">
                     <a href="{{pathFor 'pos.paymentGroup'}}">
-                        <i class="fa fa-circle-o"></i> <span>{{_ "pos.sidebarMenu.paymentGroup"}}</span>
+                        <i class="fa fa-angle-right"></i> <span>{{_ "pos.sidebarMenu.paymentGroup"}}</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.creditValidation'}}">
                     <a href="{{pathFor 'pos.creditValidation'}}">
-                        <i class="fa fa-circle-o"></i> <span>Credit Validation</span>
+                        <i class="fa fa-angle-right"></i> <span>Credit Validation</span>
                     </a>
                 </li> <li class="{{isActiveRoute name='pos.whiteListCustomer'}}">
                     <a href="{{pathFor 'pos.whiteListCustomer'}}">
-                        <i class="fa fa-circle-o"></i> <span>White List Customer</span>
+                        <i class="fa fa-angle-right"></i> <span>White List Customer</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.penalty'}}">
                     <a href="{{pathFor 'pos.penalty'}}">
-                        <i class="fa fa-circle-o"></i> <span>Penalty</span>
+                        <i class="fa fa-angle-right"></i> <span>Penalty</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.accountIntegrationSetting'}}">
                     <a href="{{pathFor 'pos.accountIntegrationSetting'}}">
-                        <i class="fa fa-circle-o"></i> <span>Account Integrated System</span>
+                        <i class="fa fa-angle-right"></i> <span>Account Integrated System</span>
                     </a>
                 </li><li class="{{isActiveRoute name='pos.stockAndAccountMapping'}}">
                     <a href="{{pathFor 'pos.stockAndAccountMapping'}}">
-                        <i class="fa fa-circle-o"></i> <span>Stock & Account Mapping</span>
+                        <i class="fa fa-angle-right"></i> <span>Stock Mapping</span>
                     </a>
                 </li>
             </ul>
