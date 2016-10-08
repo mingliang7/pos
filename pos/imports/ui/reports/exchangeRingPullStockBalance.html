@@ -1,4 +1,4 @@
-<template name="Pos_groupReport">
+<template name="Pos_exchangeRingPullStockBalance">
     <div class="panel-group" id="accordion1">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -11,21 +11,18 @@
                 <div class="panel-body">
                     <div class="container-fluid">
                         <div class="inbox-head report-header">
-                            {{#autoForm schema=schema id='groupReport'}}
+                            {{#autoForm schema=schema id='exchangeRingPullStockBalance'}}
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {{> afQuickField name="items" label= 'Item'}}
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-md-2">
-                                        {{> afQuickField name="fromDate" label= 'From Date'}}
+                                        {{> afQuickField name="branch" label="Branch"}}
                                     </div>
-                                    <div class="col-md-2">
-                                        {{> afQuickField name="toDate" label='To Date'}}
+                                    <div class="col-md-3">
                                     </div>
-                                    <div class="col-md-2">
-                                        {{> afQuickField name="customer" label="Customer"}}
-                                    </div>
-                                    <!--<div class="col-md-4">-->
-                                    <!--{{> afQuickField name="filter" label="Custom Fields"}}-->
-                                    <!--</div>-->
-
                                 </div>
                                 <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run</button>
                             {{/autoForm}}
@@ -33,12 +30,12 @@
                     </div>
                 </div>
             </div>
-            {{>groupReportData}}
+            {{>exchangeRingPullStockBalanceData}}
         </div>
     </div>
 </template>
 
-<template name="groupReportData">
+<template name="exchangeRingPullStockBalanceData">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4">
@@ -57,7 +54,7 @@
                 <br>
             </div>
         {{/with}}
-        <div class="col-md-12" align="center"><h3>GROUP INVOICE REPORT</h3></div>
+        <div class="col-md-12" align="center"><h3>EXCHANGE RING PULL STOCK BALANCE REPORT</h3></div>
         <div class="row">
             <div class="col-xs-12">
                 <hr>
@@ -78,46 +75,30 @@
 
             </div>
         </div>
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                {{#each data.fields }}
-                    <th>{{field}}</th>
-                {{/each}}
-
-            </tr>
-            </thead>
-            <tbody>
+        <table class="table table-striped ">
             {{#with data}}
+                <tbody>
                 {{#each col in content}}
-                    {{#each field in col.data}}
-                        <tr style="background: #dddddd">
-                            {{{display field}}}
-                        </tr>
-                    {{/each}}
                     <tr>
-                        {{{reduceField}}}
-                        <th>INVOICE</th>
-                        <th>INVOICE DATE</th>
-                        <th>TOTAL</th>
+                        <td colspan="4" style="background-color: #d0d0d0"><span><i class="fa fa-code-fork"
+                                                                                   aria-hidden="true"></i> <u>Branch</u>: {{col.branchDoc.khName}}
+                            ({{col.branchDoc.enName}})</span>
+                        </td>
                     </tr>
-                    {{#each invoice in col.invoices}}
+                    <tr>
+                        <th class="text-center">ITEM</th>
+                        <th>QTY</th>
+                    </tr>
+                    {{#each col.items}}
                         <tr>
-                            {{{reduceField}}}
-                            <td>{{invoice._id}}</td>
-                            <td>{{moFormat invoice.invoiceDate 'YYYY-MM-DD HH:mm'}}</td>
-                            <td>{{numFormat invoice.total '0,0.00'}}</td>
+                            <td class="text-center">{{itemName}}</td>
+                            <td>{{numFormat qty '0,0'}}</td>
                         </tr>
                     {{/each}}
-                    <tr>
-                        {{{getTotal col.total}}}
-                    </tr>
+
                 {{/each}}
-                <tr>
-                    {{{getTotal footer.totalRemainQty footer.total}}}
-                </tr>
+                </tbody>
             {{/with}}
-            </tbody>
         </table>
         {{> ReportSignFooter}}
     </div>

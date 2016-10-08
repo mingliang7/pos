@@ -74,6 +74,9 @@ indexTmpl.helpers({
             },
             {
                 label: 'Receive Item Summary', value: 'receiveItemSummary'
+            },
+            {
+                label: 'Exchange Ring Pull Stock Balance', value: 'exchangeRingPullStockBalance'
             }
 
         ]
@@ -81,8 +84,8 @@ indexTmpl.helpers({
 });
 
 indexTmpl.events({
-    'change [name="goToReport"]'(event,instance){
-        if(event.currentTarget.value != ''){
+    'change [name="goToReport"]'(event, instance){
+        if (event.currentTarget.value != '') {
             FlowRouter.go(getDefaultReportParams(event.currentTarget.value));
         }
     }
@@ -90,7 +93,7 @@ indexTmpl.events({
 
 function getDefaultReportParams(reportName) {
     let params = '';
-    switch(reportName){
+    switch (reportName) {
         case 'invoiceReport':
             params = `/pos/report/invoice?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}`;
             break;
@@ -153,6 +156,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'lendingStock':
             params = `/pos/report/lendingStockReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
+            break;
+        case 'exchangeRingPullStockBalance':
+            params = `/pos/report/exchangeRingPullStockBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
             break;
     }
     return params;

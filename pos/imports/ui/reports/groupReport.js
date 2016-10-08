@@ -49,14 +49,17 @@ indexTmpl.events({
     }
 });
 invoiceDataTmpl.helpers({
-
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     data(){
         if (invoiceData.get()) {
             return invoiceData.get();
         }
     },
     reduceField(){
-        let td = ''
+        let td = '';
         let fieldLength = this.displayFields.length - 5;
         for (let i = 0; i < fieldLength; i++) {
             td += '<td></td>';
@@ -70,15 +73,17 @@ invoiceDataTmpl.helpers({
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD')}</td>`
             } else if (obj.field == 'customer') {
                 let type = col.customer._paymentGroup ? col.customer._paymentGroup.name : 'term';
-                    data += `<td>${col.customer.name}(${type})</td>`;
-            } else if (obj.field == 'total') {
+                data += `<td>${col.customer.name}(${type})</td>`;
+            } else if (obj.field == 'telephone' || obj.field == 'address') {
+                data += `<td>${col['customer'][obj.field] || ''}</td>`
+            }
+            else if (obj.field == 'total') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
             }
         });
-
         return data;
     },
     getTotal(totalRemainQty, total){

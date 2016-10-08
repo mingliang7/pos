@@ -384,3 +384,17 @@ PosRoutes.route('/report/receiveItemSummary', {
         parent: 'pos.mainReport'
     }
 });
+import '../imports/ui/reports/exchangeRingPullStockBalance';
+PosRoutes.route('/report/exchangeRingPullStockBalance', {
+    name: 'pos.exchangeRingPullStockBalanceReport',
+    title: 'Exchange Ring Pull Stock Balance',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_exchangeRingPullStockBalance');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Exchange Ring Pull Stock Balance',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});

@@ -83,6 +83,10 @@ indexTmpl.events({
     }
 });
 receivePaymentTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     data(){
         if (receivePayment.get()) {
             debugger

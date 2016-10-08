@@ -1,36 +1,63 @@
 <template name="Pos_invoiceByItemReport">
-    <div class="inbox-head report-header">
-        {{#autoForm schema=schema id='invoiceReport'}}
-            <div class="row">
-                <div class="col-md-2">
-                    {{> afQuickField name="fromDate" label= 'From Date'}}
-                </div>
-                <div class="col-md-2">
-                    {{> afQuickField name="toDate" label='To Date'}}
-                </div>
-                <div class="col-md-2">
-                    {{> afQuickField name="customer" label="Customer"}}
-                </div>
-                <!--<div class="col-md-4">-->
-                    <!--{{> afQuickField name="filter" label="Custom Fields"}}-->
-                <!--</div>-->
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='invoiceReport'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="fromDate" label= 'From Date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="toDate" label='To Date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="customer" label="Customer"}}
+                                    </div>
+                                    <!--<div class="col-md-4">-->
+                                    <!--{{> afQuickField name="filter" label="Custom Fields"}}-->
+                                    <!--</div>-->
 
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <span>
-                        <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
-                        <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run</button>
-                    </span>
+                                </div>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                            {{/autoForm}}
+                        </div>
+                    </div>
                 </div>
             </div>
-        {{/autoForm}}
+            {{>invoiceByItemReportData}}
+        </div>
     </div>
-    {{>invoiceByItemReportData}}
 </template>
 
 <template name="invoiceByItemReportData">
-    <div class="container-fluid well report-body-shadow" id="to-print">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <br>
+                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h3 class="text-center">{{khName}}</h3>
+                <h4 class="text-center">{{enName}}</h4>
+                <h5 class="text-center">{{khAddress}}</h5>
+                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
+                <br>
+            </div>
+        {{/with}}
         <div class="col-md-12" align="center"><h3>INVOICE BY ITEMS REPORT</h3></div>
         <div class="row">
             <div class="col-xs-12">
@@ -83,15 +110,17 @@
                 {{/each}}
                 <tbody>
                 <tr>
-                    <td colspan="4" style="background-color: #d0d0d0"><span><i class="fa fa-file-text" aria-hidden="true"></i> ITEMS SUMMARY</span></td>
+                    <td colspan="4" style="background-color: #d0d0d0"><span><i class="fa fa-file-text"
+                                                                               aria-hidden="true"></i> ITEMS SUMMARY</span>
+                    </td>
                 </tr>
                 {{#each footer.itemsSummary}}
-                <tr>
-                    <td>{{itemName}}</td>
-                    <td>{{qty}}</td>
-                    <td>{{numFormat price '0,0.00'}}</td>
-                    <td><u>{{numFormat amount '0,0.00'}}</u></td>
-                </tr>
+                    <tr>
+                        <td>{{itemName}}</td>
+                        <td>{{qty}}</td>
+                        <td>{{numFormat price '0,0.00'}}</td>
+                        <td><u>{{numFormat amount '0,0.00'}}</u></td>
+                    </tr>
                 {{/each}}
                 <br>
                 <tr>

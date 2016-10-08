@@ -49,13 +49,16 @@ indexTmpl.events({
     }
 });
 invoiceDataTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     data(){
         if (invoiceData.get()) {
             debugger
             return invoiceData.get();
         }
     },
-
     display(col){
         let data = '';
         this.displayFields.forEach(function (obj) {

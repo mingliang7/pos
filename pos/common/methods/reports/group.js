@@ -64,8 +64,8 @@ export const groupReport = new ValidatedMethod({
                     'customer': '$customerDoc',
                     'total': '$total'
                 };
-                data.fields = [{field: '#ID'}, {field: 'Customer'}, {field: 'Start Date'}, {field: 'End Date'}, {field: 'Status'}, {field: 'Total'}];
-                data.displayFields = [{field: '_id'}, {field: 'customer'}, {field: 'startDate'}, {field: 'endDate'}, {field: 'status'}, {field: 'total'}];
+                data.fields = [{field: '#ID'}, {field: 'Customer'},{field: 'Tel'}, {field: 'Address'},{field: 'Start Date'}, {field: 'End Date'}, {field: 'Status'}, {field: 'Total'}];
+                data.displayFields = [{field: '_id'}, {field: 'customer'}, {field: 'telephone'},{field: 'address'}, {field: 'startDate'}, {field: 'endDate'}, {field: 'status'}, {field: 'total'}];
             }
 
             /****** Title *****/
