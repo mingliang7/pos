@@ -62,7 +62,8 @@
 
                 <li class="{{isActiveRoute name='pos.enterBill'}}">
                     <a href="{{pathFor 'pos.enterBill'}}">
-                        <i class="fa fa-file-text" aria-hidden="true"></i> <span>{{_ "pos.sidebarMenu.enterBill"}}</span>
+                        <i class="fa fa-file-text" aria-hidden="true"></i>
+                        <span>{{_ "pos.sidebarMenu.enterBill"}}</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.groupBillList'}}">
@@ -208,7 +209,8 @@
                     <a href="{{pathFor 'pos.item'}}">
                         <i class="fa fa-list-ul"></i> <span>{{_ "pos.sidebarMenu.item"}}</span>
                     </a>
-                </li><li class="{{isActiveRoute name='pos.itemPriceForCustomer'}}">
+                </li>
+                <li class="{{isActiveRoute name='pos.itemPriceForCustomer'}}">
                     <a href="{{pathFor 'pos.itemPriceForCustomer'}}">
                         <i class="fa fa-usd"></i> <span>{{_ "pos.sidebarMenu.itemPriceForCustomer"}}</span>
                     </a>
@@ -227,7 +229,8 @@
                     <a href="{{pathFor 'pos.creditValidation'}}">
                         <i class="fa fa-angle-right"></i> <span>Credit Validation</span>
                     </a>
-                </li> <li class="{{isActiveRoute name='pos.whiteListCustomer'}}">
+                </li>
+                <li class="{{isActiveRoute name='pos.whiteListCustomer'}}">
                     <a href="{{pathFor 'pos.whiteListCustomer'}}">
                         <i class="fa fa-angle-right"></i> <span>White List Customer</span>
                     </a>
@@ -239,9 +242,15 @@
                 </li>
                 <li class="{{isActiveRoute name='pos.accountIntegrationSetting'}}">
                     <a href="{{pathFor 'pos.accountIntegrationSetting'}}">
-                        <i class="fa fa-angle-right"></i> <span>Account Integrated System</span>
+                        <i class="fa fa-angle-right"></i> <span>Account Integrated</span>
                     </a>
-                </li><li class="{{isActiveRoute name='pos.stockAndAccountMapping'}}">
+                </li>
+                <!--<li class="{{isActiveRoute name='pos.accountMapping'}}">-->
+                    <!--<a href="{{pathFor 'pos.accountMapping'}}">-->
+                        <!--<i class="fa fa-angle-right"></i> <span>Account Mapping</span>-->
+                    <!--</a>-->
+                <!--</li>-->
+                <li class="{{isActiveRoute name='pos.stockAndAccountMapping'}}">
                     <a href="{{pathFor 'pos.stockAndAccountMapping'}}">
                         <i class="fa fa-angle-right"></i> <span>Stock Mapping</span>
                     </a>

@@ -735,6 +735,9 @@
     },
     "itemPriceForCustomer": {
       "title": "Special Price For Customer"
+    },
+    "accountMapping": {
+      "title": "Account Mapping"
     }
   }
 }

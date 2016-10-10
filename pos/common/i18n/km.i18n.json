@@ -449,6 +449,9 @@
     },
     "itemPriceForCustomer": {
       "title": "តម្លៃពិសេសសម្រាប់អតិថិជន"
+    },
+    "accountMapping": {
+      "title": "ផ្គូរផ្គងគណនេយ្យ"
     }
   }
 }

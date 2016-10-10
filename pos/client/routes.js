@@ -611,3 +611,17 @@ PosRoutes.route('/account-integration-setting', {
     }
 
 });
+import '../imports/ui/pages/accountMapping';
+PosRoutes.route('/accountMapping', {
+    name: 'pos.accountMapping',
+    title: 'Account Mapping',
+    action: function (params, queryParams) {
+        Layout.main('Pos_accountMapping');
+    },
+    breadcrumb: {
+        title: 'Account Mapping',
+        icon: '',
+        parent: 'pos.home'
+    }
+
+});
