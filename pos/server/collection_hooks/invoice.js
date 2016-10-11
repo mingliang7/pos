@@ -9,6 +9,7 @@ import {GroupInvoice} from '../../imports/api/collections/groupInvoice';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {Item} from '../../imports/api/collections/item.js'
 import {GratisInventories} from '../../imports/api/collections/gratisInventory.js'
+import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
 //import invoice state
 import {invoiceState} from '../../common/globalState/invoice';
 //import methods
@@ -64,6 +65,32 @@ Invoices.after.insert(function (userId, doc) {
         if (doc.invoiceType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
         }
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "Invoice";
+            data.items.forEach(function (item) {
+                let itemDoc = Item.findOne(item.itemId);
+                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+                    transaction.push({
+                        account: itemDoc.accountMapping.accountReceivable,
+                        dr: item.amount,
+                        cr: 0,
+                        drcr: item.amount
+                    }, {
+                        account: itemDoc.accountMapping.inventoryAsset,
+                        dr: 0,
+                        cr: item.amount,
+                        drcr: -item.amount
+                    })
+                }
+            });
+            data.transaction = transaction;
+            Meteor.call('insertAccountJournal', data);
+        }
+        //End Account Integration
     });
 });
 
@@ -128,6 +155,35 @@ Invoices.after.update(function (userId, doc) {
             });
         })
     }
+    Meteor.defer(function () {
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "Invoice";
+            data.items.forEach(function (item) {
+                let itemDoc = Item.findOne(item.itemId);
+                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+                    transaction.push({
+                        account: itemDoc.accountMapping.accountReceivable,
+                        dr: item.amount,
+                        cr: 0,
+                        drcr: item.amount
+                    }, {
+                        account: itemDoc.accountMapping.inventoryAsset,
+                        dr: 0,
+                        cr: item.amount,
+                        drcr: -item.amount
+                    })
+                }
+            });
+            data.transaction = transaction;
+            Meteor.call('updateAccountJournal', data);
+        }
+        //End Account Integration
+    });
+
 });
 
 //remove
@@ -167,6 +223,13 @@ Invoices.after.remove(function (userId, doc) {
             });
         }
         Meteor.call('insertRemovedInvoice', doc);
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let data = {_id: doc._id, type: 'Invoice'};
+            Meteor.call('removeAccountJournal', data);
+        }
+        //End Account Integration
 
     });
 });

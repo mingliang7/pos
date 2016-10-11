@@ -30,13 +30,12 @@ CompanyExchangeRingPulls.after.insert(function (userId, doc) {
                         account: itemDoc.accountMapping.inventoryAsset,
                         dr: item.amount,
                         cr: 0,
-                        drcr: item.amount,
-
+                        drcr: item.amount
                     }, {
                         account: itemDoc.accountMapping.accountPayable,
                         dr: 0,
                         cr: item.amount,
-                        drcr: -item.amount,
+                        drcr: -item.amount
                     })
                 }
             });

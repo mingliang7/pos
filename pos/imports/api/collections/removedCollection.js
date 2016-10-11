@@ -6,3 +6,4 @@ export const RemoveGroupInvoice = new Mongo.Collection('removed_groupInvoice');
 export const RemoveGroupBill = new Mongo.Collection('removed_groupBill');
 export const RemoveCompanyExchangeRingPull = new Mongo.Collection('removed_companyExchangeRingPull');
 export const RemoveExchangeGratis = new Mongo.Collection('removed_exchangeGratis');
+export const RemoveExchangeRingPulls = new Mongo.Collection('removed_exchangeRingPulls');
