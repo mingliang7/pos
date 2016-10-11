@@ -4,7 +4,7 @@ import {PayBills} from '../../imports/api/collections/payBill';
 import {Invoices} from '../../imports/api/collections/invoice';
 import {Item} from '../../imports/api/collections/item.js';
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js';
-
+import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
 PayBills.before.insert(function (userId, doc) {
     doc._id = idGenerator.genWithPrefix(PayBills, `${doc.branchId}-`, 9);
 });
@@ -14,37 +14,125 @@ PayBills.after.remove(function (userId, doc) {
 });
 
 PayBills.after.insert(function (userId, doc) {
-    //Account Integration
-    let setting = AccountIntegrationSetting.findOne();
-    if (setting && setting.integrate) {
-        let transaction = [];
-        let data = doc;
-        data.type = "Invoice";
-        let invoice = Invoices.findOne(doc.invoiceId);
-        let firstItem = invoice.items[0];
-        let itemDoc = Item.findOne(firstItem.itemId);
-        invoice.items.forEach(function (item) {
-            let itemDoc = Item.findOne(item.itemId);
-            if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+    Meteor.defer(function () {
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "PayBill";
+            let apChartAccount = AccountMapping.findOne({name: 'A/P'});
+            let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+            let purchaseDiscountChartAccount = AccountMapping.findOne({name: 'Purchase Discount'});
+            transaction.push({
+                account: apChartAccount.account,
+                dr: doc.paidAmount,
+                cr: 0,
+                drcr: doc.paidAmount + (doc.dueAmount * doc.discount / 100)
+            }, {
+                account: cashChartAccount.account,
+                dr: 0,
+                cr: doc.paidAmount,
+                drcr: -doc.paidAmount
+            });
+            if ((doc.dueAmount * doc.discount / 100) > 0) {
                 transaction.push({
-                    account: itemDoc.accountMapping.accountReceivable,
-                    dr: item.amount,
-                    cr: 0,
-                    drcr: item.amount
-                }, {
-                    account: itemDoc.accountMapping.inventoryAsset,
+                    account: purchaseDiscountChartAccount.account,
                     dr: 0,
-                    cr: item.amount,
-                    drcr: -item.amount
-                })
+                    cr: (doc.dueAmount * doc.discount / 100),
+                    drcr: -(doc.dueAmount * doc.discount / 100)
+                });
             }
-        });
-        data.transaction = transaction;
-        Meteor.call('updateAccountJournal', data);
-    }
-    //End Account Integration
+            /*  let invoice = Invoices.findOne(doc.invoiceId);
+             let firstItem = invoice.items[0];
+             let itemDoc = Item.findOne(firstItem.itemId);
+             invoice.items.forEach(function (item) {
+             let itemDoc = Item.findOne(item.itemId);
+             if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+             transaction.push({
+             account: itemDoc.accountMapping.accountReceivable,
+             dr: item.amount,
+             cr: 0,
+             drcr: item.amount
+             }, {
+             account: itemDoc.accountMapping.inventoryAsset,
+             dr: 0,
+             cr: item.amount,
+             drcr: -item.amount
+             })
+             }
+             });*/
+            data.transaction = transaction;
+            Meteor.call('insertAccountJournal', data);
+        }
+        //End Account Integration
+    });
 })
 
-PayBills.after.update(function(userId,doc){
+PayBills.after.update(function (userId, doc) {
+    Meteor.defer(function () {
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "PayBill";
+            let apChartAccount = AccountMapping.findOne({name: 'A/P'});
+            let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+            let purchaseDiscountChartAccount = AccountMapping.findOne({name: 'Purchase Discount'});
+            transaction.push({
+                account: apChartAccount.account,
+                dr: doc.paidAmount,
+                cr: 0,
+                drcr: doc.paidAmount + (doc.dueAmount * doc.discount / 100)
+            }, {
+                account: cashChartAccount.account,
+                dr: 0,
+                cr: doc.paidAmount,
+                drcr: -doc.paidAmount
+            });
+            if ((doc.dueAmount * doc.discount / 100) > 0) {
+                transaction.push({
+                    account: purchaseDiscountChartAccount.account,
+                    dr: 0,
+                    cr: (doc.dueAmount * doc.discount / 100),
+                    drcr: -(doc.dueAmount * doc.discount / 100)
+                });
+            }
+            /*  let invoice = Invoices.findOne(doc.invoiceId);
+             let firstItem = invoice.items[0];
+             let itemDoc = Item.findOne(firstItem.itemId);
+             invoice.items.forEach(function (item) {
+             let itemDoc = Item.findOne(item.itemId);
+             if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+             transaction.push({
+             account: itemDoc.accountMapping.accountReceivable,
+             dr: item.amount,
+             cr: 0,
+             drcr: item.amount
+             }, {
+             account: itemDoc.accountMapping.inventoryAsset,
+             dr: 0,
+             cr: item.amount,
+             drcr: -item.amount
+             })
+             }
+             });*/
+            data.transaction = transaction;
+            Meteor.call('updateAccountJournal', data);
+        }
+        //End Account Integration
+    });
+});
 
-})
+PayBills.after.remove(function (userId, doc) {
+   Meteor.defer(function(){
+       //Account Integration
+       let setting = AccountIntegrationSetting.findOne();
+       if (setting && setting.integrate) {
+           let data = {_id: doc._id, type: 'PayBill'};
+           Meteor.call('removeAccountJournal', data);
+       }
+       //End Account Integration
+   })
+});

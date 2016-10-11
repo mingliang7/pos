@@ -10,6 +10,7 @@ import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {Item} from '../../imports/api/collections/item.js'
 import {GratisInventories} from '../../imports/api/collections/gratisInventory.js'
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
+import {AccountMapping} from '../../imports/api/collections/accountMapping'
 //import invoice state
 import {invoiceState} from '../../common/globalState/invoice';
 //import methods
@@ -71,7 +72,21 @@ Invoices.after.insert(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "Invoice";
-            data.items.forEach(function (item) {
+            let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            transaction.push({
+                account: arChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total,
+
+            }, {
+                account: inventoryChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total,
+            });
+            /*data.items.forEach(function (item) {
                 let itemDoc = Item.findOne(item.itemId);
                 if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
                     transaction.push({
@@ -86,7 +101,7 @@ Invoices.after.insert(function (userId, doc) {
                         drcr: -item.amount
                     })
                 }
-            });
+            });*/
             data.transaction = transaction;
             Meteor.call('insertAccountJournal', data);
         }
@@ -162,7 +177,21 @@ Invoices.after.update(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "Invoice";
-            data.items.forEach(function (item) {
+            let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            transaction.push({
+                account: arChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total,
+
+            }, {
+                account: inventoryChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total,
+            });
+            /*data.items.forEach(function (item) {
                 let itemDoc = Item.findOne(item.itemId);
                 if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
                     transaction.push({
@@ -177,7 +206,7 @@ Invoices.after.update(function (userId, doc) {
                         drcr: -item.amount
                     })
                 }
-            });
+            });*/
             data.transaction = transaction;
             Meteor.call('updateAccountJournal', data);
         }

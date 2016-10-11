@@ -7,6 +7,7 @@ import {EnterBills} from '../../imports/api/collections/enterBill.js';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {Item} from '../../imports/api/collections/item.js';
 import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder';
+import {AccountMapping} from '../../imports/api/collections/accountMapping.js';
 //import state
 import {billState} from '../../common/globalState/enterBill';
 import {GroupBill} from '../../imports/api/collections/groupBill.js'
@@ -42,26 +43,30 @@ EnterBills.after.insert(function (userId, doc) {
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            let apChartAccount = AccountMapping.findOne({name: 'A/P'});
+
             let transaction = [];
             let data = doc;
             data.type = "EnterBill";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount,
+            /* data.items.forEach(function (item) {
+             let itemDoc = Item.findOne(item.itemId);
+             if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
+             */
+            transaction.push({
+                account: inventoryChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total,
 
-                    }, {
-                        account: itemDoc.accountMapping.accountPayable,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount,
-                    })
-                }
+            }, {
+                account: apChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total,
             });
+            /* }
+             });*/
             data.transaction = transaction;
             Meteor.call('insertAccountJournal', data, function (er, re) {
                 if (er) {
@@ -79,7 +84,8 @@ EnterBills.after.insert(function (userId, doc) {
         }
         //End Account Integration
     });
-});
+})
+;
 
 EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
     let preDoc = this.previous;
@@ -116,10 +122,12 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
+            let apChartAccount = AccountMapping.findOne({name: 'A/P'});
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             let transaction = [];
             let data = doc;
             data.type = "EnterBill";
-            data.items.forEach(function (item) {
+            /*data.items.forEach(function (item) {
                 let itemDoc = Item.findOne(item.itemId);
                 if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
                     transaction.push({
@@ -135,6 +143,18 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
                         drcr: -item.amount
                     })
                 }
+            });*/
+            transaction.push({
+                account: inventoryChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total,
+
+            }, {
+                account: apChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total,
             });
             data.transaction = transaction;
             Meteor.call('updateAccountJournal', data, function (er, re) {
