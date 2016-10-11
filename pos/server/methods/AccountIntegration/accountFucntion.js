@@ -5,45 +5,49 @@ Meteor.methods({
         data.journalDate = moment().toDate();
         data.branchId = doc.branchId;
         data.voucherId = doc.voucherId;
-        data.currencyId = doc.currencyId;
+        data.currencyId = doc.currencyId == null ? 'USD' : doc.currencyId;
         data.memo = doc.des == null || doc.des == '' ? 'No Memo' : doc.des;
         data.refId = doc._id;
         data.refFrom = doc.type;
         data.total = doc.total;
         data.transaction = doc.transaction;
-        Meteor.call('api_journalInsert', data, function (er, re) {
-            if (re) {
-                id = re;
+        console.log(data);
+        Meteor.call('api_journalInsert', data, function (err, res) {
+            if (res) {
+                id = res;
             }
         });
         return id;
     },
     updateAccountJournal(doc){
+
         let isTrue = false;
         let data = {};
         data.journalDate = moment().toDate();
         data.branchId = doc.branchId;
         data.voucherId = doc.voucherId;
-        data.currencyId = doc.currencyId;
+        data.currencyId = doc.currencyId == null ? 'USD' : doc.currencyId;
         data.memo = doc.des == null ? 'No Memo' : doc.des;
         data.refId = doc._id;
         data.refFrom = doc.type;
         data.total = doc.total;
         data.transaction = doc.transaction;
-        Meteor.call('api_journalUpdate', data, function (er, re) {
-            if (re) {
-                isTrue = re;
+        console.log(data);
+        Meteor.call('api_journalUpdate', data, function (err, res) {
+            if (res) {
+                isTrue = res;
             }
         });
+        console.log(isTrue);
         return isTrue;
     },
     removeAccountJournal(doc){
         let isTrue = false;
         let refId = doc._id;
         let refFrom = doc.type;
-        Meteor.call('api_journalRemove', refId, refFrom, function (er, re) {
-            if (er) {
-                isTrue = re;
+        Meteor.call('api_journalRemove', refId, refFrom, function (err, res) {
+            if (res) {
+                isTrue = res;
             }
         });
         return isTrue;

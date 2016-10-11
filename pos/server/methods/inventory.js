@@ -5,6 +5,7 @@ import {LocationTransfers} from '../../imports/api/collections/locationTransfer.
 import {Item} from '../../imports/api/collections/item.js'
 import {RingPullInventories} from '../../imports/api/collections/ringPullInventory.js'
 import {RingPullTransfers} from '../../imports/api/collections/ringPullTransfer.js'
+import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
 import {idGenerator} from 'meteor/theara:id-generator';
 import 'meteor/matb33:collection-hooks';
 
@@ -168,6 +169,34 @@ Meteor.methods({
             );
             //--- End Inventory type block "FIFO Inventory"---
 
+
+            //Account Integration
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let transaction = [];
+                let data = doc;
+                data.type = "LocationTransfer";
+                data.items.forEach(function (item) {
+                    let itemDoc = Item.findOne(item.itemId);
+                    if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+                        transaction.push({
+                            account: itemDoc.accountMapping.accountReceivable,
+                            dr: item.amount,
+                            cr: 0,
+                            drcr: item.amount
+                        }, {
+                            account: itemDoc.accountMapping.inventoryAsset,
+                            dr: 0,
+                            cr: item.amount,
+                            drcr: -item.amount
+                        })
+                    }
+                });
+                data.transaction = transaction;
+                Meteor.call('insertAccountJournal', data);
+            }
+            //End Account Integration
+
         });
     },
     returnToInventory: function (invoiceId) {
@@ -283,55 +312,55 @@ Meteor.methods({
             ringPullTransfer.items.forEach(function (item) {
                 //1. reduce stock from the current stock location Or Add to some Account?....
                 /*  let inventory = AverageInventories.findOne({
-                    branchId: ringPullTransfer.fromBranchId,
-                    itemId: item.itemId,
-                    stockLocationId: ringPullTransfer.stockLocationId
-                }, {sort: {_id: 1}});
+                 branchId: ringPullTransfer.fromBranchId,
+                 itemId: item.itemId,
+                 stockLocationId: ringPullTransfer.stockLocationId
+                 }, {sort: {_id: 1}});
 
-                if (inventory) {
-                    let newInventory = {
-                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                        branchId: ringPullTransfer.fromBranchId,
-                        stockLocationId: ringPullTransfer.stockLocationId,
-                        itemId: item.itemId,
-                        qty: item.qty,
-                        price: inventory.price,
-                        remainQty: inventory.remainQty - item.qty,
-                        coefficient: -1,
-                        type: 'ringPullTransfer-from',
-                        refId: ringPullTransferId
-                    };
-                    AverageInventories.insert(newInventory);
-                    item.price = inventory.price;
-                    item.amount = inventory.price * item.qty;
-                }
-                else {
-                    let thisItem = Item.findOne(item.itemId);
-                    let newInventory = {
-                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                        branchId: ringPullTransfer.fromBranchId,
-                        stockLocationId: ringPullTransfer.fromStockLocationId,
-                        itemId: item.itemId,
-                        qty: item.qty,
-                        price: thisItem.purchasePrice,
-                        remainQty: 0 - item.qty,
-                        coefficient: -1,
-                        type: 'ringPullTransfer-from',
-                        refId: ringPullTransferId
-                    };
-                    AverageInventories.insert(newInventory);
-                    item.price = thisItem.purchasePrice;
-                    item.amount = thisItem.purchasePrice * item.qty;
-                }
-                //total += item.amount;
-                newItems.push(item);
-                averageInventoryInsert(
-                    ringPullTransfer.toBranchId,
-                    item,
-                    ringPullTransfer.toStockLocationId,
-                    'ringPullTransfer-to',
-                    ringPullTransferId
-                );*/
+                 if (inventory) {
+                 let newInventory = {
+                 _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                 branchId: ringPullTransfer.fromBranchId,
+                 stockLocationId: ringPullTransfer.stockLocationId,
+                 itemId: item.itemId,
+                 qty: item.qty,
+                 price: inventory.price,
+                 remainQty: inventory.remainQty - item.qty,
+                 coefficient: -1,
+                 type: 'ringPullTransfer-from',
+                 refId: ringPullTransferId
+                 };
+                 AverageInventories.insert(newInventory);
+                 item.price = inventory.price;
+                 item.amount = inventory.price * item.qty;
+                 }
+                 else {
+                 let thisItem = Item.findOne(item.itemId);
+                 let newInventory = {
+                 _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                 branchId: ringPullTransfer.fromBranchId,
+                 stockLocationId: ringPullTransfer.fromStockLocationId,
+                 itemId: item.itemId,
+                 qty: item.qty,
+                 price: thisItem.purchasePrice,
+                 remainQty: 0 - item.qty,
+                 coefficient: -1,
+                 type: 'ringPullTransfer-from',
+                 refId: ringPullTransferId
+                 };
+                 AverageInventories.insert(newInventory);
+                 item.price = thisItem.purchasePrice;
+                 item.amount = thisItem.purchasePrice * item.qty;
+                 }
+                 //total += item.amount;
+                 newItems.push(item);
+                 averageInventoryInsert(
+                 ringPullTransfer.toBranchId,
+                 item,
+                 ringPullTransfer.toStockLocationId,
+                 'ringPullTransfer-to',
+                 ringPullTransferId
+                 );*/
 
                 //inventories=sortArrayByKey()
                 //2. reduce RingPullInventory from fromBranch
@@ -351,7 +380,7 @@ Meteor.methods({
                     RingPullInventories.insert({
                         itemId: item.itemId,
                         branchId: ringPullTransfer.fromBranchId,
-                        qty: 0-item.qty
+                        qty: 0 - item.qty
                     })
                 }
                 //3. increase RingPullInventory to toBranch
@@ -386,10 +415,34 @@ Meteor.methods({
                 {$set: setObj}
             );
             //--- End Inventory type block "FIFO Inventory"---
+            //Account Integration
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let transaction = [];
+                let data = doc;
+                data.type = "RingPullTransfer";
+                data.items.forEach(function (item) {
+                    let itemDoc = Item.findOne(item.itemId);
+                    if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+                        transaction.push({
+                            account: itemDoc.accountMapping.accountReceivable,
+                            dr: item.amount,
+                            cr: 0,
+                            drcr: item.amount
+                        }, {
+                            account: itemDoc.accountMapping.inventoryAsset,
+                            dr: 0,
+                            cr: item.amount,
+                            drcr: -item.amount
+                        })
+                    }
+                });
+                data.transaction = transaction;
+                Meteor.call('insertAccountJournal', data);
+            }
+            //End Account Integration
 
         });
-
-
 
 
     },
@@ -472,7 +525,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         nextInventory.stockLocationId = stockLocationId;
         nextInventory.itemId = item.itemId;
         nextInventory.qty = item.qty;
-        nextInventory.price = math.round(price,2);
+        nextInventory.price = math.round(price, 2);
         nextInventory.remainQty = totalQty;
         nextInventory.type = type;
         nextInventory.coefficient = 1;
@@ -486,3 +539,43 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
     setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
     Item.direct.update(item.itemId, setModifier);
 }
+
+/*
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "PrepaidOrder";
+            data.items.forEach(function (item) {
+                let itemDoc = Item.findOne(item.itemId);
+                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+                    transaction.push({
+                        account: itemDoc.accountMapping.accountReceivable,
+                        dr: item.amount,
+                        cr: 0,
+                        drcr: item.amount
+                    }, {
+                        account: itemDoc.accountMapping.inventoryAsset,
+                        dr: 0,
+                        cr: item.amount,
+                        drcr: -item.amount
+                    })
+                }
+            });
+            data.transaction = transaction;
+            Meteor.call('updateAccountJournal', data);
+        }
+        //End Account Integration
+
+
+*/
+/*
+    //Account Integration
+    let setting = AccountIntegrationSetting.findOne();
+    if (setting && setting.integrate) {
+        let data = {_id: doc._id, type: 'PrepaidOrder'};
+        Meteor.call('removeAccountJournal', data)
+    }
+    //End Account Integration
+*/
