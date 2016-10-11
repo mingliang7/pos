@@ -89,7 +89,7 @@
                                         {{#if invoices}}
                                             {{#each invoices}}
                                                 {{#if _id}}
-                                                    <tr class='invoice-parents'>
+                                                    <tr class='invoice-parents animated fadeIn'>
                                                         <td>
                                                             {{selectedOrder}}
                                                             {{#if hasAmount}}
@@ -107,8 +107,8 @@
                                                         <td class="text-center">{{voucherId}}</td>
                                                         <td class="text-right">{{originAmount}}</td>
                                                         <td class="text-right">{{dueAmount}}</td>
-                                                        <td class="text-right"><input type="text" class="discount"
-                                                                                      value="{{discount}}" readonly="{{disableInputIfLastPaymentDateGreaterThanCurrentSelectDate}}"></td>
+                                                        <td class="text-right"><input type="text" class="{{#if disableInputIfLastPaymentDateGreaterThanCurrentSelectDateOrPaidSome}}border-none{{/if}} discount"
+                                                                                      value="{{discount}}" readonly="{{disableInputIfLastPaymentDateGreaterThanCurrentSelectDateOrPaidSome}}"></td>
                                                         <td class="text-right"><input class="text-right actual-pay"
                                                                                       value="{{total}}"
                                                                                       style="background: none; border: none;"
