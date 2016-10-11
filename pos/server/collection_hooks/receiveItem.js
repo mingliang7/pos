@@ -9,6 +9,7 @@ import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder';
 import {LendingStocks} from '../../imports/api/collections/lendingStock.js';
 import {CompanyExchangeRingPulls} from '../../imports/api/collections/companyExchangeRingPull.js';
 import {ExchangeGratis} from '../../imports/api/collections/exchangeGratis.js';
+import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting';
 //import state
 import {receiveItemState} from '../../common/globalState/receiveItem';
 import {GroupBill} from '../../imports/api/collections/groupBill.js'
@@ -38,6 +39,34 @@ ReceiveItems.after.insert(function (userId, doc) {
         doc.items.forEach(function (item) {
             averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'receiveItem', doc._id);
         });
+
+
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "ReceiveItem";
+            data.items.forEach(function (item) {
+                let itemDoc = Item.findOne(item.itemId);
+                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+                    transaction.push({
+                        account: itemDoc.accountMapping.accountReceivable,
+                        dr: item.amount,
+                        cr: 0,
+                        drcr: item.amount
+                    }, {
+                        account: itemDoc.accountMapping.inventoryAsset,
+                        dr: 0,
+                        cr: item.amount,
+                        drcr: -item.amount
+                    })
+                }
+            });
+            data.transaction = transaction;
+            Meteor.call('insertAccountJournal', data);
+        }
+        //End Account Integration
     });
 });
 
@@ -64,6 +93,32 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
         doc.items.forEach(function (item) {
             averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'receiveItem', doc._id);
         });
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "ReceiveItem";
+            data.items.forEach(function (item) {
+                let itemDoc = Item.findOne(item.itemId);
+                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+                    transaction.push({
+                        account: itemDoc.accountMapping.accountReceivable,
+                        dr: item.amount,
+                        cr: 0,
+                        drcr: item.amount
+                    }, {
+                        account: itemDoc.accountMapping.inventoryAsset,
+                        dr: 0,
+                        cr: item.amount,
+                        drcr: -item.amount
+                    })
+                }
+            });
+            data.transaction = transaction;
+            Meteor.call('updateAccountJournal', data);
+        }
+        //End Account Integration
     });
 });
 
@@ -85,6 +140,13 @@ ReceiveItems.after.remove(function (userId, doc) {
             throw Meteor.Error('Require Receive Item type');
         }
         reduceFromInventory(doc, 'receive-item-return');
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let data = {_id: doc._id, type: 'ReceiveItem'};
+            Meteor.call('removeAccountJournal', data)
+        }
+        //End Account Integration
     });
 });
 

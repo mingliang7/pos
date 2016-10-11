@@ -5,6 +5,8 @@ import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {ExchangeRingPulls} from '../../imports/api/collections/exchangeRingPull.js';
 import {Item} from '../../imports/api/collections/item.js'
 import {RingPullInventories} from '../../imports/api/collections/ringPullInventory.js'
+import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
+import StockFunction from '../../imports/api/libs/stock';
 ExchangeRingPulls.before.insert(function (userId, doc) {
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
@@ -14,7 +16,54 @@ ExchangeRingPulls.before.insert(function (userId, doc) {
 ExchangeRingPulls.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        ExchangeRingPullManageStock(doc);
+        //ExchangeRingPullManageStock(doc);
+        //---------------------------------------------//
+        let inventoryIdList = [];
+        doc.items.forEach(function (item) {
+            let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'reduce-from-exchange-rill-pull', doc._id);
+            inventoryIdList.push(id);
+        });
+        StockFunction.increaseRingPullInventory(doc);
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "ExchangeRingPull";
+            data.items.forEach(function (item) {
+                let itemDoc = Item.findOne(item.itemId);
+                if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
+                    transaction.push({
+                        account: itemDoc.accountMapping.inventoryAsset,
+                        dr: item.amount,
+                        cr: 0,
+                        drcr: item.amount
+                    }, {
+                        account: itemDoc.accountMapping.accountPayable,
+                        dr: 0,
+                        cr: item.amount,
+                        drcr: -item.amount
+                    })
+                }
+            });
+            data.transaction = transaction;
+            Meteor.call('insertAccountJournal', data, function (er, re) {
+                if (er) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    StockFunction.reduceRingPullInventory(doc);
+                    Meteor.call('insertRemovedCompanyExchangeRingPull', doc);
+                    ExchangeRingPulls.direct.remove({_id: doc._id});
+                    throw new Meteor.Error(er.message);
+                } else if (re == null) {
+                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                    StockFunction.reduceRingPullInventory(doc);
+                    Meteor.call('insertRemovedCompanyExchangeRingPull', doc);
+                    ExchangeRingPulls.direct.remove({_id: doc._id});
+                    throw new Meteor.Error("Can't Entry to Account System.");
+                }
+            });
+        }
+        //End Account Integration
     });
 });
 ExchangeRingPulls.after.update(function (userId, doc) {

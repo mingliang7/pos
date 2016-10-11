@@ -1,6 +1,6 @@
 import 'meteor/matb33:collection-hooks';
 import {idGenerator} from 'meteor/theara:id-generator';
-
+import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
 // Collection
 import {LendingStocks} from '../../imports/api/collections/lendingStock.js';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
@@ -21,6 +21,32 @@ LendingStocks.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
         lendingStockManageStock(doc);
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "LendingStock";
+            data.items.forEach(function (item) {
+                let itemDoc = Item.findOne(item.itemId);
+                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+                    transaction.push({
+                        account: itemDoc.accountMapping.accountReceivable,
+                        dr: item.amount,
+                        cr: 0,
+                        drcr: item.amount
+                    }, {
+                        account: itemDoc.accountMapping.inventoryAsset,
+                        dr: 0,
+                        cr: item.amount,
+                        drcr: -item.amount
+                    })
+                }
+            });
+            data.transaction = transaction;
+            Meteor.call('insertAccountJournal', data);
+        }
+        //End Account Integration
     });
 });
 
@@ -30,7 +56,34 @@ LendingStocks.after.update(function (userId, doc, fieldNames, modifier, options)
         Meteor._sleepForMs(200);
         returnToInventoryAndLendingStock(preDoc);
         lendingStockManageStock(doc);
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "LendingStock";
+            data.items.forEach(function (item) {
+                let itemDoc = Item.findOne(item.itemId);
+                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+                    transaction.push({
+                        account: itemDoc.accountMapping.accountReceivable,
+                        dr: item.amount,
+                        cr: 0,
+                        drcr: item.amount
+                    }, {
+                        account: itemDoc.accountMapping.inventoryAsset,
+                        dr: 0,
+                        cr: item.amount,
+                        drcr: -item.amount
+                    })
+                }
+            });
+            data.transaction = transaction;
+            Meteor.call('updateAccountJournal', data);
+        }
+        //End Account Integration
     })
+
 
 });
 
@@ -38,6 +91,13 @@ LendingStocks.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
         returnToInventoryAndLendingStock(doc);
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let data = {_id: doc._id, type: 'LendingStock'};
+            Meteor.call('removeAccountJournal', data)
+        }
+        //End Account Integration
     });
 });
 
@@ -106,7 +166,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         nextInventory.stockLocationId = stockLocationId;
         nextInventory.itemId = item.itemId;
         nextInventory.qty = item.qty;
-        nextInventory.price = math.round(price,2);
+        nextInventory.price = math.round(price, 2);
         nextInventory.remainQty = totalQty;
         nextInventory.type = type;
         nextInventory.coefficient = 1;
@@ -166,27 +226,27 @@ function lendingStockManageStock(lendingStock) {
 
         //Manage Lending Stock
         /*let lendingInventory = LendingInventories.findOne({
-            itemId: item.itemId,
-            vendorId: lendingStock.vendorId,
-            branchId: lendingStock.branchId
-        });
-        if (lendingInventory) {
-            LendingInventories.update(
-                lendingInventory._id,
-                {
-                    $inc: {qty: item.qty}
-                });
-        } else {
-            let newLendingStock = {
-                _id: idGenerator.genWithPrefix(LendingInventories, lendingPrefix, 13),
-                vendorId: lendingStock.vendorId,
-                branchId: lendingStock.branchId,
-                itemId: item.itemId,
-                qty: item.qty
-            };
-            LendingInventories.insert(newLendingStock);
-        }
-        */
+         itemId: item.itemId,
+         vendorId: lendingStock.vendorId,
+         branchId: lendingStock.branchId
+         });
+         if (lendingInventory) {
+         LendingInventories.update(
+         lendingInventory._id,
+         {
+         $inc: {qty: item.qty}
+         });
+         } else {
+         let newLendingStock = {
+         _id: idGenerator.genWithPrefix(LendingInventories, lendingPrefix, 13),
+         vendorId: lendingStock.vendorId,
+         branchId: lendingStock.branchId,
+         itemId: item.itemId,
+         qty: item.qty
+         };
+         LendingInventories.insert(newLendingStock);
+         }
+         */
     });
 }
 function returnToInventoryAndLendingStock(lendingStock) {
@@ -204,29 +264,29 @@ function returnToInventoryAndLendingStock(lendingStock) {
         //--- End Inventory type block "Average Inventory"---
 
         //-- reduceFromLendingStock to lending stock---
-       /* let lendingInventory = LendingInventories.findOne({
-            itemId: item.itemId,
-            vendorId: lendingStock.vendorId,
-            branchId: lendingStock.branchId
-        });
-        let qty = -1 * item.qty;
-        if (lendingInventory) {
-            LendingInventories.update(
-                lendingInventory._id,
-                {
-                    $inc: {qty: qty}
-                });
-        } else {
-            let newLendingStock = {
-                _id: idGenerator.genWithPrefix(LendingInventories, lendingPrefix, 13),
-                vendorId: lendingStock.vendorId,
-                branchId: lendingStock.branchId,
-                itemId: item.itemId,
-                qty: qty
-            };
-            LendingInventories.insert(newLendingStock);
-        }
-        */
+        /* let lendingInventory = LendingInventories.findOne({
+         itemId: item.itemId,
+         vendorId: lendingStock.vendorId,
+         branchId: lendingStock.branchId
+         });
+         let qty = -1 * item.qty;
+         if (lendingInventory) {
+         LendingInventories.update(
+         lendingInventory._id,
+         {
+         $inc: {qty: qty}
+         });
+         } else {
+         let newLendingStock = {
+         _id: idGenerator.genWithPrefix(LendingInventories, lendingPrefix, 13),
+         vendorId: lendingStock.vendorId,
+         branchId: lendingStock.branchId,
+         itemId: item.itemId,
+         qty: qty
+         };
+         LendingInventories.insert(newLendingStock);
+         }
+         */
 
     });
 
