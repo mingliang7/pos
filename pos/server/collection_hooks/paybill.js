@@ -24,23 +24,25 @@ PayBills.after.insert(function (userId, doc) {
             let apChartAccount = AccountMapping.findOne({name: 'A/P'});
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let purchaseDiscountChartAccount = AccountMapping.findOne({name: 'Purchase Discount'});
+            let discountAmount = doc.dueAmount * doc.discount / 100;
+            data.total = doc.paidAmount + discountAmount;
             transaction.push({
                 account: apChartAccount.account,
-                dr: doc.paidAmount,
+                dr: doc.paidAmount + discountAmount,
                 cr: 0,
-                drcr: doc.paidAmount + (doc.dueAmount * doc.discount / 100)
+                drcr: doc.paidAmount + discountAmount
             }, {
                 account: cashChartAccount.account,
                 dr: 0,
                 cr: doc.paidAmount,
                 drcr: -doc.paidAmount
             });
-            if ((doc.dueAmount * doc.discount / 100) > 0) {
+            if (discountAmount > 0) {
                 transaction.push({
                     account: purchaseDiscountChartAccount.account,
                     dr: 0,
-                    cr: (doc.dueAmount * doc.discount / 100),
-                    drcr: -(doc.dueAmount * doc.discount / 100)
+                    cr: discountAmount,
+                    drcr: -discountAmount
                 });
             }
             /*  let invoice = Invoices.findOne(doc.invoiceId);
@@ -64,6 +66,7 @@ PayBills.after.insert(function (userId, doc) {
              });*/
             data.transaction = transaction;
             Meteor.call('insertAccountJournal', data);
+            console.log(data);
         }
         //End Account Integration
     });
@@ -71,6 +74,7 @@ PayBills.after.insert(function (userId, doc) {
 
 PayBills.after.update(function (userId, doc) {
     Meteor.defer(function () {
+        console.log(doc);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -80,23 +84,25 @@ PayBills.after.update(function (userId, doc) {
             let apChartAccount = AccountMapping.findOne({name: 'A/P'});
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let purchaseDiscountChartAccount = AccountMapping.findOne({name: 'Purchase Discount'});
+            let discountAmount = doc.dueAmount * doc.discount / 100;
+            data.total = doc.paidAmount + discountAmount;
             transaction.push({
                 account: apChartAccount.account,
-                dr: doc.paidAmount,
+                dr: doc.paidAmount + discountAmount,
                 cr: 0,
-                drcr: doc.paidAmount + (doc.dueAmount * doc.discount / 100)
+                drcr: doc.paidAmount + discountAmount
             }, {
                 account: cashChartAccount.account,
                 dr: 0,
                 cr: doc.paidAmount,
                 drcr: -doc.paidAmount
             });
-            if ((doc.dueAmount * doc.discount / 100) > 0) {
+            if (discountAmount > 0) {
                 transaction.push({
                     account: purchaseDiscountChartAccount.account,
                     dr: 0,
-                    cr: (doc.dueAmount * doc.discount / 100),
-                    drcr: -(doc.dueAmount * doc.discount / 100)
+                    cr: +discountAmount,
+                    drcr: -+discountAmount
                 });
             }
             /*  let invoice = Invoices.findOne(doc.invoiceId);
@@ -126,13 +132,13 @@ PayBills.after.update(function (userId, doc) {
 });
 
 PayBills.after.remove(function (userId, doc) {
-   Meteor.defer(function(){
-       //Account Integration
-       let setting = AccountIntegrationSetting.findOne();
-       if (setting && setting.integrate) {
-           let data = {_id: doc._id, type: 'PayBill'};
-           Meteor.call('removeAccountJournal', data);
-       }
-       //End Account Integration
-   })
+    Meteor.defer(function () {
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let data = {_id: doc._id, type: 'PayBill'};
+            Meteor.call('removeAccountJournal', data);
+        }
+        //End Account Integration
+    })
 });

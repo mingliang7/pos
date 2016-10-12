@@ -235,7 +235,7 @@ indexTpl.events({
             }
         ]
         data.transaction = transaction;
-        Meteor.call('otherSystem_journalInsert', data);
+        Meteor.call('api_journalInsert', data);
     },
     'click .otherSystem_journalUpdate': function (e, t) {
 
@@ -267,12 +267,12 @@ indexTpl.events({
 
         data.transaction = transaction;
 
-        Meteor.call('otherSystem_journalUpdate', data);
+        Meteor.call('api_journalUpdate', data);
     },
     'click .otherSystem_journalRemove': function (e, t) {
         let self = this;
 
-        Meteor.call('otherSystem_journalRemove', self._id, "001", "Sale");
+        Meteor.call('api_journalRemove',"001", "Sale");
     },
 
 

@@ -100,6 +100,18 @@ export const SelectOpts = {
             });
         return listChartAccount;
     },
+    cashFlowCategory: function () {
+        var list = [{label: "(Select One)", value: ""}];
+        list.push({
+            label: "Operating Activities",value: "Operating Activities"
+        },{
+            label: "Investing Activities",value: "Investing Activities"
+        },{
+            label: "Financing Activities",value: "Financing Activities"
+        })
+
+        return list;
+    },
     parent: function (selector) {
         var selector = _.isUndefined(selector) ? {} : selector;
         var list = [{label: "(Select One)", value: ""}];

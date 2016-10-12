@@ -107,7 +107,7 @@
                                                         <td class="text-center">{{voucherId}}</td>
                                                         <td class="text-right">{{originAmount}}</td>
                                                         <td class="text-right">{{dueAmount}}</td>
-                                                        <td class="text-right"><input type="text" class="{{#if disableInputIfLastPaymentDateGreaterThanCurrentSelectDateOrPaidSome}}border-none{{/if}} discount"
+                                                        <td class="text-right"><input type="text" class="{{#if disableInputIfLastPaymentDateGreaterThanCurrentSelectDateOrPaidSome}}border-none text-center{{/if}} discount"
                                                                                       value="{{discount}}" readonly="{{disableInputIfLastPaymentDateGreaterThanCurrentSelectDateOrPaidSome}}"></td>
                                                         <td class="text-right"><input class="text-right actual-pay"
                                                                                       value="{{total}}"
@@ -116,7 +116,7 @@
                                                         </td>
                                                         <td class="text-right"><input type="text"
                                                                                       value="{{#if hasAmount}}{{total}}{{/if}}"
-                                                                                      class="total" readonly="{{disableInputIfLastPaymentDateGreaterThanCurrentSelectDate}}"></td>
+                                                                                      class="{{#if disableInputIfLastPaymentDateGreaterThanCurrentSelectDate}}border-none {{/if}}total" readonly="{{disableInputIfLastPaymentDateGreaterThanCurrentSelectDate}}"></td>
                                                     </tr>
                                                 {{else}}
                                                     <small><i class="fa fa-spinner fa-spin fa-1x fa-fw"></i>Loading...

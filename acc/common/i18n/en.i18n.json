@@ -27,7 +27,8 @@
       "chartNetIncome": "Net Income",
       "accountComparation": "Account Comparation",
       "companySnapshot": "Company Snapshot",
-      "paymentReceiveMethod": "Payment/Receive Method"
+      "paymentReceiveMethod": "Payment/Receive Method",
+      "cashFlowReport": "Cash Flow"
     },
     "home": {
       "title": "Home",
@@ -189,6 +190,9 @@
     },
     "paymentReceiveMethod": {
       "title": "Payment/Receive Method"
+    },
+    "cashFlowReport": {
+      "title": "Cash Flow Report"
     }
   }
 }

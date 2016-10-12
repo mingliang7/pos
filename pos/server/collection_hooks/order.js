@@ -5,6 +5,7 @@ import {idGenerator} from 'meteor/theara:id-generator';
 import {Order} from '../../imports/api/collections/order.js';
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
 import {Item} from '../../imports/api/collections/item.js'
+import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
 Order.before.insert(function (userId, doc) {
     let prefix = doc.customerId;
     doc._id = idGenerator.genWithPrefix(Order, prefix, 6);
@@ -23,36 +24,47 @@ Order.after.insert(function (userId, doc) {
                 sumRemainQty: sumRemainQty
             }
         });
-        Meteor.defer(function () {
-            Meteor._sleepForMs(200);
-            lendingStockManageStock(doc);
-            //Account Integration
-            let setting = AccountIntegrationSetting.findOne();
-            if (setting && setting.integrate) {
-                let transaction = [];
-                let data = doc;
-                data.type = "SaleOrder";
-                data.items.forEach(function (item) {
-                    let itemDoc = Item.findOne(item.itemId);
-                    if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                        transaction.push({
-                            account: itemDoc.accountMapping.accountReceivable,
-                            dr: item.amount,
-                            cr: 0,
-                            drcr: item.amount
-                        }, {
-                            account: itemDoc.accountMapping.inventoryAsset,
-                            dr: 0,
-                            cr: item.amount,
-                            drcr: -item.amount
-                        })
-                    }
-                });
-                data.transaction = transaction;
-                Meteor.call('insertAccountJournal', data);
-            }
-            //End Account Integration
-        });
+
+        //Account Integration
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            let transaction = [];
+            let data = doc;
+            data.type = "SaleOrder";
+            let oweInventoryChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
+            let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+            transaction.push({
+                account: cashChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total
+            }, {
+                account: oweInventoryChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
+            });
+
+            /*data.items.forEach(function (item) {
+             let itemDoc = Item.findOne(item.itemId);
+             if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+             transaction.push({
+             account: itemDoc.accountMapping.accountReceivable,
+             dr: item.amount,
+             cr: 0,
+             drcr: item.amount
+             }, {
+             account: itemDoc.accountMapping.inventoryAsset,
+             dr: 0,
+             cr: item.amount,
+             drcr: -item.amount
+             })
+             }
+             });*/
+            data.transaction = transaction;
+            Meteor.call('insertAccountJournal', data);
+        }
+        //End Account Integration
     });
 });
 
@@ -74,21 +86,18 @@ Order.after.update(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "SaleOrder";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.accountReceivable,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount
-                    }, {
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount
-                    })
-                }
+            let oweInventoryChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
+            let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+            transaction.push({
+                account: cashChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total
+            }, {
+                account: oweInventoryChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
             });
             data.transaction = transaction;
             Meteor.call('updateAccountJournal', data);
