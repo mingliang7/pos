@@ -187,7 +187,7 @@ indexTmpl.helpers({
     lastPaymentDate(){
         var lastPaymentDate = getLastPaymentDate(this._id);
         if(lastPaymentDate) {
-            return `<br><span class="label label-danger"><i class="fa fa-money"></i> Last Paid: ${moment(lastPaymentDate).format('YYYY-MM-DD HH:mm:ss')}</span>`;
+            return `<br><span class="label label-success"><i class="fa fa-money"></i> Last Paid: ${moment(lastPaymentDate).format('YYYY-MM-DD HH:mm:ss')}</span>`;
         }
         return '';
     },
@@ -325,8 +325,22 @@ indexTmpl.helpers({
         }
         return `<input type="checkbox" name="name" class="select-invoice">`;
     },
+    disableInputIfLastPaymentDateGreaterThanCurrentSelectDateOrPaidSome(){
+        let lastPaymentDate = getLastPaymentDate(this._id);
+        let lastPayment = getLastPayment(this._id);
+        let currentSelectDate = currentPaymentDate.get();
+        if (lastPaymentDate) {
+            if (moment(currentSelectDate).isBefore(lastPaymentDate) || lastPayment > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    },
     disableInputIfLastPaymentDateGreaterThanCurrentSelectDate(){
         let lastPaymentDate = getLastPaymentDate(this._id);
+        let lastPayment = getLastPayment(this._id);
         let currentSelectDate = currentPaymentDate.get();
         if (lastPaymentDate) {
             if (moment(currentSelectDate).isBefore(lastPaymentDate)) {
