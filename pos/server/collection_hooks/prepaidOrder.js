@@ -20,7 +20,7 @@ PrepaidOrders.after.insert(function (userId,doc) {
         let transaction = [];
         let data = doc;
         data.type = "PrepaidOrder";
-        let oweInventoryChartAccount = AccountMapping.findOne({name: 'Owe Inventory Supplier'});
+        let oweInventoryChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
         let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
         transaction.push({
             account: oweInventoryChartAccount.account,
@@ -47,7 +47,7 @@ PrepaidOrders.after.update(function (userId,doc) {
             let transaction = [];
             let data = doc;
             data.type = "PrepaidOrder";
-            let oweInventoryChartAccount = AccountMapping.findOne({name: 'Owe Inventory Supplier'});
+            let oweInventoryChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             transaction.push({
                 account: oweInventoryChartAccount.account,

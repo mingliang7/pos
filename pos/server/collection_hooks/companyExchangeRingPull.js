@@ -27,36 +27,21 @@ CompanyExchangeRingPulls.after.insert(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "CompanyExchangeRingPull";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount
-                    }, {
-                        account: itemDoc.accountMapping.accountPayable,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount
-                    })
-                }
+            let oweInventoryRingPullChartAccount = AccountMapping.findOne({name: 'Inventory Ring Pull Owing'});
+            let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
+            transaction.push({
+                account: oweInventoryRingPullChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total
+            }, {
+                account: ringPullChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
             });
             data.transaction = transaction;
-            Meteor.call('insertAccountJournal', data, function (er, re) {
-                if (er) {
-                    StockFunction.increaseRingPullInventory(doc);
-                    Meteor.call('insertRemovedCompanyExchangeRingPull', doc);
-                    CompanyExchangeRingPulls.direct.remove({_id: doc._id});
-                    throw new Meteor.Error(er.message);
-                } else if (re == null) {
-                    StockFunction.increaseRingPullInventory(doc);
-                    Meteor.call('insertRemovedCompanyExchangeRingPull', doc);
-                    CompanyExchangeRingPulls.direct.remove({_id: doc._id});
-                    throw new Meteor.Error("Can't Entry to Account System.");
-                }
-            });
+            Meteor.call('insertAccountJournal', data);
         }
         //End Account Integration
     });
@@ -73,38 +58,21 @@ CompanyExchangeRingPulls.after.update(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "CompanyExchangeRingPull";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount,
-
-                    }, {
-                        account: itemDoc.accountMapping.accountPayable,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount,
-                    })
-                }
+            let oweInventoryRingPullChartAccount = AccountMapping.findOne({name: 'Inventory Ring Pull Owing'});
+            let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
+            transaction.push({
+                account: oweInventoryRingPullChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total
+            }, {
+                account: ringPullChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
             });
             data.transaction = transaction;
-            Meteor.call('updateAccountJournal', data, function (er, re) {
-                if (er) {
-                    StockFunction.reduceRingPullInventory(preDoc);
-                    StockFunction.increaseRingPullInventory(doc);
-                    CompanyExchangeRingPulls.direct.update(doc._id, {$set: {preDoc}});
-                    throw new Meteor.Error(er.message);
-
-                } else if (re == false) {
-                    StockFunction.reduceRingPullInventory(preDoc);
-                    StockFunction.increaseRingPullInventory(doc);
-                    CompanyExchangeRingPulls.direct.update(doc._id, {$set: {preDoc}});
-                    throw new Meteor.Error("Can't Update on Account System.");
-                }
-            });
+            Meteor.call('updateAccountJournal', data);
         }
         //End Account Integration
     });
@@ -117,17 +85,7 @@ CompanyExchangeRingPulls.after.remove(function (userId, doc) {
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
             let data = {_id: doc._id, type: 'CompanyExchangeRingPull'};
-            Meteor.call('removeAccountJournal', data, function (er, re) {
-                if (er) {
-                    StockFunction.reduceRingPullInventory(doc);
-                    CompanyExchangeRingPulls.direct.insert(doc);
-                    throw new Meteor.Error(er.message);
-                } else if (re == false) {
-                    StockFunction.reduceRingPullInventory(doc);
-                    CompanyExchangeRingPulls.direct.insert(doc);
-                    throw new Meteor.Error("Can't Remove on Account System.");
-                }
-            })
+            Meteor.call('removeAccountJournal', data)
         }
         //End Account Integration
     });

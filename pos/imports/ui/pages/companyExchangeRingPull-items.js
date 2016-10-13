@@ -31,8 +31,8 @@ import {CompanyExchangeRingPulls} from '../../api/collections/companyExchangeRin
 import {Order} from '../../api/collections/order';
 // Declare template
 var itemsTmpl = Template.Pos_companyExchangeRingPullItems,
-    actionItemsTmpl = Template.Pos_companyExchangeRingPullItemsAction;
-editItemsTmpl = Template.Pos_companyExchangeRingPullItemsEdit;
+    actionItemsTmpl = Template.Pos_companyExchangeRingPullItemsAction,
+    editItemsTmpl = Template.Pos_companyExchangeRingPullItemsEdit;
 
 //methods
 import {removeItemInSaleOrder} from '../../../common/methods/sale-order';
@@ -146,18 +146,18 @@ itemsTmpl.helpers({
 
         return {};
     },
-    /*total: function () {
-     let total = 0;
-     let getItems = itemsCollection.find();
-     getItems.forEach((obj) => {
-     total += obj.amount;
-     });
-     total = FlowRouter.query.get('vendorId') ? 0 : total;
-     if(Session.get('getVendorId')) {
-     Session.set('creditLimitAmount', total);
-     }
-     return total;
-     }*/
+    total: function () {
+        let total = 0;
+        let getItems = itemsCollection.find();
+        getItems.forEach((obj) => {
+            total += obj.amount;
+        });
+        total = FlowRouter.query.get('vendorId') ? 0 : total;
+        if (Session.get('getVendorId')) {
+            Session.set('creditLimitAmount', total);
+        }
+        return total;
+    }
 });
 
 itemsTmpl.events({
@@ -183,23 +183,23 @@ itemsTmpl.events({
         // instance.$('[name="price"]').val('');
         instance.$('[name="amount"]').val('');
     },
-    /*'keyup [name="qty"],[name="price"]': function (event, instance) {
-     let qty = instance.$('[name="qty"]').val();
-     let price = instance.$('[name="price"]').val();
-     qty = _.isEmpty(qty) ? 0 : parseInt(qty);
-     price = _.isEmpty(price) ? 0 : parseFloat(price);
-     let amount = qty * price;
+    'keyup [name="qty"],[name="price"]': function (event, instance) {
+        let qty = instance.$('[name="qty"]').val();
+        let price = instance.$('[name="price"]').val();
+        qty = _.isEmpty(qty) ? 0 : parseInt(qty);
+        price = _.isEmpty(price) ? 0 : parseFloat(price);
+        let amount = qty * price;
 
-     instance.state('amount', amount);
-     },*/
+        instance.state('amount', amount);
+    },
     'click .js-add-item': function (event, instance) {
         let itemId = instance.$('[name="itemId"]').val();
         let qty = instance.$('[name="qty"]').val();
         qty = qty == '' ? 1 : parseInt(qty);
-        let price = 0;
-        let amount = 0;
-        //let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
-        //let amount = math.round(qty * price, 2);
+        //let price = 0;
+        //let amount = 0;
+        let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
+        let amount = math.round(qty * price, 2);
         // Check exist
         Meteor.call('addScheme', {itemId}, function (err, result) {
             if (!_.isEmpty(result[0])) {
@@ -287,24 +287,24 @@ itemsTmpl.events({
         }
 
     },
-    /*'change .item-qty'(event, instance){
-     let currentQty = event.currentTarget.value;
-     let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
-     let currentItem = itemsCollection.findOne({itemId: itemId});
-     let selector = {};
-     if (currentQty != '') {
-     selector.$set = {
-     amount: currentQty * currentItem.price,
-     qty: currentQty
-     }
-     } else {
-     selector.$set = {
-     amount: 1 * currentItem.price,
-     qty: 1
-     }
-     }
-     itemsCollection.update({itemId: itemId}, selector);
-     },*/
+    'change .item-qty'(event, instance){
+        let currentQty = event.currentTarget.value;
+        let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
+        let currentItem = itemsCollection.findOne({itemId: itemId});
+        let selector = {};
+        if (currentQty != '') {
+            selector.$set = {
+                amount: currentQty * currentItem.price,
+                qty: currentQty
+            }
+        } else {
+            selector.$set = {
+                amount: 1 * currentItem.price,
+                qty: 1
+            }
+        }
+        itemsCollection.update({itemId: itemId}, selector);
+    },
     "keypress .item-qty" (evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
         return !(charCode > 31 && (charCode < 48 || charCode > 57));
@@ -339,7 +339,7 @@ editItemsTmpl.events({
     'change [name="itemId"]': function (event, instance) {
         instance.$('[name="qty"]').val('');
         //instance.$('[name="price"]').val('');
-        //instance.$('[name="amount"]').val('');
+        instance.$('[name="amount"]').val('');
     },
     'keyup [name="qty"],[name="price"]': function (event, instance) {
         let qty = instance.$('[name="qty"]').val();
