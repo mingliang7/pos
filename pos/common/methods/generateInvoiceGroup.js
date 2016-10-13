@@ -58,7 +58,8 @@ function insertGroupInvoice({collection,range, doc, groupCollection}) {
     let groupInvoice = groupCollection.findOne({
         vendorOrCustomerId: doc.customerId || doc.vendorId,
         startDate:moment(range.startDate).toDate(),
-        endDate: moment(range.endDate).toDate()
+        endDate: moment(range.endDate).toDate(),
+        status: 'active'
     });
     if (groupInvoice) {
         var isUpdated = groupCollection.update(groupInvoice._id, {$addToSet: {invoices: doc}, $inc: {total: doc.total}});
