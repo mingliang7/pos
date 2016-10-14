@@ -279,6 +279,7 @@ itemsTmpl.events({
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
         let currentItem = itemsCollection.findOne({itemId: itemId});
         let selector = {};
+        debugger
         if (currentLostQty >= currentItem.exactQty) {
             $(event.currentTarget).val(0);
             selector.$set = {

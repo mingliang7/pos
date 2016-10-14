@@ -360,11 +360,10 @@ editTmpl.helpers({
         _.forEach(data.items, (value)=> {
             Meteor.call('getItem', value.itemId, function (err, result) {
                 value.name = result.name;
-                value.exactQty = result.qty;
+                value.exactQty = value.qty + value.lostQty;
                 itemsCollection.insert(value);
             })
         });
-
         return data;
     },
     itemsCollection(){
@@ -584,6 +583,7 @@ listPrepaidOrder.helpers({
             });
         }
         prepaidOrders.forEach(function (prepaidOrder) {
+            debugger
             prepaidOrder.items.forEach(function (prepaidOrderItem) {
                 item.push(prepaidOrderItem.itemId);
             });
