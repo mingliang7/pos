@@ -5,7 +5,7 @@ import {idGenerator} from 'meteor/theara:id-generator';
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js';
 
 AccountMapping.before.insert(function (userId, doc) {
-    doc._id = idGenerator.genWithPrefix(AccountMapping, 2);
+    doc._id = idGenerator.gen(AccountMapping, 3);
 });
 
 

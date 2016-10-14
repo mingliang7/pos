@@ -4,6 +4,7 @@ import {AccountIntegrationSetting} from '../../imports/api/collections/accountIn
 // Collection
 import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder.js';
 import {Item} from '../../imports/api/collections/item.js';
+import {AccountMapping} from '../../imports/api/collections/accountMapping.js';
 
 PrepaidOrders.before.insert(function (userId, doc) {
     let prefix = doc.vendorId;
@@ -11,7 +12,7 @@ PrepaidOrders.before.insert(function (userId, doc) {
 });
 
 
-PrepaidOrders.after.insert(function () {
+PrepaidOrders.after.insert(function (userId,doc) {
 
     //Account Integration
     let setting = AccountIntegrationSetting.findOne();
@@ -19,21 +20,18 @@ PrepaidOrders.after.insert(function () {
         let transaction = [];
         let data = doc;
         data.type = "PrepaidOrder";
-        data.items.forEach(function (item) {
-            let itemDoc = Item.findOne(item.itemId);
-            if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                transaction.push({
-                    account: itemDoc.accountMapping.accountReceivable,
-                    dr: item.amount,
-                    cr: 0,
-                    drcr: item.amount
-                }, {
-                    account: itemDoc.accountMapping.inventoryAsset,
-                    dr: 0,
-                    cr: item.amount,
-                    drcr: -item.amount
-                })
-            }
+        let oweInventoryChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
+        let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+        transaction.push({
+            account: oweInventoryChartAccount.account,
+            dr: doc.total,
+            cr: 0,
+            drcr: doc.total
+        }, {
+            account: cashChartAccount.account,
+            dr: 0,
+            cr: doc.total,
+            drcr: -doc.total
         });
         data.transaction = transaction;
         Meteor.call('insertAccountJournal', data);
@@ -41,7 +39,7 @@ PrepaidOrders.after.insert(function () {
     //End Account Integration
 });
 
-PrepaidOrders.after.update(function () {
+PrepaidOrders.after.update(function (userId,doc) {
     Meteor.defer(function () {
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
@@ -49,21 +47,18 @@ PrepaidOrders.after.update(function () {
             let transaction = [];
             let data = doc;
             data.type = "PrepaidOrder";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.accountReceivable,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount
-                    }, {
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount
-                    })
-                }
+            let oweInventoryChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
+            let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+            transaction.push({
+                account: oweInventoryChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total
+            }, {
+                account: cashChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
             });
             data.transaction = transaction;
             Meteor.call('updateAccountJournal', data);
@@ -72,7 +67,7 @@ PrepaidOrders.after.update(function () {
     });
 });
 
-PrepaidOrders.after.remove(function () {
+PrepaidOrders.after.remove(function (userId,doc) {
     //Account Integration
     let setting = AccountIntegrationSetting.findOne();
     if (setting && setting.integrate) {

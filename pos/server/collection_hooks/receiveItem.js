@@ -13,6 +13,8 @@ import {AccountIntegrationSetting} from '../../imports/api/collections/accountIn
 //import state
 import {receiveItemState} from '../../common/globalState/receiveItem';
 import {GroupBill} from '../../imports/api/collections/groupBill.js'
+import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
+
 ReceiveItems.before.insert(function (userId, doc) {
 
     let todayDate = moment().format('YYYYMMDD');
@@ -25,13 +27,13 @@ ReceiveItems.after.insert(function (userId, doc) {
     console.log(doc);
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        if (doc.type=='PrepaidOrder') {
+        if (doc.type == 'PrepaidOrder') {
             reducePrepaidOrder(doc);
-        } else if (doc.type=='LendingStock') {
+        } else if (doc.type == 'LendingStock') {
             reduceLendingStock(doc);
-        } else if (doc.type=='ExchangeGratis') {
+        } else if (doc.type == 'ExchangeGratis') {
             reduceExchangeGratis(doc);
-        } else if (doc.type=='CompanyExchangeRingPull') {
+        } else if (doc.type == 'CompanyExchangeRingPull') {
             reduceCompanyExchangeRingPull(doc);
         } else {
             throw Meteor.Error('Require Receive Item type');
@@ -47,21 +49,18 @@ ReceiveItems.after.insert(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "ReceiveItem";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.accountReceivable,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount
-                    }, {
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount
-                    })
-                }
+            let oweInventoryChartAccount = AccountMapping.findOne({name: 'Owe Inventory Supplier'});
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            transaction.push({
+                account: inventoryChartAccount.account,
+                dr: 0,
+                cr: 0,
+                drcr: 0
+            }, {
+                account: oweInventoryChartAccount.account,
+                dr: 0,
+                cr: 0,
+                drcr: -0
             });
             data.transaction = transaction;
             Meteor.call('insertAccountJournal', data);
@@ -74,16 +73,16 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
     let preDoc = this.previous;
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        if (doc.type=='PrepaidOrder') {
+        if (doc.type == 'PrepaidOrder') {
             increasePrepaidOrder(preDoc);
             reducePrepaidOrder(doc);
-        } else if (doc.type=='LendingStock') {
+        } else if (doc.type == 'LendingStock') {
             increaseLendingStock(preDoc);
             reduceLendingStock(doc);
-        } else if (doc.type=='ExchangeGratis') {
+        } else if (doc.type == 'ExchangeGratis') {
             increaseExchangeGratis(preDoc);
             reduceExchangeGratis(doc);
-        } else if (doc.type=='CompanyExchangeRingPull') {
+        } else if (doc.type == 'CompanyExchangeRingPull') {
             increaseCompanyExchangeRingPull(preDoc);
             reduceCompanyExchangeRingPull(doc);
         } else {
@@ -127,13 +126,13 @@ ReceiveItems.after.remove(function (userId, doc) {
     console.log(doc);
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        if (doc.type=='PrepaidOrder') {
+        if (doc.type == 'PrepaidOrder') {
             increasePrepaidOrder(doc);
-        } else if (doc.type=='LendingStock') {
+        } else if (doc.type == 'LendingStock') {
             increaseLendingStock(doc);
-        } else if (doc.type=='ExchangeGratis') {
+        } else if (doc.type == 'ExchangeGratis') {
             increaseExchangeGratis(doc);
-        } else if (doc.type=='CompanyExchangeRingPull') {
+        } else if (doc.type == 'CompanyExchangeRingPull') {
             increaseCompanyExchangeRingPull(doc);
 
         } else {

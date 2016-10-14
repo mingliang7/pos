@@ -10,6 +10,7 @@ import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder';
 //import state
 import {GroupBill} from '../../imports/api/collections/groupBill.js'
 import {PayBills} from '../../imports/api/collections/payBill.js';
+import {AccountMapping} from '../../imports/api/collections/accountMapping';
 LendingStocks.before.insert(function (userId, doc) {
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
@@ -27,21 +28,18 @@ LendingStocks.after.insert(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "LendingStock";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.accountReceivable,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount
-                    }, {
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount
-                    })
-                }
+            let lendingStockChartAccount = AccountMapping.findOne({name: 'Lending Stock'});
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            transaction.push({
+                account: lendingStockChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total
+            }, {
+                account: inventoryChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
             });
             data.transaction = transaction;
             Meteor.call('insertAccountJournal', data);
@@ -62,21 +60,18 @@ LendingStocks.after.update(function (userId, doc, fieldNames, modifier, options)
             let transaction = [];
             let data = doc;
             data.type = "LendingStock";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.accountReceivable,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount
-                    }, {
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount
-                    })
-                }
+            let lendingStockChartAccount = AccountMapping.findOne({name: 'Lending Stock'});
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            transaction.push({
+                account: lendingStockChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total
+            }, {
+                account: inventoryChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
             });
             data.transaction = transaction;
             Meteor.call('updateAccountJournal', data);

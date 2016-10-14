@@ -108,16 +108,16 @@ ExchangeRingPulls.schema = new SimpleSchema({
     items: {
         type: [ExchangeRingPulls.itemsSchema]
     },
-    /*total: {
-     type: Number,
-     decimal: true,
-     autoform: {
-     type: 'inputmask',
-     inputmaskOptions: function () {
-     return inputmaskOptions.currency();
-     }
-     }
-     },*/
+    total: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
     branchId: {
         type: String
     },

@@ -10,6 +10,7 @@ import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {Item} from '../../imports/api/collections/item.js'
 import {GratisInventories} from '../../imports/api/collections/gratisInventory.js'
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
+import {AccountMapping} from '../../imports/api/collections/accountMapping'
 //import invoice state
 import {invoiceState} from '../../common/globalState/invoice';
 //import methods
@@ -35,9 +36,12 @@ Invoices.before.insert(function (userId, doc) {
 Invoices.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
+        let transaction = [];
         let totalRemain = 0;
         if (doc.saleId) {
+            let total = 0;
             doc.items.forEach(function (item) {
+                total += item.amount;
                 Order.direct.update(
                     {
                         _id: doc.saleId,
@@ -54,13 +58,73 @@ Invoices.after.insert(function (userId, doc) {
             if (saleOrder.sumRemainQty == 0) {
                 Order.direct.update(saleOrder._id, {$set: {status: 'closed'}});
             }
-        } else {
+
+            let oweInventoryCustomerChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            doc.total = total;
+            transaction.push({
+                account: oweInventoryCustomerChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total,
+
+            }, {
+                account: inventoryChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total,
+            });
+
+
+        }
+        else {
             invoiceManageStock(doc);
+            let totalGratis = 0;
             doc.items.forEach(function (item) {
                 if (item.price == 0) {
                     increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                    let inventoryObj = AverageInventories.findOne({
+                        itemId: item.itemId,
+                        branchId: doc.branchId,
+                        stockLocationId: doc.stockLocationId
+                    });
+                    let thisItemPrice = 0;
+                    if (inventoryObj) {
+                        thisItemPrice = inventoryObj.price;
+                    } else {
+                        thisItemPrice = Item.findOne(item.itemId).purchasePrice;
+                    }
+                    totalGratis += item.qty * thisItemPrice;
                 }
             });
+            let totalInventory = doc.total + totalGratis;
+
+            let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+            let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            transaction.push({
+                account: arChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total,
+
+            });
+            if (totalGratis > 0) {
+                transaction.push({
+                    account: gratisChartAccount.account,
+                    dr: totalGratis,
+                    cr: 0,
+                    drcr: totalGratis
+                });
+
+            }
+            transaction.push({
+                account: inventoryChartAccount.account,
+                dr: 0,
+                cr: totalInventory,
+                drcr: -totalInventory,
+            });
+            doc.total = totalInventory;
         }
         if (doc.invoiceType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
@@ -68,25 +132,25 @@ Invoices.after.insert(function (userId, doc) {
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
-            let transaction = [];
             let data = doc;
             data.type = "Invoice";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.accountReceivable,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount
-                    }, {
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount
-                    })
-                }
-            });
+
+            /*data.items.forEach(function (item) {
+             let itemDoc = Item.findOne(item.itemId);
+             if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+             transaction.push({
+             account: itemDoc.accountMapping.accountReceivable,
+             dr: item.amount,
+             cr: 0,
+             drcr: item.amount
+             }, {
+             account: itemDoc.accountMapping.inventoryAsset,
+             dr: 0,
+             cr: item.amount,
+             drcr: -item.amount
+             })
+             }
+             });*/
             data.transaction = transaction;
             Meteor.call('insertAccountJournal', data);
         }
@@ -101,6 +165,7 @@ Invoices.after.update(function (userId, doc) {
         term: doc.invoiceType == 'term',
         group: doc.invoiceType == 'group'
     };
+    let transaction = [];
     if (type.saleOrder) {
         Meteor.defer(function () {
             recalculateQty(preDoc);
@@ -112,7 +177,29 @@ Invoices.after.update(function (userId, doc) {
                 Order.direct.update(doc.saleId, {$set: {status: 'active'}});
             }
         });
-    } else if (type.group) {
+        let total = 0;
+        doc.items.forEach(function (item) {
+            total += item.amount;
+        });
+        doc.total = total;
+        let oweInventoryCustomerChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
+        let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+        transaction.push({
+            account: oweInventoryCustomerChartAccount.account,
+            dr: doc.total,
+            cr: 0,
+            drcr: doc.total,
+
+        }, {
+            account: inventoryChartAccount.account,
+            dr: 0,
+            cr: doc.total,
+            drcr: -doc.total,
+        });
+
+
+    }
+    else if (type.group) {
         Meteor.defer(function () {
             removeInvoiceFromGroup(preDoc);
             pushInvoiceFromGroup(doc);
@@ -133,9 +220,57 @@ Invoices.after.update(function (userId, doc) {
             });
 
             // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total});
-        });
 
-    } else {
+        });
+        let totalGratis = 0;
+        doc.items.forEach(function (item) {
+            if (item.price == 0) {
+                // increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                let inventoryObj = AverageInventories.findOne({
+                    itemId: item.itemId,
+                    branchId: doc.branchId,
+                    stockLocationId: doc.stockLocationId
+                });
+                let thisItemPrice = 0;
+                if (inventoryObj) {
+                    thisItemPrice = inventoryObj.price;
+                } else {
+                    thisItemPrice = Item.findOne(item.itemId).purchasePrice;
+                }
+                totalGratis += item.qty * thisItemPrice;
+            }
+        });
+        let totalInventory = doc.total + totalGratis;
+
+        let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+        let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
+        let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+        transaction.push({
+            account: arChartAccount.account,
+            dr: doc.total,
+            cr: 0,
+            drcr: doc.total,
+
+        });
+        if (totalGratis > 0) {
+            transaction.push({
+                account: gratisChartAccount.account,
+                dr: totalGratis,
+                cr: 0,
+                drcr: totalGratis
+            });
+
+        }
+        transaction.push({
+            account: inventoryChartAccount.account,
+            dr: 0,
+            cr: totalInventory,
+            drcr: -totalInventory,
+        });
+        doc.total = totalInventory;
+
+    }
+    else {
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
             recalculatePayment({preDoc, doc});
@@ -153,31 +288,61 @@ Invoices.after.update(function (userId, doc) {
                     increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
                 }
             });
-        })
+        });
+        let totalGratis = 0;
+        doc.items.forEach(function (item) {
+            if (item.price == 0) {
+                //increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                let inventoryObj = AverageInventories.findOne({
+                    itemId: item.itemId,
+                    branchId: doc.branchId,
+                    stockLocationId: doc.stockLocationId
+                });
+                let thisItemPrice = 0;
+                if (inventoryObj) {
+                    thisItemPrice = inventoryObj.price;
+                } else {
+                    thisItemPrice = Item.findOne(item.itemId).purchasePrice;
+                }
+                totalGratis += item.qty * thisItemPrice;
+            }
+        });
+        let totalInventory = doc.total + totalGratis;
+
+        let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+        let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
+        let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+        transaction.push({
+            account: arChartAccount.account,
+            dr: doc.total,
+            cr: 0,
+            drcr: doc.total,
+
+        });
+        if (totalGratis > 0) {
+            transaction.push({
+                account: gratisChartAccount.account,
+                dr: totalGratis,
+                cr: 0,
+                drcr: totalGratis
+            });
+
+        }
+        transaction.push({
+            account: inventoryChartAccount.account,
+            dr: 0,
+            cr: totalInventory,
+            drcr: -totalInventory,
+        });
+        doc.total = totalInventory;
+
     }
     Meteor.defer(function () {
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
-            let transaction = [];
             let data = doc;
             data.type = "Invoice";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.accountReceivable,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount
-                    }, {
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount
-                    })
-                }
-            });
             data.transaction = transaction;
             Meteor.call('updateAccountJournal', data);
         }

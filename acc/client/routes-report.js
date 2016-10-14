@@ -366,3 +366,32 @@ AccRoutes.route('/trialBalanceReportGen', {
         Layout.report('acc_trialBalanceReportGen');
     }
 });
+
+//Cash Flow
+import '../imports/ui/reports/cashFlow/cashFlow';
+AccRoutes.route('/cashFlowReport', {
+    name: 'acc.cashFlowReport',
+    title: __('acc.cashFlowReport.title'),
+    subscriptions: function (params, queryParams) {
+        this.register(
+            'cpanel_exchange',
+            Meteor.subscribe('cpanel_exchange')
+        );
+    },
+    action: function (params, queryParams) {
+        Layout.main('acc_cashFlowReport');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'Cash Flow Report',
+        parent: 'acc.home'
+    }
+});
+
+AccRoutes.route('/cashFlowReportGen', {
+    name: 'acc.cashFlowReportGen',
+    action: function (params, queryParams) {
+        Layout.report('acc_cashFlowReportGen');
+    }
+});

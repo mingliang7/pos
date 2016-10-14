@@ -61,6 +61,7 @@ export const ItemsSchema = new SimpleSchema({
         defaultValue: function () {
             let id = AutoForm.getFieldValue('itemId');
             let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
+            debugger
             if (id) {
                 itemInfo.callPromise({
                     _id: id, customerId: customerId
@@ -72,7 +73,7 @@ export const ItemsSchema = new SimpleSchema({
             } else {
                 defaultPrice.set(0);
             }
-
+            console.log(defaultPrice.get());
             return defaultPrice.get();
         },
         autoform: {
@@ -143,7 +144,6 @@ export const RingPullItemsSchema = new SimpleSchema({
             } else {
                 defaultPrice.set(0);
             }
-
             return defaultPrice.get();
         },
         autoform: {
