@@ -77,6 +77,8 @@ exchangeGratisTmpl.events({
                         this.exchangeGratisId = exchangeGratisId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
+                        this.lostQty = 0;
+                        this.exactQty = parseFloat(remainQty);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')

@@ -22,7 +22,7 @@ Meteor.isClient && require('../../imports/ui/pages/journal/journal.html');
 tabularOpts.name = 'acc.journal';
 tabularOpts.collection = Journal;
 tabularOpts.order = ['2', 'desc'],
-    tabularOpts.extraFields = ['currencyId', 'transactionAsset', 'transaction', 'endId', 'fixAssetExpenseId', 'closingId', 'refId', 'refFrom'];
+    tabularOpts.extraFields = ['currencyId', 'transactionAsset', 'transaction', 'endId', 'fixAssetExpenseId', 'closingId', 'refId'];
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.acc_journalAction},
     {data: "_id", title: "Id"},

@@ -76,10 +76,10 @@ itemsTmpl.helpers({
         reactiveTableSettings.collection = itemsCollection;
         reactiveTableSettings.fields = [{
             key: 'itemId',
-            label: __(`${i18nPrefix}.itemId.label`)
+            label: ''
         }, {
             key: 'name',
-            label: 'Name'
+            label: ''
         }, {
             key: 'qty',
             label: __(`${i18nPrefix}.qty.label`),
@@ -87,29 +87,36 @@ itemsTmpl.helpers({
                 return FlowRouter.query.get('vendorId') ? value : Spacebars.SafeString(`<input type="text" value=${value} class="item-qty">`);
             }
         }, {
-            key: 'price',
-            label: __(`${i18nPrefix}.price.label`),
-            fn(value, object, key) {
-                return numeral(value).format('0,0.00');
+            key: 'lostQty',
+            label: __(`${i18nPrefix}.lostQty.label`),
+            fn(value, obj, key){
+                return Spacebars.SafeString(`<input type="text" value=${value} class="lost-qty">`);
             }
-        }, {
-            key: 'amount',
-            label: __(`${i18nPrefix}.amount.label`),
-            fn(value, object, key) {
-                return numeral(value).format('0,0.00');
-            }
-        }, {
-            key: '_id',
-            label() {
-                return fa('bars', '', true);
-            },
-            headerClass: function () {
-                let css = 'text-center col-action-receiveItem-item';
-                return css;
-            },
-            tmpl: actionItemsTmpl,
-            sortable: false
-        }];
+        },
+            {
+                key: 'price',
+                label: __(`${i18nPrefix}.price.label`),
+                fn(value, object, key) {
+                    return numeral(value).format('0,0.00');
+                }
+            }, {
+                key: 'amount',
+                label: __(`${i18nPrefix}.amount.label`),
+                fn(value, object, key) {
+                    return numeral(value).format('0,0.00');
+                }
+            }, {
+                key: '_id',
+                label() {
+                    return fa('bars', '', true);
+                },
+                headerClass: function () {
+                    let css = 'text-center col-action-receiveItem-item';
+                    return css;
+                },
+                tmpl: actionItemsTmpl,
+                sortable: false
+            }];
 
         return reactiveTableSettings;
     },
@@ -192,11 +199,12 @@ itemsTmpl.events({
                 }
             });
         } else {
-            debugger
             itemsCollection.insert({
                 itemId: itemId,
                 qty: qty,
+                exactQty: qty,
                 price: price,
+                lostQty: 0,
                 amount: amount,
                 name: instance.name
             });
@@ -222,13 +230,13 @@ itemsTmpl.events({
         console.log('fuck you bitch swal');
         if (AutoForm.getFormId() == "Pos_receiveItemEdit") { //check if update form
             swal({
-                    title: "Are you sure?",
-                    text: "លុបទំនិញមួយនេះ?",
-                    type: "warning", showCancelButton: true,
-                    confirmButtonColor: "#DD6B55",
-                    confirmButtonText: "Yes, delete it!",
-                    closeOnConfirm: false
-                }).then(
+                title: "Are you sure?",
+                text: "លុបទំនិញមួយនេះ?",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            }).then(
                 function () {
                     if (!ReceiveDeletedItem.findOne({itemId: itemDoc.itemId})) {
                         ReceiveDeletedItem.insert(itemDoc);
@@ -266,7 +274,44 @@ itemsTmpl.events({
         }
         itemsCollection.update({itemId: itemId}, selector);
     },
-    "keypress .item-qty" (evt) {
+    'change .lost-qty'(event, instance){
+        let currentLostQty = event.currentTarget.value;
+        let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
+        let currentItem = itemsCollection.findOne({itemId: itemId});
+        let selector = {};
+        if (currentLostQty >= currentItem.exactQty) {
+            $(event.currentTarget).val(0);
+            selector.$set = {
+                amount: currentItem.exactQty * currentItem.price,
+                qty: currentItem.exactQty,
+                lostQty: 0
+            }
+        } else {
+            if (currentLostQty != '') {
+                selector.$set = {
+                    amount: (currentItem.exactQty - currentLostQty) * currentItem.price,
+                    qty: currentItem.exactQty - currentLostQty,
+                    lostQty: currentLostQty
+                }
+            } else if (currentLostQty == '0') {
+                selector.$set = {
+                    amount: currentItem.exactQty * currentItem.price,
+                    qty: currentItem.exactQty,
+                    lostQty: currentLostQty
+                }
+            }
+            else {
+                selector.$set = {
+                    amount: currentItem.exactQty * currentItem.price,
+                    qty: currentItem.exactQty,
+                    lostQty: currentLostQty
+                }
+            }
+        }
+
+        itemsCollection.update({itemId: itemId}, selector);
+    },
+    "keypress .item-qty .lost-qty" (evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
         return !(charCode > 31 && (charCode < 48 || charCode > 57));
     }
@@ -362,7 +407,6 @@ AutoForm.addHooks(['Pos_receiveItemItemsEdit'], hooksObject);
 
 
 var calculateTotal = function () {
-    debugger;
     let subTotal = 0;
     let getItems = itemsCollection.find();
     getItems.forEach((obj) => {

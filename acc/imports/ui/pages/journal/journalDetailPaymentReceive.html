@@ -1,29 +1,58 @@
 <!--Journal Temporary-->
 <template name="acc_journalDetailPaymentReceive">
     {{#autoForm schema=schema id="acc_journalDetailPaymentReceive"}}
-        <div class="row" style="padding-left: 1%;">
-            <div class="col-sm-4" style="padding-right:1px;padding-left: 0px;">
-                {{> afQuickField name='paymentReceiveMethod' id="paymentReceiveMethod" class="input-sm"}}
+
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <div class="box-title">Payment</div>
+            </div>
+            <div class="box-body">
+
+                    <div class="col-sm-4" style="padding-right:1px;padding-left: 0px;">
+                        {{> afQuickField name='paymentReceiveMethod' id="paymentReceiveMethod" class="input-sm"}}
+                    </div>
+
+                <div class="col-sm-11" style="padding-right:1px;padding-left:0px;">
+                    <div class="col-sm-7" style="padding-right:1px;padding-left:0px;">
+                        {{> afQuickField name='account' id='account' class="input-sm" style="width: 100%"}}
+                    </div>
+                    <div class="col-sm-5" style="padding-right:1px;padding-left:0px;">
+
+                        {{> afQuickField name='amount' class="input-sm" value=tmpAmount}}
+
+                    </div>
+                </div>
+
+                <div class="col-sm-1" style="padding-right:0px;padding-left:0px;margin-top: 5px;">
+                    <br>
+                    <button type="button" class="btn btn-add-round btn-primary addItem input-sm" {{cssClassForAddMore}}>{{fa "plus"}}</button>
+                </div>
             </div>
         </div>
-        <div class="row well report-header invoice-body-shadow" style="padding-left: 1%;">
-            <div class="col-sm-11" style="padding-right:1px;padding-left:0px;">
-                <div class="col-sm-7" style="padding-right:1px;padding-left:0px;">
-                    {{> afQuickField name='account' id='account' class="input-sm" style="width: 100%"}}
-                </div>
-                <div class="col-sm-5" style="padding-right:1px;padding-left:0px;">
 
-                    {{> afQuickField name='amount' class="input-sm" value=tmpAmount}}
+        <!--<div class="row" style="padding-left: 1%;">-->
+            <!--<div class="col-sm-4" style="padding-right:1px;padding-left: 0px;">-->
+                <!--{{> afQuickField name='paymentReceiveMethod' id="paymentReceiveMethod" class="input-sm"}}-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="row well report-header invoice-body-shadow" style="padding-left: 1%;">-->
+            <!--<div class="col-sm-11" style="padding-right:1px;padding-left:0px;">-->
+                <!--<div class="col-sm-7" style="padding-right:1px;padding-left:0px;">-->
+                    <!--{{> afQuickField name='account' id='account' class="input-sm" style="width: 100%"}}-->
+                <!--</div>-->
+                <!--<div class="col-sm-5" style="padding-right:1px;padding-left:0px;">-->
 
-                </div>
-            </div>
+                    <!--{{> afQuickField name='amount' class="input-sm" value=tmpAmount}}-->
 
-            <div class="col-sm-1" style="padding-right:0px;padding-left:0px;margin-top: 5px;">
-                <br>
-                <button type="button" class="btn btn-primary addItem input-sm" {{cssClassForAddMore}}>+</button>
-            </div>
-        </div>
-        <hr>
+                <!--</div>-->
+            <!--</div>-->
+
+            <!--<div class="col-sm-1" style="padding-right:0px;padding-left:0px;margin-top: 5px;">-->
+                <!--<br>-->
+                <!--<button type="button" class="btn btn-add-round btn-primary addItem input-sm" {{cssClassForAddMore}}>{{fa "plus"}}</button>-->
+            <!--</div>-->
+        <!--</div>-->
+
         {{#each journals}}
             <div class="row listJournal" style="padding-left: 1%;">
                 <div class="col-sm-11" style="padding-right:1px;padding-left:0px;">
@@ -41,11 +70,23 @@
                     </div>
                 </div>
                 <div class="col-sm-1" style="padding-right:1px;padding-left:0px;">
+
+
                     <ul class="list-inline input-sm" style="padding-right:0px; padding-left:0px;">
-                        <li><a href="#" class="js-update-item input-sm" style="padding-right:0px; padding-left:1px;"><i
-                                class="fa fa-pencil"></i></a></li>
-                        <li><a href="#" class="js-destroy-item input-sm" style="padding-right:0px; padding-left:0px;"><i
-                                class="fa fa-remove text-red"></i></a></li>
+                        <li>
+                            <a href="#" class="js-update-item">
+                                         <span class="badge badge-round bg-green">
+                                             {{fa "pencil"}}
+                                         </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="js-destroy-item">
+                                    <span class="badge badge-round bg-red ">
+                                        {{fa "remove"}}
+                                    </span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

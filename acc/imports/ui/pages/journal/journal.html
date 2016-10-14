@@ -120,24 +120,18 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class=" invoice-body-shadow panel panel-info">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">
-                                    <div style="height: 20px;">
-                                        <div class="pull-left">
-                                            <input type="checkbox" class="js-switch"/>
-                                            <label>Is Fixed Asset</label>
-                                        </div>
-                                    </div>
-                                </h3>
-                            </div>
-                            <div class="panel-body">
+                        <div class="box box-primary">
+                         <div class="box-header with-header">
+                             <input type="checkbox" class="js-switch pull-right"/> <h3 class="box-title pull-right">Is Fixed Asset</h3>
+                         </div>
+                            <div class="box-body">
                                 {{> afQuickField name='journalDate' id='journalDate' class="input-sm"}}
                                 {{> afQuickField name='currencyId' id='currencyId' class="input-sm"}}
                                 {{> afQuickField name='voucherId' id='voucherId' class="input-sm" value=voucherId }}
                                 {{> afQuickField name='memo' id='memo' class="input-sm"}}
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -186,22 +180,11 @@
                         </div>
 
                         <div class="col-md-3">
-                            <div class="invoice-body-shadow panel panel-info">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">
-                                        <div style="height: 20px;">
-                                            <div style="height: 20px;">
-                                                <div class="pull-left">
-                                                    <input type="checkbox" class="js-switch" {{isChecked}}/>
-                                                    <label>Is Fixed Asset</label>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </h3>
+                            <div class="box box-primary">
+                                <div class="box-header with-header">
+                                    <input type="checkbox" class="js-switch pull-right" {{isChecked}}/> <h3 class="box-title pull-right">Is Fixed Asset</h3>
                                 </div>
-
-                                <div class="panel-body">
+                                <div class="box-body">
                                     {{> afQuickField name='journalDate' id='journalDate' class="input-sm"}}
                                     {{> afQuickField name='currencyId' id='currencyId' class="input-sm"}}
                                     {{> afQuickField name='voucherId' id='voucherId' class="input-sm"}}
@@ -259,24 +242,36 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="invoice-body-shadow panel panel-info">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">
-                                    <div style="height: 20px;">
-                                        <div class="pull-left">
-                                            <input type="checkbox" class="js-switch"/>
-                                            <label>Is Fixed Asset</label>
-                                        </div>
-                                    </div>
-                                </h3>
+                        <div class="box box-primary">
+                            <div class="box-header with-header">
+                                <input type="checkbox" class="js-switch pull-right"/> <h3 class="box-title pull-right">Is Fixed Asset</h3>
                             </div>
-                            <div class="panel-body">
+                            <div class="box-body">
                                 {{> afQuickField name='journalDate' id='journalDate' class="input-sm"}}
                                 {{> afQuickField name='currencyId' id='currencyId' class="input-sm"}}
                                 {{> afQuickField name='voucherId' id='voucherId' class="input-sm" value=voucherId }}
                                 {{> afQuickField name='memo' id='memo' class="input-sm"}}
                             </div>
                         </div>
+
+                        <!--<div class="invoice-body-shadow panel panel-info">-->
+                            <!--<div class="panel-heading">-->
+                                <!--<h3 class="panel-title">-->
+                                    <!--<div style="height: 20px;">-->
+                                        <!--<div class="pull-left">-->
+                                            <!--<input type="checkbox" class="js-switch"/>-->
+                                            <!--<label>Is Fixed Asset</label>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</h3>-->
+                            <!--</div>-->
+                            <!--<div class="panel-body">-->
+                                <!--{{> afQuickField name='journalDate' id='journalDate' class="input-sm"}}-->
+                                <!--{{> afQuickField name='currencyId' id='currencyId' class="input-sm"}}-->
+                                <!--{{> afQuickField name='voucherId' id='voucherId' class="input-sm" value=voucherId }}-->
+                                <!--{{> afQuickField name='memo' id='memo' class="input-sm"}}-->
+                            <!--</div>-->
+                        <!--</div>-->
                     </div>
                 </div>
             </div>
@@ -319,22 +314,16 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="invoice-body-shadow panel panel-info">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">
-                                    <div style="height: 20px;">
-                                        <div class="pull-left">
-                                            <input type="checkbox" class="js-switch"/>
-                                            <label>Is Fixed Asset</label>
-                                        </div>
-                                    </div>
-                                </h3>
-                            </div>
-                            <div class="panel-body">
-                                {{> afQuickField name='journalDate' id='journalDate' class="input-sm"}}
-                                {{> afQuickField name='currencyId' id='currencyId' class="input-sm"}}
-                                {{> afQuickField name='voucherId' id='voucherId' class="input-sm" value=voucherId }}
-                                {{> afQuickField name='memo' id='memo' class="input-sm"}}
+                        <div class="box box-primary">
+                            <div class="box-header with-border">
+                                <input type="checkbox" class="js-switch pull-right"/>
+                                <h3 class="box-title">Is Fixed Asset</h3>
+                                <div class="box-body">
+                                    {{> afQuickField name='journalDate' id='journalDate' class="input-sm"}}
+                                    {{> afQuickField name='currencyId' id='currencyId' class="input-sm"}}
+                                    {{> afQuickField name='voucherId' id='voucherId' class="input-sm" value=voucherId }}
+                                    {{> afQuickField name='memo' id='memo' class="input-sm"}}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -344,7 +333,3 @@
         {{/autoForm}}
     </div>
 </template>
-
-
-
-

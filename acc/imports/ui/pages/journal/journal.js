@@ -805,8 +805,7 @@ var disableDate = function () {
     switcherFun = function () {
         var elem = document.querySelector('.js-switch');
         var init = new Switchery(elem, {
-            color: '#7c8bc7',
-            jackColor: '#9decff',
+            color: '#337ab7',
             size: 'small'
         });
     };

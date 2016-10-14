@@ -26,8 +26,8 @@
                     </div>
                     <div class="col-sm-1" style="padding-right:0px;padding-left:0px;margin-top: 5px;">
                         <br>
-                        <button type="button" class="btn btn-primary addItem input-sm" {{cssClassForAddMoreFixedAsset}}>
-                            +
+                        <button type="button" class="btn btn-add-round btn-primary addItem input-sm" {{cssClassForAddMoreFixedAsset}}>
+                            {{fa "plus"}}
                         </button>
                     </div>
                 </div>
@@ -67,12 +67,20 @@
                         </div>
                         <div class="col-sm-1" style="padding-right:1px; padding-left:0px;">
                             <ul class="list-inline input-sm" style="padding-right:0px; padding-left:0px;">
-                                <li><a href="#" class="js-update-item input-sm"
-                                       style="padding-right:0px; padding-left:1px;"><i class="fa fa-pencil"></i></a>
+                                <li>
+                                    <a href="#" class="js-update-item">
+                                         <span class="badge badge-round bg-green">
+                                             {{fa "pencil"}}
+                                         </span>
+                                    </a>
                                 </li>
-                                <li><a href="#" class="js-destroy-item input-sm"
-                                       style="padding-right:0px; padding-left:0px;"><i
-                                        class="fa fa-remove text-red"></i></a></li>
+                                <li>
+                                    <a href="#" class="js-destroy-item">
+                                    <span class="badge badge-round bg-red ">
+                                        {{fa "remove"}}
+                                    </span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -144,9 +152,19 @@
 
 <template name="acc_actionFixAsset">
     <ul class="list-inline input-sm" style="padding-right:0px; padding-left:0px;">
-        <li><a href="#" class="js-update-item input-sm" style="padding-right:0px; padding-left:1px;"><i
-                class="fa fa-pencil"></i></a></li>
-        <li><a href="#" class="js-destroy-item input-sm" style="padding-right:0px; padding-left:0px;"><i
-                class="fa fa-remove text-red"></i></a></li>
+        <li>
+            <a href="#" class="js-update-item">
+                                         <span class="badge badge-round bg-green">
+                                             {{fa "pencil"}}
+                                         </span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="js-destroy-item">
+                                    <span class="badge badge-round bg-red ">
+                                        {{fa "remove"}}
+                                    </span>
+            </a>
+        </li>
     </ul>
 </template>

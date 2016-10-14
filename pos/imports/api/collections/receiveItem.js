@@ -29,6 +29,17 @@ ReceiveItems.itemsSchema = new SimpleSchema({
             }
         }
     },
+    lostQty: {
+        type: Number,
+        decimal: true,
+        defaultValue: 0,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
     amount: {
         type: Number,
         decimal: true,

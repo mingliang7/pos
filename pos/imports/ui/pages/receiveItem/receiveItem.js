@@ -360,6 +360,7 @@ editTmpl.helpers({
         _.forEach(data.items, (value)=> {
             Meteor.call('getItem', value.itemId, function (err, result) {
                 value.name = result.name;
+                value.exactQty = result.qty;
                 itemsCollection.insert(value);
             })
         });
@@ -528,12 +529,7 @@ let hooksObject = {
             return doc;
         },
         update: function (doc) {
-            let items = [];
-            itemsCollection.find().forEach((obj)=> {
-                delete obj._id;
-                items.push(obj);
-            });
-            doc.$set.items = items;
+            doc.$set.items = itemsCollection.find().fetch();
             delete doc.$unset;
             return doc;
         }
@@ -636,6 +632,8 @@ listPrepaidOrder.events({
                         this.prepaidOrderId = prepaidOrderId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
+                        this.exactQty = parseFloat(remainQty);
+                        this.lostQty = 0;
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')

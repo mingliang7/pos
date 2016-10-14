@@ -77,6 +77,8 @@ lendingStockTmpl.events({
                         this.lendingStockId = lendingStockId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
+                        this.lostQty = 0;
+                        this.exactQty = parseFloat(remainQty);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
