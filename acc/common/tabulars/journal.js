@@ -22,7 +22,7 @@ Meteor.isClient && require('../../imports/ui/pages/journal/journal.html');
 tabularOpts.name = 'acc.journal';
 tabularOpts.collection = Journal;
 tabularOpts.order = ['2', 'desc'],
-    tabularOpts.extraFields = ['currencyId', 'transactionAsset', 'transaction', 'endId', 'fixAssetExpenseId', 'closingId', 'refId'];
+    tabularOpts.extraFields = ['currencyId', 'transactionAsset', 'transaction', 'endId', 'fixAssetExpenseId', 'closingId', 'refId', 'refFrom'];
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.acc_journalAction},
     {data: "_id", title: "Id"},
@@ -61,7 +61,9 @@ tabularOpts.columns = [
                 return "<p class='label label-warning'>Currency Closing</p>";
             }else if(doc.refFrom!= undefined){
                 return "<p class='label label-info'>"+doc.refFrom+"</p>";
-            }else if(doc.fixAssetExpenseId){
+            }else if(doc.fixAssetExpenseId>0){
+                return "<p class='label label-danger'>Depreciation</p>";
+            }else {
                 return "<p class='label label-default'>Normal</p>";
             }
         }
