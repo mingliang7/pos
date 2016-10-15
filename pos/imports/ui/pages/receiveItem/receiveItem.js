@@ -674,6 +674,8 @@ listPrepaidOrder.events({
                     Meteor.call('getItem', this.itemId, (err, result)=> {
                         this.prepaidOrderId = prepaidOrderId;
                         this.qty = parseFloat(remainQty);
+                        this.exactQty = parseFloat(remainQty);
+                        this.lostQty = 0;
                         this.name = result.name;
                         this.amount = this.qty * this.price;
                         itemsCollection.insert(this);

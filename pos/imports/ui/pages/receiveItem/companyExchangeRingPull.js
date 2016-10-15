@@ -119,6 +119,8 @@ companyExchangeRingPullTmpl.events({
                     Meteor.call('getItem', this.itemId, (err, result)=> {
                         this.companyExchangeRingPullId = companyExchangeRingPullId;
                         this.qty = parseFloat(remainQty);
+                        this.exactQty = parseFloat(remainQty);
+                        this.lostQty = 0;
                         this.name = result.name;
                         this.amount = this.qty * this.price;
                         itemsCollection.insert(this);

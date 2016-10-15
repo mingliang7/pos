@@ -16,7 +16,6 @@ import {GroupBill} from '../../imports/api/collections/groupBill.js'
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
 
 ReceiveItems.before.insert(function (userId, doc) {
-
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
     let tmpBillId = doc._id;
@@ -24,18 +23,82 @@ ReceiveItems.before.insert(function (userId, doc) {
 });
 
 ReceiveItems.after.insert(function (userId, doc) {
-    console.log(doc);
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
+        let transaction = [];
+        let type = '';
+        console.log(doc);
+        console.log('------------------data------------');
+        let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+        let lostInventoryChartAccount = AccountMapping.findOne({name: 'Lost Inventory'});
+        let total = 0;
+        let totalLostAmount = 0;
+        doc.items.forEach(function (item) {
+            total += item.qty * item.price;
+            totalLostAmount += item.lostQty * item.price;
+        });
+        doc.total = total;
+        transaction.push({
+            account: inventoryChartAccount.account,
+            dr: doc.total,
+            cr: 0,
+            drcr: doc.total
+        });
+        if (totalLostAmount > 0) {
+            transaction.push({
+                account: lostInventoryChartAccount.account,
+                dr: totalLostAmount,
+                cr: 0,
+                drcr: totalLostAmount
+            });
+        }
+        doc.total = doc.total + totalLostAmount;
         if (doc.type == 'PrepaidOrder') {
+            type = 'PrepaidOrder-RI';
+            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
+            transaction.push({
+                account: InventoryOwingChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
+            });
             reducePrepaidOrder(doc);
-        } else if (doc.type == 'LendingStock') {
+
+        }
+        else if (doc.type == 'LendingStock') {
+            type = 'LendingStock-RI';
+            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Lending Stock'});
+            transaction.push({
+                account: InventoryOwingChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
+            });
             reduceLendingStock(doc);
-        } else if (doc.type == 'ExchangeGratis') {
+        }
+        else if (doc.type == 'ExchangeGratis') {
+            type = 'Gratis-RI';
+            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Gratis Owing'});
+            transaction.push({
+                account: InventoryOwingChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
+            });
             reduceExchangeGratis(doc);
-        } else if (doc.type == 'CompanyExchangeRingPull') {
+        }
+        else if (doc.type == 'CompanyExchangeRingPull') {
+            type = 'RingPull-RI';
+            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Ring Pull Owing'});
+            transaction.push({
+                account: InventoryOwingChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
+            });
             reduceCompanyExchangeRingPull(doc);
-        } else {
+        }
+        else {
             throw Meteor.Error('Require Receive Item type');
         }
         doc.items.forEach(function (item) {
@@ -46,26 +109,14 @@ ReceiveItems.after.insert(function (userId, doc) {
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
-            let transaction = [];
             let data = doc;
-            data.type = "ReceiveItem";
-            let oweInventoryChartAccount = AccountMapping.findOne({name: 'Owe Inventory Supplier'});
-            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-            transaction.push({
-                account: inventoryChartAccount.account,
-                dr: 0,
-                cr: 0,
-                drcr: 0
-            }, {
-                account: oweInventoryChartAccount.account,
-                dr: 0,
-                cr: 0,
-                drcr: -0
-            });
+            data.type = type;
             data.transaction = transaction;
+            console.log(data);
             Meteor.call('insertAccountJournal', data);
         }
         //End Account Integration
+
     });
 });
 
@@ -73,16 +124,76 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
     let preDoc = this.previous;
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
+        let transaction = [];
+        let type = '';
+        let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+        let lostInventoryChartAccount = AccountMapping.findOne({name: 'Lost Inventory'});
+        let totalLostAmount = 0;
+        let total = 0;
+        console.log(doc);
+        doc.items.forEach(function (item) {
+            total += item.qty * item.price;
+            totalLostAmount += item.lostQty * item.price;
+        });
+        doc.total = total;
+        transaction.push({
+            account: inventoryChartAccount.account,
+            dr: doc.total,
+            cr: 0,
+            drcr: doc.total
+        });
+        if (totalLostAmount > 0) {
+            transaction.push({
+                account: lostInventoryChartAccount.account,
+                dr: totalLostAmount,
+                cr: 0,
+                drcr: totalLostAmount
+            });
+        }
+        doc.total = doc.total + totalLostAmount;
+
         if (doc.type == 'PrepaidOrder') {
+            type = 'PrepaidOrder-RI';
+            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
+            transaction.push({
+                account: InventoryOwingChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
+            });
             increasePrepaidOrder(preDoc);
             reducePrepaidOrder(doc);
         } else if (doc.type == 'LendingStock') {
+            type = 'LendingStock-RI';
+            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Lending Stock'});
+            transaction.push({
+                account: InventoryOwingChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
+            });
             increaseLendingStock(preDoc);
             reduceLendingStock(doc);
         } else if (doc.type == 'ExchangeGratis') {
+            type = 'Gratis-RI';
+            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Gratis Owing'});
+            transaction.push({
+                account: InventoryOwingChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
+            });
             increaseExchangeGratis(preDoc);
             reduceExchangeGratis(doc);
         } else if (doc.type == 'CompanyExchangeRingPull') {
+            type = 'RingPull-RI';
+            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Ring Pull Owing'});
+            transaction.push({
+                account: InventoryOwingChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total
+            });
             increaseCompanyExchangeRingPull(preDoc);
             reduceCompanyExchangeRingPull(doc);
         } else {
@@ -95,44 +206,32 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
-            let transaction = [];
             let data = doc;
-            data.type = "ReceiveItem";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.accountReceivable,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount
-                    }, {
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount
-                    })
-                }
-            });
+            data.type = type;
             data.transaction = transaction;
+            console.log(data);
             Meteor.call('updateAccountJournal', data);
         }
         //End Account Integration
+
     });
 });
 
 ReceiveItems.after.remove(function (userId, doc) {
-    console.log('-------------from receive item after remove--------------');
-    console.log(doc);
+    let type = '';
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
         if (doc.type == 'PrepaidOrder') {
+            type = 'PrepaidOrder-RI';
             increasePrepaidOrder(doc);
         } else if (doc.type == 'LendingStock') {
+            type = 'LendingStock-RI';
             increaseLendingStock(doc);
         } else if (doc.type == 'ExchangeGratis') {
+            type = 'ExchangeGratis-RI';
             increaseExchangeGratis(doc);
         } else if (doc.type == 'CompanyExchangeRingPull') {
+            type = 'CompanyExchangeRingPull-RI';
             increaseCompanyExchangeRingPull(doc);
 
         } else {
@@ -142,7 +241,7 @@ ReceiveItems.after.remove(function (userId, doc) {
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
-            let data = {_id: doc._id, type: 'ReceiveItem'};
+            let data = {_id: doc._id, type: type};
             Meteor.call('removeAccountJournal', data)
         }
         //End Account Integration

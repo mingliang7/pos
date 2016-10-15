@@ -6,6 +6,7 @@ import {Item} from '../../imports/api/collections/item.js'
 import {RingPullInventories} from '../../imports/api/collections/ringPullInventory.js'
 import {RingPullTransfers} from '../../imports/api/collections/ringPullTransfer.js'
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
+import {AccountMapping} from '../../imports/api/collections/accountMapping'
 import {idGenerator} from 'meteor/theara:id-generator';
 import 'meteor/matb33:collection-hooks';
 
@@ -416,32 +417,36 @@ Meteor.methods({
             );
             //--- End Inventory type block "FIFO Inventory"---
             //Account Integration
+
             let setting = AccountIntegrationSetting.findOne();
             if (setting && setting.integrate) {
-                let transaction = [];
-                let data = doc;
-                data.type = "RingPullTransfer";
-                data.items.forEach(function (item) {
-                    let itemDoc = Item.findOne(item.itemId);
-                    if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                        transaction.push({
-                            account: itemDoc.accountMapping.accountReceivable,
-                            dr: item.amount,
-                            cr: 0,
-                            drcr: item.amount
-                        }, {
-                            account: itemDoc.accountMapping.inventoryAsset,
-                            dr: 0,
-                            cr: item.amount,
-                            drcr: -item.amount
-                        })
-                    }
+                let doc = ringPullTransfer;
+                let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
+                let data1 = doc;
+                data1.transaction = [];
+                data1.branchId = doc.fromBranchId;
+                data1.type = "RingPullTransferFrom";
+                data1.transaction.push({
+                    account: ringPullChartAccount.account,
+                    dr: 0,
+                    cr: data1.total,
+                    drcr: data1.total
                 });
-                data.transaction = transaction;
-                Meteor.call('insertAccountJournal', data);
+                Meteor.call('insertAccountJournal', data1);
+
+                let data2 = doc;
+                data2.transaction = [];
+                data2.branchId = doc.toBranchId;
+                data2.type = "RingPullTransferTo";
+                data2.transaction.push({
+                    account: ringPullChartAccount.account,
+                    dr: data2.total,
+                    cr: 0,
+                    drcr: data2.total
+                });
+                Meteor.call('insertAccountJournal', data2);
             }
             //End Account Integration
-
         });
 
 
@@ -541,41 +546,41 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
 }
 
 /*
-        //Account Integration
-        let setting = AccountIntegrationSetting.findOne();
-        if (setting && setting.integrate) {
-            let transaction = [];
-            let data = doc;
-            data.type = "PrepaidOrder";
-            data.items.forEach(function (item) {
-                let itemDoc = Item.findOne(item.itemId);
-                if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-                    transaction.push({
-                        account: itemDoc.accountMapping.accountReceivable,
-                        dr: item.amount,
-                        cr: 0,
-                        drcr: item.amount
-                    }, {
-                        account: itemDoc.accountMapping.inventoryAsset,
-                        dr: 0,
-                        cr: item.amount,
-                        drcr: -item.amount
-                    })
-                }
-            });
-            data.transaction = transaction;
-            Meteor.call('updateAccountJournal', data);
-        }
-        //End Account Integration
+ //Account Integration
+ let setting = AccountIntegrationSetting.findOne();
+ if (setting && setting.integrate) {
+ let transaction = [];
+ let data = doc;
+ data.type = "PrepaidOrder";
+ data.items.forEach(function (item) {
+ let itemDoc = Item.findOne(item.itemId);
+ if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
+ transaction.push({
+ account: itemDoc.accountMapping.accountReceivable,
+ dr: item.amount,
+ cr: 0,
+ drcr: item.amount
+ }, {
+ account: itemDoc.accountMapping.inventoryAsset,
+ dr: 0,
+ cr: item.amount,
+ drcr: -item.amount
+ })
+ }
+ });
+ data.transaction = transaction;
+ Meteor.call('updateAccountJournal', data);
+ }
+ //End Account Integration
 
 
-*/
+ */
 /*
-    //Account Integration
-    let setting = AccountIntegrationSetting.findOne();
-    if (setting && setting.integrate) {
-        let data = {_id: doc._id, type: 'PrepaidOrder'};
-        Meteor.call('removeAccountJournal', data)
-    }
-    //End Account Integration
-*/
+ //Account Integration
+ let setting = AccountIntegrationSetting.findOne();
+ if (setting && setting.integrate) {
+ let data = {_id: doc._id, type: 'PrepaidOrder'};
+ Meteor.call('removeAccountJournal', data)
+ }
+ //End Account Integration
+ */

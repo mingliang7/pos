@@ -92,16 +92,16 @@ RingPullTransfers.schema = new SimpleSchema({
     items: {
         type: [RingPullTransfers.itemsSchema]
     },
-    /*total: {
-     type: Number,
-     decimal: true,
-     autoform: {
-     type: 'inputmask',
-     inputmaskOptions: function () {
-     return inputmaskOptions.currency();
-     }
-     }
-     },*/
+    total: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
     fromBranchId: {
         type: String,
     },

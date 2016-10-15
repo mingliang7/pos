@@ -120,6 +120,8 @@ lendingStockTmpl.events({
                         this.lendingStockId = lendingStockId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
+                        this.exactQty = parseFloat(remainQty);
+                        this.lostQty = 0;
                         this.amount = this.qty * this.price;
                         itemsCollection.insert(this);
                     });

@@ -22,8 +22,6 @@ CompanyExchangeRingPulls.after.insert(function (userId, doc) {
 
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
-            let arChartAccount = AccountMapping.findOne({name: 'A/R'});
-
             let transaction = [];
             let data = doc;
             data.type = "CompanyExchangeRingPull";
