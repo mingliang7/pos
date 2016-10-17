@@ -124,7 +124,7 @@
                     <div class="col-md-3">
                         <div class="box box-primary">
                          <div class="box-header with-header">
-                             <input type="checkbox" class="js-switch pull-right"/> <h3 class="box-title pull-right">Is Fixed Asset</h3>
+                            <h3 class="box-title pull-right"> <input type="checkbox" class="js-switch"/>  <span class="label label-primary pull-right">Is Fixed Asset</span></h3>
                          </div>
                             <div class="box-body">
                                 {{> afQuickField name='journalDate' id='journalDate' }}
@@ -154,37 +154,74 @@
                         <div class="col-md-9">
                             <!--Journal Temporary-->
                             {{> acc_journalDetail transaction=this.transaction journalDetailCollection=journalDetailCollection}}
+                            <br>
                             <div class="row" style="padding-left: 1%">
-                                <div class="col-sm-3 pull-left"
+                                <div class="col-sm-5 pull-left"
                                      style="padding-right:1px;padding-left:0px;text-align: left;">
-                                    <button type="submit"
-                                            class="btn btn-primary" {{cssClassForSubmit}}>{{fa "floppy-o"}}
+                                    <button type="submit" class="btn btn-primary" {{cssClassForSubmit}}>{{fa "floppy-o"}}
                                         Save
+                                    </button>
+                                    <button type="submit"
+                                            class="btn btn-primary save-new" {{cssClassForSubmit}}>{{fa "floppy-o"}}
+                                        Save and New
                                     </button>
                                     <button type="reset" class="btn btn-default">{{fa "refresh"}} Reset</button>
                                 </div>
-                                <div class="col-sm-3" style="padding-right:1px;padding-left:0px;text-align: right;">
-                                    <b>Total :</b>
-                                </div>
-                                <div class="col-sm-5" style="padding-right:1px;padding-left:0px;">
-                                    <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
-                                        <input type="text" value={{formatMoney totalDr}} style="width: 100%"
-                                        class="form-control
-                                        input-sm" readonly=true>
+                                <div style="margin-right: 45px;">
+                                    <div class="col-sm-1" style="text-align: right;">
+                                        <b>Total :</b>
                                     </div>
-                                    <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
-                                        <input type="text" value={{formatMoney totalCr}} style="width: 100%"
-                                        class="form-control
-                                        input-sm" readonly=true>
+                                    <div class="col-sm-5" style="padding-right:1px;padding-left:0px;">
+                                        <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
+                                            <input type="text" value={{formatMoney totalDr}} style="width: 100%"
+                                            class="form-control
+                                            input-sm" readonly=true>
+                                        </div>
+                                        <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
+                                            <input type="text" value={{formatMoney totalCr}} style="width: 100%"
+                                            class="form-control
+                                            input-sm" readonly=true>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                    <!--<div class="row">-->
+                        <!--<div class="col-md-9">-->
+                            <!--&lt;!&ndash;Journal Temporary&ndash;&gt;-->
+                            <!--{{> acc_journalDetail transaction=this.transaction journalDetailCollection=journalDetailCollection}}-->
+                            <!--<div class="row" style="padding-left: 1%">-->
+                                <!--<div class="col-sm-3 pull-left"-->
+                                     <!--style="padding-right:1px;padding-left:0px;text-align: left;">-->
+                                    <!--<button type="submit"-->
+                                            <!--class="btn btn-primary" {{cssClassForSubmit}}>{{fa "floppy-o"}}-->
+                                        <!--Save-->
+                                    <!--</button>-->
+                                    <!--<button type="reset" class="btn btn-default">{{fa "refresh"}} Reset</button>-->
+                                <!--</div>-->
+                                <!--<div class="col-sm-1" style="text-align: right;">-->
+                                    <!--<b>Total :</b>-->
+                                <!--</div>-->
+                                <!--<div class="col-sm-5" style="padding-right:1px;padding-left:0px;">-->
+                                    <!--<div class="col-sm-6" style="padding-right:1px;padding-left:0px;">-->
+                                        <!--<input type="text" value={{formatMoney totalDr}} style="width: 100%"-->
+                                        <!--class="form-control-->
+                                        <!--input-sm" readonly=true>-->
+                                    <!--</div>-->
+                                    <!--<div class="col-sm-6" style="padding-right:1px;padding-left:0px;">-->
+                                        <!--<input type="text" value={{formatMoney totalCr}} style="width: 100%"-->
+                                        <!--class="form-control-->
+                                        <!--input-sm" readonly=true>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+
                         <div class="col-md-3">
                             <div class="box box-primary">
                                 <div class="box-header with-header">
-                                    <input type="checkbox" class="js-switch pull-right" {{isChecked}}/> <h3 class="box-title pull-right">Is Fixed Asset</h3>
+                                    <h3 class="box-title pull-right"> <input type="checkbox" class="js-switch"/>  <span class="label label-primary pull-right">Is Fixed Asset</span></h3>
                                 </div>
                                 <div class="box-body">
                                     {{> afQuickField name='journalDate' id='journalDate' }}
@@ -246,7 +283,7 @@
                     <div class="col-md-3">
                         <div class="box box-primary">
                             <div class="box-header with-header">
-                                <input type="checkbox" class="js-switch pull-right"/> <h3 class="box-title pull-right">Is Fixed Asset</h3>
+                                <h3 class="box-title pull-right"> <input type="checkbox" class="js-switch"/>  <span class="label label-primary pull-right">Is Fixed Asset</span></h3>
                             </div>
                             <div class="box-body">
                                 {{> afQuickField name='journalDate' id='journalDate' }}
@@ -318,8 +355,9 @@
                     <div class="col-md-3">
                         <div class="box box-primary">
                             <div class="box-header with-border">
-                                <input type="checkbox" class="js-switch pull-right"/>
-                                <h3 class="box-title">Is Fixed Asset</h3>
+                                <div class="box-header with-header">
+                                    <h3 class="box-title pull-right"> <input type="checkbox" class="js-switch"/>  <span class="label label-primary pull-right">Is Fixed Asset</span></h3>
+                                </div>
                                 <div class="box-body">
                                     {{> afQuickField name='journalDate' id='journalDate' }}
                                     {{> afQuickField name='currencyId' id='currencyId' }}
