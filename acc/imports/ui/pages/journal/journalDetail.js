@@ -54,6 +54,7 @@ journalDetailTpl.onCreated(function () {
     let data = Template.currentData();
     journalDetailCollection = data.journalDetailCollection;
     journalDetailCollection.remove({});
+
     if (data.transaction) {
         data.transaction.forEach(function (obj) {
             obj.account = Spacebars.SafeString(SpaceChar.space(obj.accountDoc.level * 6) + obj.account).string;
@@ -72,7 +73,9 @@ journalDetailTpl.helpers({
     cssClassForAddMore: function () {
         let dr = state.get('dr');
         let cr = state.get('cr');
+
         let account = state.get('account');
+
         if ((dr > 0 || cr > 0) && (dr != "" || cr != "") && account != "") {
             state.set('cssClassForAddMore', '');
         } else {
@@ -117,6 +120,7 @@ journalDetailTpl.events({
         let totalDr = state.get("totalDr");
         let totalCr = state.get("totalCr");
         let bal = totalDr - totalCr;
+        
         if (bal > 0) {
             state.set('dr', 0);
             state.set('cr', bal);

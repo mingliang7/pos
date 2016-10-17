@@ -11,60 +11,69 @@
                 </div>
                 <div class="col-sm-5" style="padding-right:1px;padding-left:0px;">
                     <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
-                        {{> afQuickField name='dr' value=tmpDr class="input-sm"}}
+                        {{> afQuickField name='dr' value=tmpDr}}
                     </div>
                     <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
-                        {{> afQuickField name='cr' value=tmpCr class="input-sm"}}
+                        {{> afQuickField name='cr' value=tmpCr}}
                     </div>
                 </div>
 
                 <div class="col-sm-1" style="padding-right:0px;padding-left:0px;margin-top: 5px;">
                     <br>
-                    <button type="button" class="btn btn-add-round btn-primary addItem input-sm" {{cssClassForAddMore}}>{{fa "plus"}}</button>
+                    <button type="button"
+                            class="btn btn-add-round btn-primary addItem input-sm" {{cssClassForAddMore}}>{{fa "plus"}}</button>
                 </div>
             </div>
         </div>
 
         {{#each journals}}
-            <div class="row listJournal" style="padding-left: 1%;">
-                <div class="col-sm-6"
-                     style="padding-right:1px;padding-left:0px;">
-                    <input type="text" value={{account}} style="width: 100%" class="form-control input-sm"
-                    readonly=true>
-                </div>
-                <div class="col-sm-5" style="padding-right:1px;padding-left:0px;">
-                    <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
-                        <div style="padding-right:1px;padding-left:0px;">
-                            <input type="text" value={{formatMoney dr}} style="width: 100%" class="form-control
-                            input-sm" readonly=true>
-                        </div>
-                    </div>
-                    <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
-                        <div style="padding-right:1px;padding-left:0px;">
-                            <input type="text" value={{formatMoney cr}} style="width: 100%" class="form-control
-                            input-sm" readonly=true>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-1" style="padding-right:1px;padding-left:0px;">
-                    <ul class="list-inline input-sm" style="padding-right:0px; padding-left:0px;">
-                        <li>
-                            <a href="#" class="js-update-item">
+            <!--<div class="box">-->
+                <!--<div class="box-body">-->
+                    <div class="col-md-12 box-custom">
+                        <div class=" listJournal" >
+                            <div class="col-sm-6"
+                                 style="padding-right:1px;padding-left:0px;">
+                                <input type="text" value={{account}} style="width: 100%" class="form-control input-sm"
+                                readonly=true>
+                            </div>
+                            <div class="col-sm-5" style="padding-right:1px;padding-left:0px;">
+                                <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
+                                    <div style="padding-right:1px;padding-left:0px;">
+                                        <input type="text" value={{formatMoney dr}} style="width: 100%"
+                                        class="form-control
+                                        input-sm" readonly=true>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
+                                    <div style="padding-right:1px;padding-left:0px;">
+                                        <input type="text" value={{formatMoney cr}} style="width: 100%"
+                                        class="form-control
+                                        input-sm" readonly=true>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-1" style="padding-right:1px;padding-left:0px;">
+                                <ul class="list-inline input-sm" style="padding-right:0px; padding-left:0px;">
+                                    <li>
+                                        <a href="#" class="js-update-item">
                                          <span class="badge badge-round bg-green">
                                              {{fa "pencil"}}
                                          </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="js-destroy-item">
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="js-destroy-item">
                                     <span class="badge badge-round bg-red ">
                                         {{fa "remove"}}
                                     </span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                <!--</div>-->
+            <!--</div>-->
         {{/each}}
     {{/autoForm}}
 </template>
@@ -92,9 +101,9 @@
                             {{> afQuickField name="cr" value=tmpCr label=false}}
                         </div>
                     </div>
-                    <div class="col-sm-12 col-sm-offset-9">
-                        <button type="submit" class="btn btn-primary">{{fa "floppy-o"}} Save</button>
-                    </div>
+
+                        <button type="submit" class="btn btn-primary pull-right">{{fa "floppy-o"}} Save</button>
+
                 </fieldset>
             </div>
         {{/autoForm}}

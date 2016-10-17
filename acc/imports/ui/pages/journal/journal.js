@@ -100,7 +100,7 @@ Tracker.autorun(function () {
             totalDr += obj.dr;
             totalCr += obj.cr;
         })
-        statestate.set('totalDr', math.round(totalDr, 2));
+        state.set('totalDr', math.round(totalDr, 2));
         state.set('totalCr', math.round(totalCr, 2));
 
         if (math.round(totalDr, 2) == math.round(totalCr, 2)) {

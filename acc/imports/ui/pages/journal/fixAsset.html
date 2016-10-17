@@ -3,26 +3,26 @@
         {{#autoForm schema=schema id="acc_FixAsset"}}
             <div class="row" style="padding-left: 1%;">
                 <div class="col-sm-3" style="padding-right:1px;padding-left:0px;">
-                    {{> afQuickField name='account' id='account' class="input-sm" style="width: 100%"}}
+                    {{> afQuickField name='account' id='account'  style="width: 100%"}}
                 </div>
                 <div class="col-sm-9" style="padding-right:1px;padding-left:0px;">
                     <div class="col-sm-3" style="padding-right:1px;padding-left:0px;">
-                        {{> afQuickField name='description' id='description' class="input-sm"}}
+                        {{> afQuickField name='description' id='description' }}
                     </div>
                     <div class="col-sm-2" style="padding-right:1px;padding-left:0px;">
-                        {{> afQuickField name='code' id='code' class="input-sm"}}
+                        {{> afQuickField name='code' id='code' }}
                     </div>
                     <div class="col-sm-2" style="padding-right:1px;padding-left:0px;">
-                        {{> afQuickField name='value' id='value' class="input-sm"}}
+                        {{> afQuickField name='value' id='value' }}
                     </div>
                     <div class="col-sm-1" style="padding-right:1px;padding-left:0px;">
-                        {{> afQuickField name='life' id='life' class="input-sm" }}
+                        {{> afQuickField name='life' id='life'  }}
                     </div>
                     <div class="col-sm-2" style="padding-right:1px;padding-left:0px;">
-                        {{> afQuickField name='estSalvage' id='estSalvage' class="input-sm" }}
+                        {{> afQuickField name='estSalvage' id='estSalvage'  }}
                     </div>
                     <div class="col-sm-1" style="padding-right:1px;padding-left:0px;">
-                        {{> afQuickField name='percent' id='percent' class="input-sm"}}
+                        {{> afQuickField name='percent' id='percent' }}
                     </div>
                     <div class="col-sm-1" style="padding-right:0px;padding-left:0px;margin-top: 5px;">
                         <br>
@@ -141,9 +141,9 @@
                             {{> afQuickField name="percent" label=false}}
                         </div>
                     </div>
-                    <div class="col-sm-12 col-sm-offset-9">
-                        <button type="submit" class="btn btn-primary">{{fa "floppy-o"}} Save</button>
-                    </div>
+
+                        <button type="submit" class="btn btn-primary pull-right">{{fa "floppy-o"}} Save</button>
+
                 </fieldset>
             </div>
         {{/autoForm}}

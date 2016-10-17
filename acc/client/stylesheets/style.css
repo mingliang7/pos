@@ -36,7 +36,7 @@
     border: 1px solid #d2d6de;
     border-radius: 0;
     padding: 6px 12px;
-    height: 30px;
+    height: 34px;
 }
 
 .custom-switchery-background{
@@ -53,4 +53,9 @@
 .badge-round{
     border-radius: 999px;
     padding: 5px 7px;
+}
+
+.box-custom {
+    margin-left: -5px;
+    padding-right: 5px;
 }
