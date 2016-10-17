@@ -71,7 +71,7 @@ Vendors.schema = new SimpleSchema({
         optional: true,
         custom: function () {
             // let paymentType = AutoForm.getFieldValue('paymentType');
-            if (this.paymentType == "Term" && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+            if (this.field ('paymentType').value == "Term" && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
                 return "required";
             }
         },
@@ -94,7 +94,7 @@ Vendors.schema = new SimpleSchema({
         optional:true,
         custom: function () {
             // let paymentType = AutoForm.getFieldValue('paymentType');
-            if (this.paymentType == "Group" && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+            if (this.field ('paymentType').value == "Group" && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
                 return "required";
             }
         },
