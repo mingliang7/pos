@@ -119,11 +119,23 @@ indexTmpl.events({
         alertify.customer(fa('pencil', TAPi18n.__('pos.customer.title')), renderTemplate(editTmpl, this));
     },
     'click .js-destroy' (event, instance) {
-        destroyAction(
-            Customers,
-            {_id: this._id},
-            {title: TAPi18n.__('pos.customer.title'), itemTitle: this._id}
-        );
+        var id = this._id;
+        Meteor.call('isCustomerHasRelation', id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    alertify.warning("Data has been used. Can't remove.");
+                } else {
+                    destroyAction(
+                        Customers,
+                        {_id: this._id},
+                        {title: TAPi18n.__('pos.customer.title'), itemTitle: id}
+                    );
+                }
+            }
+        });
+
     },
     'click .js-display' (event, instance) {
         alertify.customerShow(fa('eye', TAPi18n.__('pos.customer.title')), renderTemplate(showTmpl, this));

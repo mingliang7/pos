@@ -117,11 +117,23 @@ indexTmpl.events({
         alertify.vendor(fa('pencil', TAPi18n.__('pos.vendor.title')), renderTemplate(editTmpl, this));
     },
     'click .js-destroy' (event, instance) {
-        destroyAction(
-            Vendors,
-            {_id: this._id},
-            {title: TAPi18n.__('pos.vendor.title'), itemTitle: this._id}
-        );
+        var id = this._id;
+        Meteor.call('isVendorHasRelation', id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    alertify.warning("Data has been used. Can't remove.");
+                } else {
+                    destroyAction(
+                        Vendors,
+                        {_id: this._id},
+                        {title: TAPi18n.__('pos.vendor.title'), itemTitle: id}
+                    );
+                }
+            }
+        });
+
     },
     'click .js-display' (event, instance) {
         alertify.vendorShow(fa('eye', TAPi18n.__('pos.vendor.title')), renderTemplate(showTmpl, this));
