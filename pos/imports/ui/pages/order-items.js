@@ -148,16 +148,29 @@ itemsTmpl.events({
         }
 
     },
+    'change [name="qtyConvert"]'(event,instance){
+        let converterAmount = $('option:selected', $('[name="baseUnit"]')).attr('convertAmount');
+        let currentValue = event.currentTarget.value;
+        $('[name="qty"]').val(parseFloat(converterAmount) * currentValue).change();
+    },
+    'change [name="baseUnit"]'(event,instance){
+        let qtyConvertAmount = instance.$('[name="qtyConvert"]').val();
+        let converterAmount = $('option:selected', $(event.currentTarget)).attr('convertAmount');
+
+        if(qtyConvertAmount != '') {
+            $('[name="qty"]').val(parseFloat(converterAmount) * parseFloat(qtyConvertAmount)).change();
+        }
+    },
     'change [name="itemId"]': function (event, instance) {
         instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
         instance.$('[name="qty"]').val('');
         // instance.$('[name="price"]').val('');
         instance.$('[name="amount"]').val('');
     },
-    'keyup [name="qty"],[name="price"]': function (event, instance) {
+    'change, keyup [name="qty"],[name="price"]': function (event, instance) {
         let qty = instance.$('[name="qty"]').val();
         let price = instance.$('[name="price"]').val();
-        qty = _.isEmpty(qty) ? 0 : parseInt(qty);
+        qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
         let amount = qty * price;
 

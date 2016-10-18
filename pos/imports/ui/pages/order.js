@@ -137,20 +137,24 @@ newTmpl.events({
 });
 newTmpl.helpers({
     customerInfo() {
-        let {customerInfo, totalAmountDue, whiteListCustomer} = Session.get('customerInfo');
-        let allowOverAmountDue = whiteListCustomer ? whiteListCustomer.limitTimes : 'Not set';
-        if (!customerInfo) {
-            return {empty: true, message: 'No data available'}
-        }
+        try {
 
-        return {
-            fields: `<li><i class="fa fa-phone-square"></i> Phone: <b><span class="label label-success">${customerInfo.telephone ? customerInfo.telephone : ''}</span></b> | </li>
+
+            let {customerInfo, totalAmountDue, whiteListCustomer} = Session.get('customerInfo');
+            let allowOverAmountDue = whiteListCustomer ? whiteListCustomer.limitTimes : 'Not set';
+            if (!customerInfo) {
+                return {empty: true, message: 'No data available'}
+            }
+
+            return {
+                fields: `<li><i class="fa fa-phone-square"></i> Phone: <b><span class="label label-success">${customerInfo.telephone ? customerInfo.telephone : ''}</span></b> | </li>
               <!--<li>Opening Balance: <span class="label label-success">0</span></li>-->
               <li><i class="fa fa-credit-card" aria-hidden="true"></i> Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span> | </li>
               <li><i class="fa fa-money"></i> Balance: <span class="label label-primary">${numeral(totalAmountDue).format('0,0.00')}</span> | 
               <li><i class="fa fa-flag"></i> Allow over amount due: <b class="label label-danger">${allowOverAmountDue}</b> | 
               <li><i class="fa fa-home"></i> Address: <b>${customerInfo.address ? customerInfo.address : 'None'}</b>`
-        };
+            };
+        }catch(e){}
     },
     collection(){
         return Order;

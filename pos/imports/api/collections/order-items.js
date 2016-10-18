@@ -13,6 +13,7 @@ import {itemInfo} from '../../../common/methods/item-info.js';
 
 // Item schema
 let defaultPrice = new ReactiveVar(0);
+let defaultBaseUnit = new ReactiveVar();
 let itemFilterSelector = new ReactiveVar({});
 Tracker.autorun(function () {
     if (Session.get('itemFilterState')) {
@@ -49,7 +50,7 @@ export const ItemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.integer();
+                return inputmaskOptions.decimal();
             }
         }
     },
@@ -61,7 +62,6 @@ export const ItemsSchema = new SimpleSchema({
         defaultValue: function () {
             let id = AutoForm.getFieldValue('itemId');
             let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
-            debugger
             if (id) {
                 itemInfo.callPromise({
                     _id: id, customerId: customerId
@@ -81,6 +81,45 @@ export const ItemsSchema = new SimpleSchema({
             optional: true,
             inputmaskOptions: function () {
                 return inputmaskOptions.currency();
+            }
+        }
+    },
+    baseUnit: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: 'select',
+            afFieldInput: {
+                style: 'width: 100%'
+            },
+            options(){
+                let id = AutoForm.getFieldValue('itemId');
+                let arr = [];
+                let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
+                if (id) {
+                    itemInfo.callPromise({
+                        _id: id, customerId: customerId
+                    }).then(function (result) {
+                        if(result.sellingUnit) {
+                            defaultBaseUnit.set(result.sellingUnit);
+                        }else{
+                            defaultBaseUnit.set(arr);
+                        }
+                    }).catch(function (err) {
+                        console.log(err.message);
+                    });
+                }
+                return defaultBaseUnit.get();
+            }
+        }
+    },
+    qtyConvert: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.decimal();
             }
         }
     },
@@ -122,7 +161,7 @@ export const RingPullItemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.integer();
+                return inputmaskOptions.decimal();
             }
         }
     },

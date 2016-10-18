@@ -18,6 +18,7 @@ export const itemInfo = new ValidatedMethod({
     }).validator(),
     run({_id, customerId}) {
         if (!this.isSimulation) {
+            let arr = [];
             let data = Item.findOne(_id);
             if (customerId) {
                 let itemPriceForCustomer = ItemPriceForCustomers.findOne({customerId: customerId});
@@ -29,6 +30,16 @@ export const itemInfo = new ValidatedMethod({
                         data.price = mapItemPrice[0].price;
                     }
                 }
+            }
+            if(data.sellingUnit) {
+                let index = 1;
+                data.sellingUnit.forEach(function (obj) {
+                    let unit = Units.findOne(obj.unitId);
+                    obj.unitName =  unit ? unit.name : '';
+                    arr.push({convertAmount: obj.converter || 0, label: `Convert Unit: ${obj.unitName} | Base Unit: ${data._unit.name} | converter: 1${obj.unitName} = ${obj.converter}${data._unit.name}`, value: index});
+                    index++;
+                });
+                data.sellingUnit = arr;
             }
             return data;
         }
