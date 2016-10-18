@@ -7,7 +7,7 @@ Tracker.autorun(function () {
     if (Session.get('creditLimitAmount') || Session.get('getCustomerId') || Session.get('saleOrderCustomerId')) {
         let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
         let info = Session.get('customerInfo');
-        if (info) {
+        if (info && Session.get('creditLimitAmount')) {
             checkCreditLimit.callPromise({
                 customerId: customerId,
                 customerInfo: info ? info.customerInfo : {},
