@@ -61,11 +61,24 @@ actionTmpl.events({
 
     },
     'click .js-destroy'(event, instance) {
-        destroyAction(
-            Units,
-            {_id: this._id},
-            {title: 'Remove Unit', itemTitle: this._id}
-        );
+        var id = this._id;
+        Meteor.call('isUnitHasRelation', id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    alertify.warning("Data has been used. Can't remove.");
+                } else {
+                    destroyAction(
+                        Units,
+                        {_id: this._id},
+                        {title: 'Remove Unit', itemTitle: id}
+                    );
+                }
+            }
+        });
+
+
     }
 })
 

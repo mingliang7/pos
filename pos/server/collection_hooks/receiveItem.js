@@ -25,12 +25,9 @@ ReceiveItems.before.insert(function (userId, doc) {
 ReceiveItems.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
+        let setting = AccountIntegrationSetting.findOne();
         let transaction = [];
         let type = '';
-        console.log(doc);
-        console.log('------------------data------------');
-        let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-        let lostInventoryChartAccount = AccountMapping.findOne({name: 'Lost Inventory'});
         let total = 0;
         let totalLostAmount = 0;
         doc.items.forEach(function (item) {
@@ -38,64 +35,80 @@ ReceiveItems.after.insert(function (userId, doc) {
             totalLostAmount += item.lostQty * item.price;
         });
         doc.total = total;
-        transaction.push({
-            account: inventoryChartAccount.account,
-            dr: doc.total,
-            cr: 0,
-            drcr: doc.total
-        });
-        if (totalLostAmount > 0) {
+        //Account Integration
+        if (setting && setting.integrate) {
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            let lostInventoryChartAccount = AccountMapping.findOne({name: 'Lost Inventory'});
             transaction.push({
-                account: lostInventoryChartAccount.account,
-                dr: totalLostAmount,
+                account: inventoryChartAccount.account,
+                dr: doc.total,
                 cr: 0,
-                drcr: totalLostAmount
+                drcr: doc.total
             });
+            if (totalLostAmount > 0) {
+                transaction.push({
+                    account: lostInventoryChartAccount.account,
+                    dr: totalLostAmount,
+                    cr: 0,
+                    drcr: totalLostAmount
+                });
+            }
         }
         doc.total = doc.total + totalLostAmount;
         if (doc.type == 'PrepaidOrder') {
-            type = 'PrepaidOrder-RI';
-            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
-            transaction.push({
-                account: InventoryOwingChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total
-            });
+            //Account Integration
+            if (setting && setting.integrate) {
+                type = 'PrepaidOrder-RI';
+                let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
+                transaction.push({
+                    account: InventoryOwingChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total
+                });
+            }
             reducePrepaidOrder(doc);
-
         }
         else if (doc.type == 'LendingStock') {
-            type = 'LendingStock-RI';
-            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Lending Stock'});
-            transaction.push({
-                account: InventoryOwingChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total
-            });
+            //Account Integration
+            if (setting && setting.integrate) {
+                type = 'LendingStock-RI';
+                let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Lending Stock'});
+                transaction.push({
+                    account: InventoryOwingChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total
+                });
+            }
             reduceLendingStock(doc);
         }
         else if (doc.type == 'ExchangeGratis') {
-            type = 'Gratis-RI';
-            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Gratis Owing'});
-            transaction.push({
-                account: InventoryOwingChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total
-            });
+            //Account Integration
+            if (setting && setting.integrate) {
+                type = 'Gratis-RI';
+                let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Gratis Owing'});
+                transaction.push({
+                    account: InventoryOwingChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total
+                });
+            }
             reduceExchangeGratis(doc);
         }
         else if (doc.type == 'CompanyExchangeRingPull') {
-            type = 'RingPull-RI';
-            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Ring Pull Owing'});
-            transaction.push({
-                account: InventoryOwingChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total
-            });
+            //Account Integration
+            if (setting && setting.integrate) {
+                type = 'RingPull-RI';
+                let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Ring Pull Owing'});
+                transaction.push({
+                    account: InventoryOwingChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total
+                });
+            }
             reduceCompanyExchangeRingPull(doc);
         }
         else {
@@ -107,7 +120,6 @@ ReceiveItems.after.insert(function (userId, doc) {
 
 
         //Account Integration
-        let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
             let data = doc;
             data.type = type;
@@ -124,10 +136,9 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
     let preDoc = this.previous;
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
+        let setting = AccountIntegrationSetting.findOne();
         let transaction = [];
         let type = '';
-        let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-        let lostInventoryChartAccount = AccountMapping.findOne({name: 'Lost Inventory'});
         let totalLostAmount = 0;
         let total = 0;
         console.log(doc);
@@ -136,64 +147,81 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
             totalLostAmount += item.lostQty * item.price;
         });
         doc.total = total;
-        transaction.push({
-            account: inventoryChartAccount.account,
-            dr: doc.total,
-            cr: 0,
-            drcr: doc.total
-        });
-        if (totalLostAmount > 0) {
+        //Account Integration
+        if (setting && setting.integrate) {
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            let lostInventoryChartAccount = AccountMapping.findOne({name: 'Lost Inventory'});
             transaction.push({
-                account: lostInventoryChartAccount.account,
-                dr: totalLostAmount,
+                account: inventoryChartAccount.account,
+                dr: doc.total,
                 cr: 0,
-                drcr: totalLostAmount
+                drcr: doc.total
             });
+            if (totalLostAmount > 0) {
+                transaction.push({
+                    account: lostInventoryChartAccount.account,
+                    dr: totalLostAmount,
+                    cr: 0,
+                    drcr: totalLostAmount
+                });
+            }
         }
         doc.total = doc.total + totalLostAmount;
 
         if (doc.type == 'PrepaidOrder') {
-            type = 'PrepaidOrder-RI';
-            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
-            transaction.push({
-                account: InventoryOwingChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total
-            });
+            //Account Integration
+            if (setting && setting.integrate) {
+                type = 'PrepaidOrder-RI';
+                let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
+                transaction.push({
+                    account: InventoryOwingChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total
+                });
+            }
             increasePrepaidOrder(preDoc);
             reducePrepaidOrder(doc);
         } else if (doc.type == 'LendingStock') {
-            type = 'LendingStock-RI';
-            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Lending Stock'});
-            transaction.push({
-                account: InventoryOwingChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total
-            });
+            //Account Integration
+            if (setting && setting.integrate) {
+                type = 'LendingStock-RI';
+                let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Lending Stock'});
+                transaction.push({
+                    account: InventoryOwingChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total
+                });
+            }
             increaseLendingStock(preDoc);
             reduceLendingStock(doc);
         } else if (doc.type == 'ExchangeGratis') {
-            type = 'Gratis-RI';
-            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Gratis Owing'});
-            transaction.push({
-                account: InventoryOwingChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total
-            });
+            //Account Integration
+            if (setting && setting.integrate) {
+                type = 'Gratis-RI';
+                let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Gratis Owing'});
+                transaction.push({
+                    account: InventoryOwingChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total
+                });
+            }
             increaseExchangeGratis(preDoc);
             reduceExchangeGratis(doc);
         } else if (doc.type == 'CompanyExchangeRingPull') {
-            type = 'RingPull-RI';
-            let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Ring Pull Owing'});
-            transaction.push({
-                account: InventoryOwingChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total
-            });
+            //Account Integration
+            if (setting && setting.integrate) {
+                type = 'RingPull-RI';
+                let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Ring Pull Owing'});
+                transaction.push({
+                    account: InventoryOwingChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total
+                });
+            }
             increaseCompanyExchangeRingPull(preDoc);
             reduceCompanyExchangeRingPull(doc);
         } else {
@@ -204,7 +232,6 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
             averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'receiveItem', doc._id);
         });
         //Account Integration
-        let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
             let data = doc;
             data.type = type;
