@@ -31,22 +31,20 @@ tabularOpts.columns = [
     {data: "total", title: "Total"},
     {data: "des", title: "Description"},
     {
-        data: "vendorId",
-        title: "Vendor ID",
-        render: function (val) {
-            let vendor = vendorBillCollection.findOne(val);
-            if (!vendor) {
-                Meteor.call('getVendor', {vendorId: val}, function (err, result) {
-                    vendorBillCollection.insert(result);
-                })
+        data: "_vendor.name",
+        title: "Vendor",
+    },
+    {
+        data: "billType",
+        title: "Type",
+        render: function(val) {
+            if(val == 'group') {
+                return `<span class="label label-warning">Group</span>`
             }
-            try {
-                return vendorBillCollection.findOne(val).name;
-            } catch (e) {
-            }
+            return `<span class="label label-primary">Term</span>`
         }
     },
-    {data: "staffId", title: "Staff ID"},
+    {data: "_staff.username", title: "Staff"},
     {data: "stockLocationId", title: "Stock Location"},
     //{
     //    data: "_vendor",

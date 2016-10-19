@@ -17,16 +17,18 @@ export const payBill = new ValidatedMethod({
             type: Object, blackbox: true
         },
         paymentDate: {type: Date},
-        branch: {type: String}
+        branch: {type: String},
+        voucherId: {type: String}
     }).validator(),
     run({
-        enterBillsObj, paymentDate, branch
+        enterBillsObj, paymentDate, branch, voucherId
     }) {
         if (!this.isSimulation) {
             for (let k in enterBillsObj) {
                 let selector = {}
                 let obj = {
                     billId: k,
+                    voucherId: voucherId,
                     paymentDate: paymentDate,
                     paidAmount: enterBillsObj[k].receivedPay,
                     dueAmount: enterBillsObj[k].dueAmount,

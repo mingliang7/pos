@@ -31,22 +31,12 @@ tabularOpts.columns = [
     {data: "total", title: "Total"},
     {data: "des", title: "Description"},
     {
-        data: "customerId",
-        title: "Customer ID",
-        render: function (val) {
-            Meteor.call('getCustomer', {customerId: val}, function (err, result) {
-                let customer = customerInvoiceCollection.findOne(result._id);
-                if (!customer) {
-                    customerInvoiceCollection.insert(result);
-                }
-            });
-            try {
-                return customerInvoiceCollection.findOne(val).name;
-
-            } catch (e) {
-
-            }
-        }
+        data: "_customer.name",
+        title: "Customer"
+    },
+    {
+        data: "_staff.username",
+        title: "Staff"
     },
     {data: "invoiceType", title: "Type"},
     {data: "status", title: "Status"},

@@ -39,6 +39,10 @@ PayBills.schema = new SimpleSchema({
     branchId: {
         type: String,
         optional: true
+    },
+    voucherId: {
+        type: String,
+        optional: true
     }
 });
 PayBills.attachSchema(PayBills.schema);
