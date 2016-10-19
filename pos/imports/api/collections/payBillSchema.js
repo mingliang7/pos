@@ -44,14 +44,14 @@ export const payBillSchema = new SimpleSchema({
         label: 'A/R Account',
         optional: true
     },
-    referenceId: {
+    voucherId: {
         type: String,
         optional: true,
-        label: 'Reference #'
+        label: 'Voucher #'
     },
     vendorId: {
         type: String,
-        label: 'Receive From',
+        label: 'Pay For',
         autoform: {
             type: 'universe-select',
             afFieldInput: {

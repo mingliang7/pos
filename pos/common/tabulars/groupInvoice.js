@@ -22,22 +22,8 @@ tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_groupInvoiceListAction},
     {data: "_id", title: "ID"},
     {
-        data: "vendorOrCustomerId",
+        data: "_customer.name",
         title: "Customer",
-        render: function (val) {
-            Meteor.call('getCustomer', {customerId: val}, function (err, result) {
-                let customer = tmpCollection.findOne(result._id);
-                if(!customer) {
-                    tmpCollection.insert(result);
-                }
-            });
-            try {
-                return tmpCollection.findOne(val).name;
-
-            }catch (e) {
-
-            }
-        }
     },
     {
         data: "startDate",

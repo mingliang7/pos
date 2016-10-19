@@ -602,6 +602,7 @@ let hooksObject = {
             });
         } else {
             let paymentDate = this.insertDoc.paymentDate || new Date();
+            let voucherId = this.insertDoc.voucherId || '' ;
             swal({
                 title: "Processing Payment..",
                 text: "Click OK to continue!",
@@ -610,7 +611,7 @@ let hooksObject = {
                 closeOnConfirm: false,
                 showLoaderOnConfirm: true,
             }).then(function () {
-                receivePayment.callPromise({paymentDate, invoicesObj, branch})
+                receivePayment.callPromise({paymentDate, invoicesObj, branch, voucherId})
                     .then(function (result) {
                         clearChecbox();
                         swal({

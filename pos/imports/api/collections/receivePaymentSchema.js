@@ -36,10 +36,10 @@ export const receivePaymentSchema = new SimpleSchema({
         label: 'A/R Account',
         optional: true
     },
-    referenceId: {
+    voucherId: {
         type: String,
         optional: true,
-        label: 'Reference #'
+        label: 'Voucher #'
     },
     customerId: {
         type: String,

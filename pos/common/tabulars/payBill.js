@@ -31,21 +31,12 @@ tabularOpts.columns = [
         }
     },
     {
-        data: "vendorId",
+        data: "_vendor.name",
         title: "Vendor",
-        render: function (val) {
-            Meteor.call('getVendor', {vendorId: val}, function (err, result) {
-                let customer = tmpCollection.findOne(result._id);
-                if(!customer) {
-                    tmpCollection.insert(result);
-                }
-            });
-            try {
-                return tmpCollection.findOne(val).name;
-            }catch (e){
-
-            }
-        }
+    },
+    {
+        data: "_staff.username",
+        title: "Staff",
     },
     {
         data: "dueAmount",

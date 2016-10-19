@@ -80,7 +80,6 @@ indexTmpl.events({
         });
     },
     'click .js-display' (event, instance) {
-        this.customer = tmpCollection.findOne(this.vendorOrCustomerId).name;
         alertify.groupInvoiceList(fa('eye', ''), renderTemplate(showTmpl, this));
     }
 });

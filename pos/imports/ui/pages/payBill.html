@@ -25,45 +25,45 @@
                         </div>
                         <hr>
                         <div class="row">
-
-                            <div class="col-xs-3">
-                                {{> afQuickField name="paymentDate" value=defaultDate}}
-                            </div>
-                            <div class="col-xs-3">
-                                {{> afQuickField name="exchangeRate" readonly=true}}
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="col-xs-3">
                                 {{> afQuickField name="vendorBalance" value=vendorBalance readonly=true}}
                             </div>
                             <div class="col-xs-3">
-                                {{> afQuickField name="accountReceivable"}}
+                                {{> afQuickField name="paymentDate" value=defaultDate}}
+                            </div>
+                            <div class="col-xs-3">
+                                {{> afQuickField name="voucherId"}}<br>
                             </div>
                         </div>
+                        <!--<div class="row">-->
+                        <!--<div class="col-xs-3">-->
+                        <!--{{> afQuickField name="accountReceivable"}}-->
+                        <!--</div>-->
+                        <!--</div>-->
 
 
-                        <div class="row">
-                            <div class="col-xs-3">
-                                {{> afQuickField name="paymentMethods"}}<br>
-                            </div>
-                            <div class="col-xs-3">
-                                {{> afQuickField name="referenceId"}}<br>
-                            </div>
-                            <div class="col-xs-3">
-                                {{> afQuickField name="depositTo"}}<br>
-                            </div>
-                        </div>
+                        <!--<div class="row">-->
+                        <!--<div class="col-xs-3">-->
+                        <!--{{> afQuickField name="paymentMethods"}}<br>-->
+                        <!--</div>-->
+
+                        <!--<div class="col-xs-3">-->
+                        <!--{{> afQuickField name="depositTo"}}<br>-->
+                        <!--</div>-->
+                        <!--</div>-->
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title"><strong>Bill List</strong></h3>
+                                <h3 class="panel-title text-center"><strong><i class="fa fa-file-text-o"></i> <u>BILL
+                                    LIST</u></strong></h3>
+
                             </div>
                             <div class="panel-body">
-                                <div class="table-responsive">
+                                <hr style="height: 2px; background: #3C8DBC;">
+                                <div class="table-responsive bg-gray-light">
                                     <table class="table table-condensed">
                                         <thead>
                                         <tr>
@@ -107,16 +107,24 @@
                                                         <td class="text-center">{{voucherId}}</td>
                                                         <td class="text-right">{{originAmount}}</td>
                                                         <td class="text-right">{{dueAmount}}</td>
-                                                        <td class="text-right"><input type="text" class="{{#if disableInputIfLastPaymentDateGreaterThanCurrentSelectDateOrPaidSome}}border-none text-center{{/if}} discount"
-                                                                                      value="{{discount}}" readonly="{{disableInputIfLastPaymentDateGreaterThanCurrentSelectDateOrPaidSome}}"></td>
-                                                        <td class="text-right"><input class="text-right actual-pay"
-                                                                                      value="{{total}}"
-                                                                                      style="background: none; border: none;"
-                                                                                      readonly="true">
+                                                        <td class="text-right"><input type="text"
+                                                                                      class="input-sm form-control {{#if disableInputIfLastPaymentDateGreaterThanCurrentSelectDateOrPaidSome}}border-none text-center{{/if}} discount"
+                                                                                      style="font-size: 13px;"
+                                                                                      value="{{discount}}"
+                                                                                      readonly="{{disableInputIfLastPaymentDateGreaterThanCurrentSelectDateOrPaidSome}}">
+                                                        </td>
+                                                        <td class="text-right"><input
+                                                                class="input-sm form-control text-right actual-pay"
+                                                                value="{{total}}"
+                                                                style="background: none; border: none; font-size: 13px;"
+                                                                readonly="true">
                                                         </td>
                                                         <td class="text-right"><input type="text"
                                                                                       value="{{#if hasAmount}}{{total}}{{/if}}"
-                                                                                      class="{{#if disableInputIfLastPaymentDateGreaterThanCurrentSelectDate}}border-none {{/if}}total" readonly="{{disableInputIfLastPaymentDateGreaterThanCurrentSelectDate}}"></td>
+                                                                                      style="font-size: 13px;"
+                                                                                      class="input-sm form-control {{#if disableInputIfLastPaymentDateGreaterThanCurrentSelectDate}}border-none {{/if}}total"
+                                                                                      readonly="{{disableInputIfLastPaymentDateGreaterThanCurrentSelectDate}}">
+                                                        </td>
                                                     </tr>
                                                 {{else}}
                                                     <small><i class="fa fa-spinner fa-spin fa-1x fa-fw"></i>Loading...
@@ -192,8 +200,11 @@
 
                                     </table>
                                 </div>
-                                <button class="btn btn-danger"><i class="fa fa-check"></i>Save</button>
-                                <a href="/pos/customer" class="btn btn-default">Back</a>
+                                <br>
+                                <span class="pull-right">
+                                    <button class="btn btn-primary"><i class="fa fa-check"></i>Save</button>
+                                    <a href="/pos/customer" class="btn btn-default">Back</a>
+                                </span>
                             </div>
                         </div>
                     </div>

@@ -43,6 +43,10 @@ ReceivePayment.schema = new SimpleSchema({
     branchId: {
         type: String,
         optional: true
+    },
+    voucherId: {
+        type: String,
+        optional: true
     }
 });
 ReceivePayment.attachSchema(ReceivePayment.schema);
