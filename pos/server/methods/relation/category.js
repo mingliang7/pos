@@ -5,10 +5,8 @@ Meteor.methods({
     isCategoryHasRelation: function (id) {
         let category = Categories.findOne({parentId: id});
         let item = Item.findOne({categoryId: id});
-        if (category || item) {
-            return true;
-        }
-        return false;
+        return !!(category || item);
+
     }
 });
 

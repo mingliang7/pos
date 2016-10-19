@@ -15,10 +15,8 @@ Meteor.methods({
         let payBills = PayBills.findOne({vendorId: id});
         let receiveItem = ReceiveItems.findOne({vendorId: id});
         let companyExchangeRingPull = CompanyExchangeRingPulls.findOne({vendorId: id});
-        if (enterBill || prepaidOrder || lendingStock || exchangeGratis || payBills || receiveItem || companyExchangeRingPull) {
-            return true;
-        }
-        return false;
+        return !!(enterBill || prepaidOrder || lendingStock || exchangeGratis || payBills || receiveItem || companyExchangeRingPull);
+
     }
 });
 

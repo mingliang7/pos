@@ -36,6 +36,7 @@ Invoices.before.insert(function (userId, doc) {
 Invoices.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
+        let setting = AccountIntegrationSetting.findOne();
         let transaction = [];
         let totalRemain = 0;
         if (doc.saleId) {
@@ -58,23 +59,25 @@ Invoices.after.insert(function (userId, doc) {
             if (saleOrder.sumRemainQty == 0) {
                 Order.direct.update(saleOrder._id, {$set: {status: 'closed'}});
             }
+            //Account Integration
+            if (setting && setting.integrate) {
+                let oweInventoryCustomerChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
+                let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+                doc.total = total;
+                transaction.push({
+                    account: oweInventoryCustomerChartAccount.account,
+                    dr: doc.total,
+                    cr: 0,
+                    drcr: doc.total,
 
-            let oweInventoryCustomerChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
-            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-            doc.total = total;
-            transaction.push({
-                account: oweInventoryCustomerChartAccount.account,
-                dr: doc.total,
-                cr: 0,
-                drcr: doc.total,
-
-            }, {
-                account: inventoryChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total,
-            });
-
+                }, {
+                    account: inventoryChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total,
+                });
+            }
+            //End Account Integration
 
         }
         else {
@@ -98,39 +101,41 @@ Invoices.after.insert(function (userId, doc) {
                 }
             });
             let totalInventory = doc.total + totalGratis;
-
-            let arChartAccount = AccountMapping.findOne({name: 'A/R'});
-            let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
-            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-            transaction.push({
-                account: arChartAccount.account,
-                dr: doc.total,
-                cr: 0,
-                drcr: doc.total,
-
-            });
-            if (totalGratis > 0) {
+            //Account Integration
+            if (setting && setting.integrate) {
+                let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+                let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
+                let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
                 transaction.push({
-                    account: gratisChartAccount.account,
-                    dr: totalGratis,
+                    account: arChartAccount.account,
+                    dr: doc.total,
                     cr: 0,
-                    drcr: totalGratis
-                });
+                    drcr: doc.total,
 
+                });
+                if (totalGratis > 0) {
+                    transaction.push({
+                        account: gratisChartAccount.account,
+                        dr: totalGratis,
+                        cr: 0,
+                        drcr: totalGratis
+                    });
+
+                }
+                transaction.push({
+                    account: inventoryChartAccount.account,
+                    dr: 0,
+                    cr: totalInventory,
+                    drcr: -totalInventory,
+                });
             }
-            transaction.push({
-                account: inventoryChartAccount.account,
-                dr: 0,
-                cr: totalInventory,
-                drcr: -totalInventory,
-            });
+            //End Account Integration
             doc.total = totalInventory;
         }
         if (doc.invoiceType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
         }
         //Account Integration
-        let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
             let data = doc;
             data.type = "Invoice";
@@ -160,6 +165,7 @@ Invoices.after.insert(function (userId, doc) {
 
 Invoices.after.update(function (userId, doc) {
     let preDoc = this.previous;
+    let setting = AccountIntegrationSetting.findOne();
     let type = {
         saleOrder: doc.invoiceType == 'saleOrder',
         term: doc.invoiceType == 'term',
@@ -182,21 +188,23 @@ Invoices.after.update(function (userId, doc) {
             total += item.amount;
         });
         doc.total = total;
-        let oweInventoryCustomerChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
-        let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-        transaction.push({
-            account: oweInventoryCustomerChartAccount.account,
-            dr: doc.total,
-            cr: 0,
-            drcr: doc.total,
+        if (setting && setting.integrate) {
+            let oweInventoryCustomerChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            transaction.push({
+                account: oweInventoryCustomerChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total,
 
-        }, {
-            account: inventoryChartAccount.account,
-            dr: 0,
-            cr: doc.total,
-            drcr: -doc.total,
-        });
-
+            }, {
+                account: inventoryChartAccount.account,
+                dr: 0,
+                cr: doc.total,
+                drcr: -doc.total,
+            });
+        }
+        //End Account Integration
 
     }
     else if (type.group) {
@@ -241,32 +249,34 @@ Invoices.after.update(function (userId, doc) {
             }
         });
         let totalInventory = doc.total + totalGratis;
-
-        let arChartAccount = AccountMapping.findOne({name: 'A/R'});
-        let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
-        let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-        transaction.push({
-            account: arChartAccount.account,
-            dr: doc.total,
-            cr: 0,
-            drcr: doc.total,
-
-        });
-        if (totalGratis > 0) {
+        if (setting && setting.integrate) {
+            let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+            let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             transaction.push({
-                account: gratisChartAccount.account,
-                dr: totalGratis,
+                account: arChartAccount.account,
+                dr: doc.total,
                 cr: 0,
-                drcr: totalGratis
-            });
+                drcr: doc.total,
 
+            });
+            if (totalGratis > 0) {
+                transaction.push({
+                    account: gratisChartAccount.account,
+                    dr: totalGratis,
+                    cr: 0,
+                    drcr: totalGratis
+                });
+
+            }
+            transaction.push({
+                account: inventoryChartAccount.account,
+                dr: 0,
+                cr: totalInventory,
+                drcr: -totalInventory,
+            });
         }
-        transaction.push({
-            account: inventoryChartAccount.account,
-            dr: 0,
-            cr: totalInventory,
-            drcr: -totalInventory,
-        });
+        //End Account Integration
         doc.total = totalInventory;
 
     }
@@ -308,38 +318,38 @@ Invoices.after.update(function (userId, doc) {
             }
         });
         let totalInventory = doc.total + totalGratis;
-
-        let arChartAccount = AccountMapping.findOne({name: 'A/R'});
-        let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
-        let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-        transaction.push({
-            account: arChartAccount.account,
-            dr: doc.total,
-            cr: 0,
-            drcr: doc.total,
-
-        });
-        if (totalGratis > 0) {
+        if (setting && setting.integrate) {
+            let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+            let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
+            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             transaction.push({
-                account: gratisChartAccount.account,
-                dr: totalGratis,
+                account: arChartAccount.account,
+                dr: doc.total,
                 cr: 0,
-                drcr: totalGratis
-            });
+                drcr: doc.total,
 
+            });
+            if (totalGratis > 0) {
+                transaction.push({
+                    account: gratisChartAccount.account,
+                    dr: totalGratis,
+                    cr: 0,
+                    drcr: totalGratis
+                });
+
+            }
+            transaction.push({
+                account: inventoryChartAccount.account,
+                dr: 0,
+                cr: totalInventory,
+                drcr: -totalInventory,
+            });
         }
-        transaction.push({
-            account: inventoryChartAccount.account,
-            dr: 0,
-            cr: totalInventory,
-            drcr: -totalInventory,
-        });
         doc.total = totalInventory;
 
     }
     Meteor.defer(function () {
         //Account Integration
-        let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
             let data = doc;
             data.type = "Invoice";
