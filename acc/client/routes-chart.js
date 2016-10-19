@@ -62,7 +62,7 @@ AccRoutes.route('/chartAccountComparation', {
     }
 });
 
-// Account Comparation
+// Company Snapshot
 import '../imports/ui/pages/chart/companySnapshot/companySnapshot';
 AccRoutes.route('/chartCompanySnapshot', {
     name: 'acc.companySnapshot',

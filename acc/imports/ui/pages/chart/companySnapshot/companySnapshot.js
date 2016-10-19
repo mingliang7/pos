@@ -49,8 +49,19 @@ indexTpl.onRendered(function () {
     }
     stateSelectorChart.set('yearSelect', $("#yearpicker").val());
 
+
+    var monthPicker = ['This Month', 'Last Month', 'Last Quater'];
+    monthPicker.forEach(function (obj) {
+        $('#monthpicker').append($('<option />').val(obj).html(obj));
+
+    })
+
+    stateSelectorChart.set('month', [s.pad(new Date().getMonth() + 1,2,"0")]);
+
+
     getDataForChart();
 });
+
 
 indexTpl.events({
     'click #usd': function () {
@@ -64,6 +75,23 @@ indexTpl.events({
         getDataForChart();
     }, 'change #yearpicker': function () {
         stateSelectorChart.set('yearSelect', $("#yearpicker").val());
+        getDataForChart();
+    }, 'change #monthpicker': function (e, t) {
+        if ($(e.currentTarget).val() == "This Month") {
+            stateSelectorChart.set('month', [s.pad(new Date().getMonth() + 1,2,"0")]);
+        } else if ($(e.currentTarget).val() == "Last Month") {
+            stateSelectorChart.set('month', [s.pad(new Date().getMonth(),2,"0")]);
+        } else if ($(e.currentTarget).val() == "Last Quater") {
+            let curMonth=(new Date().getMonth()) + 1;
+            let monthList=[];
+            for(i=curMonth;i>curMonth-3;i--){
+                if(i>0){
+                    monthList.push(s.pad(i,2,"0")+"");
+                }
+            }
+
+            stateSelectorChart.set('month', monthList);
+        }
         getDataForChart();
     }
 })
@@ -98,8 +126,8 @@ if (Meteor.isClient) {
                             }
                         },
                         /*tooltip: {
-                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                        },*/
+                         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                         },*/
                         plotOptions: {
                             pie: {
                                 allowPointSelect: true,
@@ -135,7 +163,6 @@ if (Meteor.isClient) {
         },
         createChartExpense: function () {
             // Gather data:
-            debugger;
             let obj = Session.get("objCompanySnapshot");
             // Use Meteor.defer() to craete chart after DOM is ready:
             if (obj != undefined) {
@@ -162,8 +189,8 @@ if (Meteor.isClient) {
                             }
                         },
                         /*tooltip: {
-                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                        },*/
+                         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                         },*/
                         plotOptions: {
                             pie: {
                                 allowPointSelect: true,
@@ -206,9 +233,20 @@ var getDataForChart = function () {
     selector.year = stateSelectorChart.get('yearSelect');
     selector.currencyId = stateSelectorChart.get('currency');
     selector.branchId = Session.get('currentBranch');
+    selector.month = {$in: stateSelectorChart.get('month')}
+
     Meteor.call("chart_companySnapshot", selector, function (err, obj) {
         if (obj != undefined) {
             Session.set("objCompanySnapshot", obj);
         }
     })
+}
+
+
+function LastDayOfMonth(Year, Month) {
+    return new Date((new Date(Year, Month, 1)) - 1);
+}
+
+function FirstDayOfMonth(Year, Month) {
+    return new Date((new Date(Year, Month - 1, 1)) + 1);
 }

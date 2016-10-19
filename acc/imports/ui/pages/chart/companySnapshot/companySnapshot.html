@@ -7,6 +7,10 @@
                         <select name="yearpicker" id="yearpicker" class="form-control input-sm"
                                 style="width: 230px"></select>
                     </div>
+                    <div class="col-sm-3">
+                        <select name="monthpicker" id="monthpicker" class="form-control input-sm"
+                                style="width: 230px"></select>
+                    </div>
                     <div class="col-sm-6">
                         <div class="switch-toggle switch-3 switch-candy" id="currency-toggle">
                             <input id="khr" value="khr" name="state-d" type="radio" checked="">
@@ -27,12 +31,11 @@
     <br><br>
     <div class="box-body">
         <div class="container-fluid ">
-            <div class="animated fadeIn">
-                <div id="chartIncome" class="col-md-12"
+            <div class="animated fadeIn col-md-12">
+                <div id="chartIncome" class="col-md-6"
                      style="min-width: 510px; max-width: 900px;  min-height: 510px;max-height: 900px; margin: 0 auto">{{createChartIncome}}
                 </div>
-                <li class="divider"></li>
-                <div id="chartExpense" class="col-md-12"
+                <div id="chartExpense" class="col-md-6"
                      style="min-width: 510px; max-width: 900px;  min-height: 510px;max-height: 900px; margin: 0 auto">{{createChartExpense}}
                 </div>
             </div>

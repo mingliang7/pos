@@ -75,6 +75,21 @@ journalDetailPaymentReceiveTpl.helpers({
     },
     keyArgs(index, name){
         return `transaction.${index}.${name}`;
+    },
+    type(){
+        if (state.get('type') == "income") {
+            return "Receive";
+        } else if (state.get('type') == "expense") {
+            return "Payment";
+        }
+    },
+    cssClassForAddMore(){
+        if (state.get('account') != "") {
+            state.set('cssClassForAddMore', '');
+        } else {
+            state.set('cssClassForAddMore', 'disabled');
+        }
+        return state.get('cssClassForAddMore');
     }
 });
 
@@ -82,16 +97,18 @@ journalDetailPaymentReceiveTpl.helpers({
 // Event
 journalDetailPaymentReceiveTpl.events({
     'click .addItem': function (e, t) {
-        debugger;
         var journal = {};
         // journal.account = (t.$('[name="account"]').val()).split('\u00A0')[(t.$('[name="account"]').val()).split('\u00A0').length - 1];
         journal.account = t.$('[name="account"]').val();
         journal.amount = parseFloat(t.$('[name="amount"]').val());
 
         let isInsert = journalDetailPaymentReceiveCollection.insert(journal);
-        state.set('amount',0);
+        state.set('amount', 0);
         $('[name="account"]').val("").trigger('change');
         $('[name="amount"]').val(0).trigger('change');
+
+        state.set('account',"")
+
     },
     'click .js-destroy-item': function (e, t) {
         let self = this;
@@ -100,8 +117,11 @@ journalDetailPaymentReceiveTpl.events({
     'click .js-update-item': function (e, t) {
         var self = this;
         var doc = journalDetailPaymentReceiveCollection.findOne(self._id);
-        Session.set('accountUpdate',doc.account);
+        Session.set('accountUpdate', doc.account);
         alertify.journalDetailPaymentReceive(fa("pencil", "Journal Detail"), renderTemplate(updateTpl, doc));
+    },
+    'change #account': function (e,t) {
+        state.set('account',$(e.currentTarget).val())
     }
 });
 
@@ -114,8 +134,8 @@ updateTpl.helpers({
 
 
 updateTpl.events({
-    'change [name="account"]': function (e,t) {
-        Session.set('accountUpdate',t.$(e.currentTarget).val());
+    'change [name="account"]': function (e, t) {
+        Session.set('accountUpdate', t.$(e.currentTarget).val());
     }
 })
 
@@ -123,9 +143,8 @@ updateTpl.events({
 AutoForm.hooks({
     acc_journalDetailPaymentReceiveUpdate: {
         onSubmit: function (insertDoc, updateDoc, currentDoc) {
-            debugger;
             event.preventDefault();
-            updateDoc.$set.account=Session.get('accountUpdate');
+            updateDoc.$set.account = Session.get('accountUpdate');
             journalDetailPaymentReceiveCollection.update(
                 {_id: currentDoc._id},
                 updateDoc

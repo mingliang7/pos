@@ -251,9 +251,8 @@ export const SelectOpts = {
         return list;
     },
     paymentReceiveMethod: function () {
-        Meteor.subscribe('acc.paymentReceiveMethod');
         let list=[];
-        list.push({label: "(Select One)", value: ""});
+        // list.push({label: "(Select One)", value: ""});
         PaymentReceiveMethod.find().forEach(function (obj) {
             list.push({label: obj.chartAccountCompare, value: Spacebars.SafeString(SpaceChar.space(obj.accountDoc.level * 6) +obj.accountDoc.code).string+" | "+obj.accountDoc.name})
         })

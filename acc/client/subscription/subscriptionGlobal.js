@@ -4,4 +4,5 @@ Meteor.subscribe('acc.currency');
 Meteor.subscribe('core.exchange');
 Meteor.subscribe('core.setting');
 Meteor.subscribe('core.branch');
+Meteor.subscribe('acc.paymentReceiveMethod');
 

@@ -17,118 +17,122 @@ FixAssetExpense.before.insert(function (userId, doc) {
     var date = moment(doc.date, "DD/MM/YYYY").format("YYMM");
     var prefix = doc.branchId + "-" + date;
     doc._id = idGenerator.genWithPrefix(FixAssetExpense, prefix, 6);
+    try {
+        var depType = ConfigDep.findOne();
+        var selectorList = {};
+        selectorList.date = {$lte: moment(doc.date).add(-1, 'months').toDate()};
+        selectorList.isDep = false;
+        selectorList.branchId = doc.branchId;
+        var depList = DepExpList.find(selectorList).fetch();
+        var startYear = new Date(doc.date).getFullYear();
+        var startDate = new Date(startYear + '-' + '01-01');
+        if (depList.length != 0) {
+            doc.date = doc.date;
+            doc.branchId = doc.branchId;
+            var selectorExpenseList = [];
+            DepExpList.update({isDep: true}, {$inc: {increment: 1}}, {multi: true});
 
+            depList.forEach(function (obj) {
 
-    var depType = ConfigDep.findOne();
-    var selectorList = {};
-    selectorList.date = {$lte: moment(doc.date).add(-1, 'months').toDate()};
-    selectorList.isDep = false;
-    selectorList.branchId = doc.branchId;
-    var depList = DepExpList.find(selectorList).fetch();
-    var startYear = new Date(doc.date).getFullYear();
-    var startDate = new Date(startYear + '-' + '01-01');
-    if (depList.length != 0) {
-        doc.date = doc.date;
-        doc.branchId = doc.branchId;
-        var selectorExpenseList = [];
-        DepExpList.update({isDep: true}, {$inc: {increment: 1}}, {multi: true});
+                obj.transactionAsset.sort(compareASD);
 
-        depList.forEach(function (obj) {
+                //Insert into FixAssetExpense
+                var selectorExpenseObj = {};
+                selectorExpenseObj.journalId = obj.journalId;
+                selectorExpenseObj.account = obj.account;
+                selectorExpenseObj.buyDate = obj.date;
+                selectorExpenseObj.currencyId = obj.currencyId;
 
-            obj.transactionAsset.sort(compareASD);
+                selectorExpenseObj.depExpListId = obj._id;
 
-            //Insert into FixAssetExpense
-            var selectorExpenseObj = {};
-            selectorExpenseObj.journalId = obj.journalId;
-            selectorExpenseObj.account = obj.account;
-            selectorExpenseObj.buyDate = obj.date;
-            selectorExpenseObj.currencyId = obj.currencyId;
-
-            selectorExpenseObj.depExpListId = obj._id;
-
-            for (let ob of obj.transactionAsset) {
-                if (ob.status == false) {
-                    var depTime = ob.maxMonth < depType.depPerTime ? ob.maxMonth : depType.depPerTime;
-                    var depValue = numeral(depTime * ob.perMonth).format('0,0.00');
-                    selectorExpenseObj.value = numeral().unformat(depValue);
-                    break;
-                }
-            }
-            selectorExpenseList.push(selectorExpenseObj);
-
-
-            //Insert Into Journal
-            var selectorJournal = {};
-            selectorJournal.journalDate = doc.date;
-            selectorJournal.currencyId = obj.currencyId;
-            selectorJournal.memo = "Depreciation Expense " + moment(doc.date).format("DD/MM/YYYY");
-
-            var year = moment(doc.date, "DD/MM/YYYY").format("YYYY");
-
-            /*var voucher = Meteor.call('getVoucherId', obj.currencyId,startDate);
-             if (voucher != null) {
-             var lastVoucherId = doc.branchId + "-" + year + s.pad(parseInt(
-             (voucher.voucherId).substr(8, 13)) + 1, 6, "0");
-             } else {
-             lastVoucherId = doc.branchId + "-" + year + "000001";
-             }*/
-
-            // selectorJournal.voucherId = lastVoucherId == undefined ? doc.branchId + "-" + year + "000001" : lastVoucherId;
-            selectorJournal.voucherId = "000000";
-            selectorJournal.branchId = doc.branchId;
-            selectorJournal.total = selectorExpenseObj.value;
-            selectorJournal.fixAssetExpenseId = doc._id;
-
-            var accountMap = MapFixAsset.findOne({fixAssetCon: obj.account});
-
-            var accountTypeAccu = AccountType.findOne(accountMap.accuFixAssetDoc.accountTypeId);
-            var accountTypeDepre = AccountType.findOne(accountMap.fixAssetExpenseDoc.accountTypeId);
-
-            if (accountTypeAccu && accountTypeDepre) {
-                var transaction = [];
-                transaction.push({
-                    account: accountMap.fixAssetExpenseDoc.code + " | " + accountMap.fixAssetExpenseDoc.name + " | " + accountTypeDepre.name,
-                    dr: selectorExpenseObj.value,
-                    cr: 0,
-                    drcr: selectorExpenseObj.value
-                }, {
-                    account: accountMap.accuFixAssetDoc.code + " | " + accountMap.accuFixAssetDoc.name + " | " + accountTypeAccu.name,
-                    dr: 0,
-                    cr: selectorExpenseObj.value,
-                    drcr: (-1) * selectorExpenseObj.value
-                });
-                selectorJournal.transaction = transaction;
-                Journal.insert(selectorJournal);
-
-
-                //Update DepExpList
-
-                var transactionUpdate = [];
-                var i = 1;
-                var yearLength = obj.transactionAsset.length;
-                obj.transactionAsset.forEach(function (ob) {
-                    if (i == 1 && ob.status == false) {
+                for (let ob of obj.transactionAsset) {
+                    if (ob.status == false) {
                         var depTime = ob.maxMonth < depType.depPerTime ? ob.maxMonth : depType.depPerTime;
-                        ob.month += depTime;
-                        i++;
+                        var depValue = numeral(depTime * ob.perMonth).format('0,0.00');
+                        selectorExpenseObj.value = numeral().unformat(depValue);
+                        break;
+                    }
+                }
+                selectorExpenseList.push(selectorExpenseObj);
 
-                        if (ob.month == ob.maxMonth && yearLength == ob.year) {
-                            obj.isDep = true;
+
+                //Insert Into Journal
+                var selectorJournal = {};
+                selectorJournal.journalDate = doc.date;
+                selectorJournal.currencyId = obj.currencyId;
+                selectorJournal.memo = "Depreciation Expense " + moment(doc.date).format("DD/MM/YYYY");
+
+                var year = moment(doc.date, "DD/MM/YYYY").format("YYYY");
+
+                /*var voucher = Meteor.call('getVoucherId', obj.currencyId,startDate);
+                 if (voucher != null) {
+                 var lastVoucherId = doc.branchId + "-" + year + s.pad(parseInt(
+                 (voucher.voucherId).substr(8, 13)) + 1, 6, "0");
+                 } else {
+                 lastVoucherId = doc.branchId + "-" + year + "000001";
+                 }*/
+
+                // selectorJournal.voucherId = lastVoucherId == undefined ? doc.branchId + "-" + year + "000001" : lastVoucherId;
+                selectorJournal.voucherId = "000000";
+                selectorJournal.branchId = doc.branchId;
+                selectorJournal.total = selectorExpenseObj.value;
+                selectorJournal.fixAssetExpenseId = doc._id;
+
+                var accountMap = MapFixAsset.findOne({fixAssetCon: obj.account});
+
+                var accountTypeAccu = AccountType.findOne(accountMap.accuFixAssetDoc.accountTypeId);
+                var accountTypeDepre = AccountType.findOne(accountMap.fixAssetExpenseDoc.accountTypeId);
+
+                if (accountTypeAccu && accountTypeDepre) {
+                    var transaction = [];
+                    transaction.push({
+                        account: accountMap.fixAssetExpenseDoc.code + " | " + accountMap.fixAssetExpenseDoc.name + " | " + accountTypeDepre.name,
+                        dr: selectorExpenseObj.value,
+                        cr: 0,
+                        drcr: selectorExpenseObj.value
+                    }, {
+                        account: accountMap.accuFixAssetDoc.code + " | " + accountMap.accuFixAssetDoc.name + " | " + accountTypeAccu.name,
+                        dr: 0,
+                        cr: selectorExpenseObj.value,
+                        drcr: (-1) * selectorExpenseObj.value
+                    });
+                    selectorJournal.transaction = transaction;
+                    Journal.insert(selectorJournal);
+
+
+                    //Update DepExpList
+
+                    var transactionUpdate = [];
+                    var i = 1;
+                    var yearLength = obj.transactionAsset.length;
+                    obj.transactionAsset.forEach(function (ob) {
+                        if (i == 1 && ob.status == false) {
+                            var depTime = ob.maxMonth < depType.depPerTime ? ob.maxMonth : depType.depPerTime;
+                            ob.month += depTime;
+                            i++;
+
+                            if (ob.month == ob.maxMonth && yearLength == ob.year) {
+                                obj.isDep = true;
+                            }
                         }
-                    }
-                    if (ob.month == ob.maxMonth) {
-                        ob.status = true;
-                    }
-                    transactionUpdate.push(ob);
-                })
-                obj.transactionAsset = transactionUpdate;
-                DepExpList.update({_id: obj._id}, {$set: obj});
-            }
-        })
-        doc.transactionExpense = selectorExpenseList;
+                        if (ob.month == ob.maxMonth) {
+                            ob.status = true;
+                        }
+                        transactionUpdate.push(ob);
+                    })
+                    obj.transactionAsset = transactionUpdate;
+                    DepExpList.update({_id: obj._id}, {$set: obj});
+                }
+            })
+            doc.transactionExpense = selectorExpenseList;
+        }
+    }
+    catch (err) {
+        FixAssetExpense.remove({_id: doc._id});
     }
 
 });
+
 
 
 function compare(a, b) {

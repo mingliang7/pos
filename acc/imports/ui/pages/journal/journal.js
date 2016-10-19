@@ -70,7 +70,8 @@ state = new ReactiveObj({
     amount:0,
     account: "",
     cssClassForAddMore: 'disabled',
-    cssClassForSubmit: 'disabled'
+    cssClassForSubmit: 'disabled',
+    type: ""
 
 });
 
@@ -279,12 +280,16 @@ indexTpl.events({
     'click .insertPayment': function (e, t) {
         stateFixAsset.set('isFixAsset', false);
         journalDetailPaymentReceiveCollection.remove({});
-        alertify.journal(fa("plus", "Journal"), renderTemplate(insertPaymentTpl)).maximize();
+        state.set('type',"expense");
+
+        alertify.journal(fa("plus", "Expense"), renderTemplate(insertPaymentTpl)).maximize();
     },
     'click .insertReceive': function (e, t) {
         stateFixAsset.set('isFixAsset', false);
         journalDetailPaymentReceiveCollection.remove({});
-        alertify.journal(fa("plus", "Journal"), renderTemplate(insertReceiveTpl)).maximize();
+        state.set('type',"income");
+
+        alertify.journal(fa("plus", "Income"), renderTemplate(insertReceiveTpl)).maximize();
     },
     'click .insert': function (e, t) {
         stateFixAsset.set('isFixAsset', false);
@@ -550,7 +555,6 @@ AutoForm.hooks({
     acc_journalInsertPayment: {
         before: {
             insert: function (doc) {
-                debugger;
                 let paymentMethod = $('#paymentReceiveMethod').val();
                 if (paymentMethod != "") {
                     var currentBranch = Session.get("currentBranch");
@@ -609,7 +613,6 @@ AutoForm.hooks({
     acc_journalInsertReceive: {
         before: {
             insert: function (doc) {
-                debugger;
                 let paymentMethod = $('#paymentReceiveMethod').val();
                 if (paymentMethod != "") {
                     var currentBranch = Session.get("currentBranch");
@@ -884,6 +887,7 @@ insertPaymentTpl.onDestroyed(function () {
     Session.set('journals', undefined);
     Session.set('currencyId', undefined);
     Session.set('dobSelect', undefined);
+    Session.set('type', undefined);
 
 
     stateFixAsset.set('isFixAsset', false);
@@ -895,6 +899,8 @@ insertReceiveTpl.onDestroyed(function () {
     Session.set('journals', undefined);
     Session.set('currencyId', undefined);
     Session.set('dobSelect', undefined);
+    Session.set('type', undefined);
+
 
 
     stateFixAsset.set('isFixAsset', false);
@@ -944,7 +950,6 @@ insertPaymentTpl.events({
         stateFixAsset.set("isFixAsset", elem.checked);
     },
     'change #paymentReceiveMethod'(){
-        debugger;
         if ($("#paymentReceiveMethod").val() != "") {
             state.set('cssClassForSubmit', '');
         } else {

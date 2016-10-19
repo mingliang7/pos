@@ -27,53 +27,49 @@
         </div>
 
         {{#each journals}}
-            <!--<div class="box">-->
-                <!--<div class="box-body">-->
-                    <div class="col-md-12 box-custom">
-                        <div class=" listJournal" >
-                            <div class="col-sm-6"
-                                 style="padding-right:1px;padding-left:0px;">
-                                <input type="text" value={{account}} style="width: 100%" class="form-control input-sm"
-                                readonly=true>
+            <div class="col-md-12 box-custom">
+                <div class=" listJournal">
+                    <div class="col-sm-6"
+                         style="padding-right:1px;padding-left:0px;">
+                        <input type="text" value={{account}} style="width: 100%" class="form-control input-sm"
+                        readonly=true>
+                    </div>
+                    <div class="col-sm-5" style="padding-right:1px;padding-left:0px;">
+                        <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
+                            <div style="padding-right:1px;padding-left:0px;">
+                                <input type="text" value={{formatMoney dr}} style="width: 100%"
+                                class="form-control
+                                input-sm" readonly=true>
                             </div>
-                            <div class="col-sm-5" style="padding-right:1px;padding-left:0px;">
-                                <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
-                                    <div style="padding-right:1px;padding-left:0px;">
-                                        <input type="text" value={{formatMoney dr}} style="width: 100%"
-                                        class="form-control
-                                        input-sm" readonly=true>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
-                                    <div style="padding-right:1px;padding-left:0px;">
-                                        <input type="text" value={{formatMoney cr}} style="width: 100%"
-                                        class="form-control
-                                        input-sm" readonly=true>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-1" style="padding-right:1px;padding-left:0px;">
-                                <ul class="list-inline input-sm" style="padding-right:0px; padding-left:0px;">
-                                    <li>
-                                        <a href="#" class="js-update-item">
-                                         <span class="badge badge-round bg-green">
-                                             {{fa "pencil"}}
-                                         </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="js-destroy-item">
-                                    <span class="badge badge-round bg-red ">
-                                        {{fa "remove"}}
-                                    </span>
-                                        </a>
-                                    </li>
-                                </ul>
+                        </div>
+                        <div class="col-sm-6" style="padding-right:1px;padding-left:0px;">
+                            <div style="padding-right:1px;padding-left:0px;">
+                                <input type="text" value={{formatMoney cr}} style="width: 100%"
+                                class="form-control
+                                input-sm" readonly=true>
                             </div>
                         </div>
                     </div>
-                <!--</div>-->
-            <!--</div>-->
+                    <div class="col-sm-1" style="padding-right:1px;padding-left:0px;">
+                        <ul class="list-inline input-sm" style="padding-right:0px; padding-left:0px;">
+                            <li>
+                                <a href="#" class="js-update-item">
+                                         <span class="badge badge-round bg-green">
+                                             {{fa "pencil"}}
+                                         </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="js-destroy-item">
+                                    <span class="badge badge-round bg-red ">
+                                        {{fa "remove"}}
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         {{/each}}
     {{/autoForm}}
 </template>
@@ -102,7 +98,7 @@
                         </div>
                     </div>
 
-                        <button type="submit" class="btn btn-primary pull-right">{{fa "floppy-o"}} Save</button>
+                    <button type="submit" class="btn btn-primary pull-right">{{fa "floppy-o"}} Save</button>
 
                 </fieldset>
             </div>

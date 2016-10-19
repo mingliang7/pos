@@ -59,25 +59,43 @@ Meteor.methods({
 
     }
     , chart_dailyIncomeExpense(param){
+        let data = {};
+
         var currentDate = new Date();
 
         let curMonth = currentDate.getMonth();
         let curYear = currentDate.getFullYear();
 
-        var dataIncome = Journal.aggregate([{
+        let month = curMonth + 1;
+        let startDate = moment('01-' + month + '-' + curYear, "DD/MM/YYYY").toDate();
+
+
+        let dataIncome= [
+            {_id: 'USD', dayList: [], value: []},
+            {_id: 'KHR', dayList: [], value: []},
+            {_id: 'THB', dayList: [], value: []}]
+
+        let dataExpense= [
+            {_id: 'USD', dayList: [], value: []},
+            {_id: 'KHR', dayList: [], value: []},
+            {_id: 'THB', dayList: [], value: []}]
+
+
+        var dataIncomeOrg = Journal.aggregate([{
             $unwind: "$transaction"
         }, {
             $match: {
-                'transaction.accountDoc.accountTypeId': { $in: ['40', '41'] },
+                'transaction.accountDoc.accountTypeId': {$in: ['40', '41']},
+                journalDate: {$gte: startDate}
             }
         },
             {
                 $project: {
                     _id: 1,
                     currencyId: 1,
-                    day: { $dayOfMonth: "$journalDate" },
-                    month: { $month: "$journalDate" },
-                    year: { $year: "$journalDate" },
+                    day: {$dayOfMonth: "$journalDate"},
+                    month: {$month: "$journalDate"},
+                    year: {$year: "$journalDate"},
                     transaction: {
                         drcr: 1
                     },
@@ -94,19 +112,19 @@ Meteor.methods({
                         currencyId: "$currencyId",
 
                     },
-                    journalDate: { $last: "$journalDate" },
-                    value: { $sum: '$transaction.drcr' }
+                    journalDate: {$last: "$journalDate"},
+                    value: {$sum: '$transaction.drcr'}
                 }
             },
-            { $sort: { journalDate: -1 } },
+            {$sort: {journalDate: -1}},
             {
                 $group: {
-                    _id:"$_id.currencyId",
+                    _id: "$_id.currencyId",
                     dayList: {
-                        $addToSet: { $dateToString: { format: "%d/%m/%Y", date: "$journalDate" } }
+                        $addToSet: {$dateToString: {format: "%d/%m/%Y", date: "$journalDate"}}
                     },
-                    value:{
-                        $addToSet: {$multiply: ["$value",-1 ]}
+                    value: {
+                        $addToSet: {$multiply: ["$value", -1]}
                     }
 
                 }
@@ -115,24 +133,34 @@ Meteor.methods({
         ]);
 
 
-        var monthList = getDaysInMonth(curMonth, curYear);
-        monthList.forEach(function (obj) {
+        dataIncomeOrg.forEach(function (obj) {
+            for(var i=0;i<dataIncome.length;i++){
+                if (dataIncome[i]._id === obj._id) {
+                    dataIncome[i].dayList = obj.dayList;
+                    dataIncome[i].value = obj.value;
+                    break;
+                }
+            }
+        })
+
+        var dayList = getDaysInMonth(curMonth, curYear);
+        dayList.forEach(function (obj) {
             dataIncome.forEach(function (doc) {
                 if (doc._id == "KHR") {
                     if (doc.dayList.indexOf(moment(obj).format("DD/MM/YYYY")) == -1) {
-                        let index = monthList.indexOf(obj);
+                        let index = dayList.indexOf(obj);
                         doc.dayList.splice(index, 0, moment(obj).format("DD/MM/YYYY"));
                         doc.value.splice(index, 0, 0);
                     }
-                }else if (doc._id == "USD") {
+                } else if (doc._id == "USD") {
                     if (doc.dayList.indexOf(moment(obj).format("DD/MM/YYYY")) == -1) {
-                        let index = monthList.indexOf(obj);
+                        let index = dayList.indexOf(obj);
                         doc.dayList.splice(index, 0, moment(obj).format("DD/MM/YYYY"));
                         doc.value.splice(index, 0, 0);
                     }
-                }else if (doc._id == "THB") {
+                } else if (doc._id == "THB") {
                     if (doc.dayList.indexOf(moment(obj).format("DD/MM/YYYY")) == -1) {
-                        let index = monthList.indexOf(obj);
+                        let index = dayList.indexOf(obj);
                         doc.dayList.splice(index, 0, moment(obj).format("DD/MM/YYYY"));
                         doc.value.splice(index, 0, 0);
                     }
@@ -140,7 +168,97 @@ Meteor.methods({
             })
         })
 
-        console.log(data);
+
+        var dataExpenseOrg = Journal.aggregate([{
+            $unwind: "$transaction"
+        }, {
+            $match: {
+                'transaction.accountDoc.accountTypeId': {$in: ['50', '51']},
+                journalDate: {$gte: startDate}
+            }
+        },
+            {
+                $project: {
+                    _id: 1,
+                    currencyId: 1,
+                    day: {$dayOfMonth: "$journalDate"},
+                    month: {$month: "$journalDate"},
+                    year: {$year: "$journalDate"},
+                    transaction: {
+                        drcr: 1
+                    },
+                    journalDate: 1,
+
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        day: "$day",
+                        month: "$month",
+                        year: "$year",
+                        currencyId: "$currencyId",
+
+                    },
+                    journalDate: {$last: "$journalDate"},
+                    value: {$sum: '$transaction.drcr'}
+                }
+            },
+            {$sort: {journalDate: -1}},
+            {
+                $group: {
+                    _id: "$_id.currencyId",
+                    dayList: {
+                        $addToSet: {$dateToString: {format: "%d/%m/%Y", date: "$journalDate"}}
+                    },
+                    value: {
+                        $addToSet: "$value"
+                    }
+
+                }
+            }
+
+        ]);
+
+        dataExpenseOrg.forEach(function (obj) {
+            for(var i=0;i<dataExpense.length;i++){
+                if (dataExpense[i]._id === obj._id) {
+                    dataExpense[i].dayList = obj.dayList;
+                    dataExpense[i].value = obj.value;
+                    break;
+                }
+            }
+        })
+
+
+        dayList.forEach(function (obj) {
+            dataExpense.forEach(function (doc) {
+                if (doc._id == "KHR") {
+                    if (doc.dayList.indexOf(moment(obj).format("DD/MM/YYYY")) == -1) {
+                        let index = dayList.indexOf(obj);
+                        doc.dayList.splice(index, 0, moment(obj).format("DD/MM/YYYY"));
+                        doc.value.splice(index, 0, 0);
+                    }
+                } else if (doc._id == "USD") {
+                    if (doc.dayList.indexOf(moment(obj).format("DD/MM/YYYY")) == -1) {
+                        let index = dayList.indexOf(obj);
+                        doc.dayList.splice(index, 0, moment(obj).format("DD/MM/YYYY"));
+                        doc.value.splice(index, 0, 0);
+                    }
+                } else if (doc._id == "THB") {
+                    if (doc.dayList.indexOf(moment(obj).format("DD/MM/YYYY")) == -1) {
+                        let index = dayList.indexOf(obj);
+                        doc.dayList.splice(index, 0, moment(obj).format("DD/MM/YYYY"));
+                        doc.value.splice(index, 0, 0);
+                    }
+                }
+            })
+        })
+
+
+        data.dataIncome = dataIncome;
+        data.dataExpense = dataExpense;
+
         return data;
 
     }
@@ -224,7 +342,9 @@ Meteor.methods({
         dataMain.datasets = data;
         return dataMain;
     }
-    , chart_companySnapshot: function (selector) {
+    ,
+
+    chart_companySnapshot: function (selector) {
 
         let thisSelector = {};
         let valueAccountListIncome = [];
@@ -239,9 +359,10 @@ Meteor.methods({
 
 
         thisSelector.accountTypeId = {$in: ['40', '41', '50', '51']}
-        thisSelector.year = '2016';
-        thisSelector.month = '06';
-        thisSelector.currencyId = 'USD';
+        thisSelector.year = selector.year;
+        // thisSelector.month = selector.year;
+        thisSelector.currencyId = selector.currencyId;
+        thisSelector.month=selector.month;
 
         let amountList = CloseChartAccountPerMonth.find(thisSelector).fetch();
 

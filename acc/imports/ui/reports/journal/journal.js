@@ -61,7 +61,6 @@ generateTpl.onCreated(function () {
 //Event
 generateTpl.events({
     'dblclick .journalRow': function (e, t) {
-        debugger;
         var self = this;
 
         var selectorGetLastDate = {};

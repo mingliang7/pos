@@ -42,28 +42,30 @@ if (Meteor.isClient) {
     indexTpl.helpers({
         createChartDailyIncomeExpense: function () {
 
-            Meteor.call('chart_dailyIncomeExpense', function (err,obj) {
-                console.log(obj);
-                if (obj != undefined) {
-                    Meteor.defer(function () {
-                        // Create standard Highcharts chart with options:
-                        Highcharts.chart('dailyIncomeExpense', {
+            Meteor.call('chart_dailyIncomeExpense', function (err, obj) {
+
+                Meteor.defer(function () {
+                    // Create standard Highcharts chart with options:
+                    if (obj.dataIncome[0] != undefined || obj.dataExpense[0] != undefined) {
+
+
+                        Highcharts.chart('dailyIncomeExpenseUSD', {
                             chart: {
                                 type: 'column'
                             },
 
                             title: {
-                                text: 'Daily Income Expense'
+                                text: 'Daily Income Expense '+ obj.dataIncome[0]._id
                             },
 
                             xAxis: {
-                                categories: obj[1].dayList
+                                categories: obj.dataIncome[0].dayList
                             },
 
                             yAxis: {
                                 allowDecimals: true,
                                 title: {
-                                    text: 'Value'
+                                    text: obj.dataIncome[0]._id
                                 }
                             },
 
@@ -85,18 +87,118 @@ if (Meteor.isClient) {
                             },
                             series: [{
                                 name: 'Income',
-                                data: obj[0].thb,
+                                data: obj.dataIncome[0].value,
                                 stack: 'daily'
                             }, {
                                 name: 'Expense',
-                                data: obj[1].thb,
+                                data: obj.dataExpense[0].value,
+                                stack: 'daily'
+                            }]
+                        });
+                    }
+                    if (obj.dataIncome[1] != undefined || obj.dataExpense[1] != undefined) {
+
+
+                        Highcharts.chart('dailyIncomeExpenseKHR', {
+                            chart: {
+                                type: 'column'
+                            },
+
+                            title: {
+                                text: 'Daily Income Expense '+ obj.dataIncome[1]._id
+                            },
+
+                            xAxis: {
+                                categories: obj.dataIncome[1].dayList
+                            },
+
+                            yAxis: {
+                                allowDecimals: true,
+                                title: {
+                                    text: obj.dataIncome[1]._id
+                                }
+                            },
+
+                            tooltip: {
+                                formatter: function () {
+                                    return '<b>' + this.x + '</b><br/>' +
+                                        this.series.name + ': ' + this.y + '<br/>' +
+                                        'Total: ' + this.point.stackTotal;
+                                }
+                            },
+
+                            plotOptions: {
+                                column: {
+                                    stacking: 'normal'
+                                }
+                            },
+                            credits: {
+                                enabled: false
+                            },
+                            series: [{
+                                name: 'Income',
+                                data: obj.dataIncome[1].value,
+                                stack: 'daily'
+                            }, {
+                                name: 'Expense',
+                                data: obj.dataExpense[1].value,
                                 stack: 'daily'
                             }]
                         })
-                    })
-                }
-            })
+                    }
+                    if (obj.dataIncome[2] != undefined || obj.dataExpense[2] != undefined) {
 
+                        Highcharts.chart('dailyIncomeExpenseTHB', {
+                            chart: {
+                                type: 'column'
+                            },
+
+                            title: {
+                                text: 'Daily Income Expense '+ obj.dataIncome[2]._id
+                            },
+
+                            xAxis: {
+                                categories: obj.dataIncome[2].dayList
+                            },
+
+                            yAxis: {
+                                allowDecimals: true,
+                                title: {
+                                    text: obj.dataIncome[2]._id
+                                }
+                            },
+
+                            tooltip: {
+                                formatter: function () {
+                                    return '<b>' + this.x + '</b><br/>' +
+                                        this.series.name + ': ' + this.y + '<br/>' +
+                                        'Total: ' + this.point.stackTotal;
+                                }
+                            },
+
+                            plotOptions: {
+                                column: {
+                                    stacking: 'normal'
+                                }
+                            },
+                            credits: {
+                                enabled: false
+                            },
+                            series: [{
+                                name: 'Income',
+                                data: obj.dataIncome[2].value,
+                                stack: 'daily'
+                            }, {
+                                name: 'Expense',
+                                data: obj.dataExpense[2].value,
+                                stack: 'daily'
+                            }]
+                        })
+                    }
+                })
+
+
+            })
         }
 
     })

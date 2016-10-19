@@ -34,6 +34,10 @@ DateEndOfProcess.schema = new SimpleSchema({
     branchId:{
         type: String,
         label: "Branch"
+    },
+    month:{
+        type: String,
+        optional: true
     }
 });
 

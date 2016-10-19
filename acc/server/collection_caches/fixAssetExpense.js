@@ -4,4 +4,4 @@ import 'meteor/theara:collection-cache';
 import {FixAssetExpense} from '../../imports/api/collections/fixAssetExpense';
 
 FixAssetExpense.cacheTimestamp();
-FixAssetExpense._ensureIndex({date: 1}, {unique: 1});
+FixAssetExpense._ensureIndex({date: 1,branchId:1}, {unique: 1});

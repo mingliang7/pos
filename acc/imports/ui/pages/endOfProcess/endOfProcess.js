@@ -158,7 +158,7 @@ AutoForm.hooks({
             alertify.success('Success');
         },
         onError: function (formType, error) {
-            alertify.error(error.message);
+            alertify.error("Duplicate Date");
         }
     }
 });
