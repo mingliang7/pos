@@ -5,7 +5,8 @@ import {LendingStocks} from '../../../imports/api/collections/lendingStock.js'
 import {ExchangeGratis} from '../../../imports/api/collections/exchangeGratis.js'
 import {PayBills} from '../../../imports/api/collections/payBill.js'
 import {ReceiveItems} from '../../../imports/api/collections/receiveItem.js'
-import {CompanyExchangeRingPulls} from '../../../imports/api/collections/companyExchangeRingPull.js'
+import {CompanyExchangeRingPulls} from '../../../imports/api/collections/companyExchangeRingPull.js';
+import {PurchaseOrder} from '../../../imports/api/collections/purchaseOrder.js';
 Meteor.methods({
     isVendorHasRelation: function (id) {
         let enterBill = EnterBills.findOne({vendorId: id});
@@ -15,7 +16,8 @@ Meteor.methods({
         let payBills = PayBills.findOne({vendorId: id});
         let receiveItem = ReceiveItems.findOne({vendorId: id});
         let companyExchangeRingPull = CompanyExchangeRingPulls.findOne({vendorId: id});
-        return !!(enterBill || prepaidOrder || lendingStock || exchangeGratis || payBills || receiveItem || companyExchangeRingPull);
+        let purchaseOrder = PurchaseOrder.findOne({vendorId: id});
+        return !!(enterBill || prepaidOrder || purchaseOrder || lendingStock || exchangeGratis || payBills || receiveItem || companyExchangeRingPull);
 
     }
 });
