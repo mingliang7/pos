@@ -131,8 +131,12 @@ newTmpl.onCreated(function () {
 newTmpl.events({
     'change [name=customerId]'(event, instance){
         if (event.currentTarget.value != '') {
+            FlowRouter.query.unset();
             Session.set('saleOrderCustomerId', event.currentTarget.value);
         }
+    },
+    'click .saveNPurchase'(event, instance){
+        FlowRouter.query.set({p: 'true'});
     }
 });
 newTmpl.helpers({
@@ -154,7 +158,8 @@ newTmpl.helpers({
               <li><i class="fa fa-flag"></i> Allow over amount due: <b class="label label-danger">${allowOverAmountDue}</b> | 
               <li><i class="fa fa-home"></i> Address: <b>${customerInfo.address ? customerInfo.address : 'None'}</b>`
             };
-        }catch(e){}
+        } catch (e) {
+        }
     },
     collection(){
         return Order;
@@ -177,21 +182,17 @@ newTmpl.onDestroyed(function () {
     itemsCollection.remove({});
     Session.set('customerInfo', undefined);
     Session.set('saleOrderCustomerId', undefined);
+    FlowRouter.query.unset();
 });
 
 // Edit
-editTmpl.onCreated(function () {
-    this.autorun(()=> {
-        this.subscribe('pos.order', {_id: this.data._id});
-    });
-});
 
 editTmpl.helpers({
     collection(){
         return Order;
     },
     data () {
-        let data = Order.findOne(this._id);
+        let data =this;
 
         // Add items to local collection
         _.forEach(data.items, (value)=> {
@@ -215,10 +216,15 @@ editTmpl.helpers({
         return {};
     }
 });
-
+editTmpl.events({
+    'click .saveNPurchase'(event,instance){
+        FlowRouter.query.set({p: 'true'});
+    }
+});
 editTmpl.onDestroyed(function () {
     // Remove items collection
     itemsCollection.remove({});
+    FlowRouter.query.unset();
 });
 
 showTmpl.helpers({
@@ -249,36 +255,38 @@ showTmpl.events({
 let hooksObject = {
     before: {
         insert: function (doc) {
+            let isPurchased = FlowRouter.query.get('p');
+            doc.isPurchased = isPurchased  ? true : false;
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
-                obj.remainQty = obj.qty
+                obj.remainQty = obj.qty;
                 items.push(obj);
             });
             doc.items = items;
-
             return doc;
         },
         update: function (doc) {
             let items = [];
+            let isPurchased = FlowRouter.query.get('p');
+            doc.$set.isPurchased = isPurchased  ? true : false;
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
                 obj.remainQty = obj.qty
                 items.push(obj);
             });
             doc.$set.items = items;
-
             delete doc.$unset;
-
             return doc;
         }
     },
     onSuccess (formType, result) {
-        // if (formType == 'update') {
+        if (formType == 'update') {
+            alertify.order().close();
+        }
         // Remove items collection
         itemsCollection.remove({});
-
-        alertify.order().close();
+        FlowRouter.query.unset();
         // }
         displaySuccess();
     },

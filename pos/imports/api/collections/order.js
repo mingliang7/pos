@@ -129,6 +129,10 @@ Order.schema = new SimpleSchema({
         type: String,
         label: 'Voucher ID',
         optional: true
+    },
+    isPurchased:{
+        type: Boolean,
+        optional: true
     }
 });
 
