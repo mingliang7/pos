@@ -103,12 +103,23 @@ indexTmpl.events({
         excuteEditForm(this);
     },
     'click .js-destroy' (event, instance) {
-        let data = this;
-        destroyAction(
-            CompanyExchangeRingPulls,
-            {_id: data._id},
-            {title: TAPi18n.__('pos.companyExchangeRingPull.title'), itemTitle: data._id}
-        );
+        var id = this._id;
+        Meteor.call('isCompanyExchangeRingPullHasRelation', id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    alertify.warning("Data has been used. Can't remove.");
+                } else {
+                    destroyAction(
+                        CompanyExchangeRingPulls,
+                        {_id: id},
+                        {title: TAPi18n.__('pos.companyExchangeRingPull.title'), itemTitle: id}
+                    );
+                }
+            }
+        });
+
     },
     'click .js-display' (event, instance) {
         swal({

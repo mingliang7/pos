@@ -139,22 +139,6 @@ CompanyExchangeRingPulls.schema = new SimpleSchema({
             }
         }
     },
-    stockLocationId: {
-        type: String,
-        autoform: {
-            type: 'universe-select',
-            afFieldInput: {
-                uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.stockLocation',
-                optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }
-                }
-            }
-        }
-    },
     sumRemainQty: {
         type: Number,
         decimal: true
