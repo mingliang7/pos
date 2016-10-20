@@ -133,7 +133,24 @@ Order.schema = new SimpleSchema({
     isPurchased:{
         type: Boolean,
         optional: true
-    }
+    },
+    vendorId: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+                optionsMethod: 'pos.selectOptMethods.vendor',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let currentBranch = Session.get('currentBranch');
+                        return {branchId: currentBranch};
+                    }
+                }
+            }
+        }
+    },
 });
 
 Meteor.startup(function () {

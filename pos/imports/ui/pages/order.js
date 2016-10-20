@@ -136,14 +136,21 @@ newTmpl.events({
         }
     },
     'click .saveNPurchase'(event, instance){
-        FlowRouter.query.set({p: 'true'});
+        let vendorId = instance.$('[name="vendorId"]').val();
+        if (vendorId == '') {
+            instance.$('.warning-msg').text('*សូមជ្រើសរើសយក Vendor');
+            return false;
+        } else {
+            FlowRouter.query.set({p: 'true'});
+        }
+    },
+    'change [name="vendorId"]'(event, instance){
+        instance.$('.warning-msg').text('');
     }
 });
 newTmpl.helpers({
     customerInfo() {
         try {
-
-
             let {customerInfo, totalAmountDue, whiteListCustomer} = Session.get('customerInfo');
             let allowOverAmountDue = whiteListCustomer ? whiteListCustomer.limitTimes : 'Not set';
             if (!customerInfo) {
@@ -192,7 +199,7 @@ editTmpl.helpers({
         return Order;
     },
     data () {
-        let data =this;
+        let data = this;
 
         // Add items to local collection
         _.forEach(data.items, (value)=> {
@@ -217,7 +224,7 @@ editTmpl.helpers({
     }
 });
 editTmpl.events({
-    'click .saveNPurchase'(event,instance){
+    'click .saveNPurchase'(event, instance){
         FlowRouter.query.set({p: 'true'});
     }
 });
@@ -256,7 +263,7 @@ let hooksObject = {
     before: {
         insert: function (doc) {
             let isPurchased = FlowRouter.query.get('p');
-            doc.isPurchased = isPurchased  ? true : false;
+            doc.isPurchased = isPurchased ? true : false;
             let items = [];
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
@@ -269,7 +276,7 @@ let hooksObject = {
         update: function (doc) {
             let items = [];
             let isPurchased = FlowRouter.query.get('p');
-            doc.$set.isPurchased = isPurchased  ? true : false;
+            doc.$set.isPurchased = isPurchased ? true : false;
             itemsCollection.find().forEach((obj)=> {
                 delete obj._id;
                 obj.remainQty = obj.qty

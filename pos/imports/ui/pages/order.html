@@ -66,8 +66,33 @@
 
                 <div class="col-md-8">
                     <!--Item Temporary-->
-                    {{> Pos_orderItems itemsCollection=itemsCollection}}
-
+                    {{> Pos_orderItems itemsCollection=itemsCollection}}<br>
+                    <div class="col-md-12">
+                        <div class="box  collapsed-box">
+                            <div class="box-header with-border cursor-pointer hover-on-select-vendor" data-widget="collapse">
+                                <h3 class="box-title"> Select Vendor</h3>
+                                <!--<div class="box-tools pull-right">-->
+                                    <!--<button type="button" class="btn btn-box-tool" data-widget="collapse"></i>-->
+                                    <!--</button>-->
+                                <!--</div>-->
+                                <!-- /.box-tools -->
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-body" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        {{>afQuickField name="vendorId" label=false}}
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-success saveNPurchase" {{disabledSubmitBtn}}>
+                                    Save & Purchase
+                                </button>
+                                <label for="" class="warning-msg text-danger"></label>
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
                     <div class="row">
                         <div class="col-sm-12 pull-right">
                             <!--{{> formFooterWithButton}}-->
@@ -76,9 +101,7 @@
                                 <button type="submit" class="btn btn-primary" {{disabledSubmitBtn}}>
                                     <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
                                 </button>
-                                <button type="submit" class="btn btn-success saveNPurchase" {{disabledSubmitBtn}}>
-                                    <i class="fa fa-floppy-o"></i> Save & Purchase
-                                </button>
+
                                 <button type="reset" class="btn btn-default">
                                     <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
                                 </button>
