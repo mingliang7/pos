@@ -83,32 +83,37 @@ indexTmpl.events({
         alertify.companyExchangeRingPull(fa('cart-arrow-down', TAPi18n.__('pos.companyExchangeRingPull.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        // if (this.saleId || (this.companyExchangeRingPullType == 'term' && this.status != 'closed')) {
-        //     excuteEditForm(this);
-        // }
-        // else if (this.companyExchangeRingPullType == 'term' && this.status == 'closed') {
-        //     // swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រលេខ ${this._id} ជាមុនសិន`, "error")
-        //     excuteEditForm(this);
-        //
-        // }
-        // else if (this.paymentGroupId) {
-        //     Meteor.call('pos.isGroupCompanyExchangeRingPullClosed', {_id: this.paymentGroupId}, (err, result)=> {
-        //         if (result.paid) {
-        //             swal("បញ្ជាក់!", `សូមធ្វើការលុបការបង់ប្រាក់សម្រាប់វិក័យប័ត្រក្រុមលេខ ${this.paymentGroupId} ជាមុនសិន`, "error")
-        //         } else {
-        //             excuteEditForm(this);
-        //         }
-        //     });
-        // }
-        excuteEditForm(this);
+        var data = this;
+        Meteor.call('isCompanyExchangeRingPullHasRelation', data.id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Bill លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+                } else {
+                    excuteEditForm(data);
+                }
+            }
+        });
     },
     'click .js-destroy' (event, instance) {
-        let data = this;
-        destroyAction(
-            CompanyExchangeRingPulls,
-            {_id: data._id},
-            {title: TAPi18n.__('pos.companyExchangeRingPull.title'), itemTitle: data._id}
-        );
+        var id = this._id;
+        Meteor.call('isCompanyExchangeRingPullHasRelation', id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+                } else {
+                    destroyAction(
+                        CompanyExchangeRingPulls,
+                        {_id: id},
+                        {title: TAPi18n.__('pos.companyExchangeRingPull.title'), itemTitle: id}
+                    );
+                }
+            }
+        });
+
     },
     'click .js-display' (event, instance) {
         swal({
@@ -154,7 +159,7 @@ newTmpl.events({
     },
 });
 newTmpl.helpers({
-  repId(){
+    repId(){
         if (Session.get('vendorInfo')) {
             try {
                 return Session.get('vendorInfo').repId;
@@ -271,16 +276,16 @@ editTmpl.helpers({
 
         return {};
     },
-   /* repId(){
-        if (Session.get('vendorInfo')) {
-            try {
-                return Session.get('vendorInfo').repId;
-            } catch (e) {
+    /* repId(){
+     if (Session.get('vendorInfo')) {
+     try {
+     return Session.get('vendorInfo').repId;
+     } catch (e) {
 
-            }
-        }
-        return '';
-    },*/
+     }
+     }
+     return '';
+     },*/
     options(){
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().repList) {
@@ -349,16 +354,16 @@ showTmpl.helpers({
         return `<label class="label label-success">G</label>`
     },
     colorizeStatus(status){
-        if(status == 'active') {
+        if (status == 'active') {
             return `<label class="label label-info">A</label>`
-        }else if(status == 'partial') {
+        } else if (status == 'partial') {
             return `<label class="label label-danger">P</label>`
         }
         return `<label class="label label-success">C</label>`
     }
 });
 showTmpl.events({
-    'click .print-exchange-ring-pull-show'(event,instance){
+    'click .print-exchange-ring-pull-show'(event, instance){
         $('#to-print').printThis();
     }
 });

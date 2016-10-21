@@ -1,13 +1,14 @@
+//import {Meteor} from 'meteor/meteor';
 import {Customers} from '../../../imports/api/collections/customer.js';
 import {Vendors} from '../../../imports/api/collections/vendor.js'
 import {Invoices} from '../../../imports/api/collections/invoice.js'
 import {EnterBills} from '../../../imports/api/collections/enterBill.js'
 Meteor.methods({
-    isPaymentGroupHasRelation: function (id) {
-        let anyRelation = Customers.findOne({paymentGroupId: id})
-            || EnterBills.findOne({paymentGroupId: id})
-            || Vendors.findOne({paymentGroupId: id})
-            || Invoices.findOne({paymentGroupId: id});
+    isTermHasRelation: function (id) {
+        let anyRelation = Invoices.findOne({termId: id})
+            || Customers.findOne({termId: id})
+            || Vendors.findOne({termId: id})
+            || EnterBills.findOne({termId: id});
         return !!anyRelation;
     }
 });

@@ -129,7 +129,7 @@ indexTmpl.events({
                 } else {
                     destroyAction(
                         Customers,
-                        {_id: this._id},
+                        {_id: id},
                         {title: TAPi18n.__('pos.customer.title'), itemTitle: id}
                     );
                 }

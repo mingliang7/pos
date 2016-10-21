@@ -79,7 +79,7 @@ indexTmpl.events({
     'click .js-update' (event, instance) {
         Meteor.call("pos.isBillExist", {_id: this._id}, (err, result)=> {
             if(result.exist){
-                swal('បញ្ជាក់!', `សូមធ្វើការលុប Bill លេខ​ ${result.invoiceId} ជាមុនសិន!​​​​`, 'error');
+                swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result._id} ជាមុនសិន!​​​​`, 'error');
             }else{
                 alertify.prepaidOrder(fa('pencil', TAPi18n.__('pos.prepaidOrder.title')), renderTemplate(editTmpl, this));
             }
@@ -87,9 +87,9 @@ indexTmpl.events({
     },
     'click .js-destroy' (event, instance) {
         let data = this;
-        Meteor.call("pos.isBillExist", {_id: this._id}, (err, result)=> {
+        Meteor.call("pos.isBillExist", {_id: data._id}, (err, result)=> {
             if(result.exist){
-                swal('បញ្ជាក់!', `សូមធ្វើការលុប Bill លេខ​ ${result.invoiceId} ជាមុនសិន!​​​​`, 'error');
+                swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result._id} ជាមុនសិន!​​​​`, 'error');
             }else{
                 destroyAction(
                     PrepaidOrders,

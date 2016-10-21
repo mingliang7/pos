@@ -82,7 +82,7 @@ indexTmpl.events({
                 } else {
                     destroyAction(
                         Item,
-                        {_id: this._id},
+                        {_id: id},
                         {title: TAPi18n.__('pos.item.title'), itemTitle: id}
                     );
                 }

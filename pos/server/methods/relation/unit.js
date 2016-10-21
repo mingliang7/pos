@@ -4,7 +4,6 @@ Meteor.methods({
     isUnitHasRelation: function (id) {
         let item = Item.findOne({unitId: id});
         return !!item;
-
     }
 });
 

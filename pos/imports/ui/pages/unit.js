@@ -71,7 +71,7 @@ actionTmpl.events({
                 } else {
                     destroyAction(
                         Units,
-                        {_id: this._id},
+                        {_id: id},
                         {title: 'Remove Unit', itemTitle: id}
                     );
                 }

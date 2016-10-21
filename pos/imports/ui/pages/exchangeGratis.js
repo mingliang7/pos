@@ -77,25 +77,34 @@ indexTmpl.events({
         alertify.exchangeGratis(fa('plus', TAPi18n.__('pos.exchangeGratis.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        Meteor.call("pos.isBillExist", {_id: this._id}, (err, result)=> {
-            if(result.exist){
-                swal('បញ្ជាក់!', `សូមធ្វើការលុប Bill លេខ​ ${result.invoiceId} ជាមុនសិន!​​​​`, 'error');
-            }else{
-                alertify.exchangeGratis(fa('pencil', TAPi18n.__('pos.exchangeGratis.title')), renderTemplate(editTmpl, this));
+        var data = this;
+        Meteor.call('isExchangeGratisHasRelation', data._id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+                } else {
+                    alertify.exchangeGratis(fa('pencil', TAPi18n.__('pos.exchangeGratis.title')), renderTemplate(editTmpl, data));
+                }
             }
         });
     },
     'click .js-destroy' (event, instance) {
-        let data = this;
-        Meteor.call("pos.isBillExist", {_id: this._id}, (err, result)=> {
-            if(result.exist){
-                swal('បញ្ជាក់!', `សូមធ្វើការលុប Bill លេខ​ ${result.invoiceId} ជាមុនសិន!​​​​`, 'error');
-            }else{
-                destroyAction(
-                    ExchangeGratis,
-                    {_id: data._id},
-                    {title: TAPi18n.__('pos.exchangeGratis.title'), itemTitle: data._id}
-                );
+        var id = this._id;
+        Meteor.call('isExchangeGratisHasRelation', id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+                } else {
+                    destroyAction(
+                        ExchangeGratis,
+                        {_id: id},
+                        {title: TAPi18n.__('pos.exchangeGratis.title'), itemTitle: id}
+                    );
+                }
             }
         });
     },

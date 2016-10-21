@@ -265,7 +265,7 @@ newTmpl.helpers({
         }
         return {};
     },
-    isTerm(){
+   /* isTerm(){
         if (Session.get('vendorInfo')) {
             let vendorInfo = Session.get('vendorInfo');
             if (vendorInfo._term) {
@@ -273,7 +273,7 @@ newTmpl.helpers({
             }
             return false;
         }
-    },
+    },*/
     dueDate(){
         let date = AutoForm.getFieldValue('receiveItemDate');
         if (Session.get('vendorInfo')) {
