@@ -76,15 +76,37 @@ indexTmpl.events({
         alertify.lendingStock(fa('plus', TAPi18n.__('pos.lendingStock.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        alertify.lendingStock(fa('pencil', TAPi18n.__('pos.lendingStock.title')), renderTemplate(editTmpl, this));
+        var data = this;
+        Meteor.call('isLendingStockHasRelation', data._id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+                } else {
+                    alertify.lendingStock(fa('pencil', TAPi18n.__('pos.lendingStock.title')), renderTemplate(editTmpl, data));
+
+                }
+            }
+        });
     },
     'click .js-destroy' (event, instance) {
-        let data = this;
-        destroyAction(
-            LendingStocks,
-            {_id: data._id},
-            {title: TAPi18n.__('pos.lendingStock.title'), itemTitle: data._id}
-        );
+        var id = this._id;
+        Meteor.call('isLendingStockHasRelation', id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+                } else {
+                    destroyAction(
+                        LendingStocks,
+                        {_id: id},
+                        {title: TAPi18n.__('pos.lendingStock.title'), itemTitle: id}
+                    );
+                }
+            }
+        });
     },
     'click .js-display' (event, instance) {
         Meteor.call('lendingStockShow', {_id: this._id}, function (err, result) {

@@ -6,7 +6,8 @@ import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 
 // Collection
 import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder.js';
-import {EnterBills} from '../../imports/api/collections/enterBill.js';
+import {ReceiveItems} from '../../imports/api/collections/receiveItem';
+
 // Check user password
 export const PrepaidOrderInfo = new ValidatedMethod({
     name: 'pos.PrepaidOrderInfo',
@@ -109,8 +110,8 @@ export const isBillExist = new ValidatedMethod({
     }).validator(),
     run({_id}){
         if(!this.isSimulation) {
-            let bill = EnterBills.findOne({prepaidOrderId: _id});
-            return {exist: bill, billId: bill && bill._id ? bill._id : ''};
+            let receiveItem = ReceiveItems.findOne({prepaidOrderId: _id});
+            return {exist: receiveItem, _id: receiveItem && receiveItem._id ? receiveItem._id : ''};
         }
     }
 
