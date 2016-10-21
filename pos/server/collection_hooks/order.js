@@ -3,8 +3,11 @@ import {idGenerator} from 'meteor/theara:id-generator';
 
 // Collection
 import {Order} from '../../imports/api/collections/order.js';
+import {PurchaseOrder} from '../../imports/api/collections/purchaseOrder.js';
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
 import {Item} from '../../imports/api/collections/item.js'
+import {Vendors} from '../../imports/api/collections/vendor.js'
+import {AverageInventories} from '../../imports/api/collections/inventory.js'
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
 Order.before.insert(function (userId, doc) {
     let prefix = doc.customerId;
@@ -25,6 +28,47 @@ Order.after.insert(function (userId, doc) {
             }
         });
 
+        if (doc.isPurchased) {
+            //Auto Purchase Order
+            let vendor = Vendors.findOne(doc.voucherId);
+            let purchaseObj = {
+                repId: vendor.repId,
+                vendorId: doc.voucherId,
+                purchaseOrderDate: new Date(),
+                des: 'From Sale Order: "' + doc._id + '"',
+                branchId: doc.branchId,
+                total: 0,
+                items: []
+            };
+            doc.items.forEach(function (item) {
+                let inventory = AverageInventories.findOne({
+                    branchId: doc.branchId,
+                    itemId: item.itemId,
+                });
+                if (inventory) {
+                    purchaseObj.items.push({
+                        itemId: item.itemId,
+                        price: inventory.price,
+                        qty: doc.qty,
+                        amount: doc.qty * inventory.price,
+                    });
+                    purchaseObj.total += doc.qty * inventory.price;
+                } else {
+                    let thisItem = Item.findOne(item.itemId);
+                    purchaseObj.items.push({
+                        itemId: item.itemId,
+                        price: item.price,
+                        qty: doc.qty,
+                        amount: doc.qty * thisItem.purchasePrice,
+                    });
+                    purchaseObj.total += doc.qty * inventory.price;
+                }
+            });
+            PurchaseOrder.insert(purchaseObj);
+
+        }
+
+
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -44,23 +88,6 @@ Order.after.insert(function (userId, doc) {
                 cr: doc.total,
                 drcr: -doc.total
             });
-
-            /*data.items.forEach(function (item) {
-             let itemDoc = Item.findOne(item.itemId);
-             if (itemDoc.accountMapping.accountReceivable && itemDoc.accountMapping.inventoryAsset) {
-             transaction.push({
-             account: itemDoc.accountMapping.accountReceivable,
-             dr: item.amount,
-             cr: 0,
-             drcr: item.amount
-             }, {
-             account: itemDoc.accountMapping.inventoryAsset,
-             dr: 0,
-             cr: item.amount,
-             drcr: -item.amount
-             })
-             }
-             });*/
             data.transaction = transaction;
             Meteor.call('insertAccountJournal', data);
         }
