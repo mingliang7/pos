@@ -86,8 +86,7 @@ editTmpl.helpers({
         return AccountMapping;
     },
     data () {
-        let data = this
-        return data;
+        return this;
     }
 });
 
