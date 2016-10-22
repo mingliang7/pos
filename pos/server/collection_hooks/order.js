@@ -30,15 +30,16 @@ Order.after.insert(function (userId, doc) {
 
         if (doc.isPurchased) {
             //Auto Purchase Order
-            let vendor = Vendors.findOne(doc.voucherId);
+            //let vendor = Vendors.findOne(doc.voucherId);
             let purchaseObj = {
-                repId: vendor.repId,
+                //repId: vendor.repId,
                 vendorId: doc.voucherId,
                 purchaseOrderDate: new Date(),
                 des: 'From Sale Order: "' + doc._id + '"',
                 branchId: doc.branchId,
                 total: 0,
-                items: []
+                items: [],
+                saleOrderId: doc._id
             };
             doc.items.forEach(function (item) {
                 let inventory = AverageInventories.findOne({
@@ -130,6 +131,46 @@ Order.after.update(function (userId, doc) {
             Meteor.call('updateAccountJournal', data);
         }
         //End Account Integration
+
+        if (doc.isPurchased) {
+            //Auto Purchase Order
+            //let vendor = Vendors.findOne(doc.voucherId);
+            let purchaseObj = {
+                //repId: vendor.repId,
+                vendorId: doc.voucherId,
+                purchaseOrderDate: new Date(),
+                des: 'From Sale Order: "' + doc._id + '"',
+                branchId: doc.branchId,
+                total: 0,
+                items: [],
+                saleOrderId: doc._id
+            };
+            doc.items.forEach(function (item) {
+                let inventory = AverageInventories.findOne({
+                    branchId: doc.branchId,
+                    itemId: item.itemId,
+                });
+                if (inventory) {
+                    purchaseObj.items.push({
+                        itemId: item.itemId,
+                        price: inventory.price,
+                        qty: doc.qty,
+                        amount: doc.qty * inventory.price,
+                    });
+                    purchaseObj.total += doc.qty * inventory.price;
+                } else {
+                    let thisItem = Item.findOne(item.itemId);
+                    purchaseObj.items.push({
+                        itemId: item.itemId,
+                        price: item.price,
+                        qty: doc.qty,
+                        amount: doc.qty * thisItem.purchasePrice,
+                    });
+                    purchaseObj.total += doc.qty * inventory.price;
+                }
+            });
+            PurchaseOrder.update({saleOrderId: doc._id}, {$set: purchaseObj});
+        }
     });
 });
 
@@ -142,6 +183,7 @@ Order.after.remove(function (userId, doc) {
             Meteor.call('removeAccountJournal', data)
         }
         //End Account Integration
+        PurchaseOrder.remove({saleOrderId: doc._id});
     })
 
-})
+});
