@@ -48,9 +48,9 @@ Meteor.methods({
         ]);
         return stockAndAccountMapping[0];
     },
-    currentUserStockAndAccountMappingDoc({userId}){
+    currentUserStockAndAccountMappingDoc({userId, branchId}){
         let company = Company.findOne({});
-        let userDoc = StockAndAccountMapping.findOne({userId: userId}) || {};
+        let userDoc = StockAndAccountMapping.findOne({userId: userId, branchId: branchId}) || {};
         let accountIntegration = AccountIntegrationSetting.findOne();
         userDoc.company = company;
         userDoc.accountIntegrated = accountIntegration.integrate;

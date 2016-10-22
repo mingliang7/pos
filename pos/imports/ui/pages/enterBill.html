@@ -113,11 +113,14 @@
         {{#if Template.subscriptionsReady}}
             {{#autoForm collection=collection id="Pos_enterBillEdit" doc=data type="update"}}
                 <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
-                    <div class="col-md-3">
+                    <div class="col-md-3 hidden">
                         <label for="email">Vendor:<span style="color: red;">*</span> </label>
                         {{> afQuickField name="vendorId" label=false}}
                     </div>
-
+                    <div class="col-md-3">
+                        <label for="">Vendor:</label>
+                        <input type="text" readonly="true" value="{{vendorId}} | {{_vendor.name}}" class="form-control">
+                    </div>
                     <div class="col-md-9">
                         <p class="pull-right ">
                         <h4 class="text-black">BALANCE DUE</h4>

@@ -16,7 +16,7 @@ Tracker.autorun(function () {
                 .then(function (result) {
                     let {customerInfo} = Session.get('customerInfo');
                     let requirePassword = RequirePassword.findOne({}, {sort: {_id: -1}});
-                    if (requirePassword && customerInfo.creditLimit && result.limitAmount > customerInfo.creditLimit) {
+                    if (_.includes(requirePassword.branchId, Session.get('currentBranch')) && requirePassword && customerInfo.creditLimit && result.limitAmount > customerInfo.creditLimit) {
                         if ((Session.get('getCustomerId') ? requirePassword.invoiceForm : requirePassword.saleOrderForm) && (!result.whiteListCustomer || (result.whiteListCustomer && result.whiteListCustomer.limitTimes == 0))) {
                             swal({
                                 title: "Password Required!",

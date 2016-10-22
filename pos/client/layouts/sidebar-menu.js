@@ -6,8 +6,8 @@ import 'meteor/tap:i18n-ui';
 import './sidebar-menu.html';
 
 Tracker.autorun(function () {
-    if(Meteor.userId() && Session.get('currentBranch')) {
-        Meteor.call('currentUserStockAndAccountMappingDoc', {userId: Meteor.userId()}, function (err, result) {
+    if(Meteor.userId() || Session.get('currentBranch')) {
+        Meteor.call('currentUserStockAndAccountMappingDoc', {userId: Meteor.userId(), branchId: Session.get('currentBranch')}, function (err, result) {
             Session.set('currentUserStockAndAccountMappingDoc', result);
         });
     }
