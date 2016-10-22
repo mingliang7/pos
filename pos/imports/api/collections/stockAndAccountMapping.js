@@ -34,7 +34,6 @@ StockAndAccountMapping.schema = new SimpleSchema({
     userId: {
         type: String,
         label: 'User',
-        unique: true,
         autoform: {
             type: 'universe-select',
             afFieldInput: {

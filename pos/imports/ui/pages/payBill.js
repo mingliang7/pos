@@ -236,6 +236,7 @@ indexTmpl.helpers({
         let totalPaid = 0;
         let enterBillsObjObj = Session.get('enterBillsObj');
         delete enterBillsObjObj.count;
+        
         if (_.isEmpty(enterBillsObjObj)) {
             return 0;
         } else {
