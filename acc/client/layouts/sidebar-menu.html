@@ -16,7 +16,46 @@
 
     {{/if}}
 
+    {{#if isInRole 'setting' 'Acc'}}
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-fire fa-spin fa-fw"></i>
+                <span>Monthly Process</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu" style="display: none;">
+                <li class="{{isActiveRoute name='core.exchange'}}">
+                    <a href="{{pathFor 'core.exchange'}}">
+                        <i class="fa fa-angle-right"></i> <span>{{_ "core.sidebarMenu.exchange"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='acc.exchangeNBC'}}">
+                    <a href="{{pathFor 'acc.exchangeNBC'}}">
+                        <i class="fa fa-angle-right"></i> <span>{{_ "acc.sidebarMenu.exchangeNBC"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='acc.fixAssetExpense'}}">
+                    <a href="{{pathFor 'acc.fixAssetExpense'}}">
+                        <i class="fa fa-angle-right"></i> <span>{{_ "acc.sidebarMenu.fixAssetExpense"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='acc.currencyClosingReport'}}">
+                    <a href="{{pathFor 'acc.currencyClosingReport'}}">
+                        <i class="fa fa-angle-right"></i> <span>{{_ "acc.sidebarMenu.currencyClosingReport"}}</span>
+                    </a>
+                </li>
 
+                <li class="{{isActiveRoute name='acc.endOfProcess'}}">
+                    <a href="{{pathFor 'acc.endOfProcess'}}">
+                        <i class="fa fa-angle-right"></i> <span>{{_ "acc.sidebarMenu.endOfProcess"}}</span>
+                    </a>
+                </li>
+
+            </ul>
+        </li>
+    {{/if}}
+
+    <!--Data-->
     {{#if isInRole 'data-insert,data-update,data-remove' 'Acc'}}
         <li class="treeview">
             <a href="#">
@@ -130,43 +169,8 @@
             </ul>
         </li>
     {{/if}}
-    <!--Settings-->
-    {{#if isInRole 'setting' 'Acc'}}
-        <li class="treeview">
-            <a href="#">
-                <i class="fa fa-fire fa-spin fa-fw"></i>
-                <span>Monthly Process</span>
-                <i class="fa fa-angle-left pull-right"></i>
-            </a>
-            <ul class="treeview-menu" style="display: none;">
-                <li class="{{isActiveRoute name='core.exchange'}}">
-                    <a href="{{pathFor 'core.exchange'}}">
-                        <i class="fa fa-angle-right"></i> <span>{{_ "core.sidebarMenu.exchange"}}</span>
-                    </a>
-                </li>
-                <li class="{{isActiveRoute name='acc.currencyClosingReport'}}">
-                    <a href="{{pathFor 'acc.currencyClosingReport'}}">
-                        <i class="fa fa-angle-right"></i> <span>{{_ "acc.sidebarMenu.currencyClosingReport"}}</span>
-                    </a>
-                </li>
-                <li class="{{isActiveRoute name='acc.fixAssetExpense'}}">
-                    <a href="{{pathFor 'acc.fixAssetExpense'}}">
-                        <i class="fa fa-angle-right"></i> <span>{{_ "acc.sidebarMenu.fixAssetExpense"}}</span>
-                    </a>
-                </li>
-                <li class="{{isActiveRoute name='acc.endOfProcess'}}">
-                    <a href="{{pathFor 'acc.endOfProcess'}}">
-                        <i class="fa fa-angle-right"></i> <span>{{_ "acc.sidebarMenu.endOfProcess"}}</span>
-                    </a>
-                </li>
-                <li class="{{isActiveRoute name='acc.exchangeNBC'}}">
-                    <a href="{{pathFor 'acc.exchangeNBC'}}">
-                        <i class="fa fa-angle-right"></i> <span>{{_ "acc.sidebarMenu.exchangeNBC"}}</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-    {{/if}}
+
+
     <!--Settings-->
     {{#if isInRole 'setting' 'Acc'}}
         <li class="treeview">

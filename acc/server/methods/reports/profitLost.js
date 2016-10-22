@@ -82,6 +82,8 @@ Meteor.methods({
             var grandTotalIncomeYearToDate = 0;
             var grandTotalExpenseYearToDate = 0;
 
+            var dataExpense={};
+            var dataIncome={};
 
             //To get Last Date of CLose Chart Account
             var selectorEnd = {};
@@ -430,6 +432,8 @@ Meteor.methods({
             var grandTotalIncomeYearToDate = 0;
             var grandTotalExpenseYearToDate = 0;
 
+            var dataExpense={};
+            var dataIncome={};
 
             //To get Last Date of CLose Chart Account
             var selectorEnd = {};

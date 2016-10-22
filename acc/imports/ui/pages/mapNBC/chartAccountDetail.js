@@ -56,7 +56,14 @@ chartAccountDetailTPL.onCreated(function () {
  */
 chartAccountDetailTPL.helpers({
     detail () {
-        return chartAccountDetailCollection.find().fetch();
+        let i = 1;
+        let chartAccount = chartAccountDetailCollection.find().fetch();
+        chartAccount.forEach(function (c) {
+            c.index = i;
+            i++;
+
+        })
+        return chartAccount;
     },
     schema(){
 

@@ -19,7 +19,7 @@ FixAssetExpense.schema = new SimpleSchema({
 
     date: {
         type: Date,
-        label: "Journal Date",
+        label: "Date",
         defaultValue: moment().toDate(),
         autoform: {
             afFieldInput: {

@@ -35,7 +35,7 @@ ExchangeNBC.schema = new SimpleSchema({
     dateTime: {
         unique: true,
         type: Date,
-        label: "Journal Date",
+        label: "Exchange Date",
         defaultValue: moment().toDate(),
         autoform: {
             afFieldInput: {

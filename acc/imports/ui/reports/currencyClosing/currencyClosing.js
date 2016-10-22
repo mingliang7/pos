@@ -26,7 +26,7 @@ var reportTpl = Template.acc_currencyClosingReport,
 
 reportTpl.helpers({
     selector: function () {
-        return {branchId : Session.get("currentBranch")};
+        return {branchId: Session.get("currentBranch")};
     },
     schema() {
         return CurrencyClosing;
@@ -35,7 +35,6 @@ reportTpl.helpers({
         return ClosingAccountTabular;
     }
 })
-
 
 
 reportTpl.events({
@@ -61,19 +60,22 @@ reportTpl.events({
         var cur = Closing.findOne({
             _id: id
         });
-            if (moment(lastEnd.dateTo).format("YYYY-MM-DD") == moment(cur.dateTo).format("YYYY-MM-DD")) {
-                alertify.confirm("Are you sure to delete ?")
-                    .set({
-                        onok: function (closeEvent) {
-                            Meteor.call('closingRemove', id);
-                        },
-                        title: fa("remove", "Closing")
-                    });
-            } else {
-                alertify.error(
-                    "You can't delete. This is not the last Closing!!!");
-            }
+        if (moment(lastEnd.dateTo).format("YYYY-MM-DD") == moment(cur.dateTo).format("YYYY-MM-DD") && cur.endId==undefined) {
+            alertify.confirm("Are you sure to delete ?")
+                .set({
+                    onok: function (closeEvent) {
+                        Meteor.call('closingRemove', id);
+                    },
+                    title: fa("remove", "Closing")
+                });
+        } else if (cur.endId != undefined) {
+            alertify.error(
+                "You can't delete.You're already End this Process!!!");
+        } else {
+            alertify.error(
+                "You can't delete. This is not the last Closing!!!");
         }
+    }
 
 
 });

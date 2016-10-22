@@ -83,13 +83,14 @@ indexTmpl.events({
         alertify.companyExchangeRingPull(fa('cart-arrow-down', TAPi18n.__('pos.companyExchangeRingPull.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
+        debugger;
         var data = this;
-        Meteor.call('isCompanyExchangeRingPullHasRelation', data.id, function (error, result) {
+        Meteor.call('isCompanyExchangeRingPullHasRelation', data._id, function (error, result) {
             if (error) {
                 alertify.error(error.message);
             } else {
                 if (result) {
-                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Bill លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
                 } else {
                     excuteEditForm(data);
                 }

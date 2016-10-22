@@ -68,19 +68,7 @@ EnterBills.after.insert(function (userId, doc) {
             /* }
              });*/
             data.transaction = transaction;
-            Meteor.call('insertAccountJournal', data, function (er, re) {
-                if (er) {
-                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                    Meteor.call('insertRemovedBill', doc);
-                    EnterBills.direct.remove({_id: doc._id});
-                    throw new Meteor.Error(er.message);
-                } else if (re == null) {
-                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                    Meteor.call('insertRemovedBill', doc);
-                    EnterBills.direct.remove({_id: doc._id});
-                    throw new Meteor.Error("Can't Entry to Account System.");
-                }
-            });
+            Meteor.call('insertAccountJournal', data);
         }
         //End Account Integration
     });
@@ -157,18 +145,7 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
                 drcr: -doc.total,
             });
             data.transaction = transaction;
-            Meteor.call('updateAccountJournal', data, function (er, re) {
-                if (er) {
-                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                    EnterBills.direct.update(doc._id, {$set: {preDoc}});
-                    throw new Meteor.Error(er.message);
-
-                } else if (re == false) {
-                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                    EnterBills.direct.update(doc._id, {$set: {preDoc}});
-                    throw new Meteor.Error("Can't Update on Account System.");
-                }
-            });
+            Meteor.call('updateAccountJournal', data);
         }
         //End Account Integration
     });
@@ -207,17 +184,7 @@ EnterBills.after.remove(function (userId, doc) {
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
             let data = {_id: doc._id, type: 'EnterBill'};
-            Meteor.call('removeAccountJournal', data, function (er, re) {
-                if (er) {
-                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                    EnterBills.direct.insert(doc);
-                    throw new Meteor.Error(er.message);
-                } else if (re == false) {
-                    AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
-                    EnterBills.direct.insert(doc);
-                    throw new Meteor.Error("Can't Remove on Account System.");
-                }
-            })
+            Meteor.call('removeAccountJournal', data)
         }
         //End Account Integration
     });

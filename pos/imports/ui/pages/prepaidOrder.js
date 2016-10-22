@@ -77,31 +77,40 @@ indexTmpl.events({
         alertify.prepaidOrder(fa('plus', TAPi18n.__('pos.prepaidOrder.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        Meteor.call("pos.isBillExist", {_id: this._id}, (err, result)=> {
-            if(result.exist){
-                swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result._id} ជាមុនសិន!​​​​`, 'error');
-            }else{
-                alertify.prepaidOrder(fa('pencil', TAPi18n.__('pos.prepaidOrder.title')), renderTemplate(editTmpl, this));
+        Meteor.call('isPrepaidOrderHasRelation', this._id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+                } else {
+                    alertify.prepaidOrder(fa('pencil', TAPi18n.__('pos.prepaidOrder.title')), renderTemplate(editTmpl, this));
+                }
             }
         });
     },
     'click .js-destroy' (event, instance) {
-        let data = this;
-        Meteor.call("pos.isBillExist", {_id: data._id}, (err, result)=> {
-            if(result.exist){
-                swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result._id} ជាមុនសិន!​​​​`, 'error');
-            }else{
-                destroyAction(
-                    PrepaidOrders,
-                    {_id: data._id},
-                    {title: TAPi18n.__('pos.prepaidOrder.title'), itemTitle: data._id}
-                );
+        var id = this._id;
+        Meteor.call('isPrepaidOrderHasRelation', id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+                } else {
+                    destroyAction(
+                        PrepaidOrders,
+                        {_id: id},
+                        {title: TAPi18n.__('pos.prepaidOrder.title'), itemTitle: id}
+                    );
+                }
             }
         });
+
     },
     'click .js-display' (event, instance) {
         Meteor.call("prepaidOrderShow", {_id: this._id}, function (err, result) {
-            if(result) {
+            if (result) {
                 alertify.prepaidOrderShow(fa('eye', TAPi18n.__('pos.prepaidOrder.title')), renderTemplate(showTmpl, result));
             }
         });

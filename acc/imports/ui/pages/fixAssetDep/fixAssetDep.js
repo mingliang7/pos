@@ -25,6 +25,7 @@ import '../../../../../core/client/components/form-footer.js';
 
 // Collection
 import {FixAssetDep} from '../../../api/collections/fixAssetDep';
+import {ExchangeForFixAsset} from '../../../api/collections/reports/exchangeForFixAsset';
 
 
 // Tabular
@@ -37,7 +38,8 @@ import '../../libs/getBranch';
 // Declare template
 var fixAssetDepTpl = Template.acc_fixAssetDep,
     fixAssetListTPL = Template.acc_fixAssetDepList,
-    fixAssetDepSummaryListTpl = Template.acc_fixAssetDepSummaryList;
+    fixAssetDepSummaryListTpl = Template.acc_fixAssetDepSummaryList,
+    exchangeForFixAssetTpl = Template.acc_exchangeForFixAsset;
 
 
 fixAssetDepTpl.onRendered(function () {
@@ -71,19 +73,14 @@ fixAssetDepTpl.events({
 
     },
     'click .fixedAssetSummaryDepreciation': function (e, t) {
-        var self = this;
 
-        var params = {};
-        var queryParams = {};
-
-        queryParams.branchId = Session.get("currentBranch");
-
-        var path = FlowRouter.path("acc.fixAssetDepSummaryList", params, queryParams);
-
-        window.open(path, "_blank");
-
+        alertify.fixAssetDep(fa("plus", "Exchange"), renderTemplate(exchangeForFixAssetTpl)).minimize();
     }
 });
+
+
+
+
 
 
 fixAssetListTPL.helpers({
@@ -130,4 +127,49 @@ fixAssetDepSummaryListTpl.helpers({
 
         return Fetcher.get('data');
     }
+})
+
+
+//Pop up Exchange Date
+
+exchangeForFixAssetTpl.events({
+    'click .go': function (e,t) {
+
+
+        let params = {};
+        let queryParams = {};
+
+        let exchangeId=$('[name="exchangeDate"]').val();
+
+        queryParams.branchId = Session.get("currentBranch");
+        queryParams.exchangeId = exchangeId;
+
+        var path = FlowRouter.path("acc.fixAssetDepSummaryList", params, queryParams);
+
+        window.open(path, "_blank");
+
+        alertify.fixAssetDep().close();
+
+    },
+    'change [name="exchangeDate"]'(e,t){
+        Session.set('exId',$(e.currentTarget).val());
+    }
+
+
+})
+exchangeForFixAssetTpl.helpers({
+    schema() {
+        return ExchangeForFixAsset;
+    },
+    cssClassForSubmit(){
+        if(Session.get('exId') =="" || Session.get('exId') == undefined){
+            return 'disabled';
+        }else{
+            return "";
+        }
+    }
+})
+
+exchangeForFixAssetTpl.onDestroyed(function () {
+    Session.set('exId',"");
 })

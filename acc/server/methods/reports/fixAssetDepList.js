@@ -45,11 +45,11 @@ Meteor.methods({
                 depList.forEach(function (obj) {
                     var cumDeprec = 0;
                     var bvEndYear = obj.amount;
-                    content += "<tr style='background-color: #e5e5e5'><td colspan='6'>" + obj.account + " : " + obj.amount + getCurrenySymbol(obj.currencyId) + "</td></tr>";
+                    content += "<tr style='background-color: #e5e5e5'><td colspan='6'>" + obj.account + " : " + numeral(obj.amount).format('0,0.00') + getCurrenySymbol(obj.currencyId) + "</td></tr>";
                     obj.transactionAsset.forEach(function (ob) {
                         cumDeprec += ob.perYear;
                         bvEndYear -= ob.perYear;
-                        content += "<tr><td>" + ob.year + "</td><td>" + ob.perMonth + "</td><td>" + ob.perYear + "</td><td>" + numeral().unformat(numeral(cumDeprec).format('0,0.00')) + "</td><td>" + numeral().unformat(numeral(bvEndYear).format('0,0.00')) + "</td><td>" + ob.month + "</td></tr>";
+                        content += "<tr><td>" + ob.year + "</td><td>" + numeral(ob.perMonth).format('0,0.00') + "</td><td>" + numeral(ob.perYear).format('0,0.00') + "</td><td>" + numeral(cumDeprec).format('0,0.00') + "</td><td>" + numeral(bvEndYear).format('0,0.00') + "</td><td>" + ob.month + "</td></tr>";
                     })
                 })
             }
@@ -101,7 +101,7 @@ Meteor.methods({
                 var baseCurrency = Setting.findOne({}).baseCurrency;
                 var mainCurrency = getCurrenySymbol(baseCurrency)
 
-                var exchangeId = Exchange.findOne({}, {sort: {_id: -1}})._id;
+                var exchangeId = Exchange.findOne({_id: self.exchangeId})._id;
                 depList.forEach(function (obj) {
 
 
@@ -120,7 +120,7 @@ Meteor.methods({
                     })
                     var currency = getCurrenySymbol(obj.currencyId);
                     if (accountShow != obj.account && i > 1) {
-                        content += "<tr><td colspan='4' style='border-bottom: none' align='center'>Total</td><td>" + numeral(totalAmount).format('0,0.00') + currency + "</td><td colspan='2'></td><td>" + numeral(totalDepExp).format('0,0.00') + currency + "</td><td>" + numeral(totalCumDeprec).format('0,0.00') + currency + "</td><td>" + numeral(totalNetBookValue).format('0,0.00') + currency + "</td></tr>";
+                        content += "<tr><td colspan='4' style='border-bottom: none' align='center'>Total</td><td>" + numeral(totalAmount).format('0,0.00') + mainCurrency + "</td><td colspan='2'></td><td>" + numeral(totalDepExp).format('0,0.00') + mainCurrency + "</td><td>" + numeral(totalCumDeprec).format('0,0.00') + mainCurrency + "</td><td>" + numeral(totalNetBookValue).format('0,0.00') + mainCurrency + "</td></tr>";
                     }
 
                     if (accountShow != obj.account) {

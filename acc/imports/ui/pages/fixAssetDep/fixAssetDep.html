@@ -20,65 +20,65 @@
 </template>
 
 <template name="acc_fixAssetDepList">
-        {{#if data}}
-            {{#ReportContent options}}
-                {{#with data}}
+    {{#if data}}
+        {{#ReportContent options}}
+            {{#with data}}
 
-                    <!--Title-->
-                    {{#with title}}
-                        <div class="title">
-                            <div class="title-1x-kh-muol">{{khName}}</div>
-                            <div class="title-1x">{{enName}}</div>
-                            <div><u>Depreciation Schedule</u></div>
-                            <div class="title-2x">{{enAddress}}</div>
-                        </div>
-                    {{/with}}
-
-                    <!--Header-->
-                    {{#with header}}
-                        <div style="width: 100%">
-                            <div style="width: 50%; float: left">
-                                <ul class="list-unstyled">
-                                    <li><strong>Branch:</strong> {{getBranch branchId}}</li>
-                                </ul>
-                            </div>
-
-                            <div style="width: 50%; float: right">
-                                <ul class="list-unstyled">
-                                    <li class="pull-right"><strong>Date:</strong> {{date}}</li>
-                                </ul>
-                            </div>
-                        </div>
-                    {{/with}}
-
-                    <!--Content-->
-                    <table class="report-content">
-                        <thead class="report-content-header">
-                        <tr>
-                            <th>Year</th>
-                            <th>Per Month</th>
-                            <th>Per Year</th>
-                            <th>Cum Deprec</th>
-                            <th>BV End Year</th>
-                            <th>Expense Month</th>
-                        </tr>
-                        </thead>
-                        <tbody class="report-content-body">
-
-                        {{{content}}}
-
-                        </tbody>
-                    </table>
-                    <!--Footer-->
+                <!--Title-->
+                {{#with title}}
+                    <div class="title">
+                        <div class="title-1x-kh-muol">{{khName}}</div>
+                        <div class="title-1x">{{enName}}</div>
+                        <div><u>Depreciation Schedule</u></div>
+                        <div class="title-2x">{{enAddress}}</div>
+                    </div>
                 {{/with}}
 
-                <!--Sign-->
-                {{> ReportSignFooter}}
+                <!--Header-->
+                {{#with header}}
+                    <div style="width: 100%">
+                        <div style="width: 50%; float: left">
+                            <ul class="list-unstyled">
+                                <li><strong>Branch:</strong> {{getBranch branchId}}</li>
+                            </ul>
+                        </div>
 
-            {{/ReportContent}}
-        {{else}}
-            {{> loading}}
-        {{/if}}
+                        <div style="width: 50%; float: right">
+                            <ul class="list-unstyled">
+                                <li class="pull-right"><strong>Date:</strong> {{date}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                {{/with}}
+
+                <!--Content-->
+                <table class="report-content">
+                    <thead class="report-content-header">
+                    <tr>
+                        <th>Year</th>
+                        <th>Per Month</th>
+                        <th>Per Year</th>
+                        <th>Cum Deprec</th>
+                        <th>BV End Year</th>
+                        <th>Expense Month</th>
+                    </tr>
+                    </thead>
+                    <tbody class="report-content-body">
+
+                    {{{content}}}
+
+                    </tbody>
+                </table>
+                <!--Footer-->
+            {{/with}}
+
+            <!--Sign-->
+            {{> ReportSignFooter}}
+
+        {{/ReportContent}}
+    {{else}}
+        {{> loading}}
+    {{/if}}
 </template>
 <template name="acc_fixAssetDepSummaryList">
 
@@ -145,4 +145,21 @@
     {{else}}
         {{> loading}}
     {{/if}}
+</template>
+
+
+<template name="acc_exchangeForFixAsset">
+    <div class="box-body">
+        {{#autoForm schema=schema id="acc_exchangeForFixAsset" target="_blank"}}
+            <div class="animated fadeIn">
+                <div class="col-md-12">
+                    {{> afQuickField name='exchangeDate'}}
+                    <button class="btn btn-primary pull-right go" {{cssClassForSubmit}}>Go...</button>
+                </div>
+
+            </div>
+        {{/autoForm}}
+    </div>
+
+
 </template>

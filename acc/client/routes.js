@@ -368,3 +368,4 @@ AccRoutes.route('/paymentReceiveMethod', {
         parent: 'acc.home'
     }
 });
+

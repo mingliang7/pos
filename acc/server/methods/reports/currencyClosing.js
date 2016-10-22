@@ -188,6 +188,8 @@ Meteor.methods({
                     selectorClose.dateFrom = fDate;
                     selectorClose.dateTo = moment(date[1], "DD/MM/YYYY").toDate();
                     selectorClose.branchId = self.branchId;
+                    selectorClose.month=(moment(date[1],"DD/MM/YYYY").toDate()).getMonth()+1;
+                    selectorClose.year=(moment(date[1],"DD/MM/YYYY").toDate()).getFullYear();
 
                     var closingId = Closing.insert(selectorClose);
 

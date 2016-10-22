@@ -67,7 +67,7 @@ state = new ReactiveObj({
     cr: 0,
     totalDr: 0,
     totalCr: 0,
-    amount:0,
+    amount: 0,
     account: "",
     cssClassForAddMore: 'disabled',
     cssClassForSubmit: 'disabled',
@@ -273,30 +273,39 @@ indexTpl.events({
     'click .otherSystem_journalRemove': function (e, t) {
         let self = this;
 
-        Meteor.call('api_journalRemove',"001", "Sale");
+        Meteor.call('api_journalRemove', "001", "Sale");
     },
 
 
     'click .insertPayment': function (e, t) {
+
+        removeCollectionNull();
+
         stateFixAsset.set('isFixAsset', false);
-        journalDetailPaymentReceiveCollection.remove({});
-        state.set('type',"expense");
+        state.set('type', "expense");
 
         alertify.journal(fa("plus", "Expense"), renderTemplate(insertPaymentTpl)).maximize();
     },
     'click .insertReceive': function (e, t) {
+
+
         stateFixAsset.set('isFixAsset', false);
-        journalDetailPaymentReceiveCollection.remove({});
-        state.set('type',"income");
+
+        removeCollectionNull();
+
+        state.set('type', "income");
 
         alertify.journal(fa("plus", "Income"), renderTemplate(insertReceiveTpl)).maximize();
     },
     'click .insert': function (e, t) {
         stateFixAsset.set('isFixAsset', false);
-        journalDetailCollection.remove({});
+        removeCollectionNull();
         alertify.journal(fa("plus", "Journal"), renderTemplate(insertTpl)).maximize();
     },
     'dblclick tbody > tr': function (event) {
+
+        removeCollectionNull();
+
         stateFixAsset.set('isFixAsset', false);
         Session.set('isTotal', false);
 
@@ -338,6 +347,9 @@ indexTpl.events({
         });
 
     }, 'click .update': function (e, t) {
+
+        removeCollectionNull();
+
         stateFixAsset.set('isFixAsset', false);
         Session.set('isTotal', false);
 
@@ -541,8 +553,7 @@ AutoForm.hooks({
             stateFixAsset.set('isFixAsset', false);
             // displaySuccess();
             alertify.success("Success");
-            fixAssetDepCollection.remove({});
-            journalDetailCollection.remove({});
+            removeCollectionNull();
         },
         onError: function (formType, error) {
             // displayError(error.message);
@@ -599,8 +610,7 @@ AutoForm.hooks({
             stateFixAsset.set('isFixAsset', false);
             // displaySuccess();
             alertify.success("Success");
-            fixAssetDepCollection.remove({});
-            journalDetailCollection.remove({});
+            removeCollectionNull();
         },
         onError: function (formType, error) {
             // displayError(error.message);
@@ -656,8 +666,7 @@ AutoForm.hooks({
             stateFixAsset.set('isFixAsset', false);
             // displaySuccess();
             alertify.success("Success");
-            fixAssetDepCollection.remove({});
-            journalDetailCollection.remove({});
+            removeCollectionNull();
         },
         onError: function (formType, error) {
             // displayError(error.message);
@@ -705,8 +714,7 @@ AutoForm.hooks({
             alertify.journal().close();
             alertify.success("Success");
             stateFixAsset.set('isFixAsset', false);
-            fixAssetDepCollection.remove({});
-            journalDetailCollection.remove({});
+            removeCollectionNull();
         },
         onError: function (formTupe, error) {
             // displayError(error.message);
@@ -732,7 +740,11 @@ insertTpl.onDestroyed(function () {
     state.set('totalCr', 0);
 
     stateFixAsset.set('isFixAsset', false);
+
+    removeCollectionNull();
+
 })
+
 
 updateTpl.onDestroyed(function () {
     Session.set('currencyId', undefined);
@@ -747,6 +759,8 @@ updateTpl.onDestroyed(function () {
     state.set('totalCr', 0);
 
     stateFixAsset.set('isFixAsset', false);
+
+    removeCollectionNull();
 
 
 })
@@ -821,7 +835,7 @@ insertPaymentTpl.helpers({
     total(){
         let amount = 0;
         let data = journalDetailPaymentReceiveCollection.find().fetch();
-        if (data.length>0) {
+        if (data.length > 0) {
             data.forEach(function (obj) {
                 amount += obj.amount;
             })
@@ -852,7 +866,7 @@ insertReceiveTpl.helpers({
     total(){
         let amount = 0;
         let data = journalDetailPaymentReceiveCollection.find().fetch();
-        if (data.length>0) {
+        if (data.length > 0) {
             data.forEach(function (obj) {
                 amount += obj.amount;
             })
@@ -891,6 +905,7 @@ insertPaymentTpl.onDestroyed(function () {
 
 
     stateFixAsset.set('isFixAsset', false);
+    removeCollectionNull();
 })
 insertReceiveTpl.onDestroyed(function () {
 
@@ -902,8 +917,9 @@ insertReceiveTpl.onDestroyed(function () {
     Session.set('type', undefined);
 
 
-
     stateFixAsset.set('isFixAsset', false);
+
+    removeCollectionNull();
 })
 
 
@@ -988,3 +1004,9 @@ insertReceiveTpl.events({
         }
     }
 });
+
+function removeCollectionNull() {
+    fixAssetDepCollection.remove({});
+    journalDetailCollection.remove({});
+    journalDetailPaymentReceiveCollection.remove({});
+}

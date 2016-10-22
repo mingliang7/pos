@@ -38,6 +38,10 @@ DateEndOfProcess.schema = new SimpleSchema({
     month:{
         type: String,
         optional: true
+    },
+    year:{
+        type: String,
+        optional: true
     }
 });
 

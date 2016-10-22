@@ -11,6 +11,7 @@ import {CloseChartAccount} from '../../imports/api/collections/closeChartAccount
 import {CloseChartAccountPerMonth} from '../../imports/api/collections/closeChartAccountPerMonth';
 import {DateEndOfProcess} from '../../imports/api/collections/dateEndOfProcess';
 import {NetInCome} from '../../imports/api/collections/netIncome';
+import {Closing} from '../../imports/api/collections/closing';
 
 
 Meteor.methods({
@@ -156,6 +157,7 @@ Meteor.methods({
                 }
                 DateEndOfProcess.remove(id);
                 CloseChartAccountPerMonth.remove({endId: id});
+                Closing.update({month: data.month,year : data.year},{$set : {endId: ""}});
             }
         });
 

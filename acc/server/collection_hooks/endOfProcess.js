@@ -7,6 +7,7 @@ import {CloseChartAccount} from '../../imports/api/collections/closeChartAccount
 import {NetInCome} from '../../imports/api/collections/netIncome';
 import {MapClosing} from '../../imports/api/collections/mapCLosing';
 import {DateEndOfProcess} from '../../imports/api/collections/dateEndOfProcess';
+import {Closing} from '../../imports/api/collections/closing';
 
 import {Exchange} from '../../../core/imports/api/collections/exchange';
 
@@ -17,10 +18,13 @@ DateEndOfProcess.before.insert(function (userId, doc) {
     var prefix = doc.branchId + "-" + date;
     doc._id = idGenerator.genWithPrefix(DateEndOfProcess, prefix, 6);
     doc.month = moment(doc.closeDate, "DD/MM/YYYY").format("MM");
+    doc.year = moment(doc.closeDate, "DD/MM/YYYY").format("YYYY");
 
 });
 
 DateEndOfProcess.after.insert(function (userId, doc) {
+
+    Closing.update({month: doc.month,year : doc.year},{$set : {endId: doc._id}});
 
     try {
         //Close Chart Account
@@ -255,6 +259,8 @@ DateEndOfProcess.after.insert(function (userId, doc) {
     }catch(err){
         DateEndOfProcess.remove({_id: doc._id});
         Journal.remove({endId: doc._id});
+        Closing.update({month: doc.month,year : doc.year},{$set : {endId: ""}});
+
     }
 
 })

@@ -38,12 +38,32 @@ import './chartAccount.html';
  */
 // var actionTpl=Template.acc_chartAccountAction;
 Template.acc_chartAccount.onRendered(function () {
+
     /* Create new alertify */
     createNewAlertify("chartAccount");
+
 });
 
 var actionTpl = Template.acc_chartAccountAction;
+
+let state = new ReactiveObj({
+    income: {},
+    balance: {},
+    status: 0
+})
+
+
 Template.acc_chartAccount.helpers({
+    selector(){
+        if (state.get('status') == 0) {
+            return {};
+        } else if (state.get('status') == 1) {
+            return state.get('income');
+
+        } else if (state.get('status') == 2) {
+            return state.get('balance');
+        }
+    },
     tabularTable(){
         return ChartAccountTabular;
     },
@@ -55,14 +75,15 @@ Template.acc_chartAccount.helpers({
         reactiveTableSettings.fields = [
             {
                 key: '_id',
-                label:"Id",
+                label: "Id",
 
                 sortOrder: 0,
                 sortDirection: 'asc'
             },
             {key: 'code', label: "Code"},
             {key: 'name', label: "Name"},
-            {key: 'parentId', label:"Parent",
+            {
+                key: 'parentId', label: "Parent",
                 fn (value, object, key) {
                     var result = "";
                     if (value != null) {
@@ -75,7 +96,7 @@ Template.acc_chartAccount.helpers({
                 }
             },
             {
-                key: 'accountTypeId', label:"AccountType",
+                key: 'accountTypeId', label: "AccountType",
                 fn (value, object, key) {
                     return AccountType.findOne({
                         _id: value
@@ -156,6 +177,21 @@ Template.acc_chartAccount.events({
             .set({
                 title: fa("eye", "Chart of Account")
             });
+    },
+    'change [name="type"]'(e, t){
+        let val = $(e.currentTarget).val();
+
+        if (val == "None") {
+            return state.set('status', 0);
+        } else if (val == "Income") {
+            getMapping();
+
+            return state.set('status', 1);
+        } else if (val == "Balance") {
+            getMapping();
+
+            return state.set('status', 2);
+        }
     }
 });
 /**
@@ -287,3 +323,18 @@ AutoForm.hooks({
         }
     }
 });
+
+function getMapping() {
+    Meteor.call('getNbcNotMapping', function (err, result) {
+        if (result.income) {
+            state.set('income', {_id: {$nin: result.income}});
+        }
+    })
+
+
+    Meteor.call('getNbcNotMapping', function (err, result) {
+        if (result.balance) {
+            state.set('balance', {_id: {$nin: result.balance}});
+        }
+    })
+}

@@ -53,7 +53,7 @@ indexTpl.onRendered(function() {
 indexTpl.events({
   'click .update': function(e, t) {
     var self=this;
-    Session.set('nbcAccountName',self.accountDocNBC.code + " | "+ self.accountDocNBC.name )
+    Session.set('nbcAccountName',self.accountDocNBC.code + " | "+ self.accountDocNBC.name );
     alertify.mapBalanceNBC(fa("pencil", "Map NBC Balance"),renderTemplate(updateTpl, self));
 
   }
