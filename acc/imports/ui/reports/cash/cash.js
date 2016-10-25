@@ -29,25 +29,25 @@ import {__} from '../../../../../core/common/libs/tapi18n-callback-helper.js';
 import {Currency} from '../../../api/collections/currency';
 import {ChartAccount} from '../../../api/collections/chartAccount';
 // Method
-// import '../../../../common/methods/reports/ledger';
+// import '../../../../common/methods/reports/cash';
 import '../../libs/getBranch';
 import '../../libs/format';
 // Schema
-import {LedgerReport} from '../../../../imports/api/collections/reports/ledger';
+import {CashReport} from '../../../../imports/api/collections/reports/cash';
 
 // Page
-import './ledger.html';
+import './cash.html';
 // Declare template
 
-var reportTpl = Template.acc_ledgerReport,
-    generateTpl = Template.acc_ledgerReportGen,
-    ledgerTpl = Template.acc_ledgerReportGen,
-    ledgerShow = Template.acc_LedgerShow;
+var reportTpl = Template.acc_cashReport,
+    generateTpl = Template.acc_cashReportGen,
+    cashTpl = Template.acc_cashReportGen,
+    cashShow = Template.acc_LedgerShow;
 
 
 reportTpl.helpers({
     schema() {
-        return LedgerReport;
+        return CashReport;
     }
 })
 
@@ -60,12 +60,12 @@ reportTpl.events({
    }
 });
 
-ledgerTpl.onRendered(function() {
+cashTpl.onRendered(function() {
     // Create new  alertify
     createNewAlertify("showJournal");
 });
 //Event
-ledgerTpl.events({
+cashTpl.events({
     'click .split-account-detail': function (e, t) {
         var self = this;
         /*var tr = $(e.currentTarget).closest("tr");
@@ -73,14 +73,14 @@ ledgerTpl.events({
         // var data = Acc.Collection.Journal.findOne({voucherId: self.voucherId,_id: self._id});
 
         Meteor.call('getJournalForLedger',self.voucherId,self._id,function (err,data) {
-            alertify.showJournal(fa("eye", "Journal"),renderTemplate(ledgerShow, data));
+            alertify.showJournal(fa("eye", "Journal"),renderTemplate(cashShow, data));
         })
     }
 });
 
 
 //Helper
-ledgerShow.helpers({
+cashShow.helpers({
     formatMoney: function (val) {
         return numeral(val).format('0,0.00');
     },
@@ -97,7 +97,6 @@ ledgerShow.helpers({
         }
     }
 })
-
 
 generateTpl.helpers({
 
@@ -117,12 +116,12 @@ generateTpl.helpers({
         var q = FlowRouter.current().queryParams;
 
         Fetcher.setDefault('data',false);
-        Fetcher.retrieve('data','acc_ledgerReport',q);
+        Fetcher.retrieve('data','acc_cashReport',q);
 
         return Fetcher.get('data');
        /* var callId = JSON.stringify(q);
 
-        var call = Meteor.callAsync(callId, 'acc_ledgerReport', q);
+        var call = Meteor.callAsync(callId, 'acc_cashReport', q);
 
         if (!call.ready()) {
             return false;
@@ -135,14 +134,14 @@ generateTpl.helpers({
 
 /*AutoForm.hooks({
     // Customer
-    acc_LedgerReport: {
+    acc_CashReport: {
         onSubmit: function (doc) {
             /!*
            doc.accountType=doc.accountType.join(",");
             return doc;*!/
             doc.date=doc.date.replace(' ','+');
             doc.date=doc.date.replace(' ','+');
-            var path='/acc/ledgerReportGen?branchId='+doc.branchId+'&accountType='+
+            var path='/acc/cashReportGen?branchId='+doc.branchId+'&accountType='+
                 doc.accountType+'&chartAccount='+doc.chartAccount
                 +'&date='+doc.date+'&exchangeDate='+doc.exchangeDate
                 +'&currencyId='+doc.currencyId;

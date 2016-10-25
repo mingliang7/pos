@@ -369,3 +369,20 @@ AccRoutes.route('/paymentReceiveMethod', {
     }
 });
 
+// Map User and Account
+import '../imports/ui/pages/mapUserAndAccount/mapUserAndAccount';
+AccRoutes.route('/mapUserAndAccount', {
+    name: 'acc.mapUserAndAccount',
+    title: __('acc.mapUserAndAccount.title'),
+    action: function (params, queryParams) {
+        Layout.main('acc_mapUserAndAccount');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('acc.mapUserAndAccount.title'),
+        icon: 'cart-plus',
+        parent: 'acc.home'
+    }
+});
+

@@ -47,7 +47,7 @@ indexTpl.onRendered(function () {
     for (i = new Date().getFullYear(); i > 1900; i--) {
         $('#yearpicker').append($('<option />').val(i).html(i));
     }
-
+    $("#radios").radiosToSlider();
 });
 
 indexTpl.events({
@@ -161,3 +161,8 @@ indexTpl.onDestroyed(function () {
 });
 
 
+// $(document).ready( function(){
+//
+//
+//
+// });
