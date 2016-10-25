@@ -80,8 +80,8 @@
                 <hr>
                 <div class="row">
                     <div class="col-xs-3">
-                        <address class="label-report">
-                            <strong>Date:</strong>
+                        <address>
+                            <strong>Date: </strong>
                             {{data.title.date}}
                         </address>
                     </div>
@@ -107,13 +107,15 @@
                     <tbody>
 
                     <tr>
-                        <td colspan="4" style="background-color: #d0d0d0"><span><i class="fa fa-file-text"
+                        <td colspan="6" style="background-color: #d0d0d0"><span><i class="fa fa-file-text"
                                                                                    aria-hidden="true"></i> {{_id}}</span>
                         </td>
                     </tr>
                     <tr>
                         <td>Item</td>
-                        <td>Qty</td>
+                        <td>Total Qty</td>
+                        <td>Lost Qty</td>
+                        <td>Remain Qty</td>
                         <td>Price</td>
                         <td>Amount</td>
                     </tr>
@@ -121,6 +123,8 @@
                         <tr>
                             <td>{{itemName}}</td>
                             <td>{{totalQty}}</td>
+                            <td>{{lostQty}}</td>
+                            <td>{{remainQty}}</td>
                             <td>{{numFormat price '0,0.00'}}</td>
                             <td><u>{{numFormat totalAmount '0,0.00'}}</u></td>
                         </tr>
@@ -130,7 +134,7 @@
                 {{/each}}
                 <br>
                 <tr style="border-top: 1px #ddd solid;">
-                    <td colspan="2"></td>
+                    <td colspan="4"></td>
                     <td><b>Total:</b></td>
                     <td><b><u>{{numFormat footer.total '0,0.00'}}</u></b></td>
                 </tr>

@@ -71,6 +71,21 @@ export const receiveItemSummary = new ValidatedMethod({
                 },
                 {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
                 {
+                  $project: {
+                      type: 1,
+                      itemDoc: 1,
+                      items: {
+                          lostQty: 1,
+                          qty: 1,
+                          totalQty: {$add: ['$items.qty', '$items.lostQty']},
+                          itemId: 1,
+                          price: 1,
+                          amount: 1,
+                      }
+
+                  }
+                },
+                {
                     $group: {
                         _id: {
                             type: '$type',
@@ -78,6 +93,12 @@ export const receiveItemSummary = new ValidatedMethod({
                         },
                         itemDoc: {
                             $last: '$itemDoc'
+                        },
+                        lostQty: {
+                          $sum: '$items.lostQty',
+                        },
+                        totalQty: {
+                          $sum: '$items.totalQty'
                         },
                         itemQty: {
                             $sum: '$items.qty'
@@ -96,7 +117,9 @@ export const receiveItemSummary = new ValidatedMethod({
                         items: {
                             $addToSet: {
                                 itemName: '$itemDoc.name',
-                                totalQty: '$itemQty',
+                                remainQty: '$itemQty',
+                                totalQty: '$totalQty',
+                                lostQty: '$lostQty',
                                 price: '$itemPrice',
                                 totalAmount: '$itemAmount'
                             }
