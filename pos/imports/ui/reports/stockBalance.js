@@ -68,6 +68,8 @@ invoiceDataTmpl.helpers({
                 data += `<td>${col._customer.name}</td>`
             } else if (obj.field == 'total') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
+            }else if (obj.field == 'amount') {
+                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
