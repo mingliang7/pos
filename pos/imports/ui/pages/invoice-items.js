@@ -185,14 +185,14 @@ itemsTmpl.events({
         // instance.$('[name="price"]').val('');
         instance.$('[name="amount"]').val('');
     },
-    'keyup [name="qty"],[name="price"]': function (event, instance) {
+    'change [name="qty"],[name="price"]': function (event, instance) {
         let qty = instance.$('[name="qty"]').val();
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseInt(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
         let amount = qty * price;
 
-        instance.state('amount', amount);
+        // instance.state('amount', amount);
     },
     'click .js-add-item': function (event, instance) {
         let itemId = instance.$('[name="itemId"]').val();

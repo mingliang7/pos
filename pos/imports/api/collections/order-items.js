@@ -60,11 +60,13 @@ export const ItemsSchema = new SimpleSchema({
         decimal: true,
         optional: true,
         defaultValue: function () {
+            let qty = AutoForm.getFieldValue('qty');
             let id = AutoForm.getFieldValue('itemId');
             let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
+            let routeName = FlowRouter.getRouteName();
             if (id) {
                 itemInfo.callPromise({
-                    _id: id, customerId: customerId
+                    _id: id, customerId: customerId, qty: qty,routeName: routeName
                 }).then(function (result) {
                     defaultPrice.set(result.price);
                 }).catch(function (err) {
@@ -73,7 +75,6 @@ export const ItemsSchema = new SimpleSchema({
             } else {
                 defaultPrice.set(0);
             }
-            console.log(defaultPrice.get());
             return defaultPrice.get();
         },
         autoform: {
@@ -100,9 +101,9 @@ export const ItemsSchema = new SimpleSchema({
                     itemInfo.callPromise({
                         _id: id, customerId: customerId
                     }).then(function (result) {
-                        if(result.sellingUnit) {
-                            defaultBaseUnit.set(result.sellingUnit);
-                        }else{
+                        if (data.sellingUnit) {
+                            defaultBaseUnit.set(data.sellingUnit);
+                        } else {
                             defaultBaseUnit.set(arr);
                         }
                     }).catch(function (err) {
@@ -128,12 +129,20 @@ export const ItemsSchema = new SimpleSchema({
         label: 'Amount',
         optional: true,
         decimal: true,
+        defaultValue(){
+            let qty = AutoForm.getFieldValue('qty');
+            let price = defaultPrice.get();
+            if(qty && price) {
+                return qty * price;
+            }
+        },
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
                 return inputmaskOptions.currency();
             }
         }
+
     }
 });
 
