@@ -70,32 +70,18 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="input-group">
-                        <h4 class="text-blue"><i class="fa fa-circle-o"></i> Account Mapping</h4>
-                        {{> chartAccountDropDown}}
+                        <h4 class="text-blue"><i class="fa fa-circle-o"></i> Quantity Range Mapping</h4>
                     </div>
                     <hr>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3"><h4 class="text-blue"><u>Asset</u></h4></div>
-                <div class="col-md-3"><h4 class="text-blue"><u>Liabilities</u></h4></div>
-                <div class="col-md-3"><h4 class="text-blue"><u>Income</u></h4></div>
-                <div class="col-md-3"><h4 class="text-blue"><u>Expense</u></h4></div>
+                <div class="col-md-3"><h4 class="text-blue"><u>Enable</u></h4></div>
                 <hr>
             </div>
             <div class="row">
-                <div class="col-md-3">{{> afQuickField name='accountMapping.inventoryAsset'}}</div>
-                <div class="col-md-3">{{> afQuickField name='accountMapping.accountPayable'}}</div>
-                <div class="col-md-3">{{> afQuickField name='accountMapping.incomeAccount'}}</div>
-                <div class="col-md-3">{{> afQuickField name='accountMapping.expenseAccount'}}</div>
+                <div class="col-md-3">{{> afQuickField name='mappingEnable'}}</div>
             </div>
-            <div class="row">
-                <div class="col-md-3">{{> afQuickField name='accountMapping.accountReceivable'}}</div>
-                <div class="col-md-3"></div>
-                <div class="col-md-3">{{> afQuickField name='accountMapping.saleDiscount'}}</div>
-                <div class="col-md-3">{{> afQuickField name='accountMapping.purchaseDiscount'}}</div>
-            </div>
-
             {{> formFooterWithButton}}
         {{/autoForm}}
     </div>
@@ -163,7 +149,21 @@
             <div class="row">
                 <div class="col-md-6">{{> afQuickField name='photo'}}</div>
             </div>
-
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <h4 class="text-blue"><i class="fa fa-circle-o"></i> Quantity Range Mapping</h4>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"><h4 class="text-blue"><u>Enable</u></h4></div>
+                <hr>
+            </div>
+            <div class="row">
+                <div class="col-md-3">{{> afQuickField name='mappingEnable'}}</div>
+            </div>
             {{> formFooterWithButton}}
 
         {{/autoForm}}

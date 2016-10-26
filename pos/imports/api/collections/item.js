@@ -240,6 +240,10 @@ Item.schema = new SimpleSchema({
     accountMapping: {
         type: accountMapping,
         optional: true
+    },
+    mappingEnable:{
+        type: Boolean,
+        optional: true
     }
 });
 

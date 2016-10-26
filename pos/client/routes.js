@@ -625,3 +625,17 @@ PosRoutes.route('/accountMapping', {
     }
 
 });
+import '../imports/ui/pages/quantityRangeMapping';
+PosRoutes.route('/quantityRangeMapping', {
+    name: 'pos.quantityRangeMapping',
+    title: 'Quantity Range Mapping',
+    action: function (params, queryParams) {
+        Layout.main('Pos_quantityRangeMapping');
+    },
+    breadcrumb: {
+        title: 'Quantity Range Mapping',
+        icon: '',
+        parent: 'pos.home'
+    }
+
+});
