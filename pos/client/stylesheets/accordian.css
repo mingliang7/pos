@@ -8,13 +8,12 @@
 }
 
 #accordion .panel-title > a.accordion-toggle::before, #accordion a[data-toggle="collapse"]::before  {
-    content:"\e113";
+    content:"";
     float: left;
-    font-family: 'Glyphicons Halflings';
     margin-right :1em;
 }
 #accordion .panel-title > a.accordion-toggle.collapsed::before, #accordion a.collapsed[data-toggle="collapse"]::before  {
-    content:"\e114";
+    content:"";
 }
 
 .panel-default {
@@ -45,17 +44,17 @@
     width: 21px;
     height: 21px;
     display: inline-block;
-    background: #e54a1a url(http://keenthemes.com/assets/bootsnipp/toggle-icons.png) no-repeat 6px 10px;
+    /*background: #e54a1a url(http://keenthemes.com/assets/bootsnipp/toggle-icons.png) no-repeat 6px 10px;*/
     border-radius: 50%;
     margin-right: 10px;
     position: relative;
     top: 4px;
 }
 .panel-default .collapsed:before {
-    background: #495764 url(http://keenthemes.com/assets/bootsnipp/toggle-icons.png) no-repeat 6px -148px;
+    /*background: #495764 url(http://keenthemes.com/assets/bootsnipp/toggle-icons.png) no-repeat 6px -148px;*/
 }
 .panel-default .panel-title:hover .collapsed:before {
-    background-color: #e54a1a;
+    /*background-color: #e54a1a;*/
 }
 .panel-default .accordion-toggle,
 .panel-default .accordion-toggle:focus,
