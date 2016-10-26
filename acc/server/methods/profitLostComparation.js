@@ -16,15 +16,15 @@ Meteor.methods({
             $unwind: "$transaction"
         }, {
             $match: {
-                'transaction.accountDoc.accountTypeId': { $in: ['40', '41','50', '51'] }
+                'transaction.accountDoc.accountTypeId': {$in: ['40', '41', '50', '51']}
             }
         },
             {
                 $project: {
                     _id: 1,
                     currencyId: 1,
-                    month: { $month: "$journalDate" },
-                    year: { $year: "$journalDate" },
+                    month: {$month: "$journalDate"},
+                    year: {$year: "$journalDate"},
                     transaction: {
                         drcr: 1,
                         account: "$transaction.accountDoc._id",
@@ -53,13 +53,67 @@ Meteor.methods({
                         parent: "$transaction.parent"
 
                     },
-                    journalDate: { $last: "$journalDate" },
-                    value: { $sum: '$transaction.drcr' }
+                    journalDate: {$last: "$journalDate"},
+                    value: {$sum: '$transaction.drcr'}
                 }
             },
-            { $sort: { journalDate: -1 } }
+            {$sort: {journalDate: -1}}
 
         ]);
+        return result;
+    },
+
+    getProfitLostGroupByMonth: function (selector, showNonActive) {
+        var result = Journal.aggregate([{
+            $unwind: "$transaction"
+        }, {
+            $match: {
+                'transaction.accountDoc.accountTypeId': {$in: ['40', '41', '50', '51']}
+            }
+        },
+            {
+                $project: {
+                    _id: 1,
+                    currencyId: 1,
+                    month: {$month: "$journalDate"},
+                    year: {$year: "$journalDate"},
+                    transaction: {
+                        drcr: 1
+                    },
+                    journalDate: 1,
+                    accountType: {
+                        $cond: [
+                            {
+                                $or: [
+                                    {$eq: ["$transaction.accountDoc.accountTypeId", "40"]},
+                                    {$eq: ["$transaction.accountDoc.accountTypeId", '41']}
+                                ]
+                            }, "Income", "Expense"]
+                    }
+
+
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        month: "$month",
+                        year: "$year",
+                        currencyId: "$currencyId",
+                        accountType: "$accountType"
+                    },
+                    journalDate: {$last: "$journalDate"},
+                    value: {$sum: '$transaction.drcr'}
+                }
+            },
+            {$sort: {journalDate: -1}}
+
+        ]);
+
+
+        
+
+
         return result;
     }
 })
