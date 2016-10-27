@@ -98,7 +98,6 @@ ledgerShow.helpers({
     }
 })
 
-
 generateTpl.helpers({
 
     options: function () {

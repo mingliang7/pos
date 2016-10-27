@@ -33,7 +33,7 @@ tabularOpts.columns = [
         title: "Parent",
         render: function (val, type, doc) {
             var result = "";
-            if (val != null && val!="") {
+            if (val != null) {
                 re = ChartAccount.findOne({
                     _id: val
                 });
