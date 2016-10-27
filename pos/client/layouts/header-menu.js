@@ -3,6 +3,7 @@ import {ReactiveVar} from 'meteor/reactive-var';
 //collection
 import {LocationTransfers} from '../../imports/api/collections/locationTransfer';
 import {RingPullTransfers} from '../../imports/api/collections/ringPullTransfer';
+import {TransferMoney} from '../../imports/api/collections/transferMoney';
 import {Branch} from '../../../core/imports/api/collections/branch';
 let indexTmpl = Template.Pos_headerMenu;
 indexTmpl.onCreated(function () {
@@ -16,6 +17,11 @@ indexTmpl.onCreated(function () {
                     status: 'active'
                 });
             let ringPullTransferSubscription = Meteor.subscribe('pos.activeRingPullTransfers', {
+                toBranchId: Session.get('currentBranch'),
+                pending: true,
+                status: 'active'
+            });
+            let TransferMoneySubscription = Meteor.subscribe('pos.activeTransferMoney', {
                 toBranchId: Session.get('currentBranch'),
                 pending: true,
                 status: 'active'
@@ -56,5 +62,18 @@ indexTmpl.helpers({
             toBranchId: Session.get('currentBranch'),
             pending: true
         }).count();
-    }
+    },
+    transferMoneyRequest(){
+        let transferMoneys = TransferMoney.find({
+            toBranchId: Session.get('currentBranch'),
+            pending: true
+        });
+        return transferMoneys;
+    },
+    transferMoneyRequestCount(){
+        return transferMoneyRequestCount = TransferMoney.find({
+            toBranchId: Session.get('currentBranch'),
+            pending: true
+        }).count();
+    },
 });

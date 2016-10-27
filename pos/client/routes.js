@@ -639,3 +639,31 @@ PosRoutes.route('/quantityRangeMapping', {
     }
 
 });
+import '../imports/ui/pages/transferMoney';
+PosRoutes.route('/transferMoney', {
+    name: 'pos.transferMoney',
+    title: 'Transfer Money',
+    action: function (params, queryParams) {
+        Layout.main('Pos_transferMoney');
+    },
+    breadcrumb: {
+        title: 'Transfer Money',
+        icon: '',
+        parent: 'pos.home'
+    }
+
+});
+import '../imports/ui/pages/transferMoneyRequest';
+PosRoutes.route('/transferMoneyRequest', {
+    name: 'pos.transferMoneyRequest',
+    title: 'Transfer Money Request',
+    action: function (params, queryParams) {
+        Layout.main('Pos_transferMoneyRequest');
+    },
+    breadcrumb: {
+        title: 'Transfer Money Request',
+        icon: '',
+        parent: 'pos.home'
+    }
+
+});
