@@ -22,7 +22,7 @@ DepExpList.schema = new SimpleSchema({
         type: Date,
         label: "Date",
         defaultValue: function () {
-            var currentDate = moment(new Date()).format('YYYY-MM-DD');
+            var currentDate = moment().format('DD/MM/YYYY');
             return currentDate;
         }
     },

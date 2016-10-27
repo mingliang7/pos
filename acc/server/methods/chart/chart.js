@@ -14,7 +14,7 @@ import {ChartAccount} from '../../../imports/api/collections/chartAccount';
 
 Meteor.methods({
     chart_netIncome(param){
-        var currentDate = new Date();
+        var currentDate = moment().toDate;
 
         var dataMain = {};
         var data = [];
@@ -61,7 +61,7 @@ Meteor.methods({
     , chart_dailyIncomeExpense(param){
         let data = {};
 
-        var currentDate = new Date();
+        var currentDate = moment().toDate();
 
         let curMonth = currentDate.getMonth();
         let curYear = currentDate.getFullYear();

@@ -44,7 +44,7 @@ var Highcharts = require('highcharts/highstock');
 indexTpl.onRendered(function () {
     stateSelectorChart.set('currency', 'USD');
 
-    for (i = new Date().getFullYear(); i > 1900; i--) {
+    for (i = moment().toDate().getFullYear(); i > 1900; i--) {
         $('#yearpicker').append($('<option />').val(i).html(i));
     }
     stateSelectorChart.set('yearSelect', $("#yearpicker").val());
@@ -56,7 +56,7 @@ indexTpl.onRendered(function () {
 
     })
 
-    stateSelectorChart.set('month', [s.pad(new Date().getMonth() + 1,2,"0")]);
+    stateSelectorChart.set('month', [s.pad(moment().toDate().getMonth() + 1,2,"0")]);
 
 
     getDataForChart();
@@ -78,11 +78,11 @@ indexTpl.events({
         getDataForChart();
     }, 'change #monthpicker': function (e, t) {
         if ($(e.currentTarget).val() == "This Month") {
-            stateSelectorChart.set('month', [s.pad(new Date().getMonth() + 1,2,"0")]);
+            stateSelectorChart.set('month', [s.pad(moment().toDate().getMonth() + 1,2,"0")]);
         } else if ($(e.currentTarget).val() == "Last Month") {
-            stateSelectorChart.set('month', [s.pad(new Date().getMonth(),2,"0")]);
+            stateSelectorChart.set('month', [s.pad(moment().toDate().getMonth(),2,"0")]);
         } else if ($(e.currentTarget).val() == "Last Quater") {
-            let curMonth=(new Date().getMonth()) + 1;
+            let curMonth=(moment().toDate().getMonth()) + 1;
             let monthList=[];
             for(i=curMonth;i>curMonth-3;i--){
                 if(i>0){

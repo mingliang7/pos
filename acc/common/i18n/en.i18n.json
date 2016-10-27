@@ -28,7 +28,10 @@
       "accountComparation": "Account Comparation",
       "companySnapshot": "Company Snapshot",
       "paymentReceiveMethod": "Payment/Receive Method",
-      "cashFlowReport": "Cash Flow"
+      "cashFlowReport": "Cash Flow",
+      "mapUserAndAccount": "Map User and Account",
+      "cashReport": "Cash",
+      "profitLostComparationReport": "Profit Lost Comparation"
     },
     "home": {
       "title": "Home",
@@ -193,6 +196,15 @@
     },
     "cashFlowReport": {
       "title": "Cash Flow Report"
+    },
+    "mapUserAndAccount": {
+      "title": "Map User and Account"
+    },
+    "cashReport": {
+      "title": "Cash Report"
+    },
+    "profitLostComparationReport": {
+      "title": "Profit Lost Comparation Report"
     }
   }
 }

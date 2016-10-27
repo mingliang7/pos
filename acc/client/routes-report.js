@@ -279,6 +279,7 @@ AccRoutes.route('/ledgerReport', {
     title: __('acc.ledgerReport.title'),
     subscriptions: function (params, queryParams) {
         this.register('cpanel_exchange', Meteor.subscribe('cpanel_exchange'));
+        this.register('acc.mapUserAndAccount', Meteor.subscribe('acc.mapUserAndAccount'));
     },
     action: function (params, queryParams) {
         Layout.main('acc_ledgerReport');
@@ -301,6 +302,40 @@ AccRoutes.route('/ledgerReportGen', {
     },
     action: function (params, queryParams) {
         Layout.report('acc_ledgerReportGen');
+    }
+})
+;
+
+//cash
+import '../imports/ui/reports/cash/cash.js';
+AccRoutes.route('/cashReport', {
+    name: 'acc.cashReport',
+    title: __('acc.cashReport.title'),
+    subscriptions: function (params, queryParams) {
+        this.register('cpanel_exchange', Meteor.subscribe('cpanel_exchange'));
+        this.register('acc.mapUserAndAccount', Meteor.subscribe('acc.mapUserAndAccount'));
+    },
+    action: function (params, queryParams) {
+        Layout.main('acc_cashReport');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'Cash Report',
+        parent: 'acc.home'
+    }
+});
+
+AccRoutes.route('/cashReportGen', {
+    name: 'acc.cashReportGen',
+    subscriptions: function (params, queryParams) {
+        this.register(
+            'acc_Journal',
+            Meteor.subscribe('acc_Journal')
+        );
+    },
+    action: function (params, queryParams) {
+        Layout.report('acc_cashReportGen');
     }
 })
 ;
@@ -348,6 +383,10 @@ AccRoutes.route('/trialBalanceReport', {
             'cpanel_exchange',
             Meteor.subscribe('cpanel_exchange')
         );
+        this.register(
+            'acc.mapUserAndAccount',
+            Meteor.subscribe('acc.mapUserAndAccount')
+        );
     },
     action: function (params, queryParams) {
         Layout.main('acc_trialBalanceReport');
@@ -393,5 +432,35 @@ AccRoutes.route('/cashFlowReportGen', {
     name: 'acc.cashFlowReportGen',
     action: function (params, queryParams) {
         Layout.report('acc_cashFlowReportGen');
+    }
+});
+
+
+//Profi Lost Comparation
+import '../imports/ui/reports/profitLostComparation/profitLostComparation';
+AccRoutes.route('/profitLostComparationReport', {
+    name: 'acc.profitLostComparationReport',
+    title: __('acc.profitLostComparationReport.title'),
+    subscriptions: function (params, queryParams) {
+        this.register(
+            'cpanel_exchange',
+            Meteor.subscribe('cpanel_exchange')
+        );
+    },
+    action: function (params, queryParams) {
+        Layout.main('acc_ProfitLostReportComparation');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: 'Profit Lost Comparation Report',
+        parent: 'acc.home'
+    }
+});
+
+AccRoutes.route('/profitLostComparationReportGen', {
+    name: 'acc.profitLostComparationReportGen',
+    action: function (params, queryParams) {
+        Layout.report('acc_ProfitLostComparationReportGen');
     }
 });

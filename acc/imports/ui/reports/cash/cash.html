@@ -1,18 +1,16 @@
-<template name="acc_ledgerReport">
+<template name="acc_cashReport">
     <div class="box-body">
-        {{#autoForm schema=schema id="acc_ledgerReport"  action="ledgerReportGen" target="_blank"}}
+        {{#autoForm schema=schema id="acc_cashReport"  action="cashReportGen" target="_blank"}}
             <div class="animated fadeIn">
                 <div class="row">
                     <div class="col-md-6">
                         {{> afQuickField name='branchId'}}
                         {{> afQuickField name='currencyId'}}
-                        {{> afQuickField name='date'}}
-                        {{> afQuickField name='exchangeDate'}}
                     </div>
 
                     <div class="col-md-6">
-                        {{> afQuickField name='accountType' size=10}}
-                        {{> afQuickField name='chartAccount'}}
+                        {{> afQuickField name='date'}}
+                        {{> afQuickField name='exchangeDate'}}
                     </div>
 
                 </div>
@@ -25,7 +23,7 @@
 
 
 <!--Generate-->
-<template name="acc_ledgerReportGen">
+<template name="acc_cashReportGen">
 
     <!--Is ready-->
     {{#if data}}
@@ -38,7 +36,7 @@
                     <div class="title">
                         <div class="title-1x-kh-muol">{{khName}}</div>
                         <div class="title-1x">{{enName}}</div>
-                        <div><u>Ledger Report</u></div>
+                        <div><u>Cash Report</u></div>
                         <div class="title-2x">{{enAddress}}</div>
                     </div>
                 {{/with}}
@@ -175,7 +173,7 @@
 </template>
 
 
-<template name="acc_LedgerShow">
+<template name="acc_CashShow">
     <div class="box-body">
         <table>
             <tr>

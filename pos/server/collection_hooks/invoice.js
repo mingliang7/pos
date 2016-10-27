@@ -39,7 +39,9 @@ Invoices.after.insert(function (userId, doc) {
         let setting = AccountIntegrationSetting.findOne();
         let transaction = [];
         let totalRemain = 0;
+        let accountRefType = 'Invoice';
         if (doc.saleId) {
+            accountRefType = 'Invoice-SaleOrder';
             let total = 0;
             let totalCost = 0;
             doc.items.forEach(function (item) {
@@ -84,6 +86,7 @@ Invoices.after.insert(function (userId, doc) {
 
         }
         else {
+            accountRefType = 'Invoice';
             invoiceManageStock(doc);
             let totalGratis = 0;
             let totalCOGS = 0;
@@ -149,6 +152,7 @@ Invoices.after.insert(function (userId, doc) {
                 );
 
                 if (totalGratis > 0) {
+                    accountRefType = 'Invoice-Gratis';
                     transaction.push({
                         account: gratisChartAccount.account,
                         dr: totalGratis,
@@ -172,7 +176,7 @@ Invoices.after.insert(function (userId, doc) {
         //Account Integration
         if (setting && setting.integrate) {
             let data = doc;
-            data.type = "Invoice";
+            data.type = accountRefType;
 
             /*data.items.forEach(function (item) {
              let itemDoc = Item.findOne(item.itemId);
@@ -205,8 +209,10 @@ Invoices.after.update(function (userId, doc) {
         term: doc.invoiceType == 'term',
         group: doc.invoiceType == 'group'
     };
+    let accountRefType = 'Invoice';
     let transaction = [];
     if (type.saleOrder) {
+        accountRefType = 'Invoice-SaleOrder';
         Meteor.defer(function () {
             recalculateQty(preDoc);
             updateQtyInSaleOrder(doc);
@@ -242,6 +248,7 @@ Invoices.after.update(function (userId, doc) {
 
     }
     else if (type.group) {
+        accountRefType = 'Invoice';
         Meteor.defer(function () {
             removeInvoiceFromGroup(preDoc);
             pushInvoiceFromGroup(doc);
@@ -328,6 +335,7 @@ Invoices.after.update(function (userId, doc) {
             );
 
             if (totalGratis > 0) {
+                accountRefType = 'Invoice-Gratis';
                 transaction.push({
                     account: gratisChartAccount.account,
                     dr: totalGratis,
@@ -347,6 +355,7 @@ Invoices.after.update(function (userId, doc) {
 
     }
     else {
+        accountRefType = 'Invoice';
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
             recalculatePayment({preDoc, doc});
@@ -430,6 +439,7 @@ Invoices.after.update(function (userId, doc) {
             );
 
             if (totalGratis > 0) {
+                accountRefType = 'Invoice-Gratis';
                 transaction.push({
                     account: gratisChartAccount.account,
                     dr: totalGratis,
@@ -452,7 +462,7 @@ Invoices.after.update(function (userId, doc) {
         //Account Integration
         if (setting && setting.integrate) {
             let data = doc;
-            data.type = "Invoice";
+            data.type = accountRefType;
             data.transaction = transaction;
             Meteor.call('updateAccountJournal', data);
         }
@@ -464,6 +474,7 @@ Invoices.after.update(function (userId, doc) {
 //remove
 Invoices.after.remove(function (userId, doc) {
     Meteor.defer(function () {
+        let accountRefType = 'Invoice';
         Meteor._sleepForMs(200);
         let type = {
             saleOrder: doc.invoiceType == 'saleOrder',
@@ -471,9 +482,11 @@ Invoices.after.remove(function (userId, doc) {
             group: doc.invoiceType == 'group'
         };
         if (type.saleOrder) {
+            accountRefType = 'Invoice-SaleOrder';
             recalculateQty(doc);
             Order.direct.update(doc.saleId, {$set: {status: 'active'}});
         } else if (type.group) {
+            accountRefType = 'Invoice';
             removeInvoiceFromGroup(doc);
             let groupInvoice = GroupInvoice.findOne(doc.paymentGroupId);
             if (groupInvoice.invoices.length <= 0) {
@@ -485,15 +498,18 @@ Invoices.after.remove(function (userId, doc) {
             returnToInventory(doc);
             doc.items.forEach(function (item) {
                 if (item.price == 0) {
+                    accountRefType='Invoice-Gratis';
                     reduceGratisInventory(item, doc.branchId, doc.stockLocationId);
                 }
             });
         } else {
+            accountRefType = 'Invoice';
             //average inventory calculation
             returnToInventory(doc);
             doc.items.forEach(function (item) {
                 if (item.price == 0) {
                     reduceGratisInventory(item, doc.branchId, doc.stockLocationId);
+                    accountRefType = 'Invoice-Gratis';
                 }
             });
         }
@@ -501,7 +517,7 @@ Invoices.after.remove(function (userId, doc) {
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
-            let data = {_id: doc._id, type: 'Invoice'};
+            let data = {_id: doc._id, type: accountRefType};
             Meteor.call('removeAccountJournal', data);
         }
         //End Account Integration

@@ -39,18 +39,19 @@
     height: 34px;
 }
 
-.custom-switchery-background{
+.custom-switchery-background {
     box-shadow: #337ab7 0px 0px 0px 11px inset;
     border-color: #337ab7;
     background-color: #337ab7;
     transition: border 0.4s, box-shadow 0.4s, background-color 1.2s;
 }
 
-.btn-add-round{
+.btn-add-round {
     border-radius: 999px;
     padding: 5px 10px;
 }
-.badge-round{
+
+.badge-round {
     border-radius: 999px;
     padding: 5px 7px;
 }
@@ -58,4 +59,8 @@
 .box-custom {
     margin-left: -5px;
     padding-right: 5px;
+}
+
+.report-pointer {
+    cursor: pointer;
 }
