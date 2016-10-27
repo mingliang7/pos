@@ -313,6 +313,27 @@ SelectOptMethods.branch = new ValidatedMethod({
         }
     }
 });
+SelectOptMethods.transferMoneybranch = new ValidatedMethod({
+    name: 'pos.selectOptMethods.transferMoneyBranch',
+    validate: null,
+    run(options) {
+        if (!this.isSimulation) {
+            this.unblock();
+
+            let list = [], selector = {};
+            let searchText = options.searchText;
+            let values = options.values;
+            let params = options.params || {};
+            let data = Branch.find(params, {limit: 100});
+            data.forEach(function (value) {
+                let label = value._id + ' : ' + value.enName;
+                list.push({label: label, value: value._id});
+            });
+
+            return list;
+        }
+    }
+});
 
 SelectOptMethods.branchListExcludeCurrent = new ValidatedMethod({
     name: 'pos.selectOptMethods.branchListExcludeCurrent',
