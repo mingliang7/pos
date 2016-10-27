@@ -69,7 +69,7 @@ export const LedgerReport = new SimpleSchema({
       type: "select2",
       defaultValue: "All",
       options: function() {
-        return SelectOptsReport.chartAccountFilter();
+        return SelectOptsReport.chartAccountId();
       }
     }
 

@@ -41,8 +41,8 @@ Invoices.after.insert(function (userId, doc) {
         let totalRemain = 0;
         if (doc.saleId) {
             let total = 0;
+            let totalCost = 0;
             doc.items.forEach(function (item) {
-                total += item.amount;
                 Order.direct.update(
                     {
                         _id: doc.saleId,
@@ -54,6 +54,7 @@ Invoices.after.insert(function (userId, doc) {
                             "items.$.remainQty": -item.qty
                         }
                     });
+                total += item.qty * item.price;
             });
             let saleOrder = Order.findOne(doc.saleId);
             if (saleOrder.sumRemainQty == 0) {
@@ -64,18 +65,20 @@ Invoices.after.insert(function (userId, doc) {
                 let oweInventoryCustomerChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
                 doc.total = total;
-                transaction.push({
-                    account: oweInventoryCustomerChartAccount.account,
-                    dr: doc.total,
-                    cr: 0,
-                    drcr: doc.total,
+                transaction.push(
+                    {
+                        account: oweInventoryCustomerChartAccount.account,
+                        dr: doc.total,
+                        cr: 0,
+                        drcr: doc.total,
 
-                }, {
-                    account: inventoryChartAccount.account,
-                    dr: 0,
-                    cr: doc.total,
-                    drcr: -doc.total,
-                });
+                    }, {
+                        account: inventoryChartAccount.account,
+                        dr: 0,
+                        cr: doc.total,
+                        drcr: -doc.total,
+                    }
+                );
             }
             //End Account Integration
 
@@ -83,6 +86,7 @@ Invoices.after.insert(function (userId, doc) {
         else {
             invoiceManageStock(doc);
             let totalGratis = 0;
+            let totalCOGS = 0;
             doc.items.forEach(function (item) {
                 if (item.price == 0) {
                     increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
@@ -90,29 +94,60 @@ Invoices.after.insert(function (userId, doc) {
                         itemId: item.itemId,
                         branchId: doc.branchId,
                         stockLocationId: doc.stockLocationId
-                    });
+                    }, {sort: {_id: -1}});
                     let thisItemPrice = 0;
                     if (inventoryObj) {
                         thisItemPrice = inventoryObj.price;
                     } else {
-                        thisItemPrice = Item.findOne(item.itemId).purchasePrice;
+                        let thisItem = Item.findOne(item.itemId);
+                        thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
                     }
                     totalGratis += item.qty * thisItemPrice;
+                } else {
+                    let inventoryObj = AverageInventories.findOne({
+                        itemId: item.itemId,
+                        branchId: doc.branchId,
+                        stockLocationId: doc.stockLocationId
+                    }, {sort: {_id: -1}});
+                    let thisItemPrice = 0;
+                    if (inventoryObj) {
+                        thisItemPrice = inventoryObj.price;
+                    } else {
+                        let thisItem = Item.findOne(item.itemId);
+                        thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
+                    }
+                    totalCOGS += item.qty * thisItemPrice;
                 }
             });
-            let totalInventory = doc.total + totalGratis;
+            let totalInventory = totalCOGS + totalGratis;
             //Account Integration
             if (setting && setting.integrate) {
                 let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+                let saleIncomeChartAccount = AccountMapping.findOne({name: 'Sale Income'});
+                let cogsChartAccount = AccountMapping.findOne({name: 'COGS'});
                 let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-                transaction.push({
-                    account: arChartAccount.account,
-                    dr: doc.total,
-                    cr: 0,
-                    drcr: doc.total,
+                transaction.push(
+                    {
+                        account: arChartAccount.account,
+                        dr: doc.total,
+                        cr: 0,
+                        drcr: doc.total,
+                    },
+                    {
+                        account: saleIncomeChartAccount.account,
+                        dr: 0,
+                        cr: doc.total,
+                        drcr: -doc.total,
+                    },
+                    {
+                        account: cogsChartAccount.account,
+                        dr: totalCOGS,
+                        cr: 0,
+                        drcr: totalCOGS
+                    }
+                );
 
-                });
                 if (totalGratis > 0) {
                     transaction.push({
                         account: gratisChartAccount.account,
@@ -120,7 +155,6 @@ Invoices.after.insert(function (userId, doc) {
                         cr: 0,
                         drcr: totalGratis
                     });
-
                 }
                 transaction.push({
                     account: inventoryChartAccount.account,
@@ -130,7 +164,7 @@ Invoices.after.insert(function (userId, doc) {
                 });
             }
             //End Account Integration
-            doc.total = totalInventory;
+            doc.total = doc.total + totalInventory;
         }
         if (doc.invoiceType == 'group') {
             Meteor.call('pos.generateInvoiceGroup', {doc});
@@ -231,6 +265,7 @@ Invoices.after.update(function (userId, doc) {
 
         });
         let totalGratis = 0;
+        let totalCOGS = 0;
         doc.items.forEach(function (item) {
             if (item.price == 0) {
                 // increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
@@ -238,28 +273,60 @@ Invoices.after.update(function (userId, doc) {
                     itemId: item.itemId,
                     branchId: doc.branchId,
                     stockLocationId: doc.stockLocationId
-                });
+                }, {sort: {_id: -1}});
                 let thisItemPrice = 0;
                 if (inventoryObj) {
                     thisItemPrice = inventoryObj.price;
                 } else {
-                    thisItemPrice = Item.findOne(item.itemId).purchasePrice;
+                    let thisItem = Item.findOne(item.itemId);
+                    thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
                 }
                 totalGratis += item.qty * thisItemPrice;
+            } else {
+                let inventoryObj = AverageInventories.findOne({
+                    itemId: item.itemId,
+                    branchId: doc.branchId,
+                    stockLocationId: doc.stockLocationId
+                }, {sort: {_id: -1}});
+                let thisItemPrice = 0;
+                if (inventoryObj) {
+                    thisItemPrice = inventoryObj.price;
+                } else {
+                    let thisItem = Item.findOne(item.itemId);
+                    thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
+                }
+                totalCOGS += item.qty * thisItemPrice;
             }
         });
-        let totalInventory = doc.total + totalGratis;
+        let totalInventory = totalCOGS + totalGratis;
+
         if (setting && setting.integrate) {
             let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+            let saleIncomeChartAccount = AccountMapping.findOne({name: 'Sale Income'});
+            let cogsChartAccount = AccountMapping.findOne({name: 'COGS'});
             let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-            transaction.push({
-                account: arChartAccount.account,
-                dr: doc.total,
-                cr: 0,
-                drcr: doc.total,
+            transaction.push(
+                {
+                    account: arChartAccount.account,
+                    dr: doc.total,
+                    cr: 0,
+                    drcr: doc.total,
+                },
+                {
+                    account: saleIncomeChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total,
+                },
+                {
+                    account: cogsChartAccount.account,
+                    dr: totalCOGS,
+                    cr: 0,
+                    drcr: totalCOGS
+                }
+            );
 
-            });
             if (totalGratis > 0) {
                 transaction.push({
                     account: gratisChartAccount.account,
@@ -267,7 +334,6 @@ Invoices.after.update(function (userId, doc) {
                     cr: 0,
                     drcr: totalGratis
                 });
-
             }
             transaction.push({
                 account: inventoryChartAccount.account,
@@ -277,7 +343,7 @@ Invoices.after.update(function (userId, doc) {
             });
         }
         //End Account Integration
-        doc.total = totalInventory;
+        doc.total = doc.total + totalInventory;
 
     }
     else {
@@ -299,36 +365,70 @@ Invoices.after.update(function (userId, doc) {
                 }
             });
         });
+
         let totalGratis = 0;
+        let totalCOGS = 0;
         doc.items.forEach(function (item) {
             if (item.price == 0) {
-                //increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                // increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
                 let inventoryObj = AverageInventories.findOne({
                     itemId: item.itemId,
                     branchId: doc.branchId,
                     stockLocationId: doc.stockLocationId
-                });
+                }, {sort: {_id: -1}});
                 let thisItemPrice = 0;
                 if (inventoryObj) {
                     thisItemPrice = inventoryObj.price;
                 } else {
-                    thisItemPrice = Item.findOne(item.itemId).purchasePrice;
+                    let thisItem = Item.findOne(item.itemId);
+                    thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
                 }
                 totalGratis += item.qty * thisItemPrice;
+            } else {
+                let inventoryObj = AverageInventories.findOne({
+                    itemId: item.itemId,
+                    branchId: doc.branchId,
+                    stockLocationId: doc.stockLocationId
+                }, {sort: {_id: -1}});
+                let thisItemPrice = 0;
+                if (inventoryObj) {
+                    thisItemPrice = inventoryObj.price;
+                } else {
+                    let thisItem = Item.findOne(item.itemId);
+                    thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
+                }
+                totalCOGS += item.qty * thisItemPrice;
             }
         });
-        let totalInventory = doc.total + totalGratis;
+        let totalInventory = totalCOGS + totalGratis;
+
         if (setting && setting.integrate) {
             let arChartAccount = AccountMapping.findOne({name: 'A/R'});
+            let saleIncomeChartAccount = AccountMapping.findOne({name: 'Sale Income'});
+            let cogsChartAccount = AccountMapping.findOne({name: 'COGS'});
             let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-            transaction.push({
-                account: arChartAccount.account,
-                dr: doc.total,
-                cr: 0,
-                drcr: doc.total,
+            transaction.push(
+                {
+                    account: arChartAccount.account,
+                    dr: doc.total,
+                    cr: 0,
+                    drcr: doc.total,
+                },
+                {
+                    account: saleIncomeChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total,
+                },
+                {
+                    account: cogsChartAccount.account,
+                    dr: totalCOGS,
+                    cr: 0,
+                    drcr: totalCOGS
+                }
+            );
 
-            });
             if (totalGratis > 0) {
                 transaction.push({
                     account: gratisChartAccount.account,
@@ -336,7 +436,6 @@ Invoices.after.update(function (userId, doc) {
                     cr: 0,
                     drcr: totalGratis
                 });
-
             }
             transaction.push({
                 account: inventoryChartAccount.account,
@@ -345,7 +444,8 @@ Invoices.after.update(function (userId, doc) {
                 drcr: -totalInventory,
             });
         }
-        doc.total = totalInventory;
+        //End Account Integration
+        doc.total = doc.total + totalInventory;
 
     }
     Meteor.defer(function () {

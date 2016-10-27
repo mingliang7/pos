@@ -234,7 +234,7 @@ Meteor.methods({
                 itemId: item.itemId,
                 locationId: item.locationId,
                 price: item.price
-            }, {fields: {_id: 1, remainQty: 1, quantity: 1}});
+            }, {sort: {_id: -1}, fields: {_id: 1, remainQty: 1, quantity: 1}});
             if (inventory.remainQty < item.qty) {
                 enough = false;
                 return false;
