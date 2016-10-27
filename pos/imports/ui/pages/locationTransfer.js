@@ -87,7 +87,15 @@ indexTmpl.events({
         );
     },
     'click .js-display' (event, instance) {
-        alertify.locationTransferShow(fa('eye', TAPi18n.__('pos.locationTransfer.title')), renderTemplate(showTmpl, this));
+        Meteor.call('pos.locationTransferInfo', {_id: this._id}, function (err, result) {
+            if (result) {
+                console.log(result);
+                alertify.locationTransfer(fa('eye', 'Showing Transfer'), renderTemplate(showTmpl, result));
+            }
+            if (err) {
+                console.log(err);
+            }
+        });
     },
     'click .js-locationTransfer' (event, instance) {
         let params = {};
@@ -232,33 +240,30 @@ editTmpl.onDestroyed(function () {
 });
 
 // Show
-showTmpl.onCreated(function () {
-    this.locationTransfer = new ReactiveVar();
-    this.autorun(()=> {
-        LocationTransferInfo.callPromise({_id: this.data._id})
-            .then((result) => {
-                this.locationTransfer.set(result);
-            }).catch(function (err) {
-                console.log(err.message);
-            }
-        );
-    });
-});
+
 
 showTmpl.helpers({
     i18nLabel(label){
         let key = `pos.locationTransfer.schema.${label}.label`;
         return TAPi18n.__(key);
     },
-    locationTransferInfo () {
-
-        let locationTransferInfo = Template.instance().locationTransfer.get();
-
-        // Use jsonview
-        locationTransferInfo.jsonViewOpts = {collapsed: true};
-        //
-        return locationTransferInfo;
-    }
+    capitalize(name){
+        return _.capitalize(name);
+    },
+    accepted(){
+        if (!this.pending && this.status == 'closed') {
+            return true;
+        }
+    },
+    declined(){
+        if (!this.pending && this.status == 'declined') {
+            return true;
+        }
+    },
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
 });
 
 // Hook

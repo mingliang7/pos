@@ -57,7 +57,7 @@ tabularOpts.columns = [
             if(val == 'active') {
                 return `<span class="label label-info">${_.capitalize(val)}</span>`;
             }else if(val == 'declined') {
-                return `<span class="label label-warning">${_.capitalize(val)}</span>`;
+                return `<span class="label label-danger">${_.capitalize(val)}</span>`;
             }
             return `<span class="label label-success">${_.capitalize(val)}</span>`
         }

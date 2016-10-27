@@ -29,26 +29,45 @@ tabularOpts.columns = [
         }
     },
     {data: "total", title: "Total"},
-    {data: "des", title: "Description"},
     {
-        data: "customerId",
-        title: "Customer ID",
-        render: function (val) {
-            Meteor.call('getCustomer', {customerId: val}, function (err, result) {
-                let customer = CustomerNullCollection.findOne(result._id);
-                if (!customer) {
-                    CustomerNullCollection.insert(result);
-                }
-            });
-            try {
-                return CustomerNullCollection.findOne(val).name;
-
-            } catch (e) {
-
-            }
+        data: "_fromBranch",
+        title: "From Branch",
+        render: function(val) {
+            return `${val.khName}(${_.capitalize(val.enName)})`;
         }
     },
-    {data: "status", title: "Status"},
+    {
+        data: "_toBranch",
+        title: "To Branch",
+        render: function(val) {
+            return `${val.khName}(${_.capitalize(val.enName)})`;
+        }
+    }, {
+        data: "_fromUser.username",
+        title: "From User",
+        render: function(val) {
+            return `${_.capitalize(val)}`;
+        }
+    },{
+        data: "_toUser.username",
+        title: "To User",
+        render: function(val) {
+            return `${_.capitalize(val)}`;
+        }
+    },
+    {data: "des", title: "Description"},
+    {
+        data: "status",
+        title: "Status",
+        render: function(val) {
+            if(val == 'active') {
+                return `<span class="label label-info">${val}</span>`;
+            }else if (val == 'declined') {
+                return `<span class="label label-danger">${val}</span>`;
+            }
+            return `<span class="label label-success">${val}</span>`;
+        }
+    },
     //{
     //    data: "_customer",
     //    title: "Customer Info",
