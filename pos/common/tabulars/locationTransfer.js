@@ -30,9 +30,52 @@ tabularOpts.columns = [
     },
     {data: "total", title: "Total"},
     {data: "des", title: "Description"},
-    {data: "fromStaffId", title: "From Staff ID"},
-    {data: "toStaffId", title: "To Staff ID"},
-    {data: "fromStockLocationId", title: "From Stock Location"},
+    {
+        data: "_fromBranch",
+        title: "From Branch",
+        render: function(val) {
+            return `${val.khName}(${_.capitalize(val.enName)})`;
+        }
+    },{
+        data: "_toBranch",
+        title: "To Branch",
+        render: function(val) {
+            return `${val.khName}(${_.capitalize(val.enName)})`;
+        }
+    },
+    {
+        data: "_fromStockLocation.name",
+        title: "From Stock",
+    },{
+        data: "_toStockLocation.name",
+        title: "To Stock",
+    },
+    {
+        data: "_fromUser.username",
+        title: "From User",
+        render: function(val) {
+            return _.capitalize(val);
+        }
+    },
+    {
+        data: "_toUser.username",
+        title: "To User",
+        render: function(val) {
+            return _.capitalize(val || '');
+        }
+    },
+    {
+        data: "status",
+        title: "Status",
+        render: function(val) {
+            if(val == 'active') {
+                return `<span class="label label-info">${val}</span>`;
+            }else if (val == 'declined') {
+                return `<span class="label label-danger">${val}</span>`;
+            }
+            return `<span class="label label-success">${val}</span>`;
+        }
+    },
     //{
     //    data: "_vendor",
     //    title: "Vendor Info",

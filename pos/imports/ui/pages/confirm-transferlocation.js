@@ -109,7 +109,6 @@ indexTmpl.events({
     'click .show-detail'(event, instance){
         Meteor.call('pos.locationTransferInfo', {_id: this._id}, function (err, result) {
             if (result) {
-                console.log(result);
                 alertify.locationTransfer(fa('eye', 'Showing Transfer'), renderTemplate(transferInfo, result));
             }
             if (err) {
@@ -192,7 +191,11 @@ transferInfo.helpers({
         if (!this.pending && this.status == 'declined') {
             return true;
         }
-    }
+    },
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
 });
 transferInfo.events({
     'click .printTransfer'(event, instance){

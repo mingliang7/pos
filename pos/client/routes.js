@@ -302,12 +302,12 @@ PosRoutes.route('/vendor/:vendorId?/payBill/:billId?', {
 import '../imports/ui/pages/confirm-transferlocation';
 PosRoutes.route('/confirm-transferLocation', {
     name: 'pos.confirmTransferLocation',
-    title: 'Transfers Request',
+    title: 'Location Transfers Request',
     action: function (params, queryParams) {
         Layout.main('Pos_confirmTransferLocation');
     },
     breadcrumb: {
-        title: 'Transfers Request',
+        title: 'Location Transfers Request',
     }
 });
 // Location Transfer
