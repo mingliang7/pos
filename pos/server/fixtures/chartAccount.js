@@ -71,6 +71,18 @@ Meteor.startup(function () {
                 "_id": "014",
                 "name": "Lost Inventory",
                 //"account": "650009 | Lost Inventory"
+            },/* 15 */
+            {
+                "_id" : "015",
+                "name" : "Sale Income",
+                //"account" : "565656 | Sale Income"
+            },
+
+            /* 16 */
+            {
+                "_id" : "016",
+                "name" : "COGS",
+                //"account" : "666666 | COGS"
             }];
         chartAccount.forEach(function (obj) {
             AccountMapping.insert(obj);
