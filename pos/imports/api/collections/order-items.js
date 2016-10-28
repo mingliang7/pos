@@ -174,7 +174,7 @@ export const RingPullItemsSchema = new SimpleSchema({
             }
         }
     },
-    price: {
+   /* price: {
         type: Number,
         label: 'Price',
         decimal: true,
@@ -184,6 +184,37 @@ export const RingPullItemsSchema = new SimpleSchema({
             if (id) {
                 itemInfo.callPromise({
                     _id: id
+                }).then(function (result) {
+                    defaultPrice.set(result.price);
+                }).catch(function (err) {
+                    console.log(err.message);
+                });
+            } else {
+                defaultPrice.set(0);
+            }
+            return defaultPrice.get();
+        },
+        autoform: {
+            type: 'inputmask',
+            optional: true,
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },*/
+    price: {
+        type: Number,
+        label: 'Price',
+        decimal: true,
+        optional: true,
+        defaultValue: function () {
+            let qty = AutoForm.getFieldValue('qty');
+            let id = AutoForm.getFieldValue('itemId');
+            let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
+            let routeName = FlowRouter.getRouteName();
+            if (id) {
+                itemInfo.callPromise({
+                    _id: id, customerId: customerId, qty: qty,routeName: routeName
                 }).then(function (result) {
                     defaultPrice.set(result.price);
                 }).catch(function (err) {
