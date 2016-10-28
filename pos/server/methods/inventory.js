@@ -7,6 +7,7 @@ import {RingPullInventories} from '../../imports/api/collections/ringPullInvento
 import {RingPullTransfers} from '../../imports/api/collections/ringPullTransfer.js'
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
 import {AccountMapping} from '../../imports/api/collections/accountMapping'
+import {TransferMoney} from '../../imports/api/collections/transferMoney.js'
 import {idGenerator} from 'meteor/theara:id-generator';
 import 'meteor/matb33:collection-hooks';
 
@@ -464,6 +465,69 @@ Meteor.methods({
         setObj.toUserId = userId;
         RingPullTransfers.update(
             ringPullTransferId,
+            {$set: setObj}
+        );
+    },
+    transferMoney: function (moneyTransferId) {
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let userId = Meteor.userId();
+        Meteor.defer(function () {
+            Meteor._sleepForMs(200);
+            let moneyTransfer=TransferMoney.findOne(moneyTransferId);
+            let setObj = {};
+            setObj.pending = false;
+            setObj.status = "closed";
+            setObj.toUserId = userId;
+            TransferMoney.update(
+                moneyTransferId,
+                {$set: setObj}
+            );
+            //--- End Inventory type block "FIFO Inventory"---
+            //Account Integration
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let doc = moneyTransfer;
+                let ringPullChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+                let data1 = doc;
+                data1.total=doc.transferAmount;
+                data1.transaction = [];
+                data1.branchId = doc.fromBranchId;
+                data1.type = "MoneyTransferFrom";
+                data1.transaction.push({
+                    account: ringPullChartAccount.account,
+                    dr: 0,
+                    cr: data1.transferAmount,
+                    drcr: data1.transferAmount
+                });
+                Meteor.call('insertAccountJournal', data1);
+                let data2 = doc;
+                data2.transaction = [];
+                data2.branchId = doc.toBranchId;
+                data2.type = "MoneyTransferTo";
+                data2.total=doc.transferAmount;
+                data2.transaction.push({
+                    account: ringPullChartAccount.account,
+                    dr: data2.transferAmount,
+                    cr: 0,
+                    drcr: data2.transferAmount
+                });
+                Meteor.call('insertAccountJournal', data2);
+            }
+            //End Account Integration
+        });
+
+
+    },
+    declineTransferMoney(moneyTransferId){
+        let userId = Meteor.userId();
+        let setObj = {};
+        setObj.status = "declined";
+        setObj.pending = false;
+        setObj.toUserId = userId;
+        TransferMoney.update(
+            moneyTransferId,
             {$set: setObj}
         );
     },

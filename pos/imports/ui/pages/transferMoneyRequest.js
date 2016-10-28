@@ -98,7 +98,7 @@ indexTmpl.events({
     },
     'click .declined'(event, instance){
         transferState.set(false);
-        statusState.set('declined')
+        statusState.set('declined');
         loadMore.set(0);
         sumLoadMore.set(10);
     },
@@ -115,7 +115,7 @@ indexTmpl.events({
             confirmButtonText: "Yes, accept it!",
             closeOnConfirm: false
         }).then(function () {
-            Meteor.call('transferMoneyManageStock', id, function (er, re) {
+            Meteor.call('transferMoney', id, function (er, re) {
                 if (er) {
                     alertify.error(er.message);
                 } else {
@@ -141,7 +141,7 @@ indexTmpl.events({
             confirmButtonText: "Yes, decline it!",
             closeOnConfirm: false
         }).then(function () {
-            Meteor.call('declineRingPullTransfer', id, function (er, re) {
+            Meteor.call('declineTransferMoney', id, function (er, re) {
                 if (er) {
                     alertify.error(er.message);
                 } else {
