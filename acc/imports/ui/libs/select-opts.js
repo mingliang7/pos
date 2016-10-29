@@ -183,7 +183,7 @@ export const SelectOpts = {
                 list.push({
                     label: Spacebars.SafeString(SpaceChar.space(obj.level * 6) + obj.code).string + " | " + obj.name,
                     value: Spacebars.SafeString(SpaceChar.space(obj.level * 6) + obj.code).string + " | " + obj.name
-                })
+            })
             });
         return list;
     }, chartAccountAsset: function () {

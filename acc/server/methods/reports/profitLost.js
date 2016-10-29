@@ -712,7 +712,7 @@ Meteor.methods({
 
             resultExpense.sort(compare);
             resultExpense.map(function (obj) {
-                if (temporaryExpense !== obj.parent & isPushExpense == false) {
+                if (temporaryExpense !== obj.parent && isPushExpense == false) {
                     resultEnpenseFinal.push({
                         name: dataExpense.name,
                         code: SpaceChar.space(6 * dataExpense.level) +

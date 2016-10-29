@@ -5,7 +5,11 @@ import '../../../client/subscription/subscriptionGlobal';
 
 
 Template.registerHelper('formatMoney', function (val) {
+    if(val != "title"){
         return numeral(val).format('(0,0.00)');
+    }else {
+        return "";
+    }
 
 });
 
