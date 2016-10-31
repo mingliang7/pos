@@ -24,5 +24,15 @@ tabularOpts.columns = [
     {data: "_id", title: "ID"},
     {data: "name", title: "Name"},
     {data: "account", title: "Account"},
+    {
+        data: "isUsed",
+        title: "Used",
+        render: function (val) {
+            if (val) {
+                return `<span class="label label-success"><i class="fa fa-check"></i></span>`
+            }
+            return `<span class="label label-danger"><i class="fa fa-remove"></i></span>`
+        }
+    },
 ];
 export const AccountMappingTabular = new Tabular.Table(tabularOpts);

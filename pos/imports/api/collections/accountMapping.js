@@ -17,6 +17,10 @@ AccountMapping.schema = new SimpleSchema({
             }
         }
 
+    },
+    isUsed:{
+        type:Boolean,
+        label:"Used"
     }
 });
 Meteor.startup(function () {
