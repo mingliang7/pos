@@ -1,6 +1,9 @@
 export const correctFieldLabel = function (field) {
     let label = '';
     switch (field) {
+        case 'transferMoneyDate':
+            label = 'Transfer Money Date';
+            break;
         case '_id':
             label = 'ID';
             break;

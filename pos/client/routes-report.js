@@ -398,3 +398,18 @@ PosRoutes.route('/report/exchangeRingPullStockBalance', {
         parent: 'pos.mainReport'
     }
 });
+
+import '../imports/ui/reports/transferMoneyReport';
+PosRoutes.route('/report/transferMoneyReport', {
+    name: 'pos.transferMoneyReport',
+    title: 'Transfer Money Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_transferMoneyReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Transfer Money Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});

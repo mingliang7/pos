@@ -77,8 +77,10 @@ indexTmpl.helpers({
             },
             {
                 label: 'Exchange Ring Pull Stock Balance', value: 'exchangeRingPullStockBalance'
-            }
-
+            },
+            {
+                label: 'Transfer Money', value: 'transferMoney'
+            },
         ]
     }
 });
@@ -120,6 +122,9 @@ function getDefaultReportParams(reportName) {
             break;
         case 'locationTransfer':
             params = `/pos/report/locationTransfer?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&fromBranch=${Session.get('currentBranch')}`;
+            break;
+        case 'transferMoney':
+            params = `/pos/report/transferMoneyReport?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&fromBranch=${Session.get('currentBranch')}`;
             break;
         case 'ringPullTransfer':
             params = `/pos/report/ringPullTransfer?date=${moment().format('YYYY-MM-DD 00:00:00')},${moment().format('YYYY-MM-DD 23:59:59')}&fromBranch=${Session.get('currentBranch')}`;
