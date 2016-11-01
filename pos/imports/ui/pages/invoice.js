@@ -125,7 +125,7 @@ indexTmpl.events({
             title: "Pleas Wait",
             text: "Getting Invoices....", showConfirmButton: false
         });
-        this.customer = customerInvoiceCollection.findOne(this.customerId).name;
+        this.customer = _.capitalize(this._customer.name);
         Meteor.call('invoiceShowItems', { doc: this }, function (err, result) {
             swal.close();
             alertify.invoiceShow(fa('eye', TAPi18n.__('pos.invoice.title')), renderTemplate(showTmpl, result)).maximize();
@@ -561,6 +561,10 @@ showTmpl.onCreated(function () {
 });
 
 showTmpl.helpers({
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
     i18nLabel(label) {
         let key = `pos.invoice.schema.${label}.label`;
         return TAPi18n.__(key);

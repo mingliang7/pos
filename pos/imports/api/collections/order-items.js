@@ -277,7 +277,7 @@ export const EnterBillItemsSchema = new SimpleSchema({
                 itemInfo.callPromise({
                     _id: id
                 }).then(function (result) {
-                    defaultPrice.set(result.price);
+                    defaultPrice.set(result.purchasePrice);
                 }).catch(function (err) {
                     console.log(err.message);
                 });
