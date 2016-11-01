@@ -24,6 +24,11 @@ indexTmpl.helpers({
         return AccountIntegrationSetting.findOne();
     }
 });
+indexTmpl.events({
+    'click #save-integrate'(){
+
+    }
+});
 // actionTmpl
 let hooksObject = {
     onSuccess (formType, result) {
