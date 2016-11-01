@@ -27,10 +27,10 @@
                     </div>
                 </div>
                 <div class="col-sm-2">
-                    {{> afQuickField name="price" label=false}}
+                    {{> afQuickField name="price" value=price label=false}}
                 </div>
                 <div class="col-sm-3">
-                    {{> afQuickField name="amount" label=false readonly=true}}
+                    {{> afQuickField name="amount" value=totalAmount label=false readonly=true}}
                 </div>
                 <div class="col-sm-1">
                     <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>

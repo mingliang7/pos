@@ -26,7 +26,7 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {ItemsSchema} from '../../api/collections/order-items.js';
+import {LocationTransfersItemSchema as ItemsSchema} from '../../api/collections/locationTransfer.js';
 import {LocationTransfers} from '../../api/collections/locationTransfer.js';
 
 // Declare template

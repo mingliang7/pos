@@ -1,33 +1,34 @@
-import {ReactiveDict} from 'meteor/reactive-dict';
-import {Template} from 'meteor/templating';
-import {AutoForm} from 'meteor/aldeed:autoform';
-import {Roles} from  'meteor/alanning:roles';
-import {alertify} from 'meteor/ovcharik:alertifyjs';
-import {sAlert} from 'meteor/juliancwirko:s-alert';
-import {fa} from 'meteor/theara:fa-helpers';
-import {lightbox} from 'meteor/theara:lightbox-helpers';
-import {_} from 'meteor/erasaur:meteor-lodash';
-import {$} from 'meteor/jquery';
-import {TAPi18n} from 'meteor/tap:i18n';
-import {ReactiveTable} from 'meteor/aslagle:reactive-table';
+import { ReactiveDict } from 'meteor/reactive-dict';
+import { Template } from 'meteor/templating';
+import { AutoForm } from 'meteor/aldeed:autoform';
+import { Roles } from 'meteor/alanning:roles';
+import { alertify } from 'meteor/ovcharik:alertifyjs';
+import { sAlert } from 'meteor/juliancwirko:s-alert';
+import { fa } from 'meteor/theara:fa-helpers';
+import { lightbox } from 'meteor/theara:lightbox-helpers';
+import { _ } from 'meteor/erasaur:meteor-lodash';
+import { $ } from 'meteor/jquery';
+import { TAPi18n } from 'meteor/tap:i18n';
+import { ReactiveTable } from 'meteor/aslagle:reactive-table';
 import 'meteor/theara:template-states';
 
 // Lib
-import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
-import {renderTemplate} from '../../../../core/client/libs/render-template.js';
-import {destroyAction} from '../../../../core/client/libs/destroy-action.js';
-import {displaySuccess, displayError} from '../../../../core/client/libs/display-alert.js';
-import {reactiveTableSettings} from '../../../../core/client/libs/reactive-table-settings.js';
-import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
+import { createNewAlertify } from '../../../../core/client/libs/create-new-alertify.js';
+import { renderTemplate } from '../../../../core/client/libs/render-template.js';
+import { destroyAction } from '../../../../core/client/libs/destroy-action.js';
+import { displaySuccess, displayError } from '../../../../core/client/libs/display-alert.js';
+import { reactiveTableSettings } from '../../../../core/client/libs/reactive-table-settings.js';
+import { __ } from '../../../../core/common/libs/tapi18n-callback-helper.js';
 
 // Component
 import '../../../../core/client/components/loading.js';
 import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
-
+//methods 
+import {itemInfo} from '../../../common/methods/item-info';
 // Collection
-import {ItemsSchema} from '../../api/collections/order-items.js';
-import {Order} from '../../api/collections/order.js';
+import { ItemsSchema } from '../../api/collections/order-items.js';
+import { Order } from '../../api/collections/order.js';
 
 // Declare template
 var itemsTmpl = Template.Pos_orderItems,
@@ -52,7 +53,37 @@ itemsTmpl.onCreated(function () {
 
     // State
     this.state('amount', 0);
+    this.defaultPrice = new ReactiveVar(0);
+    this.defaultItem = new ReactiveVar()
+    this.defaultQty = new ReactiveVar(0);
+    this.autorun(() => {
+        if (FlowRouter.query.get('customerId')) {
+            let sub = Meteor.subscribe('pos.activeSaleOrder', {
+                customerId: FlowRouter.query.get('customerId'),
+                status: 'active'
+            });
+            if (!sub.ready()) {
+                swal({
+                    title: "Pleas Wait",
+                    text: "Getting Order....", showConfirmButton: false
+                });
+            } else {
+                setTimeout(function () {
+                    swal.close();
+                }, 500);
+            }
 
+        }
+        if (this.defaultItem.get() && (this.defaultItem.get() || this.defaultQty.get())) {
+            itemInfo.callPromise({
+                _id: this.defaultItem.get(), customerId: Session.get('saleOrderCustomerId'), qty: this.defaultQty.get(), routeName: FlowRouter.getRouteName()
+            }).then((result) => {
+                this.defaultPrice.set(result.price);
+            }).catch((err) => {
+                console.log(err.message);
+            });
+        }
+    });
 });
 
 itemsTmpl.onRendered(function () {
@@ -75,7 +106,7 @@ itemsTmpl.helpers({
         }, {
             key: 'qty',
             label: __(`${i18nPrefix}.qty.label`),
-            fn(value, obj, key){
+            fn(value, obj, key) {
                 return Spacebars.SafeString(`<input type="text" value=${value} class="item-qty">`);
             }
         }, {
@@ -124,23 +155,39 @@ itemsTmpl.helpers({
         getItems.forEach((obj) => {
             total += obj.amount;
         });
-        if(Session.get('saleOrderCustomerId')) {
+        if (Session.get('saleOrderCustomerId')) {
             Session.set('creditLimitAmount', total);
         }
         return total;
+    },
+    price() {
+        try {
+            let instance = Template.instance();
+            return instance.defaultPrice.get();
+        } catch (error) {
+
+        }
+    },
+    totalAmount() {
+        try {
+            let instance = Template.instance();
+            return instance.defaultPrice.get() * instance.defaultQty.get();
+        } catch (error) {
+
+        }
     }
 });
 
 itemsTmpl.events({
-    'change [name="item-filter"]'(event, instance){
+    'change [name="item-filter"]'(event, instance) {
         //filter item in order-item collection
         let currentValue = event.currentTarget.value;
         switch (currentValue) {
             case 'none-scheme':
-                Session.set('itemFilterState', {scheme: {$exists: false}});
+                Session.set('itemFilterState', { scheme: { $exists: false } });
                 break;
             case 'scheme':
-                Session.set('itemFilterState', {scheme: {$exists: true}});
+                Session.set('itemFilterState', { scheme: { $exists: true } });
                 break;
             case 'all':
                 Session.set('itemFilterState', {});
@@ -148,85 +195,116 @@ itemsTmpl.events({
         }
 
     },
-    'change [name="qtyConvert"]'(event,instance){
-        let converterAmount = $('option:selected', $('[name="baseUnit"]')).attr('convertAmount');
-        let currentValue = event.currentTarget.value;
-        $('[name="qty"]').val(parseFloat(converterAmount) * currentValue).change();
-    },
-    'change [name="baseUnit"]'(event,instance){
-        let qtyConvertAmount = instance.$('[name="qtyConvert"]').val();
-        let converterAmount = $('option:selected', $(event.currentTarget)).attr('convertAmount');
-
-        if(qtyConvertAmount != '') {
-            $('[name="qty"]').val(parseFloat(converterAmount) * parseFloat(qtyConvertAmount)).change();
-        }
-    },
     'change [name="itemId"]': function (event, instance) {
         instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
-        instance.$('[name="qty"]').val('');
-        // instance.$('[name="price"]').val('');
-        instance.$('[name="amount"]').val('');
+        instance.defaultItem.set(event.currentTarget.value);
     },
-    'change, keyup [name="qty"],[name="price"]': function (event, instance) {
+    'change [name="qty"]'(event, instance) {
         let qty = instance.$('[name="qty"]').val();
-        let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
-        price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = qty * price;
+        instance.defaultQty.set(qty);
 
-        instance.state('amount', amount);
+    },
+    'change [name="price"]': function (event, instance) {
+        let price = instance.$('[name="price"]').val();
+        price = _.isEmpty(price) ? 0 : parseFloat(price);
+        instance.defaultPrice.set(price);
     },
     'click .js-add-item': function (event, instance) {
         let itemId = instance.$('[name="itemId"]').val();
         let qty = parseInt(instance.$('[name="qty"]').val());
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         let amount = math.round(qty * price, 2);
-
         // Check exist
-        let exist = itemsCollection.findOne({
-            itemId: itemId
-        });
-        if (exist) {
-            qty += parseInt(exist.qty);
-            amount = math.round(qty * price, 2);
+        Meteor.call('addScheme', { itemId }, function (err, result) {
+            if (!_.isEmpty(result[0])) {
+                result.forEach(function (item) {
+                    // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
+                    // if(schemeItem) {
+                    //     let amount = item.price * item.quantity;
+                    //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
+                    // }else{
+                    itemsCollection.insert({
+                        itemId: item.itemId,
+                        qty: item.quantity * qty,
+                        price: item.price,
+                        amount: (item.price * item.quantity) * qty,
+                        name: item.itemName
+                    });
+                    // }
+                });
+            } else {
+                let exist = itemsCollection.findOne({
+                    itemId: itemId
+                });
+                if (exist) {
+                    qty += parseInt(exist.qty);
+                    amount = math.round(qty * price, 2);
 
-            itemsCollection.update({
-                _id: exist._id
-            }, {
-                $set: {
-                    qty: qty,
-                    price: price,
-                    amount: amount
+                    itemsCollection.update({
+                        _id: exist._id
+                    }, {
+                            $set: {
+                                qty: qty,
+                                price: price,
+                                amount: amount
+                            }
+                        });
+                } else {
+                    itemsCollection.insert({
+                        itemId: itemId,
+                        qty: qty,
+                        price: price,
+                        amount: amount,
+                        name: instance.name
+                    });
                 }
-            });
-        } else {
-            itemsCollection.insert({
-                itemId: itemId,
-                qty: qty,
-                price: price,
-                amount: amount,
-                name: instance.name
-            });
-        }
+            }
+        });
     },
     // Reactive table for item
     'click .js-update-item': function (event, instance) {
-        alertify.item(fa('pencil', TAPi18n.__('pos.order.schema.itemId.label')), renderTemplate(editItemsTmpl, this));
+        alertify.item(fa('pencil', TAPi18n.__('pos.invoice.schema.itemId.label')), renderTemplate(editItemsTmpl, this));
     },
     'click .js-destroy-item': function (event, instance) {
-        destroyAction(
-            itemsCollection, {
-                _id: this._id
-            }, {
-                title: TAPi18n.__('pos.order.schema.itemId.label'),
-                itemTitle: this.itemId
-            }
-        );
+        event.preventDefault();
+        let itemDoc = this;
+        if (AutoForm.getFormId() == "Pos_invoiceUpdate") { //check if update form
+            let isCurrenctItemExistInTmpCollection = instance.data.currentItemsCollection.findOne({ itemId: this.itemId }); // check if current item collection has wanted remove item 
+            swal({
+                title: "Are you sure?",
+                text: "លុបទំនិញមួយនេះ?",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            }).then(
+                function () {
+                    if (!deletedItem.findOne({ itemId: itemDoc.itemId })) {
+                        deletedItem.insert(itemDoc);
+                    }
+                    if (isCurrenctItemExistInTmpCollection) {
+                        currentItemsInupdateForm.insert(itemDoc);
+                    }
+                    itemsCollection.remove({ itemId: itemDoc.itemId });
+                    swal.close();
+                });
+        } else {
+            destroyAction(
+                itemsCollection, {
+                    _id: this._id
+                }, {
+                    title: TAPi18n.__('pos.invoice.schema.itemId.label'),
+                    itemTitle: this.itemId
+                }
+            );
+        }
+
     },
-    'change .item-qty'(event, instance){
+    'change .item-qty'(event, instance) {
         let currentQty = event.currentTarget.value;
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
-        let currentItem = itemsCollection.findOne({itemId: itemId});
+        let currentItem = itemsCollection.findOne({ itemId: itemId });
         let selector = {};
         if (currentQty != '') {
             selector.$set = {
@@ -239,52 +317,18 @@ itemsTmpl.events({
                 qty: 1
             }
         }
-        itemsCollection.update({itemId: itemId}, selector);
+        itemsCollection.update({ itemId: itemId }, selector);
     },
-    "keypress .item-qty" (evt) {
+    "keypress .item-qty"(evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
         return !(charCode > 31 && (charCode < 48 || charCode > 57));
     }
 });
 
 
-// Edit
-editItemsTmpl.onCreated(function () {
-    this.state('amount', 0);
-
-    this.autorun(() => {
-        let data = Template.currentData();
-        this.state('amount', data.amount);
-    });
+itemsTmpl.onDestroyed(function () {
+    Session.set('productFromOrderItem', undefined);
 });
-
-editItemsTmpl.helpers({
-    schema() {
-        return ItemsSchema;
-    },
-    data: function () {
-        let data = Template.currentData();
-        return data;
-    }
-});
-
-editItemsTmpl.events({
-    'change [name="itemId"]': function (event, instance) {
-        instance.$('[name="qty"]').val('');
-        instance.$('[name="price"]').val('');
-        instance.$('[name="amount"]').val('');
-    },
-    'keyup [name="qty"],[name="price"]': function (event, instance) {
-        let qty = instance.$('[name="qty"]').val();
-        let price = instance.$('[name="price"]').val();
-        qty = _.isEmpty(qty) ? 0 : parseInt(qty);
-        price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = qty * price;
-
-        instance.state('amount', amount);
-    }
-});
-
 let hooksObject = {
     onSubmit: function (insertDoc, updateDoc, currentDoc) {
         this.event.preventDefault();
@@ -292,8 +336,8 @@ let hooksObject = {
         // Check old item
         if (insertDoc.itemId == currentDoc.itemId) {
             itemsCollection.update({
-                    _id: currentDoc._id
-                },
+                _id: currentDoc._id
+            },
                 updateDoc
             );
         } else {
@@ -309,12 +353,12 @@ let hooksObject = {
                 itemsCollection.update({
                     _id: insertDoc._id
                 }, {
-                    $set: {
-                        qty: newQty,
-                        price: newPrice,
-                        amount: newAmount
-                    }
-                });
+                        $set: {
+                            qty: newQty,
+                            price: newPrice,
+                            amount: newAmount
+                        }
+                    });
             } else {
                 itemsCollection.remove({
                     _id: currentDoc._id

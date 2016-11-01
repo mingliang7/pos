@@ -180,7 +180,6 @@ newTmpl.helpers({
 });
 
 newTmpl.onDestroyed(function () {
-    debugger;
     // Remove items collection
     itemsCollection.remove({});
     Session.set('vendorInfo', undefined);

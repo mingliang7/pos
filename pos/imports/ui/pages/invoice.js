@@ -1,22 +1,22 @@
-import {Template} from 'meteor/templating';
-import {AutoForm} from 'meteor/aldeed:autoform';
-import {Roles} from  'meteor/alanning:roles';
-import {alertify} from 'meteor/ovcharik:alertifyjs';
-import {sAlert} from 'meteor/juliancwirko:s-alert';
-import {fa} from 'meteor/theara:fa-helpers';
-import {lightbox} from 'meteor/theara:lightbox-helpers';
-import {_} from 'meteor/erasaur:meteor-lodash';
+import { Template } from 'meteor/templating';
+import { AutoForm } from 'meteor/aldeed:autoform';
+import { Roles } from 'meteor/alanning:roles';
+import { alertify } from 'meteor/ovcharik:alertifyjs';
+import { sAlert } from 'meteor/juliancwirko:s-alert';
+import { fa } from 'meteor/theara:fa-helpers';
+import { lightbox } from 'meteor/theara:lightbox-helpers';
+import { _ } from 'meteor/erasaur:meteor-lodash';
 import 'meteor/theara:jsonview';
-import {TAPi18n} from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/tap:i18n';
 import 'meteor/tap:i18n-ui';
 
 
 // Lib
-import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
-import {renderTemplate} from '../../../../core/client/libs/render-template.js';
-import {destroyAction} from '../../../../core/client/libs/destroy-action.js';
-import {displaySuccess, displayError} from '../../../../core/client/libs/display-alert.js';
-import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
+import { createNewAlertify } from '../../../../core/client/libs/create-new-alertify.js';
+import { renderTemplate } from '../../../../core/client/libs/render-template.js';
+import { destroyAction } from '../../../../core/client/libs/destroy-action.js';
+import { displaySuccess, displayError } from '../../../../core/client/libs/display-alert.js';
+import { __ } from '../../../../core/common/libs/tapi18n-callback-helper.js';
 
 // Component
 import '../../../../core/client/components/loading.js';
@@ -24,13 +24,14 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {Invoices} from '../../api/collections/invoice.js';
-import {Order} from '../../api/collections/order';
-import {Item} from '../../api/collections/item';
-import {deletedItem} from './invoice-items';
-import {customerInvoiceCollection, nullCollection} from '../../api/collections/tmpCollection';
+import { Invoices } from '../../api/collections/invoice.js';
+import { Order } from '../../api/collections/order';
+import { Item } from '../../api/collections/item';
+import { deletedItem } from './invoice-items';
+import { customerInvoiceCollection, nullCollection } from '../../api/collections/tmpCollection';
+let currentItemsCollection = new Mongo.Collection(null);
 // Tabular
-import {InvoiceTabular} from '../../../common/tabulars/invoice.js';
+import { InvoiceTabular } from '../../../common/tabulars/invoice.js';
 
 // Page
 import './invoice.html';
@@ -38,22 +39,22 @@ import './invoice-items.js';
 import './info-tab.html';
 import './customer.html';
 //methods
-import {invoiceInfo} from '../../../common/methods/invoice.js'
-import {customerInfo} from '../../../common/methods/customer.js';
-import {isGroupInvoiceClosed} from '../../../common/methods/invoiceGroup';
+import { invoiceInfo } from '../../../common/methods/invoice.js'
+import { customerInfo } from '../../../common/methods/customer.js';
+import { isGroupInvoiceClosed } from '../../../common/methods/invoiceGroup';
 //Tracker for customer infomation
 Tracker.autorun(function () {
     if (Session.get("getCustomerId")) {
-        customerInfo.callPromise({_id: Session.get("getCustomerId")})
+        customerInfo.callPromise({ _id: Session.get("getCustomerId") })
             .then(function (result) {
                 Session.set('customerInfo', result);
             })
             .catch(function (e) {
 
-        });
+            });
     }
     if (Session.get('saleOrderItems')) {
-        Meteor.subscribe('pos.item', {_id: {$in: Session.get('saleOrderItems')}});
+        Meteor.subscribe('pos.item', { _id: { $in: Session.get('saleOrderItems') } });
     }
 });
 
@@ -69,28 +70,28 @@ let itemsCollection = nullCollection;
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    createNewAlertify('invoice', {size: 'lg'});
-    createNewAlertify('invoiceShow',);
-    createNewAlertify('listSaleOrder', {size: 'lg'});
+    createNewAlertify('invoice', { size: 'lg' });
+    createNewAlertify('invoiceShow', );
+    createNewAlertify('listSaleOrder', { size: 'lg' });
     createNewAlertify('customer');
 });
 
 indexTmpl.helpers({
-    tabularTable(){
+    tabularTable() {
         return InvoiceTabular;
     },
     selector() {
-        return {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
+        return { status: { $ne: 'removed' }, branchId: Session.get('currentBranch') };
     }
 });
 indexTmpl.onDestroyed(function () {
     customerInvoiceCollection.remove({});
 });
 indexTmpl.events({
-    'click .js-create' (event, instance) {
+    'click .js-create'(event, instance) {
         alertify.invoice(fa('cart-arrow-down', TAPi18n.__('pos.invoice.title')), renderTemplate(newTmpl)).maximize();
     },
-    'click .js-update' (event, instance) {
+    'click .js-update'(event, instance) {
         // if (this.saleId || (this.invoiceType == 'term' && this.status != 'closed')) {
         //     excuteEditForm(this);
         // }
@@ -110,29 +111,29 @@ indexTmpl.events({
         // }
         excuteEditForm(this);
     },
-    'click .js-destroy' (event, instance) {
+    'click .js-destroy'(event, instance) {
         let data = this;
         destroyAction(
             Invoices,
-            {_id: data._id},
-            {title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id}
+            { _id: data._id },
+            { title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id }
         );
 
     },
-    'click .js-display' (event, instance) {
+    'click .js-display'(event, instance) {
         swal({
             title: "Pleas Wait",
             text: "Getting Invoices....", showConfirmButton: false
         });
         this.customer = customerInvoiceCollection.findOne(this.customerId).name;
-        Meteor.call('invoiceShowItems', {doc: this}, function (err, result) {
+        Meteor.call('invoiceShowItems', { doc: this }, function (err, result) {
             swal.close();
             alertify.invoiceShow(fa('eye', TAPi18n.__('pos.invoice.title')), renderTemplate(showTmpl, result)).maximize();
         });
     },
-    'click .js-invoice' (event, instance) {
+    'click .js-invoice'(event, instance) {
         let params = {};
-        let queryParams = {invoiceId: this._id};
+        let queryParams = { invoiceId: this._id };
         let path = FlowRouter.path("pos.invoiceReportGen", params, queryParams);
 
         window.open(path, '_blank');
@@ -140,7 +141,7 @@ indexTmpl.events({
 });
 //on rendered
 newTmpl.onCreated(function () {
-    Meteor.subscribe('pos.requirePassword', {branchId: {$in: [Session.get('currentBranch')]}});//subscribe require password validation
+    Meteor.subscribe('pos.requirePassword', { branchId: { $in: [Session.get('currentBranch')] } });//subscribe require password validation
     this.repOptions = new ReactiveVar();
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
@@ -148,13 +149,13 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
-    'click .add-new-customer'(event, instance){
+    'click .add-new-customer'(event, instance) {
         alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
     },
-    'click .go-to-receive-payment'(event, instance){
+    'click .go-to-receive-payment'(event, instance) {
         alertify.invoice().close();
     },
-    'change [name=customerId]'(event, instance){
+    'change [name=customerId]'(event, instance) {
         if (event.currentTarget.value != '') {
             Session.set('getCustomerId', event.currentTarget.value);
             if (FlowRouter.query.get('customerId')) {
@@ -165,7 +166,7 @@ newTmpl.events({
         Session.set('totalOrder', undefined);
 
     },
-    'change .enable-sale-order'(event, instance){
+    'change .enable-sale-order'(event, instance) {
         itemsCollection.remove({});
         let customerId = $('[name="customerId"]').val();
         if ($(event.currentTarget).prop('checked')) {
@@ -185,10 +186,10 @@ newTmpl.events({
             $('.sale-order').removeClass('toggle-list');
         }
     },
-    'click .toggle-list'(event, instance){
+    'click .toggle-list'(event, instance) {
         alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
     },
-    'change [name="termId"]'(event, instance){
+    'change [name="termId"]'(event, instance) {
         let {customerInfo} = Session.get('customerInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
             customerInfo._term.netDueIn = result.netDueIn;
@@ -197,7 +198,7 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
-    stockLocation(){
+    stockLocation() {
         try {
             let stockLocationAndAccountMapping = Session.get('currentUserStockAndAccountMappingDoc');
             if (stockLocationAndAccountMapping) {
@@ -210,7 +211,7 @@ newTmpl.helpers({
         }
 
     },
-    repId(){
+    repId() {
         try {
             let {customerInfo} = Session.get('customerInfo');
             if (customerInfo) {
@@ -221,7 +222,7 @@ newTmpl.helpers({
         }
         return '';
     },
-    termId(){
+    termId() {
         try {
             let {customerInfo} = Session.get('customerInfo');
             if (customerInfo) {
@@ -232,21 +233,21 @@ newTmpl.helpers({
         }
         return '';
     },
-    options(){
+    options() {
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().repList) {
             return instance.repOptions.get().repList
         }
         return '';
     },
-    termOption(){
+    termOption() {
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().termList) {
             return instance.repOptions.get().termList
         }
         return '';
     },
-    totalOrder(){
+    totalOrder() {
         let total = 0;
         if (!FlowRouter.query.get('customerId')) {
             itemsCollection.find().forEach(function (item) {
@@ -257,14 +258,14 @@ newTmpl.helpers({
             let totalOrder = Session.get('totalOrder');
             return totalOrder;
         }
-        return {total};
+        return { total };
     },
     customerInfo() {
         try {
             let {customerInfo, totalAmountDue, whiteListCustomer} = Session.get('customerInfo');
             let allowOverAmountDue = whiteListCustomer ? whiteListCustomer.limitTimes : 'Not set';
             if (!customerInfo) {
-                return {empty: true, message: 'No data available'}
+                return { empty: true, message: 'No data available' }
             }
 
             return {
@@ -280,21 +281,21 @@ newTmpl.helpers({
         ;
     },
 
-    collection(){
+    collection() {
         return Invoices;
     },
-    itemsCollection(){
+    itemsCollection() {
         return itemsCollection;
     },
     disabledSubmitBtn: function () {
         let cont = itemsCollection.find().count();
         if (cont == 0) {
-            return {disabled: true};
+            return { disabled: true };
         }
 
         return {};
     },
-    dueDate(){
+    dueDate() {
         try {
             let date = AutoForm.getFieldValue('invoiceDate');
             let {customerInfo} = Session.get('customerInfo');
@@ -310,7 +311,7 @@ newTmpl.helpers({
         } catch (e) {
         }
     },
-    isTerm(){
+    isTerm() {
         try {
             let {customerInfo} = Session.get('customerInfo');
             if (customerInfo) {
@@ -338,6 +339,8 @@ newTmpl.onDestroyed(function () {
 
 // Edit
 editTmpl.onCreated(function () {
+    Session.set('getCustomerId', this.data.customerId);
+    Meteor.subscribe('pos.requirePassword', { branchId: { $in: [Session.get('currentBranch')] } });//subscribe require password validation    
     this.repOptions = new ReactiveVar();
     this.isSaleOrder = new ReactiveVar(false);
     Meteor.call('getRepList', (err, result) => {
@@ -351,13 +354,13 @@ editTmpl.onCreated(function () {
 
 
 editTmpl.events({
-    'click .add-new-customer'(event, instance){
+    'click .add-new-customer'(event, instance) {
         alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
     },
-    'click .go-to-receive-payment'(event, instance){
+    'click .go-to-receive-payment'(event, instance) {
         alertify.invoice().close();
     },
-    'change [name=customerId]'(event, instance){
+    'change [name=customerId]'(event, instance) {
         if (event.currentTarget.value != '') {
             Session.set('getCustomerId', event.currentTarget.value);
             if (FlowRouter.query.get('customerId')) {
@@ -367,10 +370,10 @@ editTmpl.events({
         Session.set('totalOrder', undefined);
 
     },
-    'click .toggle-list'(event, instance){
+    'click .toggle-list'(event, instance) {
         alertify.listSaleOrder(fa('', 'Sale Order'), renderTemplate(listSaleOrder));
     },
-    'change [name="termId"]'(event, instance){
+    'change [name="termId"]'(event, instance) {
         let {customerInfo} = Session.get('customerInfo');
         Meteor.call('getTerm', event.currentTarget.value, function (err, result) {
             try {
@@ -382,41 +385,45 @@ editTmpl.events({
     }
 });
 editTmpl.helpers({
-    closeSwal(){
+    closeSwal() {
         setTimeout(function () {
             swal.close();
         }, 500);
     },
-    isSaleOrder(){
+    isSaleOrder() {
         return Template.instance().isSaleOrder.get();
     },
-    collection(){
+    collection() {
         return Invoices;
     },
-    data () {
+    data() {
         let data = this;
         // Add items to local collection
-        _.forEach(data.items, (value)=> {
-            Meteor.call('getItem', value.itemId, (err, result)=> {
+        _.forEach(data.items, (value) => {
+            Meteor.call('getItem', value.itemId, (err, result) => {
                 value.name = result.name;
                 value.saleId = this.saleId;
                 itemsCollection.insert(value);
+                currentItemsCollection.insert(value);
             })
         });
         return data;
     },
-    itemsCollection(){
+    itemsCollection() {
         return itemsCollection;
+    },
+    currentItemsCollection(){
+        return currentItemsCollection;
     },
     disabledSubmitBtn: function () {
         let cont = itemsCollection.find().count();
         if (cont == 0) {
-            return {disabled: true};
+            return { disabled: true };
         }
 
         return {};
     },
-    repId(){
+    repId() {
         let {customerInfo} = Session.get('customerInfo');
         if (customerInfo) {
             try {
@@ -427,7 +434,7 @@ editTmpl.helpers({
         }
         return '';
     },
-    termId(){
+    termId() {
         let {customerInfo} = Session.get('customerInfo');
         if (customerInfo) {
             try {
@@ -438,21 +445,21 @@ editTmpl.helpers({
         }
         return '';
     },
-    options(){
+    options() {
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().repList) {
             return instance.repOptions.get().repList
         }
         return '';
     },
-    termOption(){
+    termOption() {
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().termList) {
             return instance.repOptions.get().termList
         }
         return '';
     },
-    totalOrder(){
+    totalOrder() {
         let total = 0;
         if (!FlowRouter.query.get('customerId')) {
             itemsCollection.find().forEach(function (item) {
@@ -463,25 +470,28 @@ editTmpl.helpers({
             let totalOrder = Session.get('totalOrder');
             return totalOrder;
         }
-        return {total};
+        return { total };
     },
     customerInfo() {
         try {
-            let {customerInfo} = Session.get('customerInfo');
+            let {customerInfo, totalAmountDue, whiteListCustomer} = Session.get('customerInfo');
+            let allowOverAmountDue = whiteListCustomer ? whiteListCustomer.limitTimes : 'Not set';
             if (!customerInfo) {
-                return {empty: true, message: 'No data available'}
+                return { empty: true, message: 'No data available' }
             }
 
             return {
-                fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
-              <li>Opening Balance: <span class="label label-success">0</span></li>
-              <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
-              <li>Sale Order to be invoice: <span class="label label-primary">0</span>`
+                fields: `<li><i class="fa fa-phone-square"></i> Phone: <b><span class="label label-success">${customerInfo.telephone ? customerInfo.telephone : ''}</span></b> | </li>
+              <!--<li>Opening Balance: <span class="label label-success">0</span></li>-->
+              <li><i class="fa fa-credit-card" aria-hidden="true"></i> Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span> | </li>
+              <li><i class="fa fa-money"></i> Balance: <span class="label label-primary">${numeral(totalAmountDue).format('0,0.00')}</span> | 
+              <li><i class="fa fa-flag"></i> Allow over amount due: <b class="label label-danger">${allowOverAmountDue}</b> | 
+              <li><i class="fa fa-home"></i> Address: <b>${customerInfo.address ? customerInfo.address : 'None'}</b>`
             };
         } catch (e) {
         }
     },
-    repId(){
+    repId() {
         try {
             let {customerInfo} = Session.get('customerInfo');
             if (customerInfo) {
@@ -490,13 +500,13 @@ editTmpl.helpers({
         } catch (e) {
         }
     },
-    collection(){
+    collection() {
         return Invoices;
     },
-    itemsCollection(){
+    itemsCollection() {
         return itemsCollection;
     },
-    dueDate(){
+    dueDate() {
         try {
             let date = AutoForm.getFieldValue('invoiceDate');
             let {customerInfo} = Session.get('customerInfo');
@@ -512,7 +522,7 @@ editTmpl.helpers({
         } catch (e) {
         }
     },
-    isTerm(){
+    isTerm() {
         try {
             let {customerInfo} = Session.get('customerInfo');
             if (customerInfo) {
@@ -540,18 +550,18 @@ editTmpl.onDestroyed(function () {
 // Show
 showTmpl.onCreated(function () {
     this.invoice = new ReactiveVar();
-    this.autorun(()=> {
-        invoiceInfo.callPromise({_id: this.data._id})
+    this.autorun(() => {
+        invoiceInfo.callPromise({ _id: this.data._id })
             .then((result) => {
                 this.invoice.set(result);
             }).catch(function (err) {
             }
-        );
+            );
     });
 });
 
 showTmpl.helpers({
-    i18nLabel(label){
+    i18nLabel(label) {
         let key = `pos.invoice.schema.${label}.label`;
         return TAPi18n.__(key);
     },
@@ -561,7 +571,7 @@ showTmpl.helpers({
         }
         return `<label class="label label-success">G</label>`
     },
-    colorizeStatus(status){
+    colorizeStatus(status) {
         if (status == 'active') {
             return `<label class="label label-info">A</label>`
         } else if (status == 'partial') {
@@ -571,15 +581,15 @@ showTmpl.helpers({
     }
 });
 showTmpl.events({
-    'click .print-invoice-show'(event, instance){
+    'click .print-invoice-show'(event, instance) {
         $('#to-print').printThis();
     }
 });
 //listSaleOrder
 listSaleOrder.helpers({
-    saleOrders(){
+    saleOrders() {
         let item = [];
-        let saleOrders = Order.find({status: 'active', customerId: FlowRouter.query.get('customerId')}).fetch();
+        let saleOrders = Order.find({ status: 'active', customerId: FlowRouter.query.get('customerId') }).fetch();
         if (deletedItem.find().count() > 0) {
             deletedItem.find().forEach(function (item) {
                 saleOrders.forEach(function (saleOrder) {
@@ -600,11 +610,11 @@ listSaleOrder.helpers({
         Session.set('saleOrderItems', item);
         return saleOrders;
     },
-    hasSaleOrders(){
-        let count = Order.find({status: 'active', customerId: FlowRouter.query.get('customerId')}).count();
+    hasSaleOrders() {
+        let count = Order.find({ status: 'active', customerId: FlowRouter.query.get('customerId') }).count();
         return count > 0;
     },
-    getItemName(itemId){
+    getItemName(itemId) {
         try {
             return Item.findOne(itemId).name;
         } catch (e) {
@@ -614,7 +624,7 @@ listSaleOrder.helpers({
     }
 });
 listSaleOrder.events({
-    'click .add-item'(event, instance){
+    'click .add-item'(event, instance) {
         event.preventDefault();
         let remainQty = $(event.currentTarget).parents('.sale-item-parents').find('.remain-qty').val();
         let saleId = $(event.currentTarget).parents('.sale-item-parents').find('.saleId').text().trim()
@@ -636,7 +646,7 @@ listSaleOrder.events({
                         swal("Retry!", "Item Must be in the same saleId", "warning")
                     }
                 } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                    Meteor.call('getItem', this.itemId, (err, result) => {
                         this.saleId = saleId;
                         this.qty = parseFloat(remainQty)
                         this.name = result.name;
@@ -651,7 +661,7 @@ listSaleOrder.events({
             swal("Retry!", "ចំនួនមិនអាចអត់មានឬស្មើសូន្យ", "warning");
         }
     },
-    'change .remain-qty'(event, instance){
+    'change .remain-qty'(event, instance) {
         event.preventDefault();
         let remainQty = $(event.currentTarget).val();
         let saleId = $(event.currentTarget).parents('.sale-item-parents').find('.saleId').text().trim()
@@ -677,7 +687,7 @@ listSaleOrder.events({
                         swal("Retry!", "Item Must be in the same saleId", "warning")
                     }
                 } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                    Meteor.call('getItem', this.itemId, (err, result) => {
                         this.saleId = saleId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
@@ -699,15 +709,15 @@ listSaleOrder.events({
 
 //insert sale order item to itemsCollection
 let insertSaleOrderItem = ({self, remainQty, saleItem, saleId}) => {
-    Meteor.call('getItem', self.itemId, (err, result)=> {
+    Meteor.call('getItem', self.itemId, (err, result) => {
         self.saleId = saleId;
         self.qty = remainQty;
         self.name = result.name;
         self.amount = self.qty * self.price;
-        let getItem = itemsCollection.findOne({itemId: self.itemId});
+        let getItem = itemsCollection.findOne({ itemId: self.itemId });
         if (getItem) {
             if (getItem.qty + remainQty <= self.remainQty) {
-                itemsCollection.update(getItem._id, {$inc: {qty: self.qty, amount: self.qty * getItem.price}});
+                itemsCollection.update(getItem._id, { $inc: { qty: self.qty, amount: self.qty * getItem.price } });
                 displaySuccess('Added!')
             } else {
                 swal("Retry!", `ចំនួនបញ្ចូលចាស់(${getItem.qty}) នឹងបញ្ចូលថ្មី(${remainQty}) លើសពីចំនួនកម្ម៉ង់ទិញចំនួន ${(self.remainQty)}`, "error");
@@ -731,7 +741,7 @@ let hooksObject = {
         insert: function (doc) {
             let items = [];
 
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 if (obj.saleId) {
                     doc.saleId = obj.saleId;
@@ -744,7 +754,7 @@ let hooksObject = {
         },
         update: function (doc) {
             let items = [];
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
             });
@@ -753,7 +763,7 @@ let hooksObject = {
             return doc;
         }
     },
-    onSuccess (formType, id) {
+    onSuccess(formType, id) {
         //get invoiceId, total, customerId
         if (formType != 'update') {
             if (!FlowRouter.query.get('customerId')) {
@@ -777,7 +787,7 @@ let hooksObject = {
         // }
         displaySuccess();
     },
-    onError (formType, error) {
+    onError(formType, error) {
         displayError(error.message);
     }
 };

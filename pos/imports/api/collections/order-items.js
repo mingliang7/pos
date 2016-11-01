@@ -1,24 +1,25 @@
-import {Meteor} from 'meteor/meteor';
-import {Mongo} from 'meteor/mongo';
-import {ReactiveVar} from 'meteor/reactive-var';
-import {SimpleSchema} from 'meteor/aldeed:simple-schema';
-import {AutoForm} from 'meteor/aldeed:autoform';
-import {moment} from 'meteor/momentjs:moment';
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { AutoForm } from 'meteor/aldeed:autoform';
+import { moment } from 'meteor/momentjs:moment';
 
 // Lib
-import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
+import { __ } from '../../../../core/common/libs/tapi18n-callback-helper.js';
 
 // Method
-import {itemInfo} from '../../../common/methods/item-info.js';
+import { itemInfo } from '../../../common/methods/item-info.js';
 
 // Item schema
-let defaultPrice = new ReactiveVar(0);
 let defaultBaseUnit = new ReactiveVar();
 let itemFilterSelector = new ReactiveVar({});
+let defaultPrice = new ReactiveVar(0);
 Tracker.autorun(function () {
     if (Session.get('itemFilterState')) {
         itemFilterSelector.set(Session.get('itemFilterState'));
     }
+   
 });
 export const ItemsSchema = new SimpleSchema({
     itemId: {
@@ -35,7 +36,7 @@ export const ItemsSchema = new SimpleSchema({
                         if (!_.isEmpty(itemFilterSelector.get())) {
                             return itemFilterSelector.get();
                         } else {
-                            return {scheme: {}};
+                            return { scheme: {} };
                         }
                     }
                 }
@@ -59,24 +60,6 @@ export const ItemsSchema = new SimpleSchema({
         label: 'Price',
         decimal: true,
         optional: true,
-        defaultValue: function () {
-            let qty = AutoForm.getFieldValue('qty');
-            let id = AutoForm.getFieldValue('itemId');
-            let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
-            let routeName = FlowRouter.getRouteName();
-            if (id) {
-                itemInfo.callPromise({
-                    _id: id, customerId: customerId, qty: qty,routeName: routeName
-                }).then(function (result) {
-                    defaultPrice.set(result.price);
-                }).catch(function (err) {
-                    console.log(err.message);
-                });
-            } else {
-                defaultPrice.set(0);
-            }
-            return defaultPrice.get();
-        },
         autoform: {
             type: 'inputmask',
             optional: true,
@@ -93,7 +76,7 @@ export const ItemsSchema = new SimpleSchema({
             afFieldInput: {
                 style: 'width: 100%'
             },
-            options(){
+            options() {
                 let id = AutoForm.getFieldValue('itemId');
                 let arr = [];
                 let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
@@ -129,13 +112,6 @@ export const ItemsSchema = new SimpleSchema({
         label: 'Amount',
         optional: true,
         decimal: true,
-        defaultValue(){
-            let qty = AutoForm.getFieldValue('qty');
-            let price = defaultPrice.get();
-            if(qty && price) {
-                return qty * price;
-            }
-        },
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
@@ -157,7 +133,7 @@ export const RingPullItemsSchema = new SimpleSchema({
                 uniPlaceholder: 'Select One',
                 optionsMethod: 'pos.selectOptMethods.item',
                 optionsMethodParams: function () {
-                    return {scheme: {$exists: false}};
+                    return { scheme: { $exists: false } };
                 }
             }
         }
@@ -174,34 +150,34 @@ export const RingPullItemsSchema = new SimpleSchema({
             }
         }
     },
-   /* price: {
-        type: Number,
-        label: 'Price',
-        decimal: true,
-        optional: true,
-        defaultValue: function () {
-            let id = AutoForm.getFieldValue('itemId');
-            if (id) {
-                itemInfo.callPromise({
-                    _id: id
-                }).then(function (result) {
-                    defaultPrice.set(result.price);
-                }).catch(function (err) {
-                    console.log(err.message);
-                });
-            } else {
-                defaultPrice.set(0);
-            }
-            return defaultPrice.get();
-        },
-        autoform: {
-            type: 'inputmask',
-            optional: true,
-            inputmaskOptions: function () {
-                return inputmaskOptions.currency();
-            }
-        }
-    },*/
+    /* price: {
+     type: Number,
+     label: 'Price',
+     decimal: true,
+     optional: true,
+     defaultValue: function () {
+     let id = AutoForm.getFieldValue('itemId');
+     if (id) {
+     itemInfo.callPromise({
+     _id: id
+     }).then(function (result) {
+     defaultPrice.set(result.price);
+     }).catch(function (err) {
+     console.log(err.message);
+     });
+     } else {
+     defaultPrice.set(0);
+     }
+     return defaultPrice.get();
+     },
+     autoform: {
+     type: 'inputmask',
+     optional: true,
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     },*/
     price: {
         type: Number,
         label: 'Price',
@@ -214,7 +190,7 @@ export const RingPullItemsSchema = new SimpleSchema({
             let routeName = FlowRouter.getRouteName();
             if (id) {
                 itemInfo.callPromise({
-                    _id: id, customerId: customerId, qty: qty,routeName: routeName
+                    _id: id, customerId: customerId, qty: qty, routeName: routeName
                 }).then(function (result) {
                     defaultPrice.set(result.price);
                 }).catch(function (err) {
@@ -269,8 +245,8 @@ export const EnterBillItemsSchema = new SimpleSchema({
                     if (Meteor.isClient) {
                         return {
                             $or: [
-                                {scheme: {$exists: false}},
-                                {scheme: {$size: 0}}
+                                { scheme: { $exists: false } },
+                                { scheme: { $size: 0 } }
                             ]
                         };
                     }

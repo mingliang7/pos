@@ -2,7 +2,7 @@
 <template name="Pos_receiveItemItems">
     <div class="container-fluid items-header">
         <div class="row ">
-            <div class="col-md-1 text-center">
+            <!--<div class="col-md-1 text-center">
                 ITEM #
             </div>
             <div class="col-md-2 text-center">
@@ -19,13 +19,13 @@
             </div>
             <div class="col-md-3 text-center">
                 AMOUNT
-            </div>
+            </div>-->
 
         </div>
         <br>
         {{#if notActivatedPrepaidOrder}}
             {{#autoForm schema=schema id="Pos_receiveItemItems"}}
-                <div class="row">
+                <!--<div class="row">
                     <div class="col-sm-4">
                         {{> afQuickField name="itemId" label=false}}
                     </div>
@@ -42,7 +42,7 @@
                         <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>
                     </div>
 
-                </div>
+                </div>-->
             {{/autoForm}}
         {{/if}}
         <!--<hr>-->
