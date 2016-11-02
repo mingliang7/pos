@@ -184,15 +184,12 @@ export const RingPullItemsSchema = new SimpleSchema({
         decimal: true,
         optional: true,
         defaultValue: function () {
-            let qty = AutoForm.getFieldValue('qty');
             let id = AutoForm.getFieldValue('itemId');
-            let customerId = Session.get('getCustomerId') || Session.get('saleOrderCustomerId');
-            let routeName = FlowRouter.getRouteName();
             if (id) {
                 itemInfo.callPromise({
-                    _id: id, customerId: customerId, qty: qty, routeName: routeName
+                    _id: id
                 }).then(function (result) {
-                    defaultPrice.set(result.price);
+                    defaultPrice.set(result.purchasePrice);
                 }).catch(function (err) {
                     console.log(err.message);
                 });

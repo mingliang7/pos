@@ -26,7 +26,7 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {LocationTransfersItemSchema as ItemsSchema} from '../../api/collections/locationTransfer';
+import {EnterBillItemsSchema as ItemsSchema} from '../../api/collections/order-items';
 import {PrepaidOrders} from '../../api/collections/prepaidOrder.js';
 import './prepaidOrder-items.html';
 
