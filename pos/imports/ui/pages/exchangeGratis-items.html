@@ -2,23 +2,23 @@
 <template name="Pos_exchangeGratisItems">
     <div class="container-fluid items-header">
         <div class="row">
-            <div class="col-md-4 text-center">ITEMS</div>
-            <div class="col-md-2 text-center">QTY</div>
-            <div class="col-md-2 text-center">PRICE</div>
-            <div class="col-md-3 text-center">AMOUNT</div>
+            <div class="col-md-6 text-center">ITEMS</div>
+            <div class="col-md-5 text-center">QTY</div>
+            <div class="col-md-2 text-center hidden">PRICE</div>
+            <div class="col-md-3 text-center hidden">AMOUNT</div>
         </div>
         {{#autoForm schema=schema id="Pos_exchangeGratisItems"}}
             <div class="row">
-                <div class="col-sm-4">
+                <div class="col-sm-6">
                     {{> afQuickField name="itemId" label=false}}
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-5">
                     {{> afQuickField name="qty" label=false}}
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-2 hidden">
                     {{> afQuickField name="price" label=false}}
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-3 hidden">
                     {{> afQuickField name="amount" value=amount label=false readonly=true}}
                 </div>
                 <div class="col-sm-1">
@@ -32,7 +32,7 @@
     <!--Reactive table-->
     <div class="report-body-shadow">
         {{> reactiveTable settings=tableSettings}}
-        <div class="row">
+        <div class="row hidden">
             <div class="col-sm-8">
                 <div class="pull-right">Total:</div>
             </div>
@@ -57,8 +57,8 @@
             <div class="col-md-12">
                 {{> afQuickField name="itemId" readonly="true"}}
                 {{> afQuickField name="qty"}}
-                {{> afQuickField name="price"}}
-                {{> afQuickField name="amount" value=amount readonly="true"}}
+                {{> afQuickField name="price" class="hidden"}}
+                {{> afQuickField name="amount" value=amount readonly="true" class="hidden"}}
             </div>
         </div>
 

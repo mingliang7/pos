@@ -6,7 +6,7 @@ import {GratisInventories} from '../collections/gratisInventory'
 export  default class StockFunction {
     static averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         let id = '';
-        let lastPurchasePrice = 0;
+        //let lastPurchasePrice = 0;
         let remainQuantity = 0;
         let prefix = stockLocationId + '-';
         let inventory = AverageInventories.findOne({
@@ -26,7 +26,7 @@ export  default class StockFunction {
             inventoryObj.type = type;
             inventoryObj.coefficient = 1;
             inventoryObj.refId = refId;
-            lastPurchasePrice = item.price;
+            //lastPurchasePrice = item.price;
             remainQuantity = inventoryObj.remainQty;
             id = AverageInventories.insert(inventoryObj);
         }
@@ -42,7 +42,7 @@ export  default class StockFunction {
             inventoryObj.type = type;
             inventoryObj.coefficient = 1;
             inventoryObj.refId = refId;
-            lastPurchasePrice = item.price;
+            //lastPurchasePrice = item.price;
             remainQuantity = inventoryObj.remainQty;
             id = AverageInventories.insert(inventoryObj);
             /*
@@ -75,12 +75,12 @@ export  default class StockFunction {
             nextInventory.type = type;
             nextInventory.coefficient = 1;
             nextInventory.refId = refId;
-            lastPurchasePrice = price;
+            //lastPurchasePrice = price;
             remainQuantity = nextInventory.remainQty;
             id = AverageInventories.insert(nextInventory);
         }
 
-        var setModifier = {$set: {purchasePrice: lastPurchasePrice}};
+        var setModifier = {$set: {purchasePrice: item.price}};
         setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
         Item.direct.update(item.itemId, setModifier);
         return id;

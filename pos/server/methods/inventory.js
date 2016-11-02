@@ -424,9 +424,29 @@ Meteor.methods({
 
 
             //Account Integration
+            let totalAmount = 0;
+            let doc = ringPullTransfer;
+            doc.items.forEach(function (item) {
+                let inventoryObj = AverageInventories.findOne({
+                    itemId: item.itemId,
+                    branchId: doc.branchId,
+                    stockLocationId: doc.stockLocationId
+                }, {sort: {_id: -1}});
+                let thisItemPrice = 0;
+                if (inventoryObj) {
+                    thisItemPrice = inventoryObj.price;
+                } else {
+                    let thisItem = Item.findOne(item.itemId);
+                    thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
+                }
+                item.price = thisItemPrice;
+                item.amount = item.qty * thisItemPrice;
+                totalAmount += item.amount;
+            });
+            doc.total = totalAmount;
             let setting = AccountIntegrationSetting.findOne();
             if (setting && setting.integrate) {
-                let doc = ringPullTransfer;
+
                 let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
                 let data1 = doc;
                 data1.transaction = [];
