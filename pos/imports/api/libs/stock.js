@@ -14,6 +14,7 @@ export  default class StockFunction {
             itemId: item.itemId,
             stockLocationId: stockLocationId
         }, {sort: {createdAt: -1}});
+        console.log(inventory);
         if (inventory == null) {
             let inventoryObj = {};
             inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
@@ -85,6 +86,7 @@ export  default class StockFunction {
         Item.direct.update(item.itemId, setModifier);
         return id;
     }
+
     static minusAverageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         let id = '';
         let prefix = stockLocationId + '-';
@@ -127,6 +129,7 @@ export  default class StockFunction {
         }
         return id;
     }
+
     static reduceRingPullInventory(companyExchangeRingPull) {
         companyExchangeRingPull.items.forEach(function (item) {
             //---Reduce from Ring Pull Stock---
@@ -149,6 +152,7 @@ export  default class StockFunction {
             }
         });
     }
+
     static increaseRingPullInventory(companyExchangeRingPull) {
         //---insert to Ring Pull Stock---
         companyExchangeRingPull.items.forEach(function (item) {
@@ -171,6 +175,7 @@ export  default class StockFunction {
             }
         });
     }
+
     static increaseGratisInventory(item, branchId, stockLocationId) {
         let prefix = stockLocationId + '-';
         let gratisInventory = GratisInventories.findOne({
@@ -195,6 +200,7 @@ export  default class StockFunction {
                 });
         }
     }
+
     static reduceGratisInventory(item, branchId, stockLocationId) {
         let prefix = stockLocationId + '-';
         let gratisInventory = GratisInventories.findOne({

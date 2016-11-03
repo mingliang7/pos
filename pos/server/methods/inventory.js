@@ -171,37 +171,57 @@ Meteor.methods({
             );
             //--- End Inventory type block "FIFO Inventory"---
 
-
-            //Account Integration
-            let setting = AccountIntegrationSetting.findOne();
-            if (setting && setting.integrate) {
+            if (locationTransfer.fromStockLocationId != locationTransfer.toStockLocationId) {
+                //Account Integration
+                let totalAmount = 0;
                 let doc = locationTransfer;
-                let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-                let data1 = doc;
-                data1.transaction = [];
-                data1.branchId = doc.fromBranchId;
-                data1.type = "LocationTransferFrom";
-                data1.transaction.push({
-                    account: inventoryChartAccount.account,
-                    dr: 0,
-                    cr: data1.total,
-                    drcr: data1.total
+                doc.items.forEach(function (item) {
+                    let inventoryObj = AverageInventories.findOne({
+                        itemId: item.itemId,
+                        branchId: doc.branchId,
+                        stockLocationId: doc.fromStockLocationId
+                    }, {sort: {_id: -1}});
+                    let thisItemPrice = 0;
+                    if (inventoryObj) {
+                        thisItemPrice = inventoryObj.price;
+                    } else {
+                        let thisItem = Item.findOne(item.itemId);
+                        thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
+                    }
+                    item.price = thisItemPrice;
+                    item.amount = item.qty * thisItemPrice;
+                    totalAmount += item.amount;
                 });
-                Meteor.call('insertAccountJournal', data1);
+                doc.total = totalAmount;
+                let setting = AccountIntegrationSetting.findOne();
+                if (setting && setting.integrate) {
+                    let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+                    let data1 = doc;
+                    data1.transaction = [];
+                    data1.branchId = doc.fromBranchId;
+                    data1.type = "LocationTransferFrom";
+                    data1.transaction.push({
+                        account: inventoryChartAccount.account,
+                        dr: 0,
+                        cr: data1.total,
+                        drcr: data1.total
+                    });
+                    Meteor.call('insertAccountJournal', data1);
 
-                let data2 = doc;
-                data2.transaction = [];
-                data2.branchId = doc.toBranchId;
-                data2.type = "LocationTransferTo";
-                data2.transaction.push({
-                    account: inventoryChartAccount.account,
-                    dr: data2.total,
-                    cr: 0,
-                    drcr: data2.total
-                });
-                Meteor.call('insertAccountJournal', data2);
+                    let data2 = doc;
+                    data2.transaction = [];
+                    data2.branchId = doc.toBranchId;
+                    data2.type = "LocationTransferTo";
+                    data2.transaction.push({
+                        account: inventoryChartAccount.account,
+                        dr: data2.total,
+                        cr: 0,
+                        drcr: data2.total
+                    });
+                    Meteor.call('insertAccountJournal', data2);
+                }
+                //End Account Integration
             }
-            //End Account Integration
 
         });
     },
@@ -422,28 +442,8 @@ Meteor.methods({
             );
             //--- End Inventory type block "FIFO Inventory"---
 
-
             //Account Integration
-            let totalAmount = 0;
             let doc = ringPullTransfer;
-            doc.items.forEach(function (item) {
-                let inventoryObj = AverageInventories.findOne({
-                    itemId: item.itemId,
-                    branchId: doc.branchId,
-                    stockLocationId: doc.stockLocationId
-                }, {sort: {_id: -1}});
-                let thisItemPrice = 0;
-                if (inventoryObj) {
-                    thisItemPrice = inventoryObj.price;
-                } else {
-                    let thisItem = Item.findOne(item.itemId);
-                    thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
-                }
-                item.price = thisItemPrice;
-                item.amount = item.qty * thisItemPrice;
-                totalAmount += item.amount;
-            });
-            doc.total = totalAmount;
             let setting = AccountIntegrationSetting.findOne();
             if (setting && setting.integrate) {
 
@@ -495,7 +495,7 @@ Meteor.methods({
         let userId = Meteor.userId();
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
-            let moneyTransfer=TransferMoney.findOne(moneyTransferId);
+            let moneyTransfer = TransferMoney.findOne(moneyTransferId);
             let setObj = {};
             setObj.pending = false;
             setObj.status = "closed";
@@ -511,7 +511,7 @@ Meteor.methods({
                 let doc = moneyTransfer;
                 let ringPullChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
                 let data1 = doc;
-                data1.total=doc.transferAmount;
+                data1.total = doc.transferAmount;
                 data1.transaction = [];
                 data1.branchId = doc.fromBranchId;
                 data1.type = "MoneyTransferFrom";
@@ -526,7 +526,7 @@ Meteor.methods({
                 data2.transaction = [];
                 data2.branchId = doc.toBranchId;
                 data2.type = "MoneyTransferTo";
-                data2.total=doc.transferAmount;
+                data2.total = doc.transferAmount;
                 data2.transaction.push({
                     account: ringPullChartAccount.account,
                     dr: data2.transferAmount,
