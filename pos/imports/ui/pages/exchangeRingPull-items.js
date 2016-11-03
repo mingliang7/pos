@@ -105,7 +105,7 @@ itemsTmpl.helpers({
             fn(value, obj, key) {
                 return FlowRouter.query.get('customerId') ? value : Spacebars.SafeString(`<input type="text" value=${value} class="item-qty">`);
             }
-        }, {
+        }, /*{
             key: 'price',
             label: __(`${i18nPrefix}.price.label`),
             fn(value, object, key) {
@@ -117,7 +117,7 @@ itemsTmpl.helpers({
             fn(value, object, key) {
                 return numeral(value).format('0,0.00');
             }
-        }, {
+        },*/ {
             key: '_id',
             label() {
                 return fa('bars', '', true);

@@ -19,6 +19,26 @@ CompanyExchangeRingPulls.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         StockFunction.reduceRingPullInventory(doc);
         //Account Integration
+        let total = 0;
+        doc.items.forEach(function (item) {
+            let inventoryObj = AverageInventories.findOne({
+                itemId: item.itemId,
+                branchId: doc.branchId,
+                //stockLocationId: doc.stockLocationId
+            }, {sort: {_id: -1}});
+            let thisItemPrice = 0;
+            if (inventoryObj) {
+                thisItemPrice = inventoryObj.price;
+            } else {
+                let thisItem = Item.findOne(item.itemId);
+                thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
+            }
+            item.price = thisItemPrice;
+            item.amount = item.qty * thisItemPrice;
+            total += item.amount;
+        });
+        doc.total = total;
+        CompanyExchangeRingPulls.direct.update(doc._id,{$set:{items:doc.items,total:doc.total}});
 
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -51,6 +71,28 @@ CompanyExchangeRingPulls.after.update(function (userId, doc) {
         StockFunction.increaseRingPullInventory(preDoc);
         StockFunction.reduceRingPullInventory(doc);
         //Account Integration
+        let total = 0;
+        doc.items.forEach(function (item) {
+            let inventoryObj = AverageInventories.findOne({
+                itemId: item.itemId,
+                branchId: doc.branchId,
+                //stockLocationId: doc.stockLocationId
+            }, {sort: {_id: -1}});
+            let thisItemPrice = 0;
+            if (inventoryObj) {
+                thisItemPrice = inventoryObj.price;
+            } else {
+                let thisItem = Item.findOne(item.itemId);
+                thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
+            }
+            item.price = thisItemPrice;
+            item.amount = item.qty * thisItemPrice;
+            total += item.amount;
+        });
+        doc.total = total;
+        CompanyExchangeRingPulls.direct.update(doc._id,{$set:{items:doc.items,total:doc.total}});
+
+
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
             let transaction = [];
