@@ -75,7 +75,7 @@ itemsTmpl.helpers({
         }, {
             key: 'qty',
             label: __(`${i18nPrefix}.qty.label`)
-        }, {
+        },/* {
             key: 'price',
             label: __(`${i18nPrefix}.price.label`),
             fn(value, object, key) {
@@ -87,7 +87,7 @@ itemsTmpl.helpers({
             fn(value, object, key) {
                 return numeral(value).format('0,0.00');
             }
-        }, {
+        },*/ {
             key: '_id',
             label() {
                 return fa('bars', '', true);
@@ -115,25 +115,16 @@ itemsTmpl.helpers({
 
         return {};
     },
-    subTotal: function () {
-        let subTotal = 0;
+    total: function () {
+        let total = 0;
         let getItems = itemsCollection.find();
         getItems.forEach((obj) => {
-            subTotal += obj.amount;
+            total += obj.amount;
         });
-        return subTotal;
+        return total;
         // return Session.get('subTotal')
     },
-    total(){
-        let subTotal = 0;
-        let getItems = itemsCollection.find();
-        getItems.forEach((obj) => {
-            subTotal += obj.amount;
-        });
-        let discount = $('#discount').val();
-        discount = discount == "" ? 0 : parseFloat(discount);
-        return subTotal * (1 - discount / 100);
-    }
+
 });
 
 
