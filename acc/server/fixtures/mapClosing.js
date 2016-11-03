@@ -1,7 +1,7 @@
-import {Meteor} from 'meteor/meteor';
-import {_} from 'meteor/erasaur:meteor-lodash';
+import { Meteor } from 'meteor/meteor';
+import { _ } from 'meteor/erasaur:meteor-lodash';
 
-import {MapClosing} from '../../imports/api/collections/mapCLosing';
+import { MapClosing } from '../../imports/api/collections/mapCLosing';
 Meteor.startup(function () {
     if (MapClosing.find().count() == 0) {
 
@@ -18,6 +18,13 @@ Meteor.startup(function () {
         MapClosing.insert({
             chartAccountCompare: 'Retain Earning',
         });
+
+        MapClosing.insert({
+            chartAccountCompare: 'Cost Of Goods Sold',
+        });
+
+
+
 
 
         /// Migrate

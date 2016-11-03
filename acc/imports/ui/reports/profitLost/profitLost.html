@@ -108,22 +108,64 @@
                             {{#if currency}}
                                 <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
                                 <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
-
-
                         </tr>
 
 
                     {{/each}}
                     <tr>
-                        <td align="right"><b>Total Income</b></td>
+                        <td align="left"><b>Total Income</b></td>
                         <td>R{{formatMoneyNormal grandTotalIncomeR}}</td>
-                        <td>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncomeUSD}}</td>
+                        <td>${{formatMoneyNormal grandTotalIncomeUSD}}</td>
                         <td>B{{formatMoneyNormal grandTotalIncomeB}}</td>
                         <td align="right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncome}}</b>
                         </td>
                         <td align="right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncomeYearToDate}}</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b> Cost Of Good Sold Expense</b></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{cogs.accountDoc.code}}}:{{cogs.accountDoc.name}}</td>
+                        <td>R{{formatMoneyNormal grandTotalRielCOGS}}</td>
+                        <td>${{formatMoneyNormal grandTotalUsdCOGS}}</td>
+                        <td>B{{formatMoneyNormal grandTotalThbCOGS}}</td>
+                        <td align="right">
+                            {{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}
+                        </td>
+                        <td align="right">
+                            {{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left"><b>Total Cost Of Good Sold Expense</b></td>
+                        <td>R{{formatMoneyNormal grandTotalRielCOGS}}</td>
+                        <td>${{formatMoneyNormal grandTotalUsdCOGS}}</td>
+                        <td>B{{formatMoneyNormal grandTotalThbCOGS}}</td>
+                        <td align="right">
+                            <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}</b>
+                        </td>
+                        <td align="right">
+                            <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left"><b>Gross Profit</b></td>
+                        <td>R{{formatMoneyNormal grandTotalGrossProfitR}}</td>
+                        <td>${{formatMoneyNormal grandTotalGrossProfitUSD}}</td>
+                        <td>B{{formatMoneyNormal grandTotalGrossProfitB}}</td>
+                        <td align="right">
+                            <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfit}}</b>
+                        </td>
+                        <td align="right">
+                            <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfitYearToDate}}</b>
                         </td>
                     </tr>
                     <tr>
@@ -159,9 +201,9 @@
 
                     {{/each}}
                     <tr>
-                        <td align="right"><b>Total Expense</b></td>
+                        <td align="left"><b>Total Expense</b></td>
                         <td>R{{formatMoneyNormal grandTotalExpenseR}}</td>
-                        <td>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpenseUSD}}</td>
+                        <td>${{formatMoneyNormal grandTotalExpenseUSD}}</td>
                         <td>B{{formatMoneyNormal grandTotalExpenseB}}</td>
                         <td align="right">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpense}}</b>
@@ -172,9 +214,9 @@
                     </tr>
 
                     <tr>
-                        <td align="right"><b>Profit and Lose</b></td>
+                        <td align="left"><b>Profit and Lose</b></td>
                         <td>R{{formatMoneyNormal profitR}}</td>
-                        <td>{{getCurrency currencySelect}}{{formatMoneyNormal profitUSD}}</td>
+                        <td>${{formatMoneyNormal profitUSD}}</td>
                         <td>B{{formatMoneyNormal profitB}}</td>
                         <td align="right" style="text-decoration: overline">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal profit}}</b>
@@ -272,12 +314,44 @@
 
                     {{/each}}
                     <tr>
-                        <td align="right"><b>Total Income</b></td>
+                        <td align="left"><b>Total Income</b></td>
                         <td align="right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncome}}</b>
                         </td>
                         <td align="right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncomeYearToDate}}</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>Cost Of Good Sold Expense</b></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{cogs.accountDoc.code}}}:{{cogs.accountDoc.name}}</td>
+                        <td align="right">
+                            {{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}
+                        </td>
+                        <td align="right">
+                            {{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left"><b>Total Cost Of Good Sold Expense</b></td>
+                        <td align="right">
+                            <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}</b>
+                        </td>
+                        <td align="right">
+                            <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left"><b>Gross Profit</b></td>
+                        <td align="right">
+                            <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfit}}</b>
+                        </td>
+                        <td align="right">
+                            <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfitYearToDate}}</b>
                         </td>
                     </tr>
                     <tr>
@@ -302,7 +376,7 @@
 
                     {{/each}}
                     <tr>
-                        <td align="right"><b>Total Expense</b></td>
+                        <td align="left"><b>Total Expense</b></td>
                         <td align="right">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpense}}</b>
                         </td>
@@ -312,7 +386,7 @@
                     </tr>
 
                     <tr>
-                        <td align="right"><b>Profit and Lose</b></td>
+                        <td align="left"><b>Profit and Lose</b></td>
                         <td align="right">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal profit}}</b>
                         </td>

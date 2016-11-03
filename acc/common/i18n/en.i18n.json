@@ -159,7 +159,25 @@
       "title": "Map NBC Income"
     },
     "balanceSheetReport": {
-      "title": "Balance Sheet"
+      "title": "Balance Sheet",
+      "income": "Income",
+      "Expense": "Expense",
+      "Account": "Account",
+      "currentAsset":"Current Asset",
+      "otherCurrentAsset":"Other Current Asset",
+      "totalOtherCurrentAsset":"Total Other Current Asset",
+      "totalCurrentAsset":"Total Current Asset",
+      "fixedAsset":"Fixed Asset",
+      "totalFixedAsset":"Total Fixed Asset",
+      "otherFixedAsset":"Other Fixed Asset",
+      "totalOtherfixedAsset": "Total Other Fixed Asset",
+      "liabilityAndEquity": "Liability & Equity",
+      "liability": "Liability",
+      "currentLiability": "Current Liability",
+      "otherCurrentLiability": "Other Current Liability",
+      "totalOtherCurrentLiability": "Total Other Current Liability",
+      "totalCurrentLiability": "Total Current Liability"
+
     },
     "profitLostReport": {
       "title": "Profit Lost"

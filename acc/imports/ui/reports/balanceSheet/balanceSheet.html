@@ -67,7 +67,7 @@
                 <table class="report-content">
                     <tbody class="report-content-body">
                     <tr>
-                        <td align="center"><b>Account</b></td>
+                        <td align="center"><b>{{_ "acc.balanceSheetReport.account"}}</b></td>
                         <td align="center"><b>KHR</b></td>
                         <td align="center"><b>USD</b></td>
                         <td align="center"><b>THB</b></td>
@@ -81,14 +81,14 @@
                         <td></td>
                     </tr>
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Current Asset</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.currentAsset"}}</b></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Other Current Asset</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.otherCurrentAsset"}}</b></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -112,7 +112,7 @@
                         </tr>
                     {{/each}}
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Total Other Current Asset</b>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.totalOtherCurrentAsset"}}</b>
                         </td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherCurrentAssetRiel}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherCurrentAssetUSD}}</b></td>
@@ -121,7 +121,7 @@
                             <b>{{formatMoneyNormal totalOtherCurrentAsset}}</b></td>
                     </tr>
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Total Current Asset</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.totalCurrentAsset"}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherCurrentAssetRiel}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherCurrentAssetUSD}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherCurrentAssetBath}}</b></td>
@@ -129,7 +129,7 @@
                             <b>{{formatMoneyNormal totalOtherCurrentAsset}}</b></td>
                     </tr>
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Fix Asset</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.fixedAsset"}}</b></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -154,14 +154,14 @@
                         </tr>
                     {{/each}}
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Total Fix Asset</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.totalFixedAsset"}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalFixAssetRiel}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalFixAssetUSD}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalFixAssetBath}}</b></td>
                         <td style="border-top: medium;" align="right"><b>{{formatMoneyNormal totalFixAsset}}</b></td>
                     </tr>
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Other Fix Asset</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.otherFixedAsset"}}</b></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -186,7 +186,7 @@
                         </tr>
                     {{/each}}
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Total Other Fix Asset</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.totalOtherfixedAsset"}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherFixAssetRiel}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherFixAssetUSD}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherFixAssetBath}}</b></td>
@@ -204,29 +204,28 @@
                             <b>{{formatMoneyNormal totalAsset}}</b></td>
                     </tr>
                     <tr>
-                        <td><b>Liability & Equity</b></td>
+                        <td><b>{{_ "acc.balanceSheetReport.liabilityAndEquity"}}</b></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Liability</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.liability"}}</b></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Current Liability</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.currentLiability"}}</b></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Other
-                            Current Liability</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.otherCurrentLiability"}}</b></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -252,8 +251,7 @@
                     {{/each}}
                     <tr>
                         <td>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Total
-                            Other Current Liability</b></td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.totalOtherCurrentLiability"}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherCurrentLiabilityRiel}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherCurrentLiabilityUSD}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherCurrentLiabilityBath}}</b></td>
@@ -261,7 +259,7 @@
                             <b>{{formatMoneyNormal totalOtherCurrentLiability}}</b></td>
                     </tr>
                     <tr>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Total Current Liability</b>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{_ "acc.balanceSheetReport.totalCurrentLiability"}}</b>
                         </td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherCurrentLiabilityRiel}}</b></td>
                         <td align="right"><b>{{formatMoneyNormal totalOtherCurrentLiabilityUSD}}</b></td>

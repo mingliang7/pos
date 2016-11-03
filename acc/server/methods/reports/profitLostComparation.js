@@ -1,17 +1,21 @@
-import {Meteor} from 'meteor/meteor';
-import {ValidatedMethod} from 'meteor/mdg:validated-method';
-import {SimpleSchema} from 'meteor/aldeed:simple-schema';
-import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
-import {_} from 'meteor/erasaur:meteor-lodash';
-import {moment} from  'meteor/momentjs:moment';
+import { Meteor } from 'meteor/meteor';
+import { ValidatedMethod } from 'meteor/mdg:validated-method';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { CallPromiseMixin } from 'meteor/didericis:callpromise-mixin';
+import { _ } from 'meteor/erasaur:meteor-lodash';
+import { moment } from 'meteor/momentjs:moment';
 
 // Collection
-import {Company} from '../../../../core/imports/api/collections/company.js';
-import {Setting} from '../../../../core/imports/api/collections/setting';
+import { Company } from '../../../../core/imports/api/collections/company.js';
+import { Setting } from '../../../../core/imports/api/collections/setting';
 
-import {CloseChartAccount} from '../../../imports/api/collections/closeChartAccount';
-import {ChartAccount} from '../../../imports/api/collections/chartAccount';
-import {SpaceChar} from '../../../common/configs/space';
+import { CloseChartAccount } from '../../../imports/api/collections/closeChartAccount';
+
+
+import { ChartAccount } from '../../../imports/api/collections/chartAccount';
+import { MapClosing } from '../../../imports/api/collections/mapCLosing';
+
+import { SpaceChar } from '../../../common/configs/space';
 
 Meteor.methods({
     acc_profitLostComparation: function (params) {
@@ -34,6 +38,7 @@ Meteor.methods({
 
             let startMonth = (fDate.getMonth()) + 1;
             let endMonth = (moment(date[1], 'DD/MM/YYYY').toDate().getMonth()) + 1;
+            let numMonth = endMonth - startMonth + 2;
 
             /****** Title *****/
             data.title = Company.findOne();
@@ -45,6 +50,7 @@ Meteor.methods({
             var self = params;
             var selector = {};
 
+            let cogs = MapClosing.findOne({ chartAccountCompare: "Cost Of Goods Sold" });
 
             if (!_.isEmpty(self.date)) {
                 selector.journalDate = {
@@ -68,136 +74,302 @@ Meteor.methods({
             }
 
 
-            let contentProfit = Meteor.call("getProfitLostComparation", selector, self.showNonActive,baseCurrency,endMonth,startYear,params.exchangeDate);
-            let incomeTotalList = Meteor.call("getIncomeGroupByMonth", selector,baseCurrency,params.exchangeDate);
-            let expenseTotalList = Meteor.call("getExpenseGroupByMonth", selector,baseCurrency,params.exchangeDate);
+            let contentProfit = Meteor.call("getProfitLostComparation", selector, self.showNonActive, baseCurrency, endMonth, startYear, params.exchangeDate);
+            // let incomeTotalList = Meteor.call("getIncomeGroupByMonth", selector, baseCurrency, params.exchangeDate);
+            // let expenseTotalList = Meteor.call("getExpenseGroupByMonth", selector, baseCurrency, params.exchangeDate);
 
-            //Total
-            incomeTotalList.sort(compare);
-            expenseTotalList.sort(compare);
-
-
-            let totalIncome = "<tr><td><b>Total Income</td>";
-            let totalExpense = "<tr><td><b>Total Expense</b></td>";
-            let netProfit = "<tr><td><b>Net Income</b></td>";
-            let grandTotalIncome = 0;
-            let grandTotalExpense = 0;
-            let grandTotalNetIncome = 0;
-            let accountTypeGrand = "";
-            let m = startMonth;
-            let n = startMonth;
-
-            let lastTotalIncome = startMonth;
-            let lastTotalExpense = startMonth;
-
-            let netProfitList = [];
-
-            incomeTotalList.forEach(function (obj) {
-
-                for (let k = m; k <= endMonth; k++) {
-                    if (k == obj._id.month) {
-
-                        totalIncome += "<td><b>" + numeral(-obj.value).format("(0,00.00)") + "</b></td>";
-                        grandTotalIncome += (-obj.value);
-                        lastTotalIncome = obj._id.month + 1;
-
-                        netProfitList.push({month: k, value: obj.value});
+            // //Total
+            // incomeTotalList.sort(compare);
+            // expenseTotalList.sort(compare);
 
 
-                        m = obj._id.month + 1;
-                        accountTypeGrand = obj._id.accountType;
-                        return false;
-                    } else {
-                        totalIncome += "<td><b>" + 0 + "</b></td>";
-                        lastTotalIncome = obj._id.month + 1;
-                        netProfitList.push({month: k, value: 0});
+            // let totalIncome = "<tr><td><b>Total Income</td>";
+            // let totalExpense = "<tr><td><b>Total Expense</b></td>";
+            // let netProfit = "<tr><td><b>Net Income</b></td>";
+            // let grandTotalIncome = 0;
+            // let grandTotalExpense = 0;
+            // let grandTotalNetIncome = 0;
+            // let accountTypeGrand = "";
+            // let m = startMonth;
+            // let n = startMonth;
+
+            // let lastTotalIncome = startMonth;
+            // let lastTotalExpense = startMonth;
+
+            // let netProfitList = [];
 
 
-                    }
-                }
-            })
+            // let cogs = MapClosing.findOne({ chartAccountCompare: "Cost Of Goods Sold" });
 
-            expenseTotalList.forEach(function (obj) {
-                for (let k = n; k <= endMonth; k++) {
-                    if (k == obj._id.month) {
-                        totalExpense += "<td><b>" + numeral(obj.value).format("(0,00.00)") + "</b></td>";
-                        grandTotalExpense += obj.value;
-                        lastTotalExpense = obj._id.month + 1;
+            // incomeTotalList.forEach(function (obj) {
 
-                        netProfitList.push({month: k, value: obj.value});
+            //     for (let k = m; k <= endMonth; k++) {
+            //         if (k == obj._id.month) {
 
+            //             totalIncome += "<td><b>" + numeral(-obj.value).format("(0,00.00)") + "</b></td>";
+            //             grandTotalIncome += (-obj.value);
+            //             lastTotalIncome = obj._id.month + 1;
 
-                        n = obj._id.month + 1;
-                        accountTypeGrand = obj._id.accountType;
-                        return false;
-                    } else {
-
-                        totalExpense += "<td><b>" + 0 + "</b></td>";
-                        lastTotalExpense = obj._id.month + 1;
-
-                        netProfitList.push({month: k, value: 0});
-
-                    }
-                }
-            })
+            //             netProfitList.push({ month: k, value: obj.value });
 
 
-            for (let i = m; i <= endMonth; i++) {
-                totalIncome += '<td><b>' + 0 + '</b></td>';
-                lastTotalIncome = i + 1;
-
-                netProfitList.push({month: i, value: 0});
-            }
-            for (let i = n; i <= endMonth; i++) {
-                totalExpense += '<td><b>' + 0 + '</b></td>';
-                lastTotalExpense = i + 1;
-
-                netProfitList.push({month: i, value: 0});
-            }
+            //             m = obj._id.month + 1;
+            //             accountTypeGrand = obj._id.accountType;
+            //             return false;
+            //         } else {
+            //             totalIncome += "<td><b>" + 0 + "</b></td>";
+            //             lastTotalIncome = obj._id.month + 1;
+            //             netProfitList.push({ month: k, value: 0 });
+            //         }
+            //     }
+            // })
 
 
-            for (let i = lastTotalIncome; i <= endMonth; i++) {
-                totalIncome += '<td><b>' + 0 + '</b></td>';
 
-                netProfitList.push({month: i, value: 0});
+            // expenseTotalList.forEach(function (obj) {
 
-            }
+            //     for (let k = n; k <= endMonth; k++) {
+            //         if (k == obj._id.month) {
+            //             totalExpense += "<td><b>" + numeral(obj.value).format("(0,00.00)") + "</b></td>";
+            //             grandTotalExpense += obj.value;
+            //             lastTotalExpense = obj._id.month + 1;
 
-            for (let i = lastTotalExpense; i <= endMonth; i++) {
-                totalExpense += '<td><b>' + 0 + '</b></td>';
-
-                netProfitList.push({month: i, value: 0});
-            }
+            //             netProfitList.push({ month: k, value: obj.value });
 
 
-            totalIncome += "<td><b>" + numeral(grandTotalIncome).format("(0,00.00)") + "</b></td></tr>";
-            totalExpense += "<td><b>" + numeral(grandTotalExpense).format("(0,00.00)") + "</b></td></tr>";
+            //             n = obj._id.month + 1;
+            //             accountTypeGrand = obj._id.accountType;
+            //             return false;
+            //         } else {
 
-            let arrProfitLost = [];
-            netProfitList.reduce(function (key, val) {
-                if (!key[val.month]) {
-                    key[val.month] = {
-                        month: val.month,
-                        value: val.value
-                    };
-                    arrProfitLost.push(key[val.month]);
-                } else {
-                    key[val.month].value += val.value;
-                }
-                return key;
-            }, {});
+            //             totalExpense += "<td><b>" + 0 + "</b></td>";
+            //             lastTotalExpense = obj._id.month + 1;
 
-            arrProfitLost.forEach(function (obj) {
-                netProfit += "<td><b>" + numeral(-obj.value).format("(0,00.00)") + "</b></td>";
-                grandTotalNetIncome += obj.value;
-            })
+            //             netProfitList.push({ month: k, value: 0 });
+
+            //         }
+            //     }
+            // })
 
 
-            netProfit += "<td><b>" + numeral(-grandTotalNetIncome).format("(0,00.00)") + "</b></td></tr>";
+            // for (let i = m; i <= endMonth; i++) {
+            //     totalIncome += '<td><b>' + 0 + '</b></td>';
+            //     lastTotalIncome = i + 1;
+
+            //     netProfitList.push({ month: i, value: 0 });
+            // }
+            // for (let i = n; i <= endMonth; i++) {
+            //     totalExpense += '<td><b>' + 0 + '</b></td>';
+            //     lastTotalExpense = i + 1;
+
+            //     netProfitList.push({ month: i, value: 0 });
+            // }
+
+
+
+
+
+            // for (let i = lastTotalIncome; i <= endMonth; i++) {
+            //     totalIncome += '<td><b>' + 0 + '</b></td>';
+
+            //     netProfitList.push({ month: i, value: 0 });
+
+            // }
+
+            // for (let i = lastTotalExpense; i <= endMonth; i++) {
+            //     totalExpense += '<td><b>' + 0 + '</b></td>';
+
+            //     netProfitList.push({ month: i, value: 0 });
+            // }
+
+
+            // totalIncome += "<td><b>" + numeral(grandTotalIncome).format("(0,00.00)") + "</b></td></tr>";
+            // totalExpense += "<td><b>" + numeral(grandTotalExpense).format("(0,00.00)") + "</b></td></tr>";
+
+            // let arrProfitLost = [];
+            // netProfitList.reduce(function (key, val) {
+            //     if (!key[val.month]) {
+            //         key[val.month] = {
+            //             month: val.month,
+            //             value: val.value
+            //         };
+            //         arrProfitLost.push(key[val.month]);
+            //     } else {
+            //         key[val.month].value += val.value;
+            //     }
+            //     return key;
+            // }, {});
+
+            // arrProfitLost.forEach(function (obj) {
+            //     netProfit += "<td><b>" + numeral(-obj.value).format("(0,00.00)") + "</b></td>";
+            //     grandTotalNetIncome += obj.value;
+            // })
+
+
+            // netProfit += "<td><b>" + numeral(-grandTotalNetIncome).format("(0,00.00)") + "</b></td></tr>";
+
+
+            // //Detail
+            // let contentProfitList = [];
+            // contentProfit.reduce(function (key, val) {
+            //     if (!key[val._id.account + val._id.month + val._id.year]) {
+
+            //         key[val._id.account + val._id.month + val._id.year] = {
+            //             accountTypeId: val._id.accountTypeId,
+            //             name: val._id.name,
+            //             currency: val._id.currencyId,
+            //             code: val._id.code,
+            //             level: val._id.level,
+            //             month: val._id.month,
+            //             year: val._id.year,
+            //             parentId: val._id.parent,
+
+            //             value: val.value
+            //         };
+
+            //         contentProfitList.push(key[val._id.account + val._id.month + val._id.year]);
+            //     } else {
+            //         key[val._id.account + val._id.month + val._id.year].value += val.value;
+            //     }
+            //     return key;
+            // }, {});
+
+
+            // contentProfitList.sort(sortTowParam);
+
+            // let content = '<table class="report-content">'
+            //     + '             <thead class="report-content-header">'
+            //     + '                  <tr>'
+            //     + '                     <th>Account Name</th>'
+
+
+            // for (let i = startMonth; i <= endMonth; i++) {
+            //     content += '<th>' + getMonthName(i) + '</th>';
+            // }
+
+            // content += '                     <th>សរុប</th>'
+            //     + '                  </tr>'
+            //     + '             </thead>'
+            //     + '             <tbody class="report-content-body">';
+
+
+            // let income = '      <tr>'
+            //     + '                 <td colspan="14"><b>Income</b></td>'
+            //     + '              </tr>'
+
+            // let exense = '      <tr>'
+            //     + '                 <td colspan="14"><b>Expense</b></td>'
+            //     + '              </tr>'
+
+
+            // let codeTemp = "";
+            // let j = startMonth;
+            // let accountType = "";
+
+            // let subTotalByAccount = 0;
+
+
+            // contentProfitList.forEach(function (obj) {
+
+
+            //     //To show column don't have value and subtotal by account
+            //     if (codeTemp != obj.code) {
+
+            //         if (codeTemp != "") {
+            //             for (let i = j; i <= endMonth; i++) {
+            //                 if (accountType == "40" || accountType == "41") {
+            //                     income += '<td>' + 0 + '</td>';
+            //                 } else if (accountType == "50" || accountType == "51") {
+            //                     exense += '<td>' + 0 + '</td>';
+            //                 }
+            //             }
+
+
+            //             if (accountType == "40" || accountType == "41") {
+            //                 income += '<td>' + numeral(subTotalByAccount).format("(0,00.00)") + '</td></tr>';
+            //             } else if (accountType == "50" || accountType == "51") {
+            //                 exense += '<td>' + numeral(subTotalByAccount).format("(0,00.00)") + '</td></tr>';
+            //             }
+
+
+
+            //             subTotalByAccount = 0;
+            //         }
+
+            //         if (obj.accountTypeId == "40" || obj.accountTypeId == "41") {
+            //             income += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;' + obj.code + " | " + obj.name;
+            //         } else if (obj.accountTypeId == "50" || obj.accountTypeId == "51") {
+            //             exense += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;' + obj.code + " | " + obj.name;
+            //         }
+            //         j = startMonth;
+            //     }
+
+            //     //TO show all column that have value
+            //     for (let i = j; i <= endMonth; i++) {
+            //         if (obj.month == i) {
+
+            //             //To show column that have value
+            //             if (obj.accountTypeId == "40" || obj.accountTypeId == "41") {
+            //                 income += '<td>' + numeral(-obj.value).format("(0,00.00)") + '</td>';
+            //                 subTotalByAccount += -obj.value;
+            //             } else if (obj.accountTypeId == "50" || obj.accountTypeId == "51") {
+            //                 exense += '<td>' + numeral(obj.value).format("(0,00.00)") + '</td>';
+            //                 subTotalByAccount += obj.value;
+            //             }
+
+            //             codeTemp = obj.code;
+            //             j = 1 + obj.month;
+            //             accountType = obj.accountTypeId;
+            //             return false;
+            //         } else {
+
+            //             //To show column don't have value before column that have value
+            //             if (obj.accountTypeId == "40" || obj.accountTypeId == "41") {
+            //                 income += '<td>' + 0 + '</td>';
+            //             } else if (obj.accountTypeId == "50" || obj.accountTypeId == "51") {
+            //                 exense += '<td>' + 0 + '</td>';
+            //             }
+            //         }
+            //     }
+            // });
+
+
+            // //To show the last column that don't have value
+            // if (codeTemp != "") {
+            //     for (let i = j; i <= endMonth; i++) {
+            //         if (accountType == "40" || accountType == "41") {
+            //             income += '<td>' + 0 + '</td>';
+            //         } else if (accountType == "50" || accountType == "51") {
+            //             exense += '<td>' + 0 + '</td>';
+            //         }
+            //     }
+
+
+            //     if (accountType == "40" || accountType == "41") {
+            //         income += '<td>' + numeral(subTotalByAccount).format("(0,00.00)") + '</td></tr>';
+            //     } else if (accountType == "50" || accountType == "51") {
+            //         exense += '<td>' + numeral(subTotalByAccount).format("(0,00.00)") + '</td></tr>';
+            //     }
+            // }
+
+
+            // content += income + totalIncome + exense + totalExpense + netProfit + '</tbody></table>';
+            // data.content = content;
+
+
+
+
+
+
+
+
+
+
+            // // Tow dimensional Array
 
 
             //Detail
-            let contentProfitList=[];
+            let contentProfitList = [];
             contentProfit.reduce(function (key, val) {
                 if (!key[val._id.account + val._id.month + val._id.year]) {
 
@@ -209,6 +381,7 @@ Meteor.methods({
                         level: val._id.level,
                         month: val._id.month,
                         year: val._id.year,
+                        parentId: val._id.parent,
 
                         value: val.value
                     };
@@ -239,105 +412,409 @@ Meteor.methods({
                 + '             <tbody class="report-content-body">';
 
 
-            let income = '      <tr>'
+            let incomeData = '      <tr>'
                 + '                 <td colspan="14"><b>Income</b></td>'
                 + '              </tr>'
 
-            let exense = '      <tr>'
+            let expenseData = '      <tr>'
                 + '                 <td colspan="14"><b>Expense</b></td>'
                 + '              </tr>'
 
 
-            let codeTemp = "";
             let j = startMonth;
-            let accountType = "";
 
-            let subTotalByAccount = 0;
+            let arr = [];
+
+            let totalSubArr = [];
+            let subArr = [];
+            let arrIncome = [];
+            let arrExpense = [];
+            let temp = { code: "" };
+
+            let totalIncomeData = "";
+            let totalExpenseData = "";
+
+            let netProfitData = "";
+
+            let isPush = false;
+
+            let tempParent = "";
+            let accountType = "";
+            let level = 0;
+            let dataOld = {};
+
+            let arrCOGS = [];
 
             contentProfitList.forEach(function (obj) {
+                if (obj.code == cogs.accountDoc.code) {
+                    // Cost Of Goods Sold
+                    arrCOGS.push({ month: obj.month, value: obj.value });
+
+                } else {
+                    let style = "";
+                    if (obj.level > 0) {
+                        style = "align='left'";
+                    } else {
+                        style = "align='right'";
+                    }
 
 
-                //To show column don't have value and subtotal by account
-                if (codeTemp != obj.code) {
+                    let styleBefore = "";
+                    if (level > 0) {
+                        styleBefore = "align='left'";
+                    } else {
+                        styleBefore = "align='right'";
+                    }
 
-                    if (codeTemp != "") {
-                        for (let i = j; i <= endMonth; i++) {
+
+                    // add column when don't have value
+                    if (temp.code != obj.code) {
+                        if (temp.code != "") {
+                            for (let i = j; i <= endMonth; i++) {
+                                if (accountType == "40" || accountType == "41") {
+                                    incomeData += '<td ' + styleBefore + '>' + numeral(0).format("(0,00.00)") + '</td>';
+                                } else if (accountType == "50" || accountType == "51") {
+                                    expenseData += '<td ' + styleBefore + '>' + numeral(0).format("(0,00.00)") + '</td>';
+                                }
+                                arr.push(0);
+
+                                // add value when have sub level
+                                if (level > 0) {
+                                    subArr.push(0);
+                                }
+                            }
+
+                            // subTotal
                             if (accountType == "40" || accountType == "41") {
-                                income += '<td>' + 0 + '</td>';
+                                arrIncome.push(arr);
+                                let subTotalRowList = sumRow(arrIncome);
+                                let amount = 0;
+                                subTotalRowList.forEach(function (val) {
+                                    amount = val;
+                                });
+                                incomeData += '<td ' + styleBefore + '>' + numeral(-amount).format("(0,00.00)") + '</td></tr>';
+
+
                             } else if (accountType == "50" || accountType == "51") {
-                                exense += '<td>' + 0 + '</td>';
+                                arrExpense.push(arr);
+                                let subTotalRowList = sumRow(arrExpense);
+                                let amount = 0;
+                                subTotalRowList.forEach(function (val) {
+                                    amount = val;
+                                });
+                                expenseData += '<td ' + styleBefore + '>' + numeral(amount).format("(0,00.00)") + '</td></tr>';
+
+                            }
+
+                            if (level > 0) {
+                                totalSubArr.push(subArr);
+                                subArr = [];
+                            }
+
+
+                            arr = [];
+                        }
+                        j = startMonth;
+                    }
+
+
+                    // add Total SubAccount when have Parent
+                    if (isPush == true && tempParent != obj.parentId) {
+                        let subTotalColumnList = sumColumn(totalSubArr);
+                        dataOld = ChartAccount.findOne({ _id: tempParent });
+                        if (accountType == "40" || accountType == "41") {
+                            incomeData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
+                            let totalSubAmount = 0;
+                            subTotalColumnList.forEach(function (val) {
+                                incomeData += "<td align='right'>" + numeral(-val).format("(0,00.00)") + "</td>";
+                                totalSubAmount += val;
+                            })
+                            incomeData += "<td align='right'>" + numeral(-totalSubAmount).format("(0,00.00)") + "</td></tr>";
+
+                        } else if (accountType == "50" || accountType == "51") {
+                            expenseData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
+                            let totalSubAmount = 0;
+                            subTotalColumnList.forEach(function (val) {
+                                expenseData += "<td align='right'>" + numeral(val).format("(0,00.00)") + "</td>";
+                                totalSubAmount += val;
+                            })
+
+                            expenseData += "<td align='right'>" + numeral(totalSubAmount).format("(0,00.00)") + "</td></tr>";
+                        }
+
+                        isPush = false;
+                        totalSubArr = [];
+
+                    }
+
+
+                    // add Header when have parent
+                    if (obj.level > 0) {
+                        if (tempParent != obj.parentId) {
+                            let dataOld = ChartAccount.findOne({ _id: obj.parentId });
+
+                            if (obj.accountTypeId == "40" || obj.accountTypeId == "41") {
+                                incomeData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '<td colspan="' + numMonth + '"></td></tr>';
+                            } else if (obj.accountTypeId == "50" || obj.accountTypeId == "51") {
+                                expenseData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '<td colspan="' + numMonth + '"></td></tr>';
+                            }
+                            isPush = true;
+                        }
+                    }
+
+                    if (temp.code != obj.code) {
+                        if (obj.accountTypeId == "40" || obj.accountTypeId == "41") {
+                            incomeData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;' + SpaceChar.space(6 * obj.level) + obj.code + " | " + obj.name;
+                        } else if (obj.accountTypeId == "50" || obj.accountTypeId == "51") {
+                            expenseData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;' + SpaceChar.space(6 * obj.level) + obj.code + " | " + obj.name;
+                        }
+                    }
+
+
+
+                    // add column when have value
+                    for (let i = j; i <= endMonth; i++) {
+
+
+                        if (obj.month == i) {
+
+
+                            if (obj.accountTypeId == "40" || obj.accountTypeId == "41") {
+                                incomeData += "<td " + style + ">" + numeral(-obj.value).format("(0,00.00)") + "</td>";
+                            } else if (obj.accountTypeId == "50" || obj.accountTypeId == "51") {
+                                expenseData += "<td " + style + ">" + numeral(obj.value).format("(0,00.00)") + "</td>";
+                            }
+
+
+                            arr.push(obj.value);
+
+                            // add value when have sub level
+                            if (obj.level > 0) {
+                                subArr.push(obj.value);
+                            }
+                            break;
+                        } else {
+                            if (obj.accountTypeId == "40" || obj.accountTypeId == "41") {
+                                incomeData += "<td " + style + ">" + numeral(0).format("(0,00.00)") + "</td>";
+                            } else if (obj.accountTypeId == "50" || obj.accountTypeId == "51") {
+                                expenseData += "<td " + style + ">" + numeral(0).format("(0,00.00)") + "</td>";
+                            }
+                            arr.push(0);
+
+                            // add value when have sub level
+                            if (obj.level > 0) {
+                                subArr.push(0);
                             }
                         }
-
-
-                        if (accountType == "40" || accountType == "41") {
-                            income += '<td>' + numeral(subTotalByAccount).format("(0,00.00)") + '</td></tr>';
-                        } else if (accountType == "50" || accountType == "51") {
-                            exense += '<td>' + numeral(subTotalByAccount).format("(0,00.00)") + '</td></tr>';
-                        }
-
-                        subTotalByAccount = 0;
                     }
 
-                    if (obj.accountTypeId == "40" || obj.accountTypeId == "41") {
-                        income += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;' + obj.code + " | " + obj.name;
-                    } else if (obj.accountTypeId == "50" || obj.accountTypeId == "51") {
-                        exense += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;' + obj.code + " | " + obj.name;
-                    }
-                    j = startMonth;
+                    j = obj.month + 1;
+                    temp = obj;
+                    tempParent = obj.parentId;
+                    accountType = obj.accountTypeId;
+                    level = obj.level;
+                }
+            })
+
+
+
+            // Last add column
+            if (arr.length > 0) {
+                let styleBefore = "";
+                if (level > 0) {
+                    styleBefore = "align='left'";
+                } else {
+                    styleBefore = "align='right'";
                 }
 
-                //TO show all column that have value
-                for (let i = j; i <= endMonth; i++) {
-                    if (obj.month == i) {
-
-                        //To show column that have value
-                        if (obj.accountTypeId == "40" || obj.accountTypeId == "41") {
-                            income += '<td>' + numeral(-obj.value).format("(0,00.00)") + '</td>';
-                            subTotalByAccount += -obj.value;
-                        } else if (obj.accountTypeId == "50" || obj.accountTypeId == "51") {
-                            exense += '<td>' + numeral(obj.value).format("(0,00.00)") + '</td>';
-                            subTotalByAccount += obj.value;
-                        }
-
-                        codeTemp = obj.code;
-                        j = 1 + obj.month;
-                        accountType = obj.accountTypeId;
-                        return false;
-                    } else {
-
-                        //To show column don't have value before column that have value
-                        if (obj.accountTypeId == "40" || obj.accountTypeId == "41") {
-                            income += '<td>' + 0 + '</td>';
-                        } else if (obj.accountTypeId == "50" || obj.accountTypeId == "51") {
-                            exense += '<td>' + 0 + '</td>';
-                        }
-                    }
-                }
-            });
-
-
-            //To show the last column that don't have value
-            if (codeTemp != "") {
                 for (let i = j; i <= endMonth; i++) {
                     if (accountType == "40" || accountType == "41") {
-                        income += '<td>' + 0 + '</td>';
+                        incomeData += "<td " + styleBefore + ">" + numeral(0).format("(0,00.00)") + "</td>";
                     } else if (accountType == "50" || accountType == "51") {
-                        exense += '<td>' + 0 + '</td>';
+                        expenseData += "<td " + styleBefore + ">" + numeral(0).format("(0,00.00)") + "</td>";
+                    }
+
+                    arr.push(0);
+                    // add value when have sub level
+                    if (level > 0) {
+                        subArr.push(0);
                     }
                 }
 
-
+                // subTotal
                 if (accountType == "40" || accountType == "41") {
-                    income += '<td>' + numeral(subTotalByAccount).format("(0,00.00)") + '</td></tr>';
+                    arrIncome.push(arr);
+                    let subTotalRowList = sumRow(arrIncome);
+                    let amount = 0;
+                    subTotalRowList.forEach(function (val) {
+                        amount = val;
+                    });
+                    incomeData += '<td ' + styleBefore + '>' + numeral(-amount).format("(0,00.00)") + '</td></tr>';
+
+
                 } else if (accountType == "50" || accountType == "51") {
-                    exense += '<td>' + numeral(subTotalByAccount).format("(0,00.00)") + '</td></tr>';
+                    arrExpense.push(arr);
+                    let subTotalRowList = sumRow(arrExpense);
+                    let amount = 0;
+                    subTotalRowList.forEach(function (val) {
+                        amount = val;
+                    });
+                    expenseData += '<td ' + styleBefore + '>' + numeral(amount).format("(0,00.00)") + '</td></tr>';
+
                 }
+
+                if (level > 0) {
+                    totalSubArr.push(subArr);
+                    subArr = [];
+
+                }
+                arr = [];
+            }
+            // Last add SubTotal SubAccount when have
+            if (isPush == true) {
+                let subTotalColumnList = sumColumn(totalSubArr);
+                dataOld = ChartAccount.findOne({ _id: tempParent });
+                if (accountType == "40" || accountType == "41") {
+                    incomeData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
+                    let totalSubAmount = 0;
+                    subTotalColumnList.forEach(function (val) {
+                        incomeData += "<td align='right'>" + numeral(-val).format("(0,00.00)") + "</td>";
+                        totalSubAmount += val;
+                    })
+                    incomeData += "<td>" + numeral(-totalSubAmount).format("(0,00.00)") + "</td></tr>";
+
+                } else if (accountType == "50" || accountType == "51") {
+                    expenseData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
+                    let totalSubAmount = 0;
+                    subTotalColumnList.forEach(function (val) {
+                        expenseData += "<td align='right'>" + numeral(val).format("(0,00.00)") + "</td>";
+                        totalSubAmount += val;
+                    })
+
+                    expenseData += "<td align='right'>" + numeral(totalSubAmount).format("(0,00.00)") + "</td></tr>";
+                }
+
+                isPush = false;
+                totalSubArr = [];
+
+                isPush = false;
             }
 
+            // // Total Row and Column
+            // let arrLength = arrIncome.length;
+            // let totalRow = [];
+            // let totalColumn = [];
+            // for (let i = 0; i < arrLength; i++) {
+            //     totalRow[i] = 0;
+            //     for (let j = 0; j < endMonth + 1 - startMonth; j++) {
 
-            content += income + totalIncome + exense + totalExpense + netProfit + '</tbody></table>';
+            //         totalRow[i] += parseFloat(arrIncome[i][j]);
+
+            //         totalColumn[j] = 0;
+            //         for (let m = 0; m < arrLength; m++) {
+            //             totalColumn[j] += parseFloat(arrIncome[m][j]);
+            //         }
+            //     }
+            // }
+
+
+
+
+
+
+
+            // cogs
+            let numMonthAddOne = numMonth + 1;
+            let cogsDataMain = "<tr  style='font-weight: bold'><td colspan='" + numMonthAddOne + "'>Cost Of Goods Sold Expense</td></tr><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;" + cogs.accountDoc.code + " | " + cogs.accountDoc.name + "</td>";
+            let cogsData = "";
+            let arrCOGSList = [];
+            let arrCOGSMain=[];
+            let totalCogs = 0;
+            let n = startMonth;
+            arrCOGS.forEach(function (val) {
+                for (let i = n; i <= endMonth; i++) {
+                    if (i == val.month) {
+                        cogsData += "<td align='right'>" + numeral(val.value).format("(0,00.00)") + "</td>";
+                        totalCogs += val.value;
+                        arrCOGSList.push(val.value);
+                        break;
+                    } else {
+                        cogsData += "<td align='right'>" + numeral(0).format("(0,00.00)") + "</td>";
+                        arrCOGSList.push(0);
+                    }
+                }
+                n = val.month + 1;
+            })
+            for (let i = n; i <= endMonth; i++) {
+                cogsData += "<td align='right'>" + numeral(0).format("(0,00.00)") + "</td>";
+                arrCOGSList.push(0);
+            }
+            arrCOGSMain.push(arrCOGSList);
+            arrCOGSList=[];
+
+            cogsData += "<td align='right'>" + totalCogs + "</td></tr>";
+            cogsDataMain += cogsData;
+            cogsDataMain += "<tr  style='font-weight: bold'><td>Total Cost Of Goods Sold</td>" + cogsData;
+
+            // Gross Profit
+            let grossProfitList = arrIncome.concat(arrCOGSMain);
+            let grossProfitData = "<tr style='font-weight: bold'><td>Gross Profit</td>";
+            let k = startMonth;
+            let totalGrossProfit = 0;
+
+            let grossProfitSum = sumColumn(grossProfitList);
+            if (grossProfitSum) {
+                grossProfitSum.forEach(function (val) {
+                    grossProfitData += "<td align='right'>" + numeral(-val).format("(0,00.00)") + "</td>";
+                    totalGrossProfit += val;
+                })
+            }
+            grossProfitData += "<td align='right'>"+numeral(-totalGrossProfit).format("(0,00.00)")+"</td></tr>";
+
+
+            // Total Income
+            let totalIncomeDataList = sumColumn(arrIncome);
+            let subTotalIncome = 0;
+            totalIncomeDataList.forEach(function (val) {
+                totalIncomeData += "<td align='right'>" + numeral(-val).format("(0,00.00)") + "</td>";
+                subTotalIncome += val;
+            })
+            totalIncomeData += "<td align='right'>" + numeral(-subTotalIncome).format("(0,00.00)") + "</td>";
+
+            // Total Expense
+            let subTotalExpense = 0;
+            let totalExpenseDataList = sumColumn(arrExpense);
+            totalExpenseDataList.forEach(function (val) {
+                totalExpenseData += "<td align='right'>" + numeral(val).format("(0,00.00)") + "</td>";
+                subTotalExpense += val;
+            })
+            totalExpenseData += "<td align='right'>" + numeral(subTotalExpense).format("(0,00.00)") + "</td>";
+
+            // Total Net Income
+            let arrNetIncome = [];
+            arrNetIncome = grossProfitList.concat(arrExpense);
+
+            let totalNetIncomeList = sumColumn(arrNetIncome);
+            let totalNetIncome = 0;
+            totalNetIncomeList.forEach(function (val) {
+                netProfitData += "<td align='right'>" + numeral(-val).format("(0,00.00)") + "</td>";
+                totalNetIncome += val;
+            })
+
+            netProfitData += "<td align='right'>" + numeral(-totalNetIncome).format("(0,00.00)") + "</td>";
+
+
+
+
+
+
+
+
+
+            content += incomeData + "<tr style='font-weight: bold'><td>Total Income</td>" + totalIncomeData + "</tr>" + cogsDataMain + grossProfitData + expenseData + "<tr style='font-weight: bold'><td>Total Expense</td>" + totalExpenseData + "</tr><tr style='font-weight: bold'><td>Net Profit</td>" + netProfitData + '</tr></tbody></table>';
             data.content = content;
+
+
             return data;
         }
     }
@@ -361,6 +838,44 @@ let compare = function (a, b) {
         return 0;
     }
 }
+
+
+let sumRow = function (arrList) {
+
+    // Total Row
+    let totalRow = [];
+    if (arrList.length > 0) {
+        let arrLength = arrList.length;
+
+        for (let i = 0; i < arrLength; i++) {
+            let endMonth = arrList[i].length;
+            totalRow[i] = 0;
+            for (let j = 0; j < endMonth; j++) {
+                totalRow[i] += parseFloat(arrList[i][j]);
+            }
+        }
+    }
+    return totalRow;
+}
+
+let sumColumn = function (arrList) {
+    // Total Column
+    let totalColumn = [];
+    if (arrList.length > 0) {
+        let columnLength = arrList.length;
+        let rowLength = arrList[0].length;
+
+        for (let i = 0; i < rowLength; i++) {
+
+            totalColumn[i] = 0;
+            for (let j = 0; j < columnLength; j++) {
+                totalColumn[i] += parseFloat(arrList[j][i]);
+            }
+        }
+    }
+    return totalColumn;
+}
+
 
 
 let getMonthName = (number) => {

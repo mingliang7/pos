@@ -148,7 +148,7 @@ journalDetailTpl.events({
         if (isInsert) {
             Session.set('isTotal', true);
         }
-        $('[name="account"]').val("").trigger('change');;
+        $('[name="account"]').val("").trigger('change');
 
 
         state.set('dr', 0);

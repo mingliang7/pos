@@ -278,6 +278,7 @@ indexTpl.events({
 
 
     'click .insertPayment': function (e, t) {
+        $.blockUI();
 
         removeCollectionNull();
 
@@ -285,8 +286,10 @@ indexTpl.events({
         state.set('type', "expense");
 
         alertify.journal(fa("plus", "Expense"), renderTemplate(insertPaymentTpl)).maximize();
+        $.unblockUI();
     },
     'click .insertReceive': function (e, t) {
+        $.blockUI();
 
 
         stateFixAsset.set('isFixAsset', false);
@@ -296,13 +299,17 @@ indexTpl.events({
         state.set('type', "income");
 
         alertify.journal(fa("plus", "Income"), renderTemplate(insertReceiveTpl)).maximize();
+        $.unblockUI();
     },
     'click .insert': function (e, t) {
+        $.blockUI();
         stateFixAsset.set('isFixAsset', false);
         removeCollectionNull();
         alertify.journal(fa("plus", "Journal"), renderTemplate(insertTpl)).maximize();
+        $.unblockUI();
     },
     'dblclick tbody > tr': function (event) {
+        $.blockUI();
 
         removeCollectionNull();
 
@@ -345,8 +352,10 @@ indexTpl.events({
                 alertify.warning("Can't Update!!!");
             }
         });
+        $.unblockUI();
 
     }, 'click .update': function (e, t) {
+        $.blockUI();
 
         removeCollectionNull();
 
@@ -385,8 +394,10 @@ indexTpl.events({
                 alertify.warning("Can't Update!!!");
             }
         });
+        $.unblockUI();
     },
     'click .remove': function (e, t) {
+        $.blockUI();
         var self = this;
         var selectorGetLastDate = {};
         var branchId = Session.get("currentBranch");
@@ -439,15 +450,18 @@ indexTpl.events({
                 }
             })
         })
+        $.unblockUI();
     }
 
     ,
     'click .show': function (e, t) {
+        $.blockUI();
         var selector = {};
         selector._id = this._id;
         Meteor.call('getJournal', selector, function (err, data) {
             alertify.journal(fa("eye", "Journal"), renderTemplate(showTpl, data).html);
         })
+        $.unblockUI();
     }
 });
 insertTpl.events({

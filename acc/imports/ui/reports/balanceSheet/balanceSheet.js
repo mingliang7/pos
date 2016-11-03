@@ -107,7 +107,6 @@ generateTpl.helpers({
     }
 });
 
-
 var switcherFun = function () {
     var elem = document.querySelector('.js-switch');
     var init = new Switchery(elem, {

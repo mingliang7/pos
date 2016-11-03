@@ -10,7 +10,7 @@ import {ChartAccountNBC} from '../../imports/api/collections/chartAccountNBC';
 var module = 'Acc';
 
 MapUserAndAccount.before.insert(function (userId, doc) {
-    console.log(doc);
+    
     var prefix = doc.branchId + "-";
     doc._id = idGenerator.genWithPrefix(MapUserAndAccount, prefix, 6);
     let transaction=[];
