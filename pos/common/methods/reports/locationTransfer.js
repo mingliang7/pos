@@ -128,7 +128,24 @@ export const locationTransferMethods = new ValidatedMethod({
                         as: "itemDoc"
                     }
                 },
+                 {
+                    $lookup: {
+                        from: "users",
+                        localField: "toUserId",
+                        foreignField: "_id",
+                        as: "_toUser"
+                    }
+                }, {
+                    $lookup: {
+                        from: "users",
+                        localField: "fromUserId",
+                        foreignField: "_id",
+                        as: "_fromUser"
+                    }
+                },
                 {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
+                {$unwind: {path: '$_fromUser', preserveNullAndEmptyArrays: true}},
+                {$unwind: {path: '$_toUser', preserveNullAndEmptyArrays: true}},
                 {
                     $group: {
                         _id: '$_id',
