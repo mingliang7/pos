@@ -4,6 +4,7 @@
       "home": "Home",
       "item": "Item",
       "customer": "Customer",
+      "prepaidOrder": "Prepaid Order",
       "order": "Sale Order",
       "purchaseOrder": "Purchase Order",
       "category": "Category",

@@ -26,7 +26,7 @@ export const stockBalanceReport = new ValidatedMethod({
                 content: [{index: 'No Result'}],
                 footer: {}
             };
-
+            selector.branchId = {$in: []};
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             if (params.date) {
                 let asOfDate = moment(params.date).toDate();
@@ -34,7 +34,7 @@ export const stockBalanceReport = new ValidatedMethod({
                 selector.createdAt = {$lte: asOfDate};
             }
             if(params.branch){
-                selector.branchId = {$in: params.branch.split(',')};
+                selector.branchId = {$in: params.branch.split(',') };
             }
             if(params.items) {
                 selector.itemId = {

@@ -6,5 +6,5 @@ import {Customers} from '../../imports/api/collections/customer.js';
 
 ReceivePayment.cacheTimestamp();
 ReceivePayment.cacheDoc('customer', Customers, ['name']);
-ReceivePayment.cacheDoc('staff', Meteor.users, ['username']);
+// ReceivePayment.cacheDoc('staff', Meteor.users, ['username']);
 

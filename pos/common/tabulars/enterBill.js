@@ -44,7 +44,7 @@ tabularOpts.columns = [
             return `<span class="label label-primary">Term</span>`
         }
     },
-    {data: "_staff.username", title: "Staff"},
+    // {data: "_staff.username", title: "Staff"},
     {data: "stockLocationId", title: "Stock Location"},
     //{
     //    data: "_vendor",
@@ -54,5 +54,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'billType', 'prepaidId', 'paymentGroupId', 'vendorId'];
+tabularOpts.extraFields = ['items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'billType', 'prepaidId', 'paymentGroupId', 'vendorId', 'staffId'];
 export const EnterBillTabular = new Tabular.Table(tabularOpts);

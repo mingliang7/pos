@@ -175,14 +175,17 @@
                                 <strong>Transfered From:</strong><br>
                                 {{_fromBranch.khName}}({{_fromBranch.enName}})<br>
                                 Stock({{_fromStockLocation.name}})<br>
-                                {{capitalize _fromUser.username}}<br>
+                                Request By: <b>{{capitalize _fromUser.username}}</b>
                             </address>
                         </div>
                         <div class="col-xs-6 text-right">
                             <address>
                                 <strong>Transfered To:</strong><br>
                                 {{_toBranch.khName}}({{_toBranch.enName}})<br>
-                                Stock({{_toStockLocation.name}})<br><br>
+                                Stock({{_toStockLocation.name}})<br>
+                                {{#if _toUser}}
+                                    Accepted By: <b>{{capitalize _toUser.username}}</b>
+                                {{/if}}
                             </address>
                         </div>
                     </div>

@@ -35,6 +35,7 @@ Meteor.methods({
         return {count, lateInvoices, calculatePenalty, penaltyNotExist: penalty.notExist || false};
     },
     invoiceShowItems({doc}){
+        doc.staff = Meteor.users.findOne(doc.staffId).username || '';
         doc.items.forEach(function (item) {
             item.name = Item.findOne(item.itemId).name;
         });

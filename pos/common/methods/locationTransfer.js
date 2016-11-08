@@ -30,36 +30,56 @@ export const LocationTransferInfo = new ValidatedMethod({
                 }
             }, {
                 $unwind: '$fItems'
-            }, {
-                $group: {
-                    _id: '$_id',
-                    data: {
-                        $addToSet: {
-                            _id: '$_id',
-                            _fromStockLocation: '$_fromStockLocation',
-                            _fromUser: '$_fromUser',
-                            _fromBranch: '$_fromBranch',
-                            _toBranch: '$_toBranch',
-                            _toStockLocation: '$_toStockLocation',
-                            locationTransferDate: '$locationTransferDate',
-                            pending: '$pending',
-                            status: '$status',
-                            total: '$total'
-                        }
-                    },
-                    items: {
-                        $addToSet: {
-                            itemId: '$items.itemId',
-                            name: '$fItems.name',
-                            qty: '$items.qty',
-                            price: '$items.price',
-                            amount: '$items.amount',
+            },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'toUserId',
+                        foreignField: '_id',
+                        as: '_toUser'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'fromUserId',
+                        foreignField: '_id',
+                        as: '_fromUser'
+                    }
+                },
+                {$unwind: {path: '$_toUser', preserveNullAndEmptyArrays: true}},
+                {$unwind: {path: '$_fromUser', preserveNullAndEmptyArrays: true}},
+                {
+                    $group: {
+                        _id: '$_id',
+                        data: {
+                            $addToSet: {
+                                _id: '$_id',
+                                _fromStockLocation: '$_fromStockLocation',
+                                _fromUser: '$_fromUser',
+                                _toUser: '$_toUser',
+                                _fromBranch: '$_fromBranch',
+                                _toBranch: '$_toBranch',
+                                _toStockLocation: '$_toStockLocation',
+                                locationTransferDate: '$locationTransferDate',
+                                pending: '$pending',
+                                status: '$status',
+                                total: '$total'
+                            }
+                        },
+                        items: {
+                            $addToSet: {
+                                itemId: '$items.itemId',
+                                name: '$fItems.name',
+                                qty: '$items.qty',
+                                price: '$items.price',
+                                amount: '$items.amount',
+                            }
                         }
                     }
-                }
-            }, {
-                $unwind: '$data'
-            }]);
+                }, {
+                    $unwind: '$data'
+                }]);
             return locationTransfer[0];
         }
     }

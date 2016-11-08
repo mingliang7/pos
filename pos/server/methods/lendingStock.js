@@ -6,6 +6,14 @@ Meteor.methods({
             {$unwind: {path: '$items', preserveNullAndEmptyArrays: true}},
             {
                 $lookup: {
+                    from: "users",
+                    localField: 'staffId',
+                    foreignField: '_id',
+                    as: 'staffDoc'
+                }
+            },
+            {
+                $lookup: {
                     from: "pos_item",
                     localField: "items.itemId",
                     foreignField: "_id",
@@ -13,6 +21,7 @@ Meteor.methods({
                 }
             },
             {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
+            {$unwind: {path: '$staffDoc', preserveNullAndEmptyArrays: true}},
             {
                 $group: {
                     _id: '$_id',
@@ -25,6 +34,7 @@ Meteor.methods({
                             remainQty: '$items.remainQty'
                         }
                     },
+                    staff: {$last: '$staffDoc.username'},
                     vendor: {$last: '$_vendor'},
                     branchId: {$last: '$branchId'},
                     lendingStockDate: {$last: '$lendingStockDate'},

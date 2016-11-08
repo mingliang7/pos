@@ -40,10 +40,10 @@ tabularOpts.columns = [
         data: "_customer.name",
         title: "Customer"
     },
-    {
-        data: "_staff.username",
-        title: "Staff"
-    },
+    // {
+    //     data: "_staff.username",
+    //     title: "Staff"
+    // },
     { data: "invoiceType", title: "Type" },
     { data: "status", title: "Status" },
     //{
@@ -54,5 +54,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['customerId', 'items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'invoiceType', 'saleId', 'paymentGroupId'];
+tabularOpts.extraFields = ['customerId', 'items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'invoiceType', 'saleId', 'paymentGroupId', 'staffId'];
 export const InvoiceTabular = new Tabular.Table(tabularOpts);

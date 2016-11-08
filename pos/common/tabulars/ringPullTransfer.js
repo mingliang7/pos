@@ -42,18 +42,6 @@ tabularOpts.columns = [
         render: function(val) {
             return `${val.khName}(${_.capitalize(val.enName)})`;
         }
-    }, {
-        data: "_fromUser.username",
-        title: "From User",
-        render: function(val) {
-            return `${_.capitalize(val)}`;
-        }
-    },{
-        data: "_toUser.username",
-        title: "To User",
-        render: function(val) {
-            return `${_.capitalize(val)}`;
-        }
     },
     {data: "des", title: "Description"},
     {
@@ -76,5 +64,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['items', 'fromBranchId','toBranchId','stockLocationId'];
+tabularOpts.extraFields = ['items', 'fromBranchId','toBranchId','stockLocationId', 'toUserId', 'fromUserId'];
 export const RingPullTransferTabular = new Tabular.Table(tabularOpts);

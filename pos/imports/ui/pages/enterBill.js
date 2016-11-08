@@ -103,7 +103,7 @@ indexTmpl.events({
             title: "Pleas Wait",
             text: "Getting Invoices....", showConfirmButton: false
         });
-        this.customer = vendorBillCollection.findOne(this.vendorId).name;
+        // this.customer = vendorBillCollection.findOne(this.vendorId).name;
         Meteor.call('billShowItems', {doc: this}, function (err, result) {
             swal.close();
             alertify.enterBillShow(fa('eye', TAPi18n.__('pos.invoice.title')), renderTemplate(showTmpl, result)).maximize();

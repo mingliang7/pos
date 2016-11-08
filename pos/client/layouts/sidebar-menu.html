@@ -71,11 +71,11 @@
 					<i class="fa fa-list-alt" aria-hidden="true"></i> <span>Group Bill List</span>
 				</a>
 			</li>
-			<li class="{{isActiveRoute name='pos.prepaidOrder'}}">
+			<!--<li class="{{isActiveRoute name='pos.prepaidOrder'}}">
 				<a href="{{pathFor 'pos.prepaidOrder'}}">
 					<i class="fa fa-cart-arrow-down" aria-hidden="true"></i> <span>Prepaid Order</span>
 				</a>
-			</li>
+			</li>-->
 			<li class="{{isActiveRoute name='pos.payBill'}}">
 				<a href="{{pathFor 'pos.payBill'}}">
 					<i class="fa fa-money"></i> <span>Pay Bill</span>
@@ -343,6 +343,12 @@
 						<a href="{{transferMoney}}">
 							<i class="fa fa-file-o"></i>
 							<span>Transfer Money</span>
+						</a>
+					</li>
+                    <li>
+						<a href="{{stockBalance}}">
+							<i class="fa fa-file-o"></i>
+							<span>Stock Balance</span>
 						</a>
 					</li>
 				</ul>

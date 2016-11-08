@@ -105,6 +105,23 @@ export const transferMoneyMethod = new ValidatedMethod({
                 },
                 {$sort: {_id: 1}},
                 {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'fromUserId',
+                        foreignField: '_Id',
+                        as: '_fromUser'
+                    }
+                }, {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'toUserId',
+                        foreignField: '_Id',
+                        as: '_toUser'
+                    }
+                },
+                {$unwind: {path: '$_fromUser', preserveNullAndEmptyArrays: true}},
+                {$unwind: {path: '$_toUser', preserveNullAndEmptyArrays: true}},
+                {
                     $group: {
                         _id: null,
                         data: {

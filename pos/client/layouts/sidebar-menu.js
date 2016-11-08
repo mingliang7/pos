@@ -1,5 +1,5 @@
-import { Template } from 'meteor/templating';
-import { TAPi18n } from 'meteor/tap:i18n';
+import {Template} from 'meteor/templating';
+import {TAPi18n} from 'meteor/tap:i18n';
 import 'meteor/tap:i18n-ui';
 
 // Page
@@ -7,7 +7,10 @@ import './sidebar-menu.html';
 
 Tracker.autorun(function () {
     if (Meteor.userId() || Session.get('currentBranch')) {
-        Meteor.call('currentUserStockAndAccountMappingDoc', { userId: Meteor.userId(), branchId: Session.get('currentBranch') }, function (err, result) {
+        Meteor.call('currentUserStockAndAccountMappingDoc', {
+            userId: Meteor.userId(),
+            branchId: Session.get('currentBranch')
+        }, function (err, result) {
             Session.set('currentUserStockAndAccountMappingDoc', result);
         });
     }
@@ -85,5 +88,8 @@ Template.Pos_sidebarMenu.helpers({
     },
     transferMoney() {
         return `/pos/report/transferMoneyReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&fromBranch=${Session.get('currentBranch')}`;
+    },
+    stockBalance(){
+        return `/pos/report/stockBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
     }
 });

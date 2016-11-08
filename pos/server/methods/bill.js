@@ -12,6 +12,7 @@ Meteor.methods({
         RemoveEnterBill.insert(doc);
     },
     billShowItems({doc}){
+        doc.staff = Meteor.users.findOne(doc.staffId).username || '';
         doc.items.forEach(function (item) {
             item.name = Item.findOne(item.itemId).name;
         });

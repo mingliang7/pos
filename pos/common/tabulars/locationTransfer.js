@@ -51,20 +51,6 @@ tabularOpts.columns = [
         title: "To Stock",
     },
     {
-        data: "_fromUser.username",
-        title: "From User",
-        render: function(val) {
-            return _.capitalize(val);
-        }
-    },
-    {
-        data: "_toUser.username",
-        title: "To User",
-        render: function(val) {
-            return _.capitalize(val || '');
-        }
-    },
-    {
         data: "status",
         title: "Status",
         render: function(val) {
@@ -84,4 +70,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
+tabularOpts.extraFields = ['toUserId', 'fromUserId'];
 export const LocationTransferTabular = new Tabular.Table(tabularOpts);

@@ -12,12 +12,11 @@ let transferState = new ReactiveVar(true);
 let statusState = new ReactiveVar('active');
 let loadMore = new ReactiveVar(0);
 let sumLoadMore = new ReactiveVar(10);
-let ringPullTmpCollection = new Mongo.Collection(null);
+let transferMoneyTmpCollection = new Mongo.Collection(null);
 indexTmpl.onCreated(function () {
     createNewAlertify('transferMoneyRequest', {size: 'lg'});
-    this.autorun(function () {
+    this.autorun(() => {
         if (Session.get('currentBranch') || transferState.get() || statusState.get()) {
-            ringPullTmpCollection.remove({});
             let subscription = Meteor.subscribe('pos.activeTransferMoney',
                 {
                     toBranchId: Session.get('currentBranch'),
@@ -30,6 +29,17 @@ indexTmpl.onCreated(function () {
                     text: "Fetching Data....", showConfirmButton: false
                 });
             } else {
+                transferMoneyTmpCollection.remove({});
+                TransferMoney.find({
+                    toBranchId: Session.get('currentBranch'),
+                    pending: transferState.get() == undefined ? true : transferState.get(),
+                    status: statusState.get() || 'active'
+                }, {sort: {_id: -1}})
+                    .forEach(function (transferMoney) {
+                        Meteor.call('transferMoneyLookup', {doc: transferMoney}, function (err, result) {
+                            transferMoneyTmpCollection.insert(result);
+                        });
+                    });
                 setTimeout(function () {
                     swal.close()
                 }, 200);
@@ -49,8 +59,7 @@ indexTmpl.onCreated(function () {
 
 indexTmpl.helpers({
     transferRequest(){
-        console.log(TransferMoney.find().fetch());
-        return TransferMoney.find({}, {_id: -1});
+        return transferMoneyTmpCollection.find({}, {_id: -1});
     },
     isNotEmpty(){
         let transferMoneys = TransferMoney.find({toBranchId: Session.get('currentBranch')});
@@ -166,7 +175,7 @@ indexTmpl.onDestroyed(function () {
     statusState.set('active');
     loadMore.set(0);
     sumLoadMore.set(10);
-    ringPullTmpCollection.remove({});
+    transferMoneyTmpCollection.remove({});
 });
 transferInfo.helpers({
     capitalize(name){

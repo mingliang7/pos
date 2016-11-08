@@ -225,7 +225,8 @@
 
                     <div class="row">
                         <div class="col-md-4" style="padding: 10px;">
-                            <strong>Vendor: </strong> {{customer}}<br>
+                            <strong>Vendor: </strong> {{_vendor.name}}<br>
+                            <strong>Staff: </strong> {{staff}}<br>
                             <span><strong>Bill Date: </strong>{{moFormat enterBillDate 'YYYY-MM-DD HH:mm:ss'}}</span>,
                             <span><strong>Due Date: </strong>{{moFormat dueDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>
                             <span><strong>Status: </strong>{{{colorizeStatus status}}}

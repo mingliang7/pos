@@ -31,7 +31,7 @@ tabularOpts.columns = [
     {data: "total", title: "Total"},
     {data: "des", title: "Description"},
     {data: "vendorId", title: "Vendor ID"},
-    {data: "staffId", title: "Staff ID"},
+    // {data: "staffId", title: "Staff ID"},
     {data: "stockLocationId", title: "Stock Location"},
     //{
     //    data: "_vendor",
@@ -41,5 +41,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'billType', 'prepaidId', 'paymentGroupId'];
+tabularOpts.extraFields = ['staffId','items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'billType', 'prepaidId', 'paymentGroupId'];
 export const LendingStockTabular = new Tabular.Table(tabularOpts);

@@ -46,7 +46,7 @@ tabularOpts.columns = [
             }
         }
     },
-    {data: "staffId", title: "Staff ID"},
+    // {data: "staffId", title: "Staff ID"},
     {data: "stockLocationId", title: "Stock Location"},
     //{
     //    data: "_vendor",
@@ -56,5 +56,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'type', 'prepaidOrderId', 'companyExchangeRingPullId','lendingStockId','exchangeGratisId'];
+tabularOpts.extraFields = ['staffId','items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'type', 'prepaidOrderId', 'companyExchangeRingPullId','lendingStockId','exchangeGratisId', '_vendor'];
 export const ReceiveItemTabular = new Tabular.Table(tabularOpts);

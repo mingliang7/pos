@@ -67,7 +67,9 @@ actionTmpl.events({
         alertify.transferMoney(fa('pencil', 'Edit Unit'), renderTemplate(editTmpl, data));
     },
     'click .js-display'(event, instance){
-        alertify.transferMoneyShow(fa('pencil', 'Display'), renderTemplate(showTmpl, this));
+        Meteor.call('transferMoneyLookup', {doc: this}, function (err, result) {
+            alertify.transferMoneyShow(fa('pencil', 'Display'), renderTemplate(showTmpl, result));
+        });
 
     },
     'click .js-destroy'(event, instance) {
