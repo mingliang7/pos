@@ -81,8 +81,8 @@ Tracker.autorun(function () {
     if (Session.get('currencyId') && Session.get('dobSelect')) {
         var currentCurrency = Session.get('currencyId');
         var dobSelect = Session.get('dobSelect');
-        var startYear = new Date(dobSelect).getFullYear();
-        var startDate = new Date('01/01/' + startYear);
+        var startYear = moment(dobSelect).year();
+        var startDate = moment('01/01/' + startYear).toDate();
         Meteor.call('getVoucherId', currentCurrency, startDate, function (err, result) {
             if (result != undefined) {
                 Session.set('lastVoucherId', parseInt((result.voucherId).substr(8, 13)) + 1);

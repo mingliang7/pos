@@ -44,7 +44,7 @@ indexTpl.onRendered(function () {
             Session.set('chart', result);
         });
     }
-    for (i = moment().toDate().getFullYear(); i > 1900; i--) {
+    for (i = moment().year(); i > 1900; i--) {
         $('#yearpicker').append($('<option />').val(i).html(i));
     }
     $("#radios").radiosToSlider();

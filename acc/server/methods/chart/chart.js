@@ -63,8 +63,8 @@ Meteor.methods({
 
         var currentDate = moment().toDate();
 
-        let curMonth = currentDate.getMonth();
-        let curYear = currentDate.getFullYear();
+        let curMonth = moment(currentDate).month();
+        let curYear = moment(currentDate).year();
 
         let month = curMonth + 1;
         let startDate = moment('01-' + month + '-' + curYear, "DD/MM/YYYY").toDate();
