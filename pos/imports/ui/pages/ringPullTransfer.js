@@ -100,15 +100,23 @@ indexTmpl.events({
         //         }
         //     });
         // }
-        excuteEditForm(this);
+        if (this.status == 'active') {
+            excuteEditForm(this);
+        } else {
+            alertify.warning('Transaction is: ' + this.status + ' can not be update.');
+        }
     },
     'click .js-destroy' (event, instance) {
         let data = this;
-        destroyAction(
-            RingPullTransfers,
-            {_id: data._id},
-            {title: TAPi18n.__('pos.ringPullTransfer.title'), itemTitle: data._id}
-        );
+        if (data.status == 'active') {
+            destroyAction(
+                RingPullTransfers,
+                {_id: data._id},
+                {title: TAPi18n.__('pos.ringPullTransfer.title'), itemTitle: data._id}
+            );
+        } else {
+            alertify.warning('Transaction is: ' + data.status + ' can not be remove.');
+        }
     },
     'click .js-display' (event, instance) {
         swal({
@@ -131,10 +139,10 @@ indexTmpl.events({
 //on rendered
 newTmpl.onCreated(function () {
     this.branch = new ReactiveVar();
-    Meteor.call('getBranch', Session.get('currentBranch'),(err,result)=> {
-        if(result) {
+    Meteor.call('getBranch', Session.get('currentBranch'), (err, result)=> {
+        if (result) {
             this.branch.set(result);
-        }else{
+        } else {
             console.log(err);
         }
 
@@ -161,7 +169,7 @@ newTmpl.events({
 newTmpl.helpers({
     fromBranchId(){
         let instance = Template.instance();
-        if(instance.branch.get()) {
+        if (instance.branch.get()) {
             return instance.branch.get().enShortName;
         }
         return '';

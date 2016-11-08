@@ -44,7 +44,7 @@ var Highcharts = require('highcharts/highstock');
 indexTpl.onRendered(function () {
     stateSelectorChart.set('currency', 'USD');
 
-    for (i = moment().toDate().getFullYear(); i > 1900; i--) {
+    for (i = moment().year(); i > 1900; i--) {
         $('#yearpicker').append($('<option />').val(i).html(i));
     }
     stateSelectorChart.set('yearSelect', $("#yearpicker").val());

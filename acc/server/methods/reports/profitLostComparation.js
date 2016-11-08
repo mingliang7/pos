@@ -33,10 +33,10 @@ Meteor.methods({
             var fDate = moment(date[0], 'DD/MM/YYYY').toDate();
             var tDate = moment(date[1], 'DD/MM/YYYY').add(1, 'days').toDate();
 
-            var startYear = fDate.getFullYear();
+            var startYear = moment(fDate).year();
             var startDate = moment('01-01-' + startYear, "DD/MM/YYYY").toDate();
 
-            let startMonth = (fDate.getMonth()) + 1;
+            let startMonth = (moment(fDate).month()) + 1;
             let endMonth = (moment(date[1], 'DD/MM/YYYY').toDate().getMonth()) + 1;
             let numMonth = endMonth - startMonth + 2;
 

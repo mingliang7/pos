@@ -24,8 +24,8 @@ FixAssetExpense.before.insert(function (userId, doc) {
         selectorList.isDep = false;
         selectorList.branchId = doc.branchId;
         var depList = DepExpList.find(selectorList).fetch();
-        var startYear = new Date(doc.date).getFullYear();
-        var startDate = new Date(startYear + '-' + '01-01');
+        var startYear = moment(doc.date).year();
+        var startDate = moment(startYear + '-' + '01-01').toDate();
         if (depList.length != 0) {
             doc.date = doc.date;
             doc.branchId = doc.branchId;

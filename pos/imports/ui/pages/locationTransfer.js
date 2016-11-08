@@ -76,15 +76,23 @@ indexTmpl.events({
         alertify.locationTransfer(fa('plus', TAPi18n.__('pos.locationTransfer.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        alertify.locationTransfer(fa('pencil', TAPi18n.__('pos.locationTransfer.title')), renderTemplate(editTmpl, this));
+        if(this.status=='active'){
+            alertify.locationTransfer(fa('pencil', TAPi18n.__('pos.locationTransfer.title')), renderTemplate(editTmpl, this));
+        }else{
+            alertify.warning('Transaction is: '+this.status+' can not be update.');
+        }
     },
     'click .js-destroy' (event, instance) {
         let data = this;
-        destroyAction(
-            LocationTransfers,
-            {_id: data._id},
-            {title: TAPi18n.__('pos.locationTransfer.title'), itemTitle: data._id}
-        );
+        if(data.status=='active') {
+            destroyAction(
+                LocationTransfers,
+                {_id: data._id},
+                {title: TAPi18n.__('pos.locationTransfer.title'), itemTitle: data._id}
+            );
+        }else{
+            alertify.warning('Transaction is: '+data.status+' can not be remove.');
+        }
     },
     'click .js-display' (event, instance) {
         Meteor.call('pos.locationTransferInfo', {_id: this._id}, function (err, result) {
