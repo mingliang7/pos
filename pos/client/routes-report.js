@@ -439,3 +439,17 @@ PosRoutes.route('/report/unpaidInvoiceOverdue', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/reports/unpaidGroupInvoiceOverdue';
+PosRoutes.route('/report/unpaidGroupInvoiceOverdue', {
+    name: 'pos.unpaidGroupInvoiceOverdue',
+    title: 'Unpaid Group Invoice Overdue',
+    action: function (params, queryParams) {
+        Layout.main('Pos_unpaidGroupInvoiceOverdue');
+    },
+    breadcrumb: {
+        title: 'Unpaid Group Invoice Overdue',
+        icon: '',
+        parent: 'pos.home'
+    }
+});

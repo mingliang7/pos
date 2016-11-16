@@ -45,6 +45,9 @@ Template.Pos_sidebarMenu.helpers({
     unpaidInvoiceOverdue(){
       return `/pos/report/unpaidInvoiceOverdue?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`
     },
+    unpaidGroupInvoiceOverdue(){
+      return `/pos/report/unpaidGroupInvoiceOverdue?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`
+    },
     // Vendor
     bill() {
         return `/pos/report/billReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
