@@ -85,6 +85,9 @@ Invoices.after.insert(function (userId, doc) {
             //End Account Integration
 
         }
+        else if(doc.invoiceType == 'group') {
+            Meteor.call('pos.generateInvoiceGroup', {doc});
+        }
         else {
             accountRefType = 'Invoice';
             invoiceManageStock(doc);
@@ -169,9 +172,6 @@ Invoices.after.insert(function (userId, doc) {
             }
             //End Account Integration
             doc.total = doc.total + totalInventory;
-        }
-        if (doc.invoiceType == 'group') {
-            Meteor.call('pos.generateInvoiceGroup', {doc});
         }
         //Account Integration
         if (setting && setting.integrate) {
