@@ -22,7 +22,9 @@
     padding: 2px;
     text-align: center;
 }
-
+.table > thead > tr > th {
+    border-bottom: 1px solid #000000;
+}
 @media print {
     .report-body-shadow {
         box-shadow: none;
