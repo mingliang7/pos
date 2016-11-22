@@ -1,0 +1,192 @@
+<template name="Pos_sale">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="container-fluid" style="background: #fff;">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <div class="icon-addon addon-lg">
+                                <input type="text" placeholder="Barcode" class="form-control barcode" autofocus="true">
+                                <label for="email" class="glyphicon glyphicon-barcode" rel="tooltip"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="form-group">
+                            <div class="icon-addon addon-lg">
+                                <input type="text" placeholder="Search here!" class="form-control search">
+                                <label for="email" class="glyphicon glyphicon-search" rel="tooltip"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div id="mart">
+                <!-- Responsive table starts here -->
+                <!-- For correct display on small screens you must add 'data-title' to each 'td' in your table -->
+                <div class="table-responsive-vertical shadow-z-1">
+                    <!-- Table starts here -->
+                    <table id="table" class="table table-hover table-mc-light-blue">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Amount</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td data-title="ID">001</td>
+                            <td data-title="Name">Material Design Color Palette</td>
+                            <td data-title="Link">
+                                $99.00
+                            </td>
+                            <td data-title="Status">100</td>
+                            <td data-title="Status">$9,999.00</td>
+                            <td><a class="btn btn-sm btn-warning remove cursor-pointer"><i
+                                    class="fa fa-trash-o"></i></a></td>
+                        </tr>
+                        <tr>
+                            <td data-title="ID">001</td>
+                            <td data-title="Name">Material Design Color Palette</td>
+                            <td data-title="Link">
+                                $99.00
+                            </td>
+                            <td data-title="Status">100</td>
+                            <td data-title="Status">$9,999.00</td>
+                            <td><a class="btn btn-sm btn-warning remove cursor-pointer"><i
+                                    class="fa fa-trash-o"></i></a></td>
+                        </tr>
+                        <tr>
+                            <td data-title="ID">001</td>
+                            <td data-title="Name">Material Design Color Palette</td>
+                            <td data-title="Link">
+                                $99.00
+                            </td>
+                            <td data-title="Status">100</td>
+                            <td data-title="Status">$9,999.00</td>
+                            <td><a class="btn btn-sm btn-warning remove cursor-pointer"><i
+                                    class="fa fa-trash-o"></i></a></td>
+                        </tr>
+                        <tr>
+                            <td data-title="ID">001</td>
+                            <td data-title="Name">Material Design Color Palette</td>
+                            <td data-title="Link">
+                                $99.00
+                            </td>
+                            <td data-title="Status">100</td>
+                            <td data-title="Status">$9,999.00</td>
+                            <td><a class="btn btn-sm btn-warning remove cursor-pointer"><i
+                                    class="fa fa-trash-o"></i></a></td>
+                        </tr>
+                        <tr>
+                            <td data-title="ID">001</td>
+                            <td data-title="Name">Material Design Color Palette</td>
+                            <td data-title="Link">
+                                $99.00
+                            </td>
+                            <td data-title="Status">100</td>
+                            <td data-title="Status">$9,999.00</td>
+                            <td><a class="btn btn-sm btn-warning remove cursor-pointer"><i
+                                    class="fa fa-trash-o"></i></a></td>
+                        </tr>
+                        <tr>
+                            <td data-title="ID">001</td>
+                            <td data-title="Name">Material Design Color Palette</td>
+                            <td data-title="Link">
+                                $99.00
+                            </td>
+                            <td data-title="Status">100</td>
+                            <td data-title="Status">$9,999.00</td>
+                            <td><a class="btn btn-sm btn-warning remove cursor-pointer"><i
+                                    class="fa fa-trash-o"></i></a></td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-7"></div>
+        <div class="col-md-5">
+            <div class="table-responsive-vertical shadow-z-1 ">
+                <!-- Table starts here -->
+                <table id="table" class="table table-hover table-mc-light-blue">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>
+                        </th>
+                        <th class="">
+                            <strong>
+                                <h4 class="text-aqua"><a class="discount cursor-pointer"><i class="fa fa-pencil"></i>
+                                    Discounts:</a></h4>
+                            </strong>
+                            <strong>
+                                <h4 class="text-black"><a class="subTotal"><i class="fa fa-usd"></i>
+                                    Sub Total:</a></h4>
+                            </strong>
+                            <strong><h4 class="text-green"><i class="fa fa-usd"> </i>Total:</h4></strong>
+                        </th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>
+                            <strong>
+                                <h4 class="text-aqua">0%</h4>
+                            </strong>
+                            <strong>
+                                <h4 class="text-black"><a>$99.00</a></h4>
+                            </strong>
+                            <h4 class="text-green">$99.00</h4>
+                        </th>
+                        <th></th>
+                        <th>
+
+                        </th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer class="my-navbar-footer">
+        <div class="container">
+            <p class="text-muted credit">
+            <div class="btn-group dropup">
+                <button type="button" class="btn btn-lg btn-warning dropdown-toggle" data-toggle="dropdown">
+                    Suspend <span class="caret caret-up"></span>
+                </button>
+                <ul class="dropdown-menu drop-up" role="menu">
+                    <li><a href="#">Action</a></li>
+                    <li><a href="#">Another action</a></li>
+                    <li><a href="#">Something else here</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Separated link</a></li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-lg btn-primary">
+                    Check out <span><i class="fa fa-credit-card"></i></span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-lg btn-info">
+                    Save <span><i class="fa fa-download"></i></span>
+                </button>
+            </div>
+            </p>
+        </div>
+    </footer>
+</template>

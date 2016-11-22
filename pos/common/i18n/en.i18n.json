@@ -1,6 +1,7 @@
 {
   "pos": {
     "sidebarMenu": {
+      "sale": "Sale",
       "home": "Home",
       "item": "Item",
       "customer": "Customer",

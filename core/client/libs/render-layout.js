@@ -30,5 +30,8 @@ export const Layout = {
     },
     customReportLayout(regions){
         _renderLayout('CustomReportLayout', regions);
+    },
+    martLayout(regions){
+        _renderLayout('MartLayout', regions);
     }
 };

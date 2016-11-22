@@ -47,3 +47,51 @@
 
     {{/AdminLTE}}
 </template>
+
+<template name="MartLayout">
+    {{#AdminLTE skin="skin-blue" sidebarMini=false}}
+
+        <!-- Site wrapper -->
+        <div class="wrapper">
+
+            <!-- Header -->
+            {{> _HeaderLayout}}
+
+            <!-- =============================================== -->
+
+            <!-- Left side column. contains the sidebar -->
+            {{> _SidebarLayout}}
+
+            <!-- =============================================== -->
+
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+
+                <!-- Content Header (Page header) -->
+                {{> _ContentHeaderLayout}}
+
+                <!-- Main content -->
+                <section class="content" style="background: #fff;">
+                    <!--<div class="box box-default color-palette-box">-->
+
+                        {{> Template.dynamic template=content}}
+
+                        <!-- Alert -->
+                        {{> sAlert}}
+
+                        <!-- Connection Status -->
+                        {{> meteorStatus}}
+
+                    <!--</div>-->
+                </section><!-- /.content -->
+
+            </div><!-- /.content-wrapper -->
+
+            <!-- Footer -->
+            <!--{{> _FooterLayout}}-->
+
+        </div>
+        <!-- ./wrapper -->
+
+    {{/AdminLTE}}
+</template>

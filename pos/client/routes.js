@@ -667,3 +667,13 @@ PosRoutes.route('/transferMoneyRequest', {
     }
 
 });
+
+import '../imports/ui/pages/sale/sale';
+PosRoutes.route('/sale', {
+    name: 'pos.sale',
+    title: 'Sale',
+    action: function (params, queryParams) {
+        Layout.martLayout('Pos_sale');
+    }
+
+});
