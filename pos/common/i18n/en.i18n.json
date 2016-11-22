@@ -17,7 +17,8 @@
       "lendingStock": "Lending Stock",
       "exchangeRingPull": "Exchange Ring Pull",
       "ringPullTransfer": "Ring Pull Transfer",
-      "itemPriceForCustomer": "Special Price For Customer"
+      "itemPriceForCustomer": "Special Price For Customer",
+      "unpaidInvoiceOverdue": "Unpaid Invoice Overdue"
     },
     "home": {
       "title": "Home",

@@ -16,7 +16,8 @@
       "enterBill": "សរសេរវិក្កយបត្រ",
       "exchangeRingPull": "ប្តូរក្រវិលកំប៉ុង",
       "ringPullTransfer": "ផ្ទេរក្រវិលកំប៉ុង",
-      "itemPriceForCustomer": "តម្លៃពិសេសសម្រាប់អតិថិជន"
+      "itemPriceForCustomer": "តម្លៃពិសេសសម្រាប់អតិថិជន",
+      "unpaidInvoiceOverdue": "វិក្កយបត្រមិនទាន់បង់លើសថ្ងៃ"
     },
     "home": {
       "title": "ទំព័រដើម",

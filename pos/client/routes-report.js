@@ -413,3 +413,43 @@ PosRoutes.route('/report/transferMoneyReport', {
         parent: 'pos.mainReport'
     }
 });
+import '../imports/ui/reports/unpaidInvoiceOverdue';
+PosRoutes.route('/report/unpaidInvoiceOverdue', {
+    name: 'pos.unpaidInvoiceOverdue',
+    title: 'Unpaid Invoice Overdue',
+    action: function (params, queryParams) {
+        Layout.main('Pos_unpaidInvoiceOverdue');
+    },
+    breadcrumb: {
+        title: 'Unpaid Invoice Overdue',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
+import '../imports/ui/reports/unpaidInvoiceOverdue';
+PosRoutes.route('/report/unpaidInvoiceOverdue', {
+    name: 'pos.unpaidInvoiceOverdue',
+    title: 'Unpaid Invoice Overdue',
+    action: function (params, queryParams) {
+        Layout.main('Pos_unpaidInvoiceOverdue');
+    },
+    breadcrumb: {
+        title: 'Unpaid Invoice Overdue',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
+
+import '../imports/ui/reports/unpaidGroupInvoiceOverdue';
+PosRoutes.route('/report/unpaidGroupInvoiceOverdue', {
+    name: 'pos.unpaidGroupInvoiceOverdue',
+    title: 'Unpaid Group Invoice Overdue',
+    action: function (params, queryParams) {
+        Layout.main('Pos_unpaidGroupInvoiceOverdue');
+    },
+    breadcrumb: {
+        title: 'Unpaid Group Invoice Overdue',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
