@@ -17,6 +17,8 @@ let invoiceData = new ReactiveVar();
 //declare template
 let indexTmpl = Template.Pos_invoiceByItemReport,
     invoiceDataTmpl = Template.invoiceByItemReportData;
+let showItemsSummary = new ReactiveVar(true);
+let showInvoicesSummary = new ReactiveVar(true);
 Tracker.autorun(function () {
     if (paramsState.get()) {
         swal({
@@ -37,6 +39,7 @@ Tracker.autorun(function () {
 });
 
 indexTmpl.onCreated(function () {
+
     createNewAlertify('invoiceReport');
     paramsState.set(FlowRouter.query.params());
 });
@@ -48,9 +51,29 @@ indexTmpl.helpers({
 indexTmpl.events({
     'click .print'(event, instance){
         $('#to-print').printThis();
+    },
+    'change .show-items-summary'(event, instance){
+        if ($(event.currentTarget).prop('checked')) {
+            showItemsSummary.set(true);
+        } else {
+            showItemsSummary.set(false);
+        }
+    },
+    'change .show-invoices-summary'(event, instance){
+        if ($(event.currentTarget).prop('checked')) {
+            showInvoicesSummary.set(true);
+        } else {
+            showInvoicesSummary.set(false);
+        }
     }
 });
 invoiceDataTmpl.helpers({
+    showItemsSummary(){
+        return showItemsSummary.get();
+    },
+    showInvoicesSummary(){
+        return showInvoicesSummary.get();
+    },
     company(){
         let doc = Session.get('currentUserStockAndAccountMappingDoc');
         return doc.company;
@@ -64,36 +87,37 @@ invoiceDataTmpl.helpers({
     display(col){
         let data = '';
         this.displayFields.forEach(function (obj) {
-            if (obj.field == 'invoiceDate') {
+            if (obj.field == 'date') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
-            } else if (obj.field == 'total') {
+            } else if (obj.field == 'total' || obj.field == 'amount') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
             else {
-                data += `<td>${col[obj.field]}</td>`;
+                data += `<td>${col[obj.field] || ''}</td>`;
             }
         });
 
         return data;
     },
-    getTotal(total, customerName){
+    getTotal(total){
         let string = '';
         let fieldLength = this.displayFields.length - 2;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td><u>${numeral(total).format('0,0.00')}</u></td>`;
+        string += `<td><u>Total:</u></td><td><u>${numeral(total).format('0,0.00')}</u></td>`;
         return string;
     },
-    getTotalFooter(total, totalKhr, totalThb){
+    getTotalFooter(totalQty,total, n){
+        let qty = totalQty ? totalQty : '';
         let string = '';
-        let fieldLength = this.displayFields.length - 4;
+        let fieldLength = this.displayFields.length - n;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalKhr).format('0,0')}<small>៛</small></b></td><td><b>${numeral(totalThb).format('0,0')}B</b></td><td><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td><h5><b>Total:</b></h5> </td><td><h5><b>${qty}</b></h5></td><td></td><td><h5><b>${numeral(total).format('0,0.00')}$</b></h5></td>`;
         return string;
     },
     capitalize(customerName){

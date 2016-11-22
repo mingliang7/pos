@@ -48,8 +48,8 @@ export const invoiceByItemReport = new ValidatedMethod({
             if (params.customer && params.customer != '') {
                 selector.customerId = params.customer;
             }
-            data.fields = [{field: 'ITEM'}, {field: 'QTY'}, {field: 'PRICE'}, {field: 'AMOUNT'}];
-            data.displayFields = [{field: 'itemName'}, {field: 'qty'}, {field: 'price'}, {field: 'amount'}];
+            data.fields = [{field: 'Date'}, {field: 'INVN'}, {field: 'Name'}, {field: 'Addr'}, {field: 'Tel'}, {field: 'Item'}, {field: 'Qty'}, {field: 'Price'}, {field: 'Amount'}];
+            data.displayFields = [{field: 'date'}, {field: 'invoiceId'}, {field: 'customer'}, {field: 'address'}, {field: 'tel'}, {field: 'itemName'}, {field: 'qty'}, {field: 'price'}, {field: 'amount'}];
 
             // project['$invoice'] = 'Invoice';
             /****** Title *****/
@@ -85,6 +85,8 @@ export const invoiceByItemReport = new ValidatedMethod({
                 {
                     $group: {
                         _id: '$customerId',
+                        invoiceId: {$last: '$_id'},
+                        date: {$last: '$invoiceDate'},
                         data: {
                             $addToSet: '$$ROOT'
                         },
@@ -111,7 +113,9 @@ export const invoiceByItemReport = new ValidatedMethod({
                             customerId: '$data.customerId',
                             itemId: '$data.items.itemId'
                         },
-                        customerId: {$addToSet: '$data.customerId'},
+                        invoiceId: {$last: '$invoiceId'},
+                        date: {$last: '$date'},
+                        customerId: {$last: '$data.customerId'},
                         itemId: {$addToSet: '$data.items.itemId'},
                         itemName: {$addToSet: '$data.itemDoc.name'},
                         qty: {$sum: '$data.items.qty'},
@@ -122,44 +126,50 @@ export const invoiceByItemReport = new ValidatedMethod({
                         totalKhr: {$addToSet: '$totalKhr'}
                     }
                 },
-                {$unwind: {path: '$customerId', preserveNullAndEmptyArrays: true}},
                 {$unwind: {path: '$itemId', preserveNullAndEmptyArrays: true}},
                 {$unwind: {path: '$itemName', preserveNullAndEmptyArrays: true}},
                 {$unwind: {path: '$total', preserveNullAndEmptyArrays: true}},
                 {$unwind: {path: '$totalThb', preserveNullAndEmptyArrays: true}},
                 {$unwind: {path: '$totalKhr', preserveNullAndEmptyArrays: true}},
                 {
-                    $group: {
-                        _id: '$customerId',
-                        items: {
-                            $addToSet: {
-                                itemName: '$itemName',
-                                qty: '$qty',
-                                price: '$price',
-                                amount: '$amount'
-                            }
-                        },
-                        total: {$addToSet: {totalUsd: '$total', totalThb: '$totalThb', totalKhr: '$totalKhr'}}
-                    }
-                },
-                {
                     $lookup: {
                         from: "pos_customers",
-                        localField: "_id",
+                        localField: "customerId",
                         foreignField: "_id",
                         as: "customerDoc"
                     }
                 }, {
                     $unwind: {path: '$customerDoc', preserveNullAndEmptyArrays: true}
                 },
-                {$unwind: {path: '$total', preserveNullAndEmptyArrays: true}},
                 {$sort: {'customerDoc.name': 1}},
+                {
+                    $group: {
+                        _id: '$customerId',
+                        items: {
+                            $addToSet: {
+                                invoiceId: '$invoiceId',
+                                date: '$date',
+                                customer: '$customerDoc.name',
+                                tel: '$customerDoc.telephone',
+                                address: '$customerDoc.address',
+                                itemName: '$itemName',
+                                qty: '$qty',
+                                price: '$price',
+                                amount: '$amount'
+                            }
+                        },
+                        totalQty: {$sum: '$qty'},
+                        total: {$addToSet: {totalUsd: '$total', totalThb: '$totalThb', totalKhr: '$totalKhr'}}
+                    }
+                },
+                {$unwind: {path: '$total', preserveNullAndEmptyArrays: true}},
                 {
                     $group: {
                         _id: null,
                         data: {
                             $addToSet: '$$ROOT'
                         },
+                        totalQty: {$sum: '$totalQty'},
                         total: {$sum: '$total.totalUsd'},
                         totalKhr: {$sum: '$total.totalKhr'},
                         totalThb: {$sum: '$total.totalThb'}
@@ -201,6 +211,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                 data.content = invoices[0].data;
                 data.footer = {
                     itemsSummary: invoiceItemSummary,
+                    totalQty: invoices[0].totalQty,
                     total: invoices[0].total,
                     totalKhr: invoices[0].totalKhr,
                     totalThb: invoices[0].totalThb
