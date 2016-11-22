@@ -110,7 +110,7 @@ indexTmpl.events({
         //     });
         // }
         let data = this;
-        Meteor.call('isInvoiceHasRelation', data.id, function (error, result) {
+        Meteor.call('isInvoiceHasRelation', data._id, function (error, result) {
             if (error) {
                 alertify.error(error.message);
             } else {
@@ -127,7 +127,7 @@ indexTmpl.events({
     },
     'click .js-destroy'(event, instance) {
         let data = this;
-        Meteor.call('isInvoiceHasRelation', data.id, function (error, result) {
+        Meteor.call('isInvoiceHasRelation', data._id, function (error, result) {
             if (error) {
                 alertify.error(error.message);
             } else {

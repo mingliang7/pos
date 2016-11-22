@@ -1,6 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 import {billState} from '../../../common/globalState/enterBill';
 import {PayBills} from '../../../imports/api/collections/payBill.js'
+import {GroupBill} from '../../../imports/api/collections/groupBill.js'
 Meteor.methods({
     getBillId(tmpId){
         Meteor._sleepForMs(1000);
@@ -10,6 +11,7 @@ Meteor.methods({
     },
     isBillHasRelation: function (id) {
         let receivePayment = PayBills.findOne({billId: id});
-        return !!receivePayment;
+        let groupBill=GroupBill.findOne({'invoices._id': id});
+        return !!(receivePayment || groupBill);
     }
 });
