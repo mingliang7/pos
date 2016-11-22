@@ -115,7 +115,16 @@ indexTmpl.events({
                 alertify.error(error.message);
             } else {
                 if (result) {
-                    alertify.warning("Data has been used. Can't Update.");
+                    let msg = '';
+                    if(data.invoiceType == 'group') {
+                        msg = `Please Check Group #${data.paymentGroupId}`;
+                    }
+                    swal(
+                        'Cancelled',
+                        `Data has been used. Can't remove. ${msg}`,
+                        'error'
+                    );
+
                 } else {
                     excuteEditForm(data);
                 }
@@ -132,7 +141,16 @@ indexTmpl.events({
                 alertify.error(error.message);
             } else {
                 if (result) {
-                    alertify.warning("Data has been used. Can't remove.");
+                    let msg = '';
+                    if(data.invoiceType == 'group') {
+                        msg = `Please Check Group #${data.paymentGroupId}`;
+                    }
+                    swal(
+                        'Cancelled',
+                        `Data has been used. Can't remove. ${msg}`,
+                        'error'
+                    );
+
                 } else {
                     destroyAction(
                         Invoices,

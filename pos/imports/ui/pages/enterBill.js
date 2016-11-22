@@ -94,7 +94,16 @@ indexTmpl.events({
                 alertify.error(error.message);
             } else {
                 if (result) {
-                    alertify.warning("Data has been used. Can't update.");
+                    let msg = '';
+                    if (data.billType == 'group') {
+                        msg = `Please Check Group #${data.paymentGroupId}`;
+                    }
+                    swal(
+                        'Cancelled',
+                        `Data has been used. Can't remove. ${msg}`,
+                        'error'
+                    );
+
                 } else {
                     alertify.enterBill(fa('pencil', TAPi18n.__('pos.enterBill.title')), renderTemplate(editTmpl, data));
                 }
@@ -109,7 +118,16 @@ indexTmpl.events({
                 alertify.error(error.message);
             } else {
                 if (result) {
-                    alertify.warning("Data has been used. Can't remove.");
+                    let msg = '';
+                    if (data.billType == 'group') {
+                        msg = `Please Check Group #${data.paymentGroupId}`;
+                    }
+                    swal(
+                        'Cancelled',
+                        `Data has been used. Can't remove. ${msg}`,
+                        'error'
+                    );
+
                 } else {
                     destroyAction(
                         EnterBills,

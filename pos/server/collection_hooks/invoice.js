@@ -573,7 +573,7 @@ Invoices.after.remove(function (userId, doc) {
             });
             removeInvoiceFromGroup(doc);
             let groupInvoice = GroupInvoice.findOne(doc.paymentGroupId);
-            if (groupInvoice.invoices.length <= 0) {
+            if (groupInvoice && groupInvoice.invoices.length <= 0) {
                 GroupInvoice.direct.remove(doc.paymentGroupId)
             } else {
                 recalculatePaymentAfterRemoved({doc})

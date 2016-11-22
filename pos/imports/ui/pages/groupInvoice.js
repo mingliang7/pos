@@ -66,18 +66,27 @@ indexTmpl.events({
     },
     'click .js-destroy' (event, instance) {
         let doc = this;
-        swal({
-            title: "Are you sure?",
-            text: `ធ្វើការលុបវិក័យប័ត្រលេខ  ${this._id}`,
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes, delete it!",
-            closeOnConfirm: false
-        }).then(function () {
-            Meteor.call('removeGroupInvoice', {doc});
-            swal("Deleted!", `វិក័យប័ត្របង់ប្រាក់លេខ ${doc._id} បានលុបដោយជោគជ័យ`, "success");
-        });
+        if(doc.status == 'active') {
+            swal({
+                title: "Are you sure?",
+                text: `ធ្វើការលុបវិក័យប័ត្រលេខ  ${this._id}`,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            }).then(function () {
+                Meteor.call('removeGroupInvoice', {doc});
+                swal("Deleted!", `វិក័យប័ត្របង់ប្រាក់លេខ ${doc._id} បានលុបដោយជោគជ័យ`, "success");
+            });
+        }else{
+            swal(
+                'Cancelled',
+                `Data has been used. Can't remove.`,
+                'error'
+            );
+        }
+
     },
     'click .js-display' (event, instance) {
         alertify.groupInvoiceList(fa('eye', ''), renderTemplate(showTmpl, this));

@@ -167,7 +167,7 @@ EnterBills.after.remove(function (userId, doc) {
             });
             removeBillFromGroup(doc);
             let groupBill = GroupBill.findOne(doc.paymentGroupId);
-            if (groupBill.invoices.length <= 0) {
+            if (groupBill && groupBill.invoices.length <= 0) {
                 GroupBill.direct.remove(doc.paymentGroupId);
             } else {
                 recalculatePaymentAfterRemoved({doc});

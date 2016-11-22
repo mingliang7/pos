@@ -7,8 +7,8 @@ Meteor.methods({
         if (doc.status == 'partial' || doc.status == 'closed') {
             PayBills.remove({billId: doc._id});
         }
-        EnterBills.direct.remove({paymentGroupId: doc._id});
         GroupBill.remove(doc._id);
+        EnterBills.remove({paymentGroupId: doc._id});
         doc.status = 'removed';
         doc.removeDate = new Date();
         doc._id = `${doc._id}R${moment().format('YYYY-MMM-DD-HH:mm')}`;

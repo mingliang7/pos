@@ -11,7 +11,7 @@ Meteor.methods({
     },
     isBillHasRelation: function (id) {
         let receivePayment = PayBills.findOne({billId: id});
-        let groupBill=GroupBill.findOne({'invoices._id': id});
+        let groupBill=GroupBill.findOne({'invoices._id': id, status: {$ne: 'active'}});
         return !!(receivePayment || groupBill);
     }
 });

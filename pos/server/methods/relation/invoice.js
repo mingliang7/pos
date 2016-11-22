@@ -17,7 +17,7 @@ Meteor.methods({
         Customers.direct.update(id, {$unset: {paymentGroupId: '', _paymentGroup: ''}});
     },
     isInvoiceHasRelation: function (id) {
-        let groupInvoice = GroupInvoice.findOne({'invoices._id': id});
+        let groupInvoice = GroupInvoice.findOne({'invoices._id': id, status: {$ne: 'active'}});
         let receivePayment = ReceivePayment.findOne({invoiceId: id});
         return !!(receivePayment || groupInvoice);
     }

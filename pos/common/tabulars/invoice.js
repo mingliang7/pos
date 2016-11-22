@@ -1,26 +1,26 @@
-import { Meteor } from 'meteor/meteor';
-import { Templet } from 'meteor/templating';
-import { Tabular } from 'meteor/aldeed:tabular';
-import { EJSON } from 'meteor/ejson';
-import { moment } from 'meteor/momentjs:moment';
-import { _ } from 'meteor/erasaur:meteor-lodash';
-import { numeral } from 'meteor/numeral:numeral';
-import { lightbox } from 'meteor/theara:lightbox-helpers';
+import {Meteor} from 'meteor/meteor';
+import {Templet} from 'meteor/templating';
+import {Tabular} from 'meteor/aldeed:tabular';
+import {EJSON} from 'meteor/ejson';
+import {moment} from 'meteor/momentjs:moment';
+import {_} from 'meteor/erasaur:meteor-lodash';
+import {numeral} from 'meteor/numeral:numeral';
+import {lightbox} from 'meteor/theara:lightbox-helpers';
 
 // Lib
-import { tabularOpts } from '../../../core/common/libs/tabular-opts.js';
+import {tabularOpts} from '../../../core/common/libs/tabular-opts.js';
 
 // Collection
-import { Invoices } from '../../imports/api/collections/invoice.js';
-import { customerInvoiceCollection } from '../../imports/api/collections/tmpCollection';
+import {Invoices} from '../../imports/api/collections/invoice.js';
+import {customerInvoiceCollection} from '../../imports/api/collections/tmpCollection';
 // Page
 Meteor.isClient && require('../../imports/ui/pages/invoice.html');
 
 tabularOpts.name = 'pos.invoice';
 tabularOpts.collection = Invoices;
 tabularOpts.columns = [
-    { title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_invoiceAction },
-    { data: "_id", title: "ID" },
+    {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_invoiceAction},
+    {data: "_id", title: "ID"},
     {
         data: "invoiceDate",
         title: "Date",
@@ -35,7 +35,7 @@ tabularOpts.columns = [
             return numeral(val).format('0,0.00');
         }
     },
-    { data: "des", title: "Description" },
+    {data: "des", title: "Description"},
     {
         data: "_customer.name",
         title: "Customer"
@@ -44,8 +44,16 @@ tabularOpts.columns = [
     //     data: "_staff.username",
     //     title: "Staff"
     // },
-    { data: "invoiceType", title: "Type" },
-    { data: "status", title: "Status" },
+    {
+        data: "invoiceType", title: "Type",
+        render: function (val) {
+            if (val == 'group') {
+                return `<span class="label label-warning">Group</span>`
+            }
+            return `<span class="label label-primary">Term</span>`
+        }
+    },
+    {data: "status", title: "Status"},
     //{
     //    data: "_customer",
     //    title: "Customer Info",
