@@ -109,16 +109,41 @@ indexTmpl.events({
         //         }
         //     });
         // }
-        excuteEditForm(this);
+        let data = this;
+        Meteor.call('isInvoiceHasRelation', data.id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    alertify.warning("Data has been used. Can't Update.");
+                } else {
+                    excuteEditForm(data);
+                }
+            }
+
+
+        });
+
     },
     'click .js-destroy'(event, instance) {
         let data = this;
-        destroyAction(
-            Invoices,
-            { _id: data._id },
-            { title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id }
-        );
+        Meteor.call('isInvoiceHasRelation', data.id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    alertify.warning("Data has been used. Can't remove.");
+                } else {
+                    destroyAction(
+                        Invoices,
+                        {_id: data._id},
+                        {title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id}
+                    );
+                }
+            }
 
+
+        });
     },
     'click .js-display'(event, instance) {
         swal({

@@ -1,5 +1,6 @@
 import {invoiceState} from '../../../common/globalState/invoice';
 import {Customers} from '../../../imports/api/collections/customer';
+import {ReceivePayment} from '../../../imports/api/collections/receivePayment.js';
 Meteor.methods({
     getInvoiceId(tmpId){
         Meteor._sleepForMs(1000);
@@ -13,5 +14,10 @@ Meteor.methods({
     },
     unsetGroup(id){
         Customers.direct.update(id, {$unset: {paymentGroupId: '', _paymentGroup: ''}});
+    },
+    isInvoiceHasRelation: function (id) {
+        let receivePayment = ReceivePayment.findOne({invoiceId: id});
+        return !!receivePayment;
+
     }
 });
