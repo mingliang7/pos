@@ -258,7 +258,7 @@ ReceiveItems.after.remove(function (userId, doc) {
             type = 'ExchangeGratis-RI';
             increaseExchangeGratis(doc);
         } else if (doc.type == 'CompanyExchangeRingPull') {
-            type = 'CompanyExchangeRingPull-RI';
+            type = 'RingPull-RI';
             increaseCompanyExchangeRingPull(doc);
 
         } else {
