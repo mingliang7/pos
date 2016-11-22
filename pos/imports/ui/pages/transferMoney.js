@@ -64,7 +64,11 @@ editTmpl.helpers({
 actionTmpl.events({
     'click .js-update'(event, instance){
         let data = this;
-        alertify.transferMoney(fa('pencil', 'Edit Unit'), renderTemplate(editTmpl, data));
+        if (data.status == 'active') {
+            alertify.transferMoney(fa('pencil', 'Edit Unit'), renderTemplate(editTmpl, data));
+        }else{
+            alertify.warning('Transaction is: ' + data.status + ' can not be update.');
+        }
     },
     'click .js-display'(event, instance){
         Meteor.call('transferMoneyLookup', {doc: this}, function (err, result) {
@@ -73,11 +77,17 @@ actionTmpl.events({
 
     },
     'click .js-destroy'(event, instance) {
-        destroyAction(
-            TransferMoney,
-            {_id: this._id},
-            {title: 'Remove Unit', itemTitle: this._id}
-        );
+        let data = this;
+        if (data.status == 'active') {
+            destroyAction(
+                TransferMoney,
+                {_id: this._id},
+                {title: 'Remove Unit', itemTitle: this._id}
+            );
+        }else{
+            alertify.warning('Transaction is: '+data.status+' can not be remove.');
+        }
+
     }
 });
 //show tmpl

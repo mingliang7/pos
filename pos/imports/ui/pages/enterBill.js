@@ -88,15 +88,37 @@ indexTmpl.events({
         alertify.enterBill(fa('plus', TAPi18n.__('pos.enterBill.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        alertify.enterBill(fa('pencil', TAPi18n.__('pos.enterBill.title')), renderTemplate(editTmpl, this));
+        let data = this;
+        Meteor.call('isBillHasRelation', data.id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    alertify.warning("Data has been used. Can't update.");
+                } else {
+                    alertify.enterBill(fa('pencil', TAPi18n.__('pos.enterBill.title')), renderTemplate(editTmpl, data));
+                }
+            }
+        });
+
     },
     'click .js-destroy' (event, instance) {
         let data = this;
-        destroyAction(
-            EnterBills,
-            {_id: data._id},
-            {title: TAPi18n.__('pos.enterBill.title'), itemTitle: data._id}
-        );
+        Meteor.call('isBillHasRelation', data.id, function (error, result) {
+            if (error) {
+                alertify.error(error.message);
+            } else {
+                if (result) {
+                    alertify.warning("Data has been used. Can't remove.");
+                } else {
+                    destroyAction(
+                        EnterBills,
+                        {_id: data._id},
+                        {title: TAPi18n.__('pos.enterBill.title'), itemTitle: data._id}
+                    );
+                }
+            }
+        });
     },
     'click .js-display' (event, instance) {
         swal({
@@ -467,7 +489,7 @@ let hooksObject = {
                 delete obj._id;
                 items.push(obj);
             });
-            doc.status='active';
+            doc.status = 'active';
             doc.items = items;
             return doc;
         },
