@@ -17,6 +17,8 @@ let invoiceData = new ReactiveVar();
 //declare template
 let indexTmpl = Template.Pos_billByItemReport,
     invoiceDataTmpl = Template.billByItemReportData;
+let showItemsSummary = new ReactiveVar(true);
+let showInvoicesSummary = new ReactiveVar(true);
 Tracker.autorun(function () {
     if (paramsState.get()) {
         swal({
@@ -56,11 +58,32 @@ indexTmpl.events({
     'click .print'(event, instance){
         $('#to-print').printThis();
     },
-    'change [name="type"]'(event,instance){
+    'change [name="type"]'(event, instance){
         Session.set('vendorFilter', event.currentTarget.value);
+    },
+    'change .show-items-summary'(event, instance){
+        if ($(event.currentTarget).prop('checked')) {
+            showItemsSummary.set(true);
+        } else {
+            showItemsSummary.set(false);
+        }
+    },
+    'change .show-invoices-summary'(event, instance){
+        if ($(event.currentTarget).prop('checked')) {
+            showInvoicesSummary.set(true);
+        } else {
+            showInvoicesSummary.set(false);
+        }
     }
+
 });
 invoiceDataTmpl.helpers({
+    showItemsSummary(){
+        return showItemsSummary.get();
+    },
+    showInvoicesSummary(){
+        return showInvoicesSummary.get();
+    },
     company(){
         let doc = Session.get('currentUserStockAndAccountMappingDoc');
         return doc.company;
@@ -74,15 +97,16 @@ invoiceDataTmpl.helpers({
     display(col){
         let data = '';
         this.displayFields.forEach(function (obj) {
-            if (obj.field == 'billDate') {
-                data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
-            } else if (obj.field == 'vendorId') {
+            if (obj.field == 'vendorId') {
                 data += `<td>${col._vendor.name}</td>`
+            } else if (obj.field == 'date' && col.type) {
+                console.log(col[obj.field]);
+                data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`;
             } else if (obj.field == 'total') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
             else {
-                data += `<td>${col[obj.field]}</td>`;
+                data += `<td>${col[obj.field] || ''}</td>`;
             }
         });
 
@@ -97,13 +121,13 @@ invoiceDataTmpl.helpers({
         string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td><u>${numeral(total).format('0,0.00')}</u></td>`;
         return string;
     },
-    getTotalFooter(total, totalKhr, totalThb){
+    getTotalFooter(totalQty, total, n){
         let string = '';
-        let fieldLength = this.displayFields.length - 4;
+        let fieldLength = this.displayFields.length - n;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalKhr).format('0,0')}<small>៛</small></b></td><td><b>${numeral(totalThb).format('0,0')}B</b></td><td><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(totalQty).format('0,0')}</b></td><td></td><td><b>${numeral(total).format('0,0.00')}$</b></td>`;
         return string;
     },
     capitalize(customerName){
@@ -126,16 +150,16 @@ AutoForm.hooks({
             if (doc.vendorId) {
                 params.vendor = doc.vendorId;
             }
-            console.log(doc);
-            if(doc.type) {
-                params.type = doc.type
-            }else{
+            if (doc.type) {
+                params.type = doc.type;
+            } else {
                 params.type = 'Term';
+
             }
             if (doc.filter) {
                 params.filter = doc.filter.join(',');
             }
-            if(doc.status){
+            if (doc.status) {
                 params.status = doc.status.join(',');
             }
             FlowRouter.query.set(params);
