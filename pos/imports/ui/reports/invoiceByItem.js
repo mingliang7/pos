@@ -117,7 +117,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><h5><b>Total:</b></h5> </td><td><h5><b>${qty}</b></h5></td><td></td><td><h5><b>${numeral(total).format('0,0.00')}$</b></h5></td>`;
+        string += `<td><h5><b>Total:</b></h5> </td><td><h5><b>${numeral(qty).format('0,0')}</b></h5></td><td></td><td><h5><b>${numeral(total).format('0,0.00')}$</b></h5></td>`;
         return string;
     },
     capitalize(customerName){
