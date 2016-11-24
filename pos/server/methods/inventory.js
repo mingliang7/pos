@@ -204,7 +204,7 @@ Meteor.methods({
                         account: inventoryChartAccount.account,
                         dr: 0,
                         cr: data1.total,
-                        drcr: data1.total
+                        drcr: -data1.total
                     });
                     Meteor.call('insertAccountJournal', data1);
 
@@ -456,7 +456,7 @@ Meteor.methods({
                     account: ringPullChartAccount.account,
                     dr: 0,
                     cr: data1.total,
-                    drcr: data1.total
+                    drcr: -data1.total
                 });
                 Meteor.call('insertAccountJournal', data1);
 
@@ -519,7 +519,7 @@ Meteor.methods({
                     account: ringPullChartAccount.account,
                     dr: 0,
                     cr: data1.transferAmount,
-                    drcr: data1.transferAmount
+                    drcr: -data1.transferAmount
                 });
                 Meteor.call('insertAccountJournal', data1);
                 let data2 = doc;
