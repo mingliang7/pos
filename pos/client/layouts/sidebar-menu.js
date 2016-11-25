@@ -67,6 +67,9 @@ Template.Pos_sidebarMenu.helpers({
     prepaidOrder() {
         return `/pos/report/prepaidOrderReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
     },
+    prepaidOrderDetail() {
+        return `/pos/report/prepaid-order-detail?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD 23:59:59')}&branchId=${Session.get('currentBranch')}`;
+    },
     // Data
     companyExchangeRingPull() {
         return `/pos/report/companyExchangeRingPullReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
