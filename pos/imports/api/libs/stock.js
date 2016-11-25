@@ -14,76 +14,92 @@ export  default class StockFunction {
             itemId: item.itemId,
             stockLocationId: stockLocationId
         }, {sort: {createdAt: -1}});
-        console.log(inventory);
-        if (inventory == null) {
-            let inventoryObj = {};
-            inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
-            inventoryObj.branchId = branchId;
-            inventoryObj.stockLocationId = stockLocationId;
-            inventoryObj.itemId = item.itemId;
-            inventoryObj.qty = item.qty;
-            inventoryObj.price = item.price;
-            inventoryObj.remainQty = item.qty;
-            inventoryObj.type = type;
-            inventoryObj.coefficient = 1;
-            inventoryObj.refId = refId;
-            //lastPurchasePrice = item.price;
-            remainQuantity = inventoryObj.remainQty;
-            id = AverageInventories.insert(inventoryObj);
-        }
-        else if (inventory.price == item.price) {
-            let inventoryObj = {};
-            inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
-            inventoryObj.branchId = branchId;
-            inventoryObj.stockLocationId = stockLocationId;
-            inventoryObj.itemId = item.itemId;
-            inventoryObj.qty = item.qty;
-            inventoryObj.price = item.price;
-            inventoryObj.remainQty = item.qty + inventory.remainQty;
-            inventoryObj.type = type;
-            inventoryObj.coefficient = 1;
-            inventoryObj.refId = refId;
-            //lastPurchasePrice = item.price;
-            remainQuantity = inventoryObj.remainQty;
-            id = AverageInventories.insert(inventoryObj);
-            /*
-             let
-             inventorySet = {};
-             inventorySet.qty = item.qty + inventory.qty;
-             inventorySet.remainQty = inventory.remainQty + item.qty;
-             AverageInventories.update(inventory._id, {$set: inventorySet});
-             */
-        }
-        else {
+
+        if (inventory) {
             let totalQty = inventory.remainQty + item.qty;
-            let price = 0;
-            //should check totalQty or inventory.remainQty
-            if (totalQty <= 0) {
-                price = inventory.price;
-            } else if (inventory.remainQty <= 0) {
-                price = item.price;
-            } else {
-                price = ((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty;
-            }
+            let lastAmount = inventory.lastAmount + (item.qty * item.price);
+            let averagePrice = lastAmount / totalQty;
+            let accumulatedAmount = lastAmount;
             let nextInventory = {};
             nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
             nextInventory.branchId = branchId;
             nextInventory.stockLocationId = stockLocationId;
             nextInventory.itemId = item.itemId;
             nextInventory.qty = item.qty;
-            nextInventory.price = math.round(price, 2);
+            nextInventory.price = item.price;
             nextInventory.remainQty = totalQty;
             nextInventory.type = type;
-            nextInventory.coefficient = 1;
+            nextInventory.amount = item.qty * item.price;
+            //nextInventory.coefficient = 1;
             nextInventory.refId = refId;
+            nextInventory.lastAmount = lastAmount;
+            nextInventory.accumulatedAmount = accumulatedAmount;
+            nextInventory.averagePrice = averagePrice;
             //lastPurchasePrice = price;
             remainQuantity = nextInventory.remainQty;
             id = AverageInventories.insert(nextInventory);
+        } else {
+            let thisItem = Item.findOne(item.itemId);
+            let totalQty = item.qty;
+            let lastAmount = item.qty * item.price;
+            let averagePrice = lastAmount / totalQty;
+            let inventoryObj = {};
+            inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+            inventoryObj.branchId = branchId;
+            inventoryObj.stockLocationId = stockLocationId;
+            inventoryObj.itemId = item.itemId;
+            inventoryObj.qty = item.qty;
+            inventoryObj.price = item.price;
+            inventoryObj.remainQty = totalQty;
+            inventoryObj.type = type;
+            inventoryObj.coefficient = 1;
+            inventoryObj.refId = refId;
+            inventoryObj.amount = lastAmount;
+            inventoryObj.lastAmount = lastAmount;
+            inventoryObj.averagePrice = averagePrice;
+            //lastPurchasePrice = item.price;
+            remainQuantity = inventoryObj.remainQty;
+            id = AverageInventories.insert(inventoryObj);
         }
 
         var setModifier = {$set: {purchasePrice: item.price}};
         setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
         Item.direct.update(item.itemId, setModifier);
+        return id;
+    }
+
+    static minusAverageInventoryInsertForBill(branchId, item, stockLocationId, type, refId) {
+        let id = '';
+        let prefix = stockLocationId + '-';
+        let inventory = AverageInventories.findOne({
+            branchId: branchId,
+            itemId: item.itemId,
+            stockLocationId: stockLocationId
+        }, {sort: {_id: -1}});
+        if (inventory) {
+            let totalQty = inventory.remainQty - item.qty;
+            let lastAmount = item.lastAmount - (item.qty*item.price);
+            let averagePrice = lastAmount / totalQty;
+            let newInventory = {
+                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                branchId: branchId,
+                stockLocationId: stockLocationId,
+                itemId: item.itemId,
+                qty: -item.qty,
+                price: item.price,
+                amount: -(item.qty*item.price),
+                remainQty: totalQty,
+                lastAmount: lastAmount,
+                averagePrice: averagePrice,
+                coefficient: -1,
+                type: type,
+                refId: refId
+            };
+            id = AverageInventories.insert(newInventory);
+        }
+        else {
+            throw new Meteor.Error('No Inventory Found');
+        }
         return id;
     }
 
@@ -95,16 +111,18 @@ export  default class StockFunction {
             itemId: item.itemId,
             stockLocationId: stockLocationId
         }, {sort: {_id: -1}});
-
         if (inventory) {
+            let lastAmount = inventory.lastAmount - (inventory.averagePrice * item.qty);
             let newInventory = {
                 _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
                 branchId: branchId,
                 stockLocationId: stockLocationId,
                 itemId: item.itemId,
                 qty: item.qty,
-                price: inventory.price,
+                price: inventory.averagePrice,
                 remainQty: inventory.remainQty - item.qty,
+                averagePrice: inventory.averagePrice,
+                lastAmount: lastAmount,
                 coefficient: -1,
                 type: type,
                 refId: refId
@@ -121,6 +139,8 @@ export  default class StockFunction {
                 qty: item.qty,
                 price: thisItem.purchasePrice,
                 remainQty: 0 - item.qty,
+                lastAmount: 0 - (item.qty * thisItem.purchasePrice),
+                averagePrice: thisItem.purchasePrice,
                 coefficient: -1,
                 type: type,
                 refId: refId
