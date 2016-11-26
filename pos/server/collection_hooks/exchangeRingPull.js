@@ -21,7 +21,7 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
         //---------------------------------------------//
         let inventoryIdList = [];
         doc.items.forEach(function (item) {
-            let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'reduce-from-exchange-rill-pull', doc._id);
+            let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'exchangeRillPull', doc._id);
             inventoryIdList.push(id);
         });
         StockFunction.increaseRingPullInventory(doc);
@@ -33,19 +33,16 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
                 branchId: doc.branchId,
                 stockLocationId: doc.stockLocationId
             }, {sort: {_id: -1}});
-            let thisItemPrice = 0;
             if (inventoryObj) {
-                thisItemPrice = inventoryObj.price;
+                item.price = inventoryObj.averagePrice;
+                item.amount = item.qty * inventoryObj.averagePrice;
+                total += item.amount;
             } else {
-                let thisItem = Item.findOne(item.itemId);
-                thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
+                throw new Meteor.Error("Not Found Inventory. @ExchangeRingPull-after-insert.");
             }
-            item.price = thisItemPrice;
-            item.amount = item.qty * thisItemPrice;
-            total += item.amount;
         });
         doc.total = total;
-        ExchangeRingPulls.direct.update(doc._id,{$set:{items:doc.items,total:doc.total}});
+        ExchangeRingPulls.direct.update(doc._id, {$set: {items: doc.items, total: doc.total}});
 
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -56,14 +53,14 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             transaction.push({
                 account: ringPullChartAccount.account,
-                dr: doc.total,
+                dr: data.total,
                 cr: 0,
-                drcr: doc.total
+                drcr: data.total
             }, {
                 account: inventoryChartAccount.account,
                 dr: 0,
-                cr: doc.total,
-                drcr: -doc.total
+                cr: data.total,
+                drcr: -data.total
             });
             data.transaction = transaction;
             Meteor.call('insertAccountJournal', data);
@@ -100,19 +97,16 @@ ExchangeRingPulls.after.update(function (userId, doc) {
                 branchId: doc.branchId,
                 stockLocationId: doc.stockLocationId
             }, {sort: {_id: -1}});
-            let thisItemPrice = 0;
             if (inventoryObj) {
-                thisItemPrice = inventoryObj.price;
+                item.price = inventoryObj.averagePrice;
+                item.amount = item.qty * inventoryObj.averagePrice;
+                total += item.amount;
             } else {
-                let thisItem = Item.findOne(item.itemId);
-                thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
+                throw new Meteor.Error("Not Found Inventory. @ExchangeRingPull-after-insert.");
             }
-            item.price = thisItemPrice;
-            item.amount = item.qty * thisItemPrice;
-            total += item.amount;
         });
         doc.total = total;
-        ExchangeRingPulls.direct.update(doc._id,{$set:{items:doc.items,total:doc.total}});
+        ExchangeRingPulls.direct.update(doc._id, {$set: {items: doc.items, total: doc.total}});
 
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -123,14 +117,14 @@ ExchangeRingPulls.after.update(function (userId, doc) {
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             transaction.push({
                 account: ringPullChartAccount.account,
-                dr: doc.total,
+                dr: data.total,
                 cr: 0,
-                drcr: doc.total
+                drcr: data.total
             }, {
                 account: inventoryChartAccount.account,
                 dr: 0,
-                cr: doc.total,
-                drcr: -doc.total
+                cr: data.total,
+                drcr: -data.total
             });
             data.transaction = transaction;
             Meteor.call('updateAccountJournal', data);
@@ -171,53 +165,7 @@ function ExchangeRingPullManageStock(exchangeRingPull) {
     let prefix = exchangeRingPull.stockLocationId + "-";
     let newItems = [];
     exchangeRingPull.items.forEach(function (item) {
-        let inventory = AverageInventories.findOne({
-            branchId: exchangeRingPull.branchId,
-            itemId: item.itemId,
-            stockLocationId: exchangeRingPull.stockLocationId
-        }, {sort: {_id: -1}});
-        if (inventory) {
-            item.cost = inventory.price;
-            //item.amountCost = inventory.price * item.qty;
-            //item.profit = item.amount - item.amountCost;
-            //totalCost += item.amountCost;
-            newItems.push(item);
-            let newInventory = {
-                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                branchId: exchangeRingPull.branchId,
-                stockLocationId: exchangeRingPull.stockLocationId,
-                itemId: item.itemId,
-                qty: item.qty,
-                price: inventory.price,
-                remainQty: inventory.remainQty - item.qty,
-                coefficient: -1,
-                type: 'exchangeRingPull',
-                refId: exchangeRingPull._id
-            };
-            AverageInventories.insert(newInventory);
-        }
-        else {
-            var thisItem = Item.findOne(item.itemId);
-            item.cost = thisItem.purchasePrice;
-            //item.amountCost = thisItem.purchasePrice * item.qty;
-            //item.profit = item.amount - item.amountCost;
-            //totalCost += item.amountCost;
-            newItems.push(item);
-            let newInventory = {
-                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                branchId: exchangeRingPull.branchId,
-                stockLocationId: exchangeRingPull.stockLocationId,
-                itemId: item.itemId,
-                qty: item.qty,
-                price: thisItem.purchasePrice,
-                remainQty: 0 - item.qty,
-                coefficient: -1,
-                type: 'exchangeRingPull',
-                refId: exchangeRingPull._id
-            };
-            AverageInventories.insert(newInventory);
-        }
-
+        StockFunction.minusAverageInventoryInsert(exchangeRingPull.branchId, item, exchangeRingPull.stockLocationId, 'exchangeRillPull', exchangeRingPull._id);
         //---insert to Ring Pull Stock---
         let ringPullInventory = RingPullInventories.findOne({
             branchId: exchangeRingPull.branchId,
@@ -238,11 +186,6 @@ function ExchangeRingPullManageStock(exchangeRingPull) {
         }
 
     });
-    //let totalProfit = exchangeRingPull.total - totalCost;
-    ExchangeRingPulls.direct.update(
-        exchangeRingPull._id,
-        {$set: {items: newItems, totalCost: totalCost}}
-    );
     //--- End Inventory type block "Average Inventory"---
 
 
@@ -253,7 +196,7 @@ function returnToInventory(exchangeRingPull, type) {
     // let exchangeRingPull = Invoices.findOne(exchangeRingPullId);
     exchangeRingPull.items.forEach(function (item) {
         item.price = item.cost;
-        averageInventoryInsert(
+        StockFunction.averageInventoryInsert(
             exchangeRingPull.branchId,
             item,
             exchangeRingPull.stockLocationId,
@@ -282,85 +225,3 @@ function returnToInventory(exchangeRingPull, type) {
     });
     //--- End Inventory type block "Average Inventory"---
 }
-
-function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
-    let lastPurchasePrice = 0;
-    let remainQuantity = 0;
-    let prefix = stockLocationId + '-';
-    let inventory = AverageInventories.findOne({
-        branchId: branchId,
-        itemId: item.itemId,
-        stockLocationId: stockLocationId
-    }, {sort: {createdAt: -1}});
-    if (inventory == null) {
-        let inventoryObj = {};
-        inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
-        inventoryObj.branchId = branchId;
-        inventoryObj.stockLocationId = stockLocationId;
-        inventoryObj.itemId = item.itemId;
-        inventoryObj.qty = item.qty;
-        inventoryObj.price = item.price;
-        inventoryObj.remainQty = item.qty;
-        inventoryObj.type = type;
-        inventoryObj.coefficient = 1;
-        inventoryObj.refId = refId;
-        //lastPurchasePrice = item.price;
-        remainQuantity = inventoryObj.remainQty;
-        AverageInventories.insert(inventoryObj);
-    }
-    else if (inventory.price == item.price) {
-        let inventoryObj = {};
-        inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
-        inventoryObj.branchId = branchId;
-        inventoryObj.stockLocationId = stockLocationId;
-        inventoryObj.itemId = item.itemId;
-        inventoryObj.qty = item.qty;
-        inventoryObj.price = item.price;
-        inventoryObj.remainQty = item.qty + inventory.remainQty;
-        inventoryObj.type = type;
-        inventoryObj.coefficient = 1;
-        inventoryObj.refId = refId;
-        //lastPurchasePrice = item.price;
-        remainQuantity = inventoryObj.remainQty;
-        AverageInventories.insert(inventoryObj);
-        /*
-         let
-         inventorySet = {};
-         inventorySet.qty = item.qty + inventory.qty;
-         inventorySet.remainQty = inventory.remainQty + item.qty;
-         AverageInventories.update(inventory._id, {$set: inventorySet});
-         */
-    }
-    else {
-        let totalQty = inventory.remainQty + item.qty;
-        let price = 0;
-        //should check totalQty or inventory.remainQty
-        if (totalQty <= 0) {
-            price = inventory.price;
-        } else if (inventory.remainQty <= 0) {
-            price = item.price;
-        } else {
-            price = ((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty;
-        }
-        let nextInventory = {};
-        nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
-        nextInventory.branchId = branchId;
-        nextInventory.stockLocationId = stockLocationId;
-        nextInventory.itemId = item.itemId;
-        nextInventory.qty = item.qty;
-        nextInventory.price = math.round(price, 2);
-        nextInventory.remainQty = totalQty;
-        nextInventory.type = type;
-        nextInventory.coefficient = 1;
-        nextInventory.refId = refId;
-        //lastPurchasePrice = price;
-        remainQuantity = nextInventory.remainQty;
-        AverageInventories.insert(nextInventory);
-    }
-
-    //var setModifier = {$set: {purchasePrice: lastPurchasePrice}};
-    var setModifier = {$set: {}};
-    setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
-    Item.direct.update(item.itemId, setModifier);
-}
-

@@ -37,7 +37,7 @@ EnterBills.after.insert(function (userId, doc) {
             Meteor.call('pos.generateInvoiceGroup', {doc});
         }
         doc.items.forEach(function (item) {
-            let id = StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'insert-bill', doc._id);
+            let id = StockFunction.averageInventoryInsertForBill(doc.branchId, item, doc.stockLocationId, 'insert-bill', doc._id);
             inventoryIdList.push(id);
         });
         //Account Integration
@@ -102,7 +102,7 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
         });
         //reduceFromInventory(preDoc);
         doc.items.forEach(function (item) {
-            let id = StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
+            let id = StockFunction.averageInventoryInsertForBill(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
             inventoryIdList.push(id);
         });
 
