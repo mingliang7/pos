@@ -166,43 +166,54 @@ export const prepaidOrderDetail = new ValidatedMethod({
 
                     }
                 },
+                {
+                    $group: {
+                        _id: null,
+                        data: {
+                            $addToSet: '$$ROOT'
+                        },
+                        total: {$sum: '$total'}
+                    }
+                }
 
             ]);
-
-            prepaidOrders.forEach(function (doc) {
-                doc.items.forEach(function (item) {
-                    let balance = item.qty;
-                    let itemDoc = Item.findOne(item.itemId);
-                    let arr = [];
-                    arr.push({
-                        itemName: itemDoc ? itemDoc.name : '',
-                        order: item.qty,
-                        receive: 0,
-                        balance: item.qty,
-                        price: item.price,
-                        amount: item.amount
-                    });
-
-                    if (doc.receiveItemsDoc.length > 0) {
-                        doc.receiveItemsDoc.forEach(function (receiveItem) {
-                            if (item.itemId == receiveItem.itemId) {
-                                receiveItem.order = 0;
-                                receiveItem.receive = receiveItem.qty;
-                                receiveItem.balance = balance - receiveItem.qty;
-                                receiveItem.amount = (balance - receiveItem.qty) * receiveItem.price;
-                                balance = balance - receiveItem.qty
-                                arr.push(receiveItem);
-                            }
+            if(prepaidOrders.length > 0){
+                prepaidOrders[0].data.forEach(function (doc) {
+                    doc.items.forEach(function (item) {
+                        let balance = item.qty;
+                        let itemDoc = Item.findOne(item.itemId);
+                        let arr = [];
+                        arr.push({
+                            itemName: itemDoc ? itemDoc.name : '',
+                            order: item.qty,
+                            receive: 0,
+                            balance: item.qty,
+                            price: item.price,
+                            amount: item.amount
                         });
-                    }
-                    item.receiveItemsDoc = arr;
-                })
-            });
+
+                        if (doc.receiveItemsDoc.length > 0) {
+                            doc.receiveItemsDoc.forEach(function (receiveItem) {
+                                if (item.itemId == receiveItem.itemId) {
+                                    receiveItem.order = 0;
+                                    receiveItem.receive = receiveItem.qty;
+                                    receiveItem.balance = balance - receiveItem.qty;
+                                    receiveItem.amount = (balance - receiveItem.qty) * receiveItem.price;
+                                    balance = balance - receiveItem.qty
+                                    arr.push(receiveItem);
+                                }
+                            });
+                        }
+                        item.receiveItemsDoc = arr;
+                    })
+                });
+            }
+
             if (prepaidOrders.length > 0) {
                 let sortData = _.sortBy(prepaidOrders[0].data, '_id');
                 prepaidOrders[0].data = sortData;
-                data.content = prepaidOrders;
-                // data.footer.total = total[0].total;
+                data.content = prepaidOrders[0].data;
+                data.footer.total = prepaidOrders[0].total;
                 // data.footer.totalRemainQty = total[0].totalRemainQty
             }
             return data
