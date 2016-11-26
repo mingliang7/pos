@@ -42,7 +42,14 @@ export const payBill = new ValidatedMethod({
                 let vendor = Vendors.findOne(obj.vendorId);
                 obj.paymentType = vendor.termId ? 'term' : 'group';
                 PayBills.insert(obj);
-                obj.status == 'closed' ? selector.$set = {status: 'closed'} : selector.$set = {status: 'partial'};
+                if(obj.status == 'closed'){
+                    selector.$set = {
+                        status: 'closed',
+                        closedAt: obj.paymentDate
+                    }
+                }else{
+                    selector.$set = {status: 'partial'};
+                }
                 if(vendor.termId) {
                     EnterBills.direct.update(k, selector)
                 }else{

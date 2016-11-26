@@ -11,7 +11,7 @@ Meteor.methods({
     },
     removedPayBill({doc}){
         let payments = PayBills.find({billId: doc.billId, status: {$ne: 'removed'}});
-        let selector = {$set: {status: 'active'}};
+        let selector = {$set: {status: 'active'}, $unset: {closedAt: ''}};
         let collections = doc.paymentType == 'term' ? EnterBills : GroupBill;
         if (payments.count() == 1) {
             collections.direct.update(doc.billId, selector)
@@ -28,6 +28,7 @@ Meteor.methods({
                 $set: {status: 'partial'}
             }, {multi: true});
             selector.$set.status = 'partial';
+            selector.$unset.closedAt = '';
             collections.direct.update(doc.billId, selector);
         }
         PayBills.remove({_id: doc._id});
