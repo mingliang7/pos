@@ -1,6 +1,6 @@
 import 'meteor/matb33:collection-hooks'
 import {idGenerator} from 'meteor/theara:id-generator'
-
+import StockFunction from '../../imports/api/libs/stock';
 // Collection
 import {Invoices} from '../../imports/api/collections/invoice.js'
 import {ReceivePayment} from '../../imports/api/collections/receivePayment.js'
@@ -179,28 +179,22 @@ Invoices.after.insert(function (userId, doc) {
                         branchId: doc.branchId,
                         stockLocationId: doc.stockLocationId
                     }, {sort: {_id: -1}});
-                    let thisItemPrice = 0;
                     if (inventoryObj) {
-                        thisItemPrice = inventoryObj.price
+                        totalGratis += item.qty * inventoryObj.averagePrice;
                     } else {
-                        let thisItem = Item.findOne(item.itemId);
-                        thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0
+                        throw new Meteor.Error('Not Found Inventory. @Invoices-after-insert. refId:' + doc._id);
                     }
-                    totalGratis += item.qty * thisItemPrice
                 } else {
                     let inventoryObj = AverageInventories.findOne({
                         itemId: item.itemId,
                         branchId: doc.branchId,
                         stockLocationId: doc.stockLocationId
                     }, {sort: {_id: -1}});
-                    let thisItemPrice = 0;
                     if (inventoryObj) {
-                        thisItemPrice = inventoryObj.price
+                        totalCOGS += item.qty * inventoryObj.averagePrice;
                     } else {
-                        let thisItem = Item.findOne(item.itemId);
-                        thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0
+                        throw new Meteor.Error('Not Found Inventory. @Invoices-after-insert. refId:' + doc._id);
                     }
-                    totalCOGS += item.qty * thisItemPrice
                 }
             });
             let totalInventory = totalCOGS + totalGratis;
@@ -424,7 +418,8 @@ Invoices.after.update(function (userId, doc) {
             // End Account Integration
             doc.total = doc.total + totalInventory
         })
-    } else {
+    }
+    else {
         accountRefType = 'Invoice';
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
@@ -454,32 +449,25 @@ Invoices.after.update(function (userId, doc) {
                         branchId: doc.branchId,
                         stockLocationId: doc.stockLocationId
                     }, {sort: {_id: -1}});
-                    let thisItemPrice = 0;
                     if (inventoryObj) {
-                        thisItemPrice = inventoryObj.price
+                        totalGratis += item.qty * inventoryObj.averagePrice;
                     } else {
-                        let thisItem = Item.findOne(item.itemId);
-                        thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0
+                        throw new Meteor.Error('Not Found Inventory. @Invoices-after-update. refId:' + doc._id);
                     }
-                    totalGratis += item.qty * thisItemPrice
                 } else {
                     let inventoryObj = AverageInventories.findOne({
                         itemId: item.itemId,
                         branchId: doc.branchId,
                         stockLocationId: doc.stockLocationId
                     }, {sort: {_id: -1}});
-                    let thisItemPrice = 0;
                     if (inventoryObj) {
-                        thisItemPrice = inventoryObj.price
+                        totalCOGS += item.qty * inventoryObj.averagePrice;
                     } else {
-                        let thisItem = Item.findOne(item.itemId);
-                        thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0
+                        throw new Meteor.Error('Not Found Inventory. @Invoices-after-update. refId:' + doc._id);
                     }
-                    totalCOGS += item.qty * thisItemPrice
                 }
             });
             let totalInventory = totalCOGS + totalGratis;
-
             if (setting && setting.integrate) {
                 let arChartAccount = AccountMapping.findOne({name: 'A/R'});
                 let saleIncomeChartAccount = AccountMapping.findOne({name: 'Sale Income'});
@@ -633,7 +621,7 @@ function returnToInventory(invoice) {
     // let invoice = Invoices.findOne(invoiceId)
     invoice.items.forEach(function (item) {
         item.price = item.cost;
-        averageInventoryInsert(
+        StockFunction.averageInventoryInsert(
             invoice.branchId,
             item,
             invoice.stockLocationId,
