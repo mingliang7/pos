@@ -1,24 +1,24 @@
-import { ReactiveDict } from 'meteor/reactive-dict';
-import { Template } from 'meteor/templating';
-import { AutoForm } from 'meteor/aldeed:autoform';
-import { Roles } from 'meteor/alanning:roles';
-import { alertify } from 'meteor/ovcharik:alertifyjs';
-import { sAlert } from 'meteor/juliancwirko:s-alert';
-import { fa } from 'meteor/theara:fa-helpers';
-import { lightbox } from 'meteor/theara:lightbox-helpers';
-import { _ } from 'meteor/erasaur:meteor-lodash';
-import { $ } from 'meteor/jquery';
-import { TAPi18n } from 'meteor/tap:i18n';
-import { ReactiveTable } from 'meteor/aslagle:reactive-table';
+import {ReactiveDict} from 'meteor/reactive-dict';
+import {Template} from 'meteor/templating';
+import {AutoForm} from 'meteor/aldeed:autoform';
+import {Roles} from 'meteor/alanning:roles';
+import {alertify} from 'meteor/ovcharik:alertifyjs';
+import {sAlert} from 'meteor/juliancwirko:s-alert';
+import {fa} from 'meteor/theara:fa-helpers';
+import {lightbox} from 'meteor/theara:lightbox-helpers';
+import {_} from 'meteor/erasaur:meteor-lodash';
+import {$} from 'meteor/jquery';
+import {TAPi18n} from 'meteor/tap:i18n';
+import {ReactiveTable} from 'meteor/aslagle:reactive-table';
 import 'meteor/theara:template-states';
 
 // Lib
-import { createNewAlertify } from '../../../../core/client/libs/create-new-alertify.js';
-import { renderTemplate } from '../../../../core/client/libs/render-template.js';
-import { destroyAction } from '../../../../core/client/libs/destroy-action.js';
-import { displaySuccess, displayError } from '../../../../core/client/libs/display-alert.js';
-import { reactiveTableSettings } from '../../../../core/client/libs/reactive-table-settings.js';
-import { __ } from '../../../../core/common/libs/tapi18n-callback-helper.js';
+import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
+import {renderTemplate} from '../../../../core/client/libs/render-template.js';
+import {destroyAction} from '../../../../core/client/libs/destroy-action.js';
+import {displaySuccess, displayError} from '../../../../core/client/libs/display-alert.js';
+import {reactiveTableSettings} from '../../../../core/client/libs/reactive-table-settings.js';
+import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
 
 // Component
 import '../../../../core/client/components/loading.js';
@@ -26,18 +26,18 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 //methods
-import { itemInfo } from '../../../common/methods/item-info';
+import {itemInfo} from '../../../common/methods/item-info';
 
 // Collection
-import { ItemsSchema } from '../../api/collections/order-items.js';
-import { Invoices } from '../../api/collections/invoice.js';
-import { Order } from '../../api/collections/order';
+import {ItemsSchema} from '../../api/collections/order-items.js';
+import {Invoices} from '../../api/collections/invoice.js';
+import {Order} from '../../api/collections/order';
 // Declare template
 var itemsTmpl = Template.Pos_invoiceItems,
-    actionItemsTmpl = Template.Pos_invoiceItemsAction;
-editItemsTmpl = Template.Pos_invoiceItemsEdit;
+    actionItemsTmpl = Template.Pos_invoiceItemsAction,
+    editItemsTmpl = Template.Pos_invoiceItemsEdit;
 //methods
-import { removeItemInSaleOrder } from '../../../common/methods/sale-order';
+import {removeItemInSaleOrder} from '../../../common/methods/sale-order';
 let currentItemsInupdateForm = new Mongo.Collection(null);
 let tmpDeletedItem = new Mongo.Collection(null); // use to check with credit limit 
 // Local collection
@@ -45,7 +45,6 @@ var itemsCollection;
 export const deletedItem = new Mongo.Collection(null); //export collection deletedItem to invoice js
 // Page
 import './invoice-items.html';
-
 
 
 itemsTmpl.onCreated(function () {
@@ -81,7 +80,10 @@ itemsTmpl.onCreated(function () {
         }
         if (this.defaultItem.get() && (this.defaultItem.get() || this.defaultQty.get())) {
             itemInfo.callPromise({
-                _id: this.defaultItem.get(), customerId: Session.get('getCustomerId'), qty: this.defaultQty.get(), routeName: FlowRouter.getRouteName()
+                _id: this.defaultItem.get(),
+                customerId: Session.get('getCustomerId'),
+                qty: this.defaultQty.get(),
+                routeName: FlowRouter.getRouteName()
             }).then((result) => {
                 this.defaultPrice.set(result.price);
             }).catch((err) => {
@@ -210,10 +212,10 @@ itemsTmpl.events({
         let currentValue = event.currentTarget.value;
         switch (currentValue) {
             case 'none-scheme':
-                Session.set('itemFilterState', { scheme: { $exists: false } });
+                Session.set('itemFilterState', {scheme: {$exists: false}});
                 break;
             case 'scheme':
-                Session.set('itemFilterState', { scheme: { $exists: true } });
+                Session.set('itemFilterState', {scheme: {$exists: true}});
                 break;
             case 'all':
                 Session.set('itemFilterState', {});
@@ -241,52 +243,74 @@ itemsTmpl.events({
         let qty = parseInt(instance.$('[name="qty"]').val());
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         let amount = math.round(qty * price, 2);
-        // Check exist
-        Meteor.call('addScheme', { itemId }, function (err, result) {
-            if (!_.isEmpty(result[0])) {
-                result.forEach(function (item) {
-                    // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
-                    // if(schemeItem) {
-                    //     let amount = item.price * item.quantity;
-                    //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
-                    // }else{
-                    itemsCollection.insert({
-                        itemId: item.itemId,
-                        qty: item.quantity * qty,
-                        price: item.price,
-                        amount: (item.price * item.quantity) * qty,
-                        name: item.itemName
-                    });
-                    // }
-                });
+        let stockLocationId = $('[name="stockLocationId"]').val();
+        debugger;
+        Meteor.call('findItem', itemId, function (error, itemResult) {
+            let itemOfCollectionNull = itemsCollection.findOne({
+                itemId: itemId
+            });
+            let checkQty = 0;
+            if (itemOfCollectionNull) {
+                checkQty = qty + parseInt(itemOfCollectionNull.qty);
             } else {
-                let exist = itemsCollection.findOne({
-                    itemId: itemId
-                });
-                if (exist) {
-                    qty += parseInt(exist.qty);
-                    amount = math.round(qty * price, 2);
+                checkQty = qty;
+            }
+            if (checkQty <= itemResult.qtyOnHand[stockLocationId]) {
+                Meteor.call('addScheme', {itemId}, function (err, result) {
+                    if (!_.isEmpty(result[0])) {
 
-                    itemsCollection.update({
-                        _id: exist._id
-                    }, {
-                            $set: {
+                        result.forEach(function (item) {
+                            // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
+                            // if(schemeItem) {
+                            //     let amount = item.price * item.quantity;
+                            //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
+                            // }else{
+
+                            itemsCollection.insert({
+                                itemId: item.itemId,
+                                qty: item.quantity * qty,
+                                price: item.price,
+                                amount: (item.price * item.quantity) * qty,
+                                name: item.itemName
+                            });
+                            // }
+                        });
+                    } else {
+                        let exist = itemsCollection.findOne({
+                            itemId: itemId
+                        });
+                        if (exist) {
+                            qty += parseInt(exist.qty);
+                            amount = math.round(qty * price, 2);
+
+                            itemsCollection.update({
+                                _id: exist._id
+                            }, {
+                                $set: {
+                                    qty: qty,
+                                    price: price,
+                                    amount: amount
+                                }
+                            });
+                        } else {
+                            itemsCollection.insert({
+                                itemId: itemId,
                                 qty: qty,
                                 price: price,
-                                amount: amount
-                            }
-                        });
-                } else {
-                    itemsCollection.insert({
-                        itemId: itemId,
-                        qty: qty,
-                        price: price,
-                        amount: amount,
-                        name: instance.name
-                    });
-                }
+                                amount: amount,
+                                name: instance.name
+                            });
+                        }
+                    }
+                });
             }
+            else {
+                alertify.warning('Qty Enough for sale. QtyOnHand is '+ itemResult.qtyOnHand[stockLocationId]);
+            }
+
         });
+        // Check exist
+
     },
     // Reactive table for item
     'click .js-update-item': function (event, instance) {
@@ -296,7 +320,7 @@ itemsTmpl.events({
         event.preventDefault();
         let itemDoc = this;
         if (AutoForm.getFormId() == "Pos_invoiceUpdate") { //check if update form
-            let isCurrenctItemExistInTmpCollection = instance.data.currentItemsCollection.findOne({ itemId: this.itemId }); // check if current item collection has wanted remove item 
+            let isCurrenctItemExistInTmpCollection = instance.data.currentItemsCollection.findOne({itemId: this.itemId}); // check if current item collection has wanted remove item
             swal({
                 title: "Are you sure?",
                 text: "លុបទំនិញមួយនេះ?",
@@ -306,13 +330,13 @@ itemsTmpl.events({
                 closeOnConfirm: false
             }).then(
                 function () {
-                    if (!deletedItem.findOne({ itemId: itemDoc.itemId })) {
+                    if (!deletedItem.findOne({itemId: itemDoc.itemId})) {
                         deletedItem.insert(itemDoc);
                     }
                     if (isCurrenctItemExistInTmpCollection) {
                         currentItemsInupdateForm.insert(itemDoc);
                     }
-                    itemsCollection.remove({ itemId: itemDoc.itemId });
+                    itemsCollection.remove({itemId: itemDoc.itemId});
                     swal.close();
                 });
         } else {
@@ -323,7 +347,7 @@ itemsTmpl.events({
     'change .item-qty'(event, instance) {
         let currentQty = event.currentTarget.value;
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
-        let currentItem = itemsCollection.findOne({ itemId: itemId });
+        let currentItem = itemsCollection.findOne({itemId: itemId});
         let selector = {};
         if (currentQty != '') {
             selector.$set = {
@@ -336,7 +360,7 @@ itemsTmpl.events({
                 qty: 1
             }
         }
-        itemsCollection.update({ itemId: itemId }, selector);
+        itemsCollection.update({itemId: itemId}, selector);
     },
     "keypress .item-qty"(evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
@@ -354,8 +378,8 @@ let hooksObject = {
         // Check old item
         if (insertDoc.itemId == currentDoc.itemId) {
             itemsCollection.update({
-                _id: currentDoc._id
-            },
+                    _id: currentDoc._id
+                },
                 updateDoc
             );
         } else {
@@ -371,12 +395,12 @@ let hooksObject = {
                 itemsCollection.update({
                     _id: insertDoc._id
                 }, {
-                        $set: {
-                            qty: newQty,
-                            price: newPrice,
-                            amount: newAmount
-                        }
-                    });
+                    $set: {
+                        qty: newQty,
+                        price: newPrice,
+                        amount: newAmount
+                    }
+                });
             } else {
                 itemsCollection.remove({
                     _id: currentDoc._id
