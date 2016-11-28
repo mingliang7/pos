@@ -255,7 +255,8 @@ itemsTmpl.events({
             } else {
                 checkQty = qty;
             }
-            if (checkQty <= itemResult.qtyOnHand[stockLocationId]) {
+            let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+            if (checkQty <= inventoryQty) {
                 Meteor.call('addScheme', {itemId}, function (err, result) {
                     if (!_.isEmpty(result[0])) {
 
@@ -305,7 +306,7 @@ itemsTmpl.events({
                 });
             }
             else {
-                alertify.warning('Qty Enough for sale. QtyOnHand is '+ itemResult.qtyOnHand[stockLocationId]);
+                alertify.warning('Qty Enough for sale. QtyOnHand is ' + inventoryQty);
             }
 
         });

@@ -652,8 +652,12 @@ function invoiceManageStock(invoice) {
             newItems.push(item);
 
             let remainQty = inventory.remainQty - item.qty;
-            let lastAmount = inventory.lastAmount - (inventory.averagePrice * item.qty);
-            let averagePrice = lastAmount / remainQty;
+            let lastAmount = 0;
+            let averagePrice = 0;
+            if (remainQty != 0) {
+                lastAmount = inventory.lastAmount - (inventory.averagePrice * item.qty);
+                averagePrice = lastAmount / remainQty;
+            }
             let newInventory = {
                 _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
                 branchId: invoice.branchId,
@@ -669,6 +673,7 @@ function invoiceManageStock(invoice) {
                 type: 'invoice',
                 refId: invoice._id
             };
+            console.log(newInventory);
             id = AverageInventories.insert(newInventory);
             let setModifier = {$set: {}};
             setModifier.$set['qtyOnHand.' + invoice.stockLocationId] = remainQty;

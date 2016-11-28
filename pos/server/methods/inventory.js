@@ -10,6 +10,7 @@ import {AccountMapping} from '../../imports/api/collections/accountMapping'
 import {TransferMoney} from '../../imports/api/collections/transferMoney.js'
 import {idGenerator} from 'meteor/theara:id-generator';
 import 'meteor/matb33:collection-hooks';
+import StockFunction from '../../imports/api/libs/stock';
 
 Meteor.methods({
     enterBillManageStock: function (enterBillId) {
@@ -107,6 +108,7 @@ Meteor.methods({
             let newItems = [];
             let total = 0;
 
+
             locationTransfer.items.forEach(function (item) {
                 let inventory = AverageInventories.findOne({
                     branchId: locationTransfer.fromBranchId,
@@ -115,48 +117,28 @@ Meteor.methods({
                 }, {sort: {_id: -1}});
 
                 if (inventory) {
-                    let newInventory = {
-                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                        branchId: locationTransfer.fromBranchId,
-                        stockLocationId: locationTransfer.fromStockLocationId,
-                        itemId: item.itemId,
-                        qty: item.qty,
-                        price: inventory.price,
-                        remainQty: inventory.remainQty - item.qty,
-                        coefficient: -1,
-                        type: 'transfer-from',
-                        refId: locationTransferId
-                    };
-                    AverageInventories.insert(newInventory);
-                    item.price = inventory.price;
-                    item.amount = inventory.price * item.qty;
+                    item.price = inventory.averagePrice;
+                    item.amount = inventory.averagePrice * item.qty;
+                    total += item.amount;
+                    newItems.push(item);
+                    StockFunction.minusAverageInventoryInsert(
+                        locationTransfer.fromBranchId,
+                        item,
+                        locationTransfer.fromStockLocationId,
+                        'transfer-from',
+                        locationTransferId
+                    );
+                    StockFunction.averageInventoryInsert(
+                        locationTransfer.toBranchId,
+                        item,
+                        locationTransfer.toStockLocationId,
+                        'transfer-to',
+                        locationTransferId
+                    );
                 } else {
-                    let thisItem = Item.findOne(item.itemId);
-                    let newInventory = {
-                        _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                        branchId: locationTransfer.fromBranchId,
-                        stockLocationId: locationTransfer.fromStockLocationId,
-                        itemId: item.itemId,
-                        qty: item.qty,
-                        price: thisItem.purchasePrice,
-                        remainQty: 0 - item.qty,
-                        coefficient: -1,
-                        type: 'transfer-from',
-                        refId: locationTransferId
-                    };
-                    AverageInventories.insert(newInventory);
-                    item.price = thisItem.purchasePrice;
-                    item.amount = thisItem.purchasePrice * item.qty;
+                    throw new Meteor.Error('Not Found Inventory. @locationTransfer-manage-stock. refId:' + locationTransferId);
                 }
-                total += item.amount;
-                newItems.push(item);
-                averageInventoryInsert(
-                    locationTransfer.toBranchId,
-                    item,
-                    locationTransfer.toStockLocationId,
-                    'transfer-to',
-                    locationTransferId
-                );
+
                 //inventories=sortArrayByKey()
             });
             let setObj = {};

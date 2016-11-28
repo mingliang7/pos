@@ -135,8 +135,12 @@ export  default class StockFunction {
         }, {sort: {_id: -1}});
         if (inventory) {
             let totalQty = inventory.remainQty - item.qty;
-            let lastAmount = item.lastAmount - (item.qty * item.price);
-            let averagePrice = lastAmount / totalQty;
+            let lastAmount = 0;
+            let averagePrice = 0;
+            if (totalQty != 0) {
+                lastAmount = item.lastAmount - (item.qty * item.price);
+                averagePrice = lastAmount / totalQty;
+            }
             let newInventory = {
                 _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
                 branchId: branchId,
@@ -170,8 +174,12 @@ export  default class StockFunction {
         }, {sort: {_id: -1}});
         if (inventory) {
             let remainQty = inventory.remainQty - item.qty;
-            let lastAmount = inventory.lastAmount - (inventory.averagePrice * item.qty);
-            let averagePrice = lastAmount / remainQty;
+            let lastAmount = 0;
+            let averagePrice = 0;
+            if (remainQty != 0) {
+                lastAmount = inventory.lastAmount - (inventory.averagePrice * item.qty);
+                averagePrice = lastAmount / remainQty;
+            }
             let newInventory = {
                 _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
                 branchId: branchId,

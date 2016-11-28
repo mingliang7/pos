@@ -244,6 +244,11 @@ Item.schema = new SimpleSchema({
     mappingEnable:{
         type: Boolean,
         optional: true
+    },
+    qtyOnHand:{
+        type:Object,
+        optional:true,
+        blackbox:true
     }
 });
 
