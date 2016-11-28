@@ -8,7 +8,6 @@ import './invoiceByItem.html';
 import  'printthis';
 //import collection
 import {invoiceSchema} from '../../api/collections/reports/invoice';
-
 //methods
 import {invoiceByItemReport} from '../../../common/methods/reports/invoiceByItem';
 //import from lib
@@ -41,18 +40,29 @@ Tracker.autorun(function () {
 });
 
 indexTmpl.onCreated(function () {
-
-    createNewAlertify('invoiceReport');
+    this.fromDate = new ReactiveVar(moment().startOf('days').toDate());
+    this.endDate = new ReactiveVar(moment().endOf('days').toDate());
+    createNewAlertify('invoiceByItemReport');
     paramsState.set(FlowRouter.query.params());
 });
 indexTmpl.helpers({
     schema(){
         return invoiceSchema;
+    },
+    fromDate(){
+        let instance = Template.instance();
+        return instance.fromDate.get();
+    },
+    endDate(){
+        let instance = Template.instance();
+        return instance.endDate.get();
     }
 });
 indexTmpl.events({
     'change #date-range-filter'(event, instance){
-
+        let currentRangeDate = RangeDate[event.currentTarget.value]();
+        instance.fromDate.set(currentRangeDate.start.toDate());
+        instance.endDate.set(currentRangeDate.end.toDate());
     },
     'click .print'(event, instance){
         $('#to-print').printThis();
@@ -70,6 +80,14 @@ indexTmpl.events({
         } else {
             showInvoicesSummary.set(false);
         }
+    },
+    'click .fullScreen'(event, instance){
+        alertify.invoiceByItemReport(fa('',''), renderTemplate(invoiceDataTmpl)).maximize();
+    }
+});
+invoiceDataTmpl.events({
+    'click .print'(event, instance){
+        $('#to-print').printThis();
     }
 });
 invoiceDataTmpl.helpers({

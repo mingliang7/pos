@@ -345,7 +345,6 @@ newTmpl.helpers({
             if (customerInfo) {
                 if (customerInfo._term) {
                     let term = customerInfo._term;
-
                     let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
                     return dueDate;
                 }
