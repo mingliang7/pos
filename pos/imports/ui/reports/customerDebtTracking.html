@@ -1,0 +1,179 @@
+<template name="Pos_customerDebtTracking">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='customerDebtTrackingReport'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="date" label= 'As of date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="customer" label="Customer"}}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{> afQuickField name="branchId" label="Branch"}}
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>customerDebtTrackingData}}
+        </div>
+    </div>
+</template>
+
+<template name="customerDebtTrackingData">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <br>
+                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h3 class="text-center">{{khName}}</h3>
+                <h4 class="text-center">{{enName}}</h4>
+                <h5 class="text-center">{{khAddress}}</h5>
+                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
+                <br>
+            </div>
+        {{/with}}
+        <div class="col-md-12" align="center"><h3>របាយការណ៍តាមដានបំណុលអតិថិជន</h3></div>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-3">
+                        <address class="">
+                            <strong>Date:</strong>
+                            {{data.title.date}}
+                        </address>
+                    </div>
+                    <!--<div class="col-xs-3 text-right">-->
+                    <!--<address class="">-->
+                    <!--<strong>Exchange: </strong>-->
+                    <!--{{{data.title.exchange}}}-->
+                    <!--</address>-->
+                    <!--</div>-->
+                </div>
+
+            </div>
+        </div>
+        <table class="table table-striped">
+            {{#with data}}
+                {{#each field in content}}
+
+                    <thead class="rpt rpt-header">
+                    <br>
+                    <br>
+                    <tr>
+                        <td><u>អតិថិជន:</u> {{field.customerDoc.name}}</td>
+                    </tr>
+                    <tr>
+                        <td><u>អាស័យដ្ឋាន:</u> {{field.customerDoc.address}}</td>
+                    </tr>
+                    <tr>
+                        <td><u>លេខទូរស័ព្ទ:</u> {{field.customerDoc.telephone}}</td>
+                    </tr>
+                    <tr style="border-top: 1px solid black">
+                        <td>ថ្ងៃខែ</td>
+                        <td>វិក័យប័ត្រ</td>
+                        <td>ល.រ ចំណូល</td>
+                        <td>បរិយាយ</td>
+                        <td>ទំនិញ</td>
+                        <td>សរុប</td>
+                        <td>ទូរទាត់</td>
+                        <td>សមតុល្យ</td>
+                    </tr>
+                    </thead>
+                    <tbody class="rpt rpt-2x rpt-body">
+                    {{#each field.data}}
+                        <tr>
+                            <td>
+                                {{moFormat invoiceDate 'YYYY/MM/DD HH:mm:ss'}}
+                            </td>
+                            <td>
+                                {{invoiceId}}
+                            </td>
+                            <td></td>
+                            <td>Invoice</td>
+                            <td>
+                                <table class="table">
+                                    <thead class="rpt rpt-header">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="rpt rpt-body">
+                                    {{#each items}}
+                                        <tr>
+                                            <td>{{itemName}}</td>
+                                            <td>{{qty}}</td>
+                                            <td>{{numFormat price '0,0.00'}}</td>
+                                            <td>{{numFormat amount '0,0.00'}}</td>
+                                        </tr>
+                                    {{/each}}
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td>{{numFormat total '0,0.00'}}</td>
+                            <td></td>
+                            <td>{{numFormat total '0,0.00'}}</td>
+                        </tr>
+                        {{#each receivePaymentDoc}}
+                            <tr>
+                                <td>{{moFormat paymentDate 'YYYY/MM/DD HH:mm:ss'}}</td>
+                                <td></td>
+                                <td>{{_id}}</td>
+                                <td>Receive Payment</td>
+                                <td></td>
+                                <td></td>
+                                <td>{{numFormat paidAmount '0,0.00'}}</td>
+                                <td>{{numFormat balanceAmount '0,0.00'}}</td>
+                            </tr>
+                        {{/each}}
+                        <tr style="border-bottom: 1px dotted black;">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr></tr>
+                    {{/each}}
+                    <tr>
+                        <td colspan="4"></td>
+                        <td style="border-top: 1px solid black;">Total:</td>
+                        <td style="border-top: 1px solid black;">{{numFormat field.total '0,0.00'}}</td>
+                        <td style="border-top: 1px solid black;">{{numFormat field.paidAmount '0,0.00'}}</td>
+                        <td style="border-top: 1px solid black;">{{numFormat field.balanceAmount '0,0.00'}}</td>
+                    </tr>
+                    </tbody>
+                {{/each}}
+            {{/with}}
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

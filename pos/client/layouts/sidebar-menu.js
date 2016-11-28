@@ -24,6 +24,9 @@ Template.Pos_sidebarMenu.helpers({
     termBalance() {
         return `/pos/report/termCustomerBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}`;
     },
+    customerDebtTracking() {
+        return `/pos/report/customer-debt-tracking?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branchId=${Session.get('currentBranch')}`;
+    },
     invoiceByCustomer() {
         return `/pos/report/invoiceByCustomer?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}`;
     },

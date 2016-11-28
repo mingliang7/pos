@@ -83,6 +83,7 @@ function insertGroupInvoice({collection,range, doc, groupCollection}) {
             invoices: [doc],
             branchId: doc.branchId
         };
+        console.log(`--Log from generate invoice line 86-- ${obj}`);
         let isInserted = groupCollection.insert(obj);
         if(isInserted){
             collection.direct.update(doc._id, {$set: {paymentGroupId: isInserted}});

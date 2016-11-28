@@ -466,3 +466,16 @@ PosRoutes.route('/report/prepaid-order-detail', {
         parent: 'pos.home'
     }
 });
+import '../imports/ui/reports/customerDebtTracking';
+PosRoutes.route('/report/customer-debt-tracking', {
+    name: 'pos.customerDebtTracking',
+    title: 'Customer Debt Tracking Report',
+    action: function (params, queryParams) {
+        Layout.main('Pos_customerDebtTracking');
+    },
+    breadcrumb: {
+        title: 'Customer Debt Tracking',
+        icon: '',
+        parent: 'pos.home'
+    }
+});

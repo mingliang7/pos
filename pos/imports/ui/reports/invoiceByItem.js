@@ -11,6 +11,8 @@ import {invoiceSchema} from '../../api/collections/reports/invoice';
 
 //methods
 import {invoiceByItemReport} from '../../../common/methods/reports/invoiceByItem';
+//import from lib
+import RangeDate from '../../api/libs/date';
 //state
 let paramsState = new ReactiveVar();
 let invoiceData = new ReactiveVar();
@@ -49,6 +51,9 @@ indexTmpl.helpers({
     }
 });
 indexTmpl.events({
+    'change #date-range-filter'(event, instance){
+
+    },
     'click .print'(event, instance){
         $('#to-print').printThis();
     },
@@ -110,7 +115,7 @@ invoiceDataTmpl.helpers({
         string += `<td><u>Total:</u></td><td><u>${numeral(total).format('0,0.00')}</u></td>`;
         return string;
     },
-    getTotalFooter(totalQty,total, n){
+    getTotalFooter(totalQty, total, n){
         let qty = totalQty ? totalQty : '';
         let string = '';
         let fieldLength = this.displayFields.length - n;
@@ -133,8 +138,8 @@ AutoForm.hooks({
             FlowRouter.query.unset();
             let params = {};
             if (doc.fromDate && doc.toDate) {
-                let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
-                let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
+                let fromDate = moment(doc.fromDate).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+                let toDate = moment(doc.toDate).endOf('days').format('YYYY-MM-DD HH:mm:ss');
                 params.date = `${fromDate},${toDate}`;
             }
             if (doc.customer) {
