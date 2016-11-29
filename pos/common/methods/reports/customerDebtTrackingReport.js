@@ -102,17 +102,6 @@ export const customerDebtTrackingReport = new ValidatedMethod({
                                 0
                             ]
                         },
-                        balanceAmount: {
-                            $cond: [
-
-                                {
-                                    $lte: ['$receivePaymentDoc.paymentDate', moment(params.date).endOf('days').toDate()]
-                                },
-
-                                '$receivePaymentDoc.balanceAmount',
-                                '$total'
-                            ]
-                        },
                         items: 1,
                         invoiceDate: 1,
                         receivePaymentDoc: {
@@ -134,7 +123,6 @@ export const customerDebtTrackingReport = new ValidatedMethod({
                         items: {$last: '$items'},
                         invoiceId: {$last: '$_id'},
                         total: {$last: '$total'},
-                        balanceAmount: {$sum: '$balanceAmount'},
                         paidAmount: {$sum: '$paidAmount'},
                         invoiceDate: {$last: '$invoiceDate'},
                         customerId: {$last: '$customerId'},
@@ -184,7 +172,7 @@ export const customerDebtTrackingReport = new ValidatedMethod({
                     $group: {
                         _id: '$customerId',
                         total: {$sum: '$total'},
-                        balanceAmount: {$sum: '$balanceAmount'},
+                        balanceAmount: {$sum: {$subtract: ['$total', '$paidAmount']}},
                         paidAmount: {$sum: '$paidAmount'},
                         data: {$push: '$$ROOT'}
                     }
