@@ -239,78 +239,152 @@ itemsTmpl.events({
         instance.defaultPrice.set(price);
     },
     'click .js-add-item': function (event, instance) {
+
         let itemId = instance.$('[name="itemId"]').val();
         let qty = parseInt(instance.$('[name="qty"]').val());
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         let amount = math.round(qty * price, 2);
         let stockLocationId = $('[name="stockLocationId"]').val();
         debugger;
-        Meteor.call('findItem', itemId, function (error, itemResult) {
-            let itemOfCollectionNull = itemsCollection.findOne({
-                itemId: itemId
-            });
-            let checkQty = 0;
-            if (itemOfCollectionNull) {
-                checkQty = qty + parseInt(itemOfCollectionNull.qty);
-            } else {
-                checkQty = qty;
+        let invoice=instance.view.parentView.parentView._templateInstance.data;
+        if(invoice){
+            let soldQty=0;
+            if(stockLocationId==invoice.stockLocationId){
+                soldQty=invoice.items.find(x => x.itemId==itemId).qty;
             }
-            let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
-            if (checkQty <= inventoryQty) {
-                Meteor.call('addScheme', {itemId}, function (err, result) {
-                    if (!_.isEmpty(result[0])) {
+            Meteor.call('findItem', itemId, function (error, itemResult) {
+                let itemOfCollectionNull = itemsCollection.findOne({
+                    itemId: itemId
+                });
+                let checkQty = 0;
+                if (itemOfCollectionNull) {
+                    checkQty = qty + parseInt(itemOfCollectionNull.qty);
+                } else {
+                    checkQty = qty;
+                }
+                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                inventoryQty+=soldQty;
+                if (checkQty <= inventoryQty) {
+                    Meteor.call('addScheme', {itemId}, function (err, result) {
+                        if (!_.isEmpty(result[0])) {
 
-                        result.forEach(function (item) {
-                            // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
-                            // if(schemeItem) {
-                            //     let amount = item.price * item.quantity;
-                            //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
-                            // }else{
+                            result.forEach(function (item) {
+                                // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
+                                // if(schemeItem) {
+                                //     let amount = item.price * item.quantity;
+                                //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
+                                // }else{
 
-                            itemsCollection.insert({
-                                itemId: item.itemId,
-                                qty: item.quantity * qty,
-                                price: item.price,
-                                amount: (item.price * item.quantity) * qty,
-                                name: item.itemName
-                            });
-                            // }
-                        });
-                    } else {
-                        let exist = itemsCollection.findOne({
-                            itemId: itemId
-                        });
-                        if (exist) {
-                            qty += parseInt(exist.qty);
-                            amount = math.round(qty * price, 2);
-
-                            itemsCollection.update({
-                                _id: exist._id
-                            }, {
-                                $set: {
-                                    qty: qty,
-                                    price: price,
-                                    amount: amount
-                                }
+                                itemsCollection.insert({
+                                    itemId: item.itemId,
+                                    qty: item.quantity * qty,
+                                    price: item.price,
+                                    amount: (item.price * item.quantity) * qty,
+                                    name: item.itemName
+                                });
+                                // }
                             });
                         } else {
-                            itemsCollection.insert({
-                                itemId: itemId,
-                                qty: qty,
-                                price: price,
-                                amount: amount,
-                                name: instance.name
+                            let exist = itemsCollection.findOne({
+                                itemId: itemId
                             });
-                        }
-                    }
-                });
-            }
-            else {
-                alertify.warning('Qty Enough for sale. QtyOnHand is ' + inventoryQty);
-            }
+                            if (exist) {
+                                qty += parseInt(exist.qty);
+                                amount = math.round(qty * price, 2);
 
-        });
-        // Check exist
+                                itemsCollection.update({
+                                    _id: exist._id
+                                }, {
+                                    $set: {
+                                        qty: qty,
+                                        price: price,
+                                        amount: amount
+                                    }
+                                });
+                            } else {
+                                itemsCollection.insert({
+                                    itemId: itemId,
+                                    qty: qty,
+                                    price: price,
+                                    amount: amount,
+                                    name: instance.name
+                                });
+                            }
+                        }
+                    });
+                }
+                else {
+                    alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+                }
+
+            });
+        }else{
+            Meteor.call('findItem', itemId, function (error, itemResult) {
+                let itemOfCollectionNull = itemsCollection.findOne({
+                    itemId: itemId
+                });
+                let checkQty = 0;
+                if (itemOfCollectionNull) {
+                    checkQty = qty + parseInt(itemOfCollectionNull.qty);
+                } else {
+                    checkQty = qty;
+                }
+                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                if (checkQty <= inventoryQty) {
+                    Meteor.call('addScheme', {itemId}, function (err, result) {
+                        if (!_.isEmpty(result[0])) {
+
+                            result.forEach(function (item) {
+                                // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
+                                // if(schemeItem) {
+                                //     let amount = item.price * item.quantity;
+                                //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
+                                // }else{
+
+                                itemsCollection.insert({
+                                    itemId: item.itemId,
+                                    qty: item.quantity * qty,
+                                    price: item.price,
+                                    amount: (item.price * item.quantity) * qty,
+                                    name: item.itemName
+                                });
+                                // }
+                            });
+                        } else {
+                            let exist = itemsCollection.findOne({
+                                itemId: itemId
+                            });
+                            if (exist) {
+                                qty += parseInt(exist.qty);
+                                amount = math.round(qty * price, 2);
+
+                                itemsCollection.update({
+                                    _id: exist._id
+                                }, {
+                                    $set: {
+                                        qty: qty,
+                                        price: price,
+                                        amount: amount
+                                    }
+                                });
+                            } else {
+                                itemsCollection.insert({
+                                    itemId: itemId,
+                                    qty: qty,
+                                    price: price,
+                                    amount: amount,
+                                    name: instance.name
+                                });
+                            }
+                        }
+                    });
+                }
+                else {
+                    alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+                }
+
+            });
+        }
 
     },
     // Reactive table for item
@@ -346,6 +420,7 @@ itemsTmpl.events({
 
     },
     'change .item-qty'(event, instance) {
+        debugger;
         let currentQty = event.currentTarget.value;
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
         let currentItem = itemsCollection.findOne({itemId: itemId});
@@ -362,6 +437,149 @@ itemsTmpl.events({
             }
         }
         itemsCollection.update({itemId: itemId}, selector);
+
+        let invoice=instance.view.parentView.parentView._templateInstance.data;
+        let stockLocationId = $('[name="stockLocationId"]').val();
+        if(invoice){
+            let soldQty=0;
+            if(stockLocationId==invoice.stockLocationId){
+                soldQty=invoice.items.find(x => x.itemId==itemId).qty;
+            }
+            Meteor.call('findItem', itemId, function (error, itemResult) {
+                let itemOfCollectionNull = itemsCollection.findOne({
+                    itemId: itemId
+                });
+                let checkQty = 0;
+                if (itemOfCollectionNull) {
+                    checkQty = qty + parseInt(itemOfCollectionNull.qty);
+                } else {
+                    checkQty = qty;
+                }
+                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                inventoryQty+=soldQty;
+                if (checkQty <= inventoryQty) {
+                    Meteor.call('addScheme', {itemId}, function (err, result) {
+                        if (!_.isEmpty(result[0])) {
+
+                            result.forEach(function (item) {
+                                // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
+                                // if(schemeItem) {
+                                //     let amount = item.price * item.quantity;
+                                //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
+                                // }else{
+
+                                itemsCollection.insert({
+                                    itemId: item.itemId,
+                                    qty: item.quantity * qty,
+                                    price: item.price,
+                                    amount: (item.price * item.quantity) * qty,
+                                    name: item.itemName
+                                });
+                                // }
+                            });
+                        } else {
+                            let exist = itemsCollection.findOne({
+                                itemId: itemId
+                            });
+                            if (exist) {
+                                qty += parseInt(exist.qty);
+                                amount = math.round(qty * price, 2);
+
+                                itemsCollection.update({
+                                    _id: exist._id
+                                }, {
+                                    $set: {
+                                        qty: qty,
+                                        price: price,
+                                        amount: amount
+                                    }
+                                });
+                            } else {
+                                itemsCollection.insert({
+                                    itemId: itemId,
+                                    qty: qty,
+                                    price: price,
+                                    amount: amount,
+                                    name: instance.name
+                                });
+                            }
+                        }
+                    });
+                }
+                else {
+                    alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+                }
+
+            });
+        }
+        else{
+            Meteor.call('findItem', itemId, function (error, itemResult) {
+                let itemOfCollectionNull = itemsCollection.findOne({
+                    itemId: itemId
+                });
+                let checkQty = 0;
+                if (itemOfCollectionNull) {
+                    checkQty = qty + parseInt(itemOfCollectionNull.qty);
+                } else {
+                    checkQty = qty;
+                }
+                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                if (checkQty <= inventoryQty) {
+                    Meteor.call('addScheme', {itemId}, function (err, result) {
+                        if (!_.isEmpty(result[0])) {
+
+                            result.forEach(function (item) {
+                                // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
+                                // if(schemeItem) {
+                                //     let amount = item.price * item.quantity;
+                                //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
+                                // }else{
+
+                                itemsCollection.insert({
+                                    itemId: item.itemId,
+                                    qty: item.quantity * qty,
+                                    price: item.price,
+                                    amount: (item.price * item.quantity) * qty,
+                                    name: item.itemName
+                                });
+                                // }
+                            });
+                        } else {
+                            let exist = itemsCollection.findOne({
+                                itemId: itemId
+                            });
+                            if (exist) {
+                                qty += parseInt(exist.qty);
+                                amount = math.round(qty * price, 2);
+
+                                itemsCollection.update({
+                                    _id: exist._id
+                                }, {
+                                    $set: {
+                                        qty: qty,
+                                        price: price,
+                                        amount: amount
+                                    }
+                                });
+                            } else {
+                                itemsCollection.insert({
+                                    itemId: itemId,
+                                    qty: qty,
+                                    price: price,
+                                    amount: amount,
+                                    name: instance.name
+                                });
+                            }
+                        }
+                    });
+                }
+                else {
+                    alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
+                }
+
+            });
+        }
+
     },
     "keypress .item-qty"(evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
