@@ -25,6 +25,7 @@
                                 </div>
                                 <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
                                 </button>
+                                <a class="btn btn-default fullScreen">Full Screen</a>
                             {{/autoForm}}
                         </div>
                     </div>
@@ -54,32 +55,20 @@
                 <br>
             </div>
         {{/with}}
-        <div class="col-md-12" align="center"><h3>របាយការណ៍តាមដានបំណុលអតិថិជន</h3></div>
-        <div class="row">
-            <div class="col-xs-12">
-                <hr>
-                <div class="row">
-                    <div class="col-xs-3">
-                        <address class="">
-                            <strong>Date:</strong>
-                            {{data.title.date}}
-                        </address>
-                    </div>
-                    <!--<div class="col-xs-3 text-right">-->
-                    <!--<address class="">-->
-                    <!--<strong>Exchange: </strong>-->
-                    <!--{{{data.title.exchange}}}-->
-                    <!--</address>-->
-                    <!--</div>-->
-                </div>
-
-            </div>
+        <div class="col-xs-12" align="center">
+            <h3>
+                <u>របាយការណ៍តាមដានបំណុលអតិថិជន</u>
+            </h3>
+            <p class="text-center">
+                <strong>Date:</strong>
+                {{data.title.date}}
+            </p>
         </div>
         <table class="table table-striped">
             {{#with data}}
                 {{#each field in content}}
 
-                    <thead class="rpt rpt-header">
+                    <thead class="rpt-header">
                     <br>
                     <br>
                     <tr>
@@ -102,7 +91,7 @@
                         <td>សមតុល្យ</td>
                     </tr>
                     </thead>
-                    <tbody class="rpt rpt-2x rpt-body">
+                    <tbody class="rpt-body">
                     {{#each field.data}}
                         <tr>
                             <td>
@@ -115,7 +104,7 @@
                             <td>Invoice</td>
                             <td>
                                 <table class="table">
-                                    <thead class="rpt rpt-header">
+                                    <thead class="rpt-header">
                                     <tr>
                                         <th>Name</th>
                                         <th>Qty</th>

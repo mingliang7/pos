@@ -37,7 +37,7 @@ Tracker.autorun(function () {
 });
 
 indexTmpl.onCreated(function () {
-    createNewAlertify('invoiceReport');
+    createNewAlertify('customerHistory');
     paramsState.set(FlowRouter.query.params());
 });
 indexTmpl.helpers({
@@ -46,16 +46,31 @@ indexTmpl.helpers({
     }
 });
 indexTmpl.events({
+    'click .fullScreen'(event,instance){
+        $('.rpt-header').addClass('rpt');
+        $('.rpt-body').addClass('rpt');
+        alertify.customerHistory(fa('', ''), renderTemplate(invoiceDataTmpl)).maximize();
+    }
+});
+invoiceDataTmpl.events({
     'click .print'(event, instance){
         $('#to-print').printThis();
     }
+});
+invoiceDataTmpl.onDestroyed(function () {
+    $('.rpt-header').removeClass('rpt');
+    $('.rpt-body').removeClass('rpt');
 });
 invoiceDataTmpl.helpers({
     data(){
         if (invoiceData.get()) {
             return invoiceData.get();
         }
-    }
+    },
+    company(){
+        let doc = Session.get('currentUserStockAndAccountMappingDoc');
+        return doc.company;
+    },
 });
 
 

@@ -13,7 +13,7 @@
                         <div class="inbox-head report-header">
                             <div class="row">
                                 <div class="col-md-2">
-                                    <select  class="form-control" id="date-range-filter">
+                                    <select class="form-control" id="date-range-filter">
                                         <option value="today">ថ្ងៃនេះ(Today)</option>
                                         <option value="yesterday">ម្សិលមិញ(Yesterday)</option>
                                         <option value="last7days">៧ ថ្ងៃមុន(Last 7days)</option>
@@ -34,9 +34,9 @@
                                     <div class="col-md-2">
                                         {{> afQuickField name="customer" label="Customer"}}
                                     </div>
-                                    <!--<div class="col-md-4">-->
-                                    <!--{{> afQuickField name="filter" label="Custom Fields"}}-->
-                                    <!--</div>-->
+                                    <div class="col-md-4">
+                                        {{> afQuickField name="branchId" label="Branch"}}
+                                    </div>
 
                                 </div>
                                 <input type="checkbox" class="show-items-summary" checked>SHOW ITEMS SUMMARY
@@ -44,7 +44,8 @@
                                 <br>
                                 <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
                                 </button>
-                                <a class="btn btn-default fullScreen"><i class="fa fa-window-maximize" aria-hidden="true"></i> Full Screen</a>
+                                <a class="btn btn-default fullScreen"><i class="fa fa-window-maximize"
+                                                                         aria-hidden="true"></i> Full Screen</a>
                             {{/autoForm}}
                         </div>
                     </div>
@@ -64,7 +65,7 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid" id="to-print">
+    <div class="container-fluid " id="to-print">
         {{#with company}}
             <div class="col-xs-12">
                 <h3 class="text-center">{{khName}}</h3>
@@ -74,39 +75,24 @@
                 <br>
             </div>
         {{/with}}
-        <div class="col-md-12" align="center"><h3>INVOICE BY ITEMS REPORT</h3></div>
-        <div class="row">
-            <div class="col-xs-12">
-                <hr>
-                <div class="row">
-                    <div class="col-xs-3">
-                        <address class="">
-                            <strong>Date:</strong>
-                            {{data.title.date}}
-                        </address>
-                    </div>
-                    <div class="col-xs-3 text-right">
-                        <address class="">
-                            <strong>Exchange: </strong>
-                            {{{data.title.exchange}}}
-                        </address>
-                    </div>
-                </div>
-
-            </div>
+        <div class="col-xs-12" align="center">
+            <h3>
+                <u>INVOICE BY ITEMS REPORT</u>
+            </h3>
+            <p class="text-center"><b>Date: </b>{{data.title.date}}</p>
         </div>
-        <table class="table table-striped">
+        <table class="table table-responsive table-striped">
             {{#with data}}
                 {{#if showInvoicesSummary}}
-                    <thead>
+                    <thead class="rpt-header">
                     <tr>
                         {{#each data.fields }}
-                            <th><u>{{field}}</u></th>
+                            {{{field}}}
                         {{/each}}
                     </tr>
                     </thead>
+                    <tbody class="rpt-body">
                     {{#each col in content}}
-                        <tbody>
                         {{#each field in col.items}}
                             <tr>
                                 {{{display field}}}
@@ -115,7 +101,6 @@
                         <!--<tr>-->
                         <!--{{{getTotal col.total.totalUsd}}}-->
                         <!--</tr>-->
-                        </tbody>
 
                     {{/each}}
                     <hr>
@@ -123,25 +108,27 @@
                     <tr>
                         {{{getTotalFooter footer.totalQty footer.total 4}}}
                     </tr>
+                    </tbody>
+
                 {{/if}}
-                <tbody>
+                <tbody class="rpt-body">
                 <br>
                 {{#if showItemsSummary}}
                     <tr style="border-bottom: 1px solid #000">
                         <td style="background-color: #d0d0d0"><span><i class="fa fa-file-text"
                                                                        aria-hidden="true"></i> ITEMS SUMMARY</span>
                         </td>
-                        <td style="background-color: #d0d0d0">Qty</td>
-                        <td style="background-color: #d0d0d0">Price</td>
-                        <td colspan="" style="background-color: #d0d0d0">Amount</td>
+                        <td style="background-color: #d0d0d0" class="text-right">Qty</td>
+                        <td style="background-color: #d0d0d0" class="text-right">Price</td>
+                        <td colspan="" style="background-color: #d0d0d0" class="text-right">Amount</td>
                         <td colspan="5" style="background-color: #d0d0d0"></td>
                     </tr>
                     {{#each footer.itemsSummary}}
                         <tr>
                             <td>{{itemName}}</td>
-                            <td>{{qty}}</td>
-                            <td>{{numFormat price '0,0.00'}}</td>
-                            <td><u>{{numFormat amount '0,0.00'}}</u></td>
+                            <td class="text-right">{{numFormat qty '0,0.00'}}</td>
+                            <td class="text-right">{{numFormat price '0,0.00'}}</td>
+                            <td class="text-right"><u>{{numFormat amount '0,0.00'}}</u></td>
                         </tr>
                     {{/each}}
                     <br>

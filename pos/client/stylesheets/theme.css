@@ -668,3 +668,7 @@ tr.cursor-pointer.sale-doc:hover {
         background-color: #ffccbc;
     }
 }
+
+.text-right{
+    text-align: right !important;
+}

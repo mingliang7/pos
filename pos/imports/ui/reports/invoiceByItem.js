@@ -65,7 +65,7 @@ indexTmpl.events({
         instance.endDate.set(currentRangeDate.end.toDate());
     },
     'click .print'(event, instance){
-        $('#to-print').printThis();
+        // $('#to-print').printThis();
     },
     'change .show-items-summary'(event, instance){
         if ($(event.currentTarget).prop('checked')) {
@@ -82,6 +82,8 @@ indexTmpl.events({
         }
     },
     'click .fullScreen'(event, instance){
+        $('.rpt-body').addClass('rpt');
+        $('.rpt-header').addClass('rpt');
         alertify.invoiceByItemReport(fa('',''), renderTemplate(invoiceDataTmpl)).maximize();
     }
 });
@@ -89,6 +91,10 @@ invoiceDataTmpl.events({
     'click .print'(event, instance){
         $('#to-print').printThis();
     }
+});
+invoiceDataTmpl.onDestroyed(function () {
+    $('.rpt-body').removeClass('rpt');
+    $('.rpt-header').removeClass('rpt');
 });
 invoiceDataTmpl.helpers({
     showItemsSummary(){
@@ -114,8 +120,8 @@ invoiceDataTmpl.helpers({
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
-            } else if (obj.field == 'total' || obj.field == 'amount') {
-                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
+            } else if (obj.field == 'qty' || obj.field == 'price' || obj.field == 'total' || obj.field == 'amount') {
+                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
             else {
                 data += `<td>${col[obj.field] || ''}</td>`;
@@ -140,7 +146,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><h5><b>Total:</b></h5> </td><td><h5><b>${numeral(qty).format('0,0')}</b></h5></td><td></td><td><h5><b>${numeral(total).format('0,0.00')}$</b></h5></td>`;
+        string += `<td><b>Total:</b></td><td class="text-right"><b>${numeral(qty).format('0,0.00')}</b></td><td></td><td class="text-right"><b>${numeral(total).format('0,0.00')}$</b></td>`;
         return string;
     },
     capitalize(customerName){
@@ -155,6 +161,7 @@ AutoForm.hooks({
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
+            params.branchId = Session.get('currentBranch');
             if (doc.fromDate && doc.toDate) {
                 let fromDate = moment(doc.fromDate).startOf('days').format('YYYY-MM-DD HH:mm:ss');
                 let toDate = moment(doc.toDate).endOf('days').format('YYYY-MM-DD HH:mm:ss');
@@ -165,6 +172,9 @@ AutoForm.hooks({
             }
             if (doc.filter) {
                 params.filter = doc.filter.join(',');
+            }
+            if(doc.branchId) {
+                params.branchId = doc.branchId.join(',');
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());

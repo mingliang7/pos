@@ -12,6 +12,7 @@ import {Exchange} from '../../../../core/imports/api/collections/exchange';
 // lib func
 import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
 import {exchangeCoefficient} from '../../../imports/api/libs/exchangeCoefficient';
+import ReportFn from "../../../imports/api/libs/report";
 export const invoiceByItemReport = new ValidatedMethod({
     name: 'pos.invoiceByItemReport',
     mixins: [CallPromiseMixin],
@@ -28,8 +29,14 @@ export const invoiceByItemReport = new ValidatedMethod({
                 content: [{index: 'No Result'}],
                 footer: {}
             };
-            let branch = [];
-            let user = Meteor.users.findOne(Meteor.userId());
+            let branchId = [];
+            if(params.branchId) {
+                branchId = params.branchId.split(',');
+                selector.branchId = {
+                    $in: branchId
+                };
+                selector = ReportFn.checkIfUserHasRights({currentUser: Meteor.userId(), selector});
+            }
             let exchange = Exchange.findOne({}, {sort: {_id: -1}});
             let coefficient = exchangeCoefficient({exchange, fieldToCalculate: '$total'})
 
@@ -48,7 +55,7 @@ export const invoiceByItemReport = new ValidatedMethod({
             if (params.customer && params.customer != '') {
                 selector.customerId = params.customer;
             }
-            data.fields = [{field: 'Date'}, {field: 'INVN'}, {field: 'Name'}, {field: 'Addr'}, {field: 'Tel'}, {field: 'Item'}, {field: 'Qty'}, {field: 'Price'}, {field: 'Amount'}];
+            data.fields = [{field: '<th>Date</th>'}, {field: '<th>INVN</th>'}, {field: '<th>Name</th>'}, {field: '<th>Addr</th>'}, {field: '<th>Tel</th>'}, {field: '<th>Item</th>'}, {field: '<th class="text-right">Qty</th>'}, {field: '<th class="text-right">Price</th>'}, {field: '<th class="text-right">Amount</th>'}];
             data.displayFields = [{field: 'date'}, {field: 'invoiceId'}, {field: 'customer'}, {field: 'address'}, {field: 'tel'}, {field: 'itemName'}, {field: 'qty'}, {field: 'price'}, {field: 'amount'}];
 
             // project['$invoice'] = 'Invoice';
