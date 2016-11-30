@@ -5,7 +5,20 @@ import {SelectOpts} from '../../../../../core/imports/ui/libs/select-opts.js';
 
 
 export const customerBalanceSchema = new SimpleSchema({
-    date: {
+    fromDate: {
+        type: Date,
+        defaultValue: moment().toDate(),
+        autoform: {
+            afFieldInput: {
+                type: "bootstrap-datetimepicker",
+                dateTimePickerOptions: {
+                    format: 'DD/MM/YYYY',
+
+                }
+            }
+        }
+    },
+    toDate: {
         type: Date,
         defaultValue: moment().toDate(),
         autoform: {

@@ -11,6 +11,7 @@ import {customerBalanceSchema} from '../../api/collections/reports/customerBalan
 
 //methods
 import {customerDebtTrackingReport} from '../../../common/methods/reports/customerDebtTrackingReport';
+import RangeDate from "../../api/libs/date";
 //state
 let paramsState = new ReactiveVar();
 let invoiceData = new ReactiveVar();
@@ -39,18 +40,35 @@ Tracker.autorun(function () {
 indexTmpl.onCreated(function () {
     createNewAlertify('customerHistory');
     paramsState.set(FlowRouter.query.params());
+    this.fromDate = new ReactiveVar(moment().startOf('days').toDate());
+    this.endDate = new ReactiveVar(moment().endOf('days').toDate());
 });
 indexTmpl.helpers({
     schema(){
         return customerBalanceSchema;
+    },
+    fromDate(){
+        let instance = Template.instance();
+        return instance.fromDate.get();
+    },
+    endDate(){
+        let instance = Template.instance();
+        return instance.endDate.get();
     }
 });
 indexTmpl.events({
-    'click .fullScreen'(event,instance){
+    'click .fullScreen'(event, instance){
         $('.rpt-header').addClass('rpt');
         $('.rpt-body').addClass('rpt');
+        $('.sub-body').addClass('rpt rpt-body');
+        $('.sub-header').addClass('rpt rpt-header');
         alertify.customerHistory(fa('', ''), renderTemplate(invoiceDataTmpl)).maximize();
-    }
+    },
+    'change #date-range-filter'(event, instance){
+        let currentRangeDate = RangeDate[event.currentTarget.value]();
+        instance.fromDate.set(currentRangeDate.start.toDate());
+        instance.endDate.set(currentRangeDate.end.toDate());
+    },
 });
 invoiceDataTmpl.events({
     'click .print'(event, instance){
@@ -60,6 +78,8 @@ invoiceDataTmpl.events({
 invoiceDataTmpl.onDestroyed(function () {
     $('.rpt-header').removeClass('rpt');
     $('.rpt-body').removeClass('rpt');
+    $('.sub-body').removeClass('rpt rpt-body');
+    $('.sub-header').removeClass('rpt rpt-header');
 });
 invoiceDataTmpl.helpers({
     data(){
@@ -81,9 +101,8 @@ AutoForm.hooks({
             FlowRouter.query.unset();
             let params = {};
             params.branchId = Session.get('currentBranch');
-            if (doc.date) {
-                let formatDate = moment(doc.date).format('YYYY-MM-DD');
-                params.date = `${formatDate}`;
+            if (doc.fromDate && doc.toDate) {
+                params.date = `${moment(doc.fromDate).startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment(doc.toDate).endOf('days').format('YYYY-MM-DD HH:mm:ss')}`;
             }
             if (doc.customer) {
                 params.customer = doc.customer
@@ -91,7 +110,7 @@ AutoForm.hooks({
             if (doc.filter) {
                 params.filter = doc.filter.join(',');
             }
-            if(doc.branchId){
+            if (doc.branchId) {
                 params.branchId = doc.branchId.join(',');
             }
             FlowRouter.query.set(params);

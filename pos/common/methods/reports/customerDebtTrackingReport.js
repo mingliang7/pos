@@ -36,26 +36,18 @@ export const customerDebtTrackingReport = new ValidatedMethod({
                 };
                 selector = ReportFn.checkIfUserHasRights({currentUser: Meteor.userId(), selector});
             }
-            let date = moment(params.date).add(1, 'days').toDate();
             let exchange = Exchange.findOne({}, {sort: {_id: -1}});
             let coefficient = exchangeCoefficient({exchange, fieldToCalculate: '$total'})
             selector.invoiceType = {$eq: 'term'};
+            var currentArrDate;
             if (params.date) {
-                data.title.date = moment(params.date).format('YYYY-MMM-DD');
+                currentArrDate = params.date.split(',');
+                data.title.date = moment(currentArrDate[0]).format('YYYY-MMM-DD') + ' - ' + moment(currentArrDate[1]).format('YYYY-MMM-DD');
                 data.title.exchange = `USD = ${coefficient.usd.$multiply[1]} $, KHR = ${coefficient.khr.$multiply[1]}<small> ៛</small>, THB = ${coefficient.thb.$multiply[1]} B`;
-                selector.$or = [
-                    {
-                        invoiceDate: {$lte: moment(params.date).endOf('days').toDate()},
-                        status: {$in: ["active", "partial"]}
-                    },
-                    {
-                        status: 'closed',
-                        closedAt: {
-                            $gte: moment(params.date).startOf('days').toDate(),
-                        },
-                        invoiceDate: {$lte: moment(params.date).startOf('days').toDate()}
-                    }
-                ];
+                selector.invoiceDate = {
+                    $gte: moment(currentArrDate[0]).startOf('days').toDate(),
+                    $lte: moment(currentArrDate[1]).endOf('days').toDate()
+                }
             }
             if (params.customer && params.customer != '') {
                 selector.customerId = params.customer;
@@ -95,7 +87,7 @@ export const customerDebtTrackingReport = new ValidatedMethod({
                             $cond: [
 
                                 {
-                                    $lte: ['$receivePaymentDoc.paymentDate', moment(params.date).endOf('days').toDate()]
+                                    $lte: ['$receivePaymentDoc.paymentDate', moment(currentArrDate[1]).endOf('days').toDate()]
                                 },
 
                                 '$receivePaymentDoc.paidAmount',
@@ -108,7 +100,7 @@ export const customerDebtTrackingReport = new ValidatedMethod({
                             $cond: [
 
                                 {
-                                    $lte: ['$receivePaymentDoc.paymentDate', moment(params.date).endOf('days').toDate()]
+                                    $lte: ['$receivePaymentDoc.paymentDate', moment(currentArrDate[1]).endOf('days').toDate()]
                                 },
 
                                 '$receivePaymentDoc',
