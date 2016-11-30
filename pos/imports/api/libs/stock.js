@@ -88,7 +88,7 @@ export  default class StockFunction {
             nextInventory.remainQty = totalQty;
             nextInventory.type = type;
             nextInventory.amount = item.qty * item.price;
-            //nextInventory.coefficient = 1;
+            nextInventory.coefficient = 1;
             nextInventory.refId = refId;
             nextInventory.lastAmount = lastAmount;
             nextInventory.averagePrice = averagePrice;

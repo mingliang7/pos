@@ -58,7 +58,7 @@ itemsTmpl.onCreated(function () {
     // State
     this.state('amount', 0);
     this.defaultPrice = new ReactiveVar(0);
-    this.defaultItem = new ReactiveVar()
+    this.defaultItem = new ReactiveVar();
     this.defaultQty = new ReactiveVar(0);
     this.autorun(() => {
         if (FlowRouter.query.get('customerId')) {
@@ -246,11 +246,11 @@ itemsTmpl.events({
         let amount = math.round(qty * price, 2);
         let stockLocationId = $('[name="stockLocationId"]').val();
         debugger;
-        let invoice=instance.view.parentView.parentView._templateInstance.data;
-        if(invoice){
-            let soldQty=0;
-            if(stockLocationId==invoice.stockLocationId){
-                soldQty=invoice.items.find(x => x.itemId==itemId).qty;
+        let invoice = instance.view.parentView.parentView._templateInstance.data;
+        if (invoice) {
+            let soldQty = 0;
+            if (stockLocationId == invoice.stockLocationId) {
+                soldQty = invoice.items.find(x => x.itemId == itemId).qty;
             }
             Meteor.call('findItem', itemId, function (error, itemResult) {
                 let itemOfCollectionNull = itemsCollection.findOne({
@@ -263,7 +263,7 @@ itemsTmpl.events({
                     checkQty = qty;
                 }
                 let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
-                inventoryQty+=soldQty;
+                inventoryQty += soldQty;
                 if (checkQty <= inventoryQty) {
                     Meteor.call('addScheme', {itemId}, function (err, result) {
                         if (!_.isEmpty(result[0])) {
@@ -318,7 +318,7 @@ itemsTmpl.events({
                 }
 
             });
-        }else{
+        } else {
             Meteor.call('findItem', itemId, function (error, itemResult) {
                 let itemOfCollectionNull = itemsCollection.findOne({
                     itemId: itemId
@@ -395,7 +395,8 @@ itemsTmpl.events({
         event.preventDefault();
         let itemDoc = this;
         if (AutoForm.getFormId() == "Pos_invoiceUpdate") { //check if update form
-            let isCurrenctItemExistInTmpCollection = instance.data.currentItemsCollection.findOne({itemId: this.itemId}); // check if current item collection has wanted remove item
+
+            let isCurrentItemExistInTmpCollection = instance.data.currentItemsCollection.findOne({itemId: this.itemId}); // check if current item collection has wanted remove item
             swal({
                 title: "Are you sure?",
                 text: "លុបទំនិញមួយនេះ?",
@@ -408,7 +409,7 @@ itemsTmpl.events({
                     if (!deletedItem.findOne({itemId: itemDoc.itemId})) {
                         deletedItem.insert(itemDoc);
                     }
-                    if (isCurrenctItemExistInTmpCollection) {
+                    if (isCurrentItemExistInTmpCollection) {
                         currentItemsInupdateForm.insert(itemDoc);
                     }
                     itemsCollection.remove({itemId: itemDoc.itemId});
@@ -421,6 +422,7 @@ itemsTmpl.events({
     },
     'change .item-qty'(event, instance) {
         debugger;
+        let thisObj=$(event.currentTarget);
         let currentQty = event.currentTarget.value;
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
         let currentItem = itemsCollection.findOne({itemId: itemId});
@@ -432,148 +434,52 @@ itemsTmpl.events({
             }
         } else {
             selector.$set = {
-                amount: 1 * currentItem.price,
-                qty: 1
-            }
+                amount: currentItem.qty * currentItem.price,
+                qty: currentItem.qty
+            };
+            currentQty=currentItem.qty;
+            thisObj.val(currentItem.qty);
         }
-        itemsCollection.update({itemId: itemId}, selector);
 
-        let invoice=instance.view.parentView.parentView._templateInstance.data;
+        let invoice = instance.view.parentView.parentView._templateInstance.data;
         let stockLocationId = $('[name="stockLocationId"]').val();
-        if(invoice){
-            let soldQty=0;
-            if(stockLocationId==invoice.stockLocationId){
-                soldQty=invoice.items.find(x => x.itemId==itemId).qty;
+        if (invoice) {
+            let soldQty = 0;
+            if (stockLocationId == invoice.stockLocationId) {
+                soldQty = invoice.items.find(x => x.itemId == itemId).qty;
             }
             Meteor.call('findItem', itemId, function (error, itemResult) {
-                let itemOfCollectionNull = itemsCollection.findOne({
-                    itemId: itemId
-                });
-                let checkQty = 0;
-                if (itemOfCollectionNull) {
-                    checkQty = qty + parseInt(itemOfCollectionNull.qty);
-                } else {
-                    checkQty = qty;
-                }
+
                 let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
-                inventoryQty+=soldQty;
-                if (checkQty <= inventoryQty) {
-                    Meteor.call('addScheme', {itemId}, function (err, result) {
-                        if (!_.isEmpty(result[0])) {
-
-                            result.forEach(function (item) {
-                                // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
-                                // if(schemeItem) {
-                                //     let amount = item.price * item.quantity;
-                                //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
-                                // }else{
-
-                                itemsCollection.insert({
-                                    itemId: item.itemId,
-                                    qty: item.quantity * qty,
-                                    price: item.price,
-                                    amount: (item.price * item.quantity) * qty,
-                                    name: item.itemName
-                                });
-                                // }
-                            });
-                        } else {
-                            let exist = itemsCollection.findOne({
-                                itemId: itemId
-                            });
-                            if (exist) {
-                                qty += parseInt(exist.qty);
-                                amount = math.round(qty * price, 2);
-
-                                itemsCollection.update({
-                                    _id: exist._id
-                                }, {
-                                    $set: {
-                                        qty: qty,
-                                        price: price,
-                                        amount: amount
-                                    }
-                                });
-                            } else {
-                                itemsCollection.insert({
-                                    itemId: itemId,
-                                    qty: qty,
-                                    price: price,
-                                    amount: amount,
-                                    name: instance.name
-                                });
-                            }
-                        }
-                    });
+                inventoryQty += soldQty;
+                if (currentQty <= inventoryQty) {
+                    itemsCollection.update({itemId: itemId}, selector);
                 }
                 else {
+                    selector.$set = {
+                        amount: currentItem.qty * currentItem.price,
+                        qty: currentItem.qty
+                    };
+                    itemsCollection.update({itemId: itemId}, selector);
+                    thisObj.val(currentItem.qty);
                     alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
                 }
 
             });
         }
-        else{
+        else {
             Meteor.call('findItem', itemId, function (error, itemResult) {
-                let itemOfCollectionNull = itemsCollection.findOne({
-                    itemId: itemId
-                });
-                let checkQty = 0;
-                if (itemOfCollectionNull) {
-                    checkQty = qty + parseInt(itemOfCollectionNull.qty);
-                } else {
-                    checkQty = qty;
-                }
                 let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
-                if (checkQty <= inventoryQty) {
-                    Meteor.call('addScheme', {itemId}, function (err, result) {
-                        if (!_.isEmpty(result[0])) {
-
-                            result.forEach(function (item) {
-                                // let schemeItem = itemsCollection.findOne({itemId: item.itemId});
-                                // if(schemeItem) {
-                                //     let amount = item.price * item.quantity;
-                                //     itemsCollection.update({itemId: schemeItem.itemId}, {$inc: {qty: item.quantity, amount: amount}});
-                                // }else{
-
-                                itemsCollection.insert({
-                                    itemId: item.itemId,
-                                    qty: item.quantity * qty,
-                                    price: item.price,
-                                    amount: (item.price * item.quantity) * qty,
-                                    name: item.itemName
-                                });
-                                // }
-                            });
-                        } else {
-                            let exist = itemsCollection.findOne({
-                                itemId: itemId
-                            });
-                            if (exist) {
-                                qty += parseInt(exist.qty);
-                                amount = math.round(qty * price, 2);
-
-                                itemsCollection.update({
-                                    _id: exist._id
-                                }, {
-                                    $set: {
-                                        qty: qty,
-                                        price: price,
-                                        amount: amount
-                                    }
-                                });
-                            } else {
-                                itemsCollection.insert({
-                                    itemId: itemId,
-                                    qty: qty,
-                                    price: price,
-                                    amount: amount,
-                                    name: instance.name
-                                });
-                            }
-                        }
-                    });
+                if (currentQty <= inventoryQty) {
+                    itemsCollection.update({itemId: itemId}, selector);
                 }
                 else {
+                    selector.$set = {
+                        amount: currentItem.qty * currentItem.price,
+                        qty: currentItem.qty
+                    };
+                    itemsCollection.update({itemId: itemId}, selector);
+                    thisObj.val(currentItem.qty);
                     alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
                 }
 
