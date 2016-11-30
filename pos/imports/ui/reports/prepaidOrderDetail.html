@@ -11,13 +11,25 @@
                 <div class="panel-body">
                     <div class="container-fluid">
                         <div class="inbox-head report-header">
+                            <div class="row">
+                                <div class="col-xs-2">
+                                    <select class="form-control" id="date-range-filter">
+                                        <option value="today">ថ្ងៃនេះ(Today)</option>
+                                        <option value="yesterday">ម្សិលមិញ(Yesterday)</option>
+                                        <option value="last7days">៧ ថ្ងៃមុន(Last 7days)</option>
+                                        <option value="last30days">៣០ ថ្ងៃមុន(Last 30days)</option>
+                                        <option value="thisMonth">ខែនេះ(This Month)</option>
+                                        <option value="lastMonth">ខែមុន(Last Month)</option>
+                                    </select>
+                                </div>
+                            </div>
                             {{#autoForm schema=schema id='prepaidOrderDetail'}}
                                 <div class="row">
                                     <div class="col-md-2">
-                                        {{> afQuickField name="fromDate" label= 'From Date'}}
+                                        {{> afQuickField name="fromDate" label= 'From Date' value=fromDate}}
                                     </div>
                                     <div class="col-md-2">
-                                        {{> afQuickField name="toDate" label='To Date'}}
+                                        {{> afQuickField name="toDate" label='To Date' value=endDate}}
                                     </div>
                                     <div class="col-md-2">
                                         {{> afQuickField name="vendor" label="Vendor"}}
@@ -39,6 +51,8 @@
                                 </div>
                                 <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
                                 </button>
+                                <a class="btn btn-default fullScreen"><i class="" aria-hidden="true"></i> Full Screen
+                                </a>
                             {{/autoForm}}
                         </div>
                     </div>
@@ -60,37 +74,38 @@
     </div>
     <div class="container-fluid" id="to-print">
         {{#with company}}
-            <div class="col-xs-12">
-                <h3 class="text-center">{{khName}}</h3>
-                <h4 class="text-center">{{enName}}</h4>
-                <h5 class="text-center">{{khAddress}}</h5>
-                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
-                <br>
-            </div>
+            <table class="table">
+                <tr>
+                    <td class="text-center"><h3 class="text-center">{{khName}}</h3></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h4 class="text-center">{{enName}}</h4></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h5 class="text-center">{{khAddress}}</h5></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}
+                    </h5></td>
+                </tr>
+            </table>
         {{/with}}
-        <div class="col-md-12" align="center"><h3>PREPAID ORDER REPORT</h3></div>
-        <div class="row">
-            <div class="col-xs-12">
-                <hr>
-                <div class="row">
-                    <div class="col-xs-3">
-                        <address class="">
-                            <strong>Date:</strong>
-                            {{data.title.date}}
-                        </address>
-                    </div>
-                    <div class="col-xs-6 text-right">
-                        <!-- <address>
-                             <strong>Order Date:</strong><br>
-                             March 7, 2014<br><br>
-                         </address>-->
-                    </div>
-                </div>
-
-            </div>
-        </div>
         <table class="table">
-            <thead>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="text-center"><h3><u>PREPAID ORDER REPORT</u></h3></td>
+            </tr>
+            <tr>
+                <td class="text-left"><strong>Date: </strong>{{data.title.date}}</td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+        </table>
+        <table class="table table-striped">
+            <thead class="sub-header">
             <tr>
                 {{#each data.fields }}
                     <th>{{field}}</th>
@@ -98,12 +113,12 @@
 
             </tr>
             </thead>
-            <tbody>
+            <tbody class="sub-body">
             {{#with data}}
                 {{#each content}}
                     <tr style="background: #dddddd">
                         <td>{{_id}}</td>
-                        <td>{{moFormat prepaidOrderDate 'YYYY/MM/DD HH:mm:ss'}}</td>
+                        <td>{{moFormat prepaidOrderDate 'YYYY/MM/DD'}}</td>
                         <td>{{vendorDoc.name}}</td>
                         <td>{{vendorDoc.telephone}}</td>
                         <td>{{status}}</td>
@@ -137,10 +152,36 @@
                         {{{getTotal col.total}}}
                     </tr>
                 {{/each}}
-                <!--<tr>-->
-                    <!--{{{getTotal footer.totalRemainQty footer.total}}}-->
-                <!--</tr>-->
+                <br>
             {{/with}}
+            </tbody>
+        </table>
+        <table class="table">
+            <thead class="sub-header">
+            <tr>
+                <th colspan="5">SUMMARY</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Amount</th>
+            </tr>
+            </thead>
+            <tbody class="sub-body">
+            {{#each data.summary}}
+                <tr>
+                    <td colspan="5"></td>
+                    <td>{{itemName}}</td>
+                    <td class="text-right">{{numFormat balance '0,0.00'}}</td>
+                    <td class="text-right">{{numFormat amount '0,0.00'}}</td>
+                </tr>
+            {{/each}}
+            <tr>
+                <td colspan="5"></td>
+                <td style="border-top: 1px dotted black" class="text-right"><b>TOTAL:</b></td>
+                <td style="border-top: 1px dotted black" class="text-right">{{numFormat data.footer.sum.qty
+                                                                                        '0,0.00'}}</td>
+                <td style="border-top: 1px dotted black" class="text-right">{{numFormat data.footer.sum.total
+                                                                                        '0,0.00'}}</td>
+            </tr>
             </tbody>
         </table>
         {{> ReportSignFooter}}

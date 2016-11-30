@@ -9,6 +9,8 @@ import {prepaidOrderReportSchema} from '../../api/collections/reports/prepaidOrd
 
 //methods
 import {prepaidOrderDetail} from '../../../common/methods/reports/prepaidOrderDetail';
+import {renderTemplate} from '../../../../core/client/libs/render-template.js';
+import RangeDate from "../../api/libs/date";
 //state
 let paramsState = new ReactiveVar();
 let invoiceData = new ReactiveVar();
@@ -35,22 +37,50 @@ Tracker.autorun(function () {
 });
 
 indexTmpl.onCreated(function () {
-    createNewAlertify('invoiceReport');
+    createNewAlertify('prepaidOrderDetail');
     paramsState.set(FlowRouter.query.params());
+    this.fromDate = new ReactiveVar(moment().startOf('days').toDate());
+    this.endDate = new ReactiveVar(moment().endOf('days').toDate());
 });
 indexTmpl.helpers({
     schema(){
         return prepaidOrderReportSchema;
+    },
+    fromDate(){
+        let instance = Template.instance();
+        return instance.fromDate.get();
+    },
+    endDate(){
+        let instance = Template.instance();
+        return instance.endDate.get();
     }
+
 });
 indexTmpl.events({
-    'click .print'(event, instance){
-        $('#to-print').printThis();
+    'change #date-range-filter'(event, instance){
+        let currentRangeDate = RangeDate[event.currentTarget.value]();
+        instance.fromDate.set(currentRangeDate.start.toDate());
+        instance.endDate.set(currentRangeDate.end.toDate());
     },
+
     'change #go-to-prepaid-order'(event, instance){
         if (event.currentTarget.value == 'prepaidOrder') {
             FlowRouter.go(`/pos/report/prepaidOrderReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`);
         }
+    },
+    'click .fullScreen'(event,instance){
+        $('.sub-body').addClass(('rpt rpt-body'));
+        $('.sub-header').addClass(('rpt rpt-header'));
+        alertify.prepaidOrderDetail(fa('',''), renderTemplate(invoiceDataTmpl)).maximize();
+    }
+});
+invoiceDataTmpl.onDestroyed(function () {
+    $('.sub-body').removeClass(('rpt rpt-body'));
+    $('.sub-header').removeClass(('rpt rpt-header'));
+});
+invoiceDataTmpl.events({
+    'click .print'(event, instance){
+        $('#to-print').printThis();
     }
 });
 invoiceDataTmpl.helpers({
@@ -117,7 +147,7 @@ AutoForm.hooks({
             if (doc.vendorId) {
                 params.vendor = doc.vendor
             }
-            if(doc.branchId) {
+            if (doc.branchId) {
                 params.branchId = doc.branchId.join(',');
             }
             if (doc.filter) {

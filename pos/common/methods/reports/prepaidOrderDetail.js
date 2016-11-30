@@ -26,10 +26,16 @@ export const prepaidOrderDetail = new ValidatedMethod({
                 fields: [],
                 displayFields: [],
                 content: [{index: 'No Result'}],
-                footer: {}
+                footer: {
+                    sum: {
+                        total: 0,
+                        qty:0
+                    }
+                },
+                summary: [],
             };
             let branchId = [];
-            if(params.branchId) {
+            if (params.branchId) {
                 branchId = params.branchId.split(',');
                 selector.branchId = {
                     $in: branchId
@@ -69,8 +75,8 @@ export const prepaidOrderDetail = new ValidatedMethod({
                     'sumRemainQty': '$sumRemainQty',
                     'total': '$total'
                 };
-                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Vendor'}, {field: 'Tel'},{field: 'Status'}, {field: 'Remain Qty'}, {field: 'Total'}];
-                data.displayFields = [{field: '_id'}, {field: 'prepaidOrderDate'}, {field: 'vendor'}, {field: 'telephone'},{field: 'status'}, {field: 'sumRemainQty'}, {field: 'total'}];
+                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Vendor'}, {field: 'Tel'}, {field: 'Status'}, {field: 'Remain Qty'}, {field: 'Total'}];
+                data.displayFields = [{field: '_id'}, {field: 'prepaidOrderDate'}, {field: 'vendor'}, {field: 'telephone'}, {field: 'status'}, {field: 'sumRemainQty'}, {field: 'total'}];
             }
 
             /****** Title *****/
@@ -177,41 +183,78 @@ export const prepaidOrderDetail = new ValidatedMethod({
                 }
 
             ]);
-            if(prepaidOrders.length > 0){
+            let itemsSummary = [];
+            if (prepaidOrders.length > 0) {
+                let groupItems = [];
                 prepaidOrders[0].data.forEach(function (doc) {
                     doc.items.forEach(function (item) {
                         let balance = item.qty;
                         let itemDoc = Item.findOne(item.itemId);
                         let arr = [];
+                        groupItems.push({
+                            itemName: itemDoc ? itemDoc.name : '',
+                            order: item.qty,
+                            itemId: item.itemId,
+                            receive: 0,
+                            balance: item.qty,
+                            price: item.price,
+                            amount: item.amount,
+                        });
                         arr.push({
                             itemName: itemDoc ? itemDoc.name : '',
+                            itemId: item.itemId,
                             order: item.qty,
                             receive: 0,
                             balance: item.qty,
                             price: item.price,
-                            amount: item.amount
+                            amount: item.amount,
                         });
 
                         if (doc.receiveItemsDoc.length > 0) {
                             doc.receiveItemsDoc.forEach(function (receiveItem) {
                                 if (item.itemId == receiveItem.itemId) {
+                                    receiveItem.itemName = itemDoc ? itemDoc.name : '';
                                     receiveItem.order = 0;
                                     receiveItem.receive = receiveItem.qty;
                                     receiveItem.balance = balance - receiveItem.qty;
                                     receiveItem.amount = (balance - receiveItem.qty) * receiveItem.price;
                                     balance = balance - receiveItem.qty
                                     arr.push(receiveItem);
+                                    groupItems.push(receiveItem);
                                 }
                             });
                         }
                         item.receiveItemsDoc = arr;
-                    })
+                    });
                 });
+                let itemObj = {};
+                groupItems.forEach(function (item) {
+                    if (_.isUndefined(itemObj[item.itemId])) {
+                        itemObj[item.itemId] = {
+                            itemName: item.itemName,
+                            order: item.order,
+                            receive: item.receive,
+                            price: item.price,
+                            amount: (item.order - item.receive) * item.price
+                        };
+                    } else {
+                        itemObj[item.itemId].order += item.order;
+                        itemObj[item.itemId].receive += item.receive;
+                        itemObj[item.itemId].amount += (item.order - item.receive) * item.price
+                    }
+                });
+                for(let k in itemObj) {
+                    data.footer.sum.total += itemObj[k].amount;
+                    itemObj[k].balance = itemObj[k].order - itemObj[k].receive;
+                    data.footer.sum.qty += (itemObj[k].order - itemObj[k].receive);
+                    itemsSummary.push(itemObj[k]);
+                }
             }
-
             if (prepaidOrders.length > 0) {
                 let sortData = _.sortBy(prepaidOrders[0].data, '_id');
+                let sortItemsSummary = _.sortBy(itemsSummary, 'itemName');
                 prepaidOrders[0].data = sortData;
+                data.summary = sortItemsSummary;
                 data.content = prepaidOrders[0].data;
                 data.footer.total = prepaidOrders[0].total;
                 // data.footer.totalRemainQty = total[0].totalRemainQty
