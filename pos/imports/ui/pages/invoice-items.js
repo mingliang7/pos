@@ -250,7 +250,8 @@ itemsTmpl.events({
         if (invoice) {
             let soldQty = 0;
             if (stockLocationId == invoice.stockLocationId) {
-                soldQty = invoice.items.find(x => x.itemId == itemId).qty;
+                let oldItem = invoice.items.find(x => x.itemId == itemId);
+                soldQty = oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
             }
             Meteor.call('findItem', itemId, function (error, itemResult) {
                 let itemOfCollectionNull = itemsCollection.findOne({
@@ -422,7 +423,7 @@ itemsTmpl.events({
     },
     'change .item-qty'(event, instance) {
         debugger;
-        let thisObj=$(event.currentTarget);
+        let thisObj = $(event.currentTarget);
         let currentQty = event.currentTarget.value;
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
         let currentItem = itemsCollection.findOne({itemId: itemId});
@@ -437,7 +438,7 @@ itemsTmpl.events({
                 amount: currentItem.qty * currentItem.price,
                 qty: currentItem.qty
             };
-            currentQty=currentItem.qty;
+            currentQty = currentItem.qty;
             thisObj.val(currentItem.qty);
         }
 

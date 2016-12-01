@@ -16,6 +16,19 @@ import {invoiceState} from '../../common/globalState/invoice'
 // import methods
 import {updateItemInSaleOrder} from '../../common/methods/sale-order'
 Invoices.before.insert(function (userId, doc) {
+
+    let isEnoughStock = true;
+    let message = "";
+    Meteor.call('checkStockByLocation', doc.stockLocationId, doc.items, function (error, result) {
+        if (!result.isEnoughStock) {
+            isEnoughStock = false;
+            message = result.message;
+        }
+    });
+    if (!isEnoughStock) {
+        throw new Meteor.Error(message);
+    }
+
     if (doc.total == 0) {
         doc.status = 'closed';
         doc.invoiceType = 'saleOrder'
@@ -31,6 +44,37 @@ Invoices.before.insert(function (userId, doc) {
     let prefix = doc.branchId + '-' + todayDate;
     doc._id = idGenerator.genWithPrefix(Invoices, prefix, 4);
     invoiceState.set(tmpInvoiceId, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total})
+});
+
+Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
+    /*console.log(doc);
+     console.log('---------------------');
+     console.log(modifier.$set);*/
+
+    let invoice = doc;
+    let items = modifier.$set.items;
+    let stockLocationId = modifier.$set.stockLocationId;
+    let newItems = [];
+    if (invoice.stockLocationId == stockLocationId) {
+        items.forEach(function (item) {
+            let oldItem = invoice.items.find(x => x.itemId == item.itemId);
+            item.qty -= oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
+            newItems.push(item);
+        });
+    } else {
+        newItems = items;
+    }
+    let isEnoughStock = true;
+    let message = "";
+    Meteor.call('checkStockByLocation', stockLocationId, newItems, function (error, result) {
+        if (!result.isEnoughStock) {
+            isEnoughStock = false;
+            message = result.message;
+        }
+    });
+    if (!isEnoughStock) {
+        throw new Meteor.Error(message);
+    }
 });
 
 Invoices.after.insert(function (userId, doc) {
