@@ -25,6 +25,8 @@
                                 </div>
                                 <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
                                 </button>
+                                <a class="btn btn-default fullScreen">Full Screen
+                                </a>
                             {{/autoForm}}
                         </div>
                     </div>
@@ -46,50 +48,48 @@
     </div>
     <div class="container-fluid" id="to-print">
         {{#with company}}
-            <div class="col-xs-12">
-                <h3 class="text-center">{{khName}}</h3>
-                <h4 class="text-center">{{enName}}</h4>
-                <h5 class="text-center">{{khAddress}}</h5>
-                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
-                <br>
-            </div>
+            <table class="table">
+                <tr>
+                    <td class="text-center"><h3 class="text-center">{{khName}}</h3></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h4 class="text-center">{{enName}}</h4></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h5 class="text-center">{{khAddress}}</h5></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}
+                    </h5></td>
+                </tr>
+                <tr>
+                    <td class="text-center"><h3>CUSTOMER BALANCE REPORT(TERM)</h3></td>
+                </tr>
+                <tr>
+                    <td class="text-left"><strong>Date: </strong>{{data.title.date}}</td>
+                </tr>
+            </table>
         {{/with}}
-        <div class="col-md-12" align="center"><h3>CUSTOMER BALANCE REPORT(TERM)</h3></div>
-        <div class="row">
-            <div class="col-xs-12">
-                <hr>
-                <div class="row">
-                    <div class="col-xs-3">
-                        <address class="">
-                            <strong>Date:</strong>
-                            {{data.title.date}}
-                        </address>
-                    </div>
-                    <!--<div class="col-xs-3 text-right">-->
-                    <!--<address class="">-->
-                    <!--<strong>Exchange: </strong>-->
-                    <!--{{{data.title.exchange}}}-->
-                    <!--</address>-->
-                    <!--</div>-->
-                </div>
-
-            </div>
-        </div>
+        <div class="col-md-12" align="center"></div>
         <table class="table table-striped">
             {{#with data}}
-                <thead>
+                <thead class="sub-header">
                 <tr>
                     {{#each data.fields }}
                         <th><u>{{field}}</u></th>
                     {{/each}}
                 </tr>
                 </thead>
+                <tbody class="sub-body">
+
                 {{#each col in content}}
-                    <tr>
-                        <td>
+
+                    <tr class="sub-body">
+                        <td colspan="3">
                             <u><i>Name: {{capitalize col.customerDoc.name}}</i>
                             </u>
-                        </td>    <td>
+                        </td>
+                        <td>
                             <u><i>Tel: {{capitalize col.customerDoc.telephone}}</i>
                             </u>
                         </td>
@@ -97,19 +97,20 @@
                             <u><i>Address: {{capitalize col.customerDoc.address}}</i>
                             </u>
                         </td>
+                        <td colspan="3"></td>
                     </tr>
-                    <tbody>
                     {{#each field in col.data}}
                         <tr>
                             {{{display field}}}
                         </tr>
                     {{/each}}
-                    <tr>
+                    <tr style="border-bottom: 1px dotted black;">
                         {{{getTotal col.dueAmountSubTotal col.paidAmount col.balance col.customerDoc.name}}}
                     </tr>
-                    </tbody>
 
                 {{/each}}
+                </tbody>
+
                 <!--<tbody>-->
                 <!--<tr>-->
                 <!--{{{getTotalFooter footer.total footer.totalKhr footer.totalThb}}}-->

@@ -7,7 +7,7 @@ import './termCustomerBalance.html';
 //import DI
 import  'printthis';
 //import collection
-import {customerBalanceSchema} from '../../api/collections/reports/customerBalance';
+import {customerTermBalanceSchema} from '../../api/collections/reports/customerTermBalance';
 
 //methods
 import {termCustomerBalanceReport} from '../../../common/methods/reports/termCustomerBalance';
@@ -37,15 +37,26 @@ Tracker.autorun(function () {
 });
 
 indexTmpl.onCreated(function () {
-    createNewAlertify('invoiceReport');
+    createNewAlertify('customerTermBalance');
     paramsState.set(FlowRouter.query.params());
 });
 indexTmpl.helpers({
     schema(){
-        return customerBalanceSchema;
+        return customerTermBalanceSchema;
     }
 });
 indexTmpl.events({
+    'click .fullScreen'(event,instance){
+        $('.sub-body').addClass('rpt rpt-body');
+        $('.sub-header').addClass('rpt rpt-header');
+        alertify.customerTermBalance(fa('', ''), renderTemplate(invoiceDataTmpl)).maximize();
+    }
+});
+invoiceDataTmpl.onDestroyed(function () {
+    $('.sub-body').removeClass('rpt rpt-body');
+    $('.sub-header').removeClass('rpt rpt-header');
+});
+invoiceDataTmpl.events({
     'click .print'(event, instance){
         $('#to-print').printThis();
     }
@@ -68,12 +79,19 @@ invoiceDataTmpl.helpers({
                 if(col[obj.field] == 'None'){
                     data += `<td>${col[obj.field]}</td>`
                 }else{
-                    data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
+                    data += `<td>${moment(col[obj.field]).format('YYYY/MM/DD')}</td>`
                 }
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
             } else if (obj.field == 'dueAmount' || obj.field == 'paidAmount' || obj.field == 'balance') {
-                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
+                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.00')}</td>`
+            }
+            else if(obj.field == 'items'){
+                let itemString = '';
+                col[obj.field].forEach(function (item) {
+                    itemString += `${item.itemName} ${numeral(item.qty).format('0,0')} x${numeral(item.price).format('0,0.00')}$ = ${numeral(item.amount).format('0,0.00')}$, `;
+                });
+                data+=`<td>${itemString}</td>`;
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
@@ -88,7 +106,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td><u>${numeral(dueAmount).format('0,0.00')}</u></td><td><u>${numeral(paidAmount).format('0,0.00')}</u></td><td><u>${numeral(total).format('0,0.00')}</u></td>`;
+        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td class="text-right"><u>${numeral(dueAmount).format('0,0.00')}</u></td><td class="text-right"><u>${numeral(paidAmount).format('0,0.00')}</u></td><td class="text-right"><u>${numeral(total).format('0,0.00')}</u></td>`;
         return string;
     },
     getTotalFooter(total, totalKhr, totalThb){

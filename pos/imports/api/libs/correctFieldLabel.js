@@ -82,6 +82,9 @@ export const correctFieldLabel = function (field) {
         case 'ringPullTransferDate':
             label = 'Transfer Date';
             break;
+        case 'items':
+            label = "Item";
+            break;
     }
     return label;
 };

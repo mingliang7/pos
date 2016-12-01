@@ -71,8 +71,8 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                     'invoiceDate': '$invoiceDate',
                     'total': '$total'
                 };
-                data.fields = [{field: 'Type'}, {field: 'ID'}, {field: 'Invoice Date'}, {field: 'Last Payment'}, {field: 'DueAmount'}, {field: 'PaidAmount'}, {field: 'Balance'}];
-                data.displayFields = [{field: 'invoice'}, {field: '_id'}, {field: 'invoiceDate'}, {field: 'lastPaymentDate'}, {field: 'dueAmount'}, {field: 'paidAmount'}, {field: 'balance'}];
+                data.fields = [{field: 'Type'}, {field: 'ID'}, {field: 'Invoice Date'},{field: 'Item'}, {field: 'Last Payment'}, {field: 'DueAmount'}, {field: 'PaidAmount'}, {field: 'Balance'}];
+                data.displayFields = [{field: 'invoice'}, {field: '_id'}, {field: 'invoiceDate'}, {field: 'items'},{field: 'lastPaymentDate'}, {field: 'dueAmount'}, {field: 'paidAmount'}, {field: 'balance'}];
             }
             // project['$invoice'] = 'Invoice';
             /****** Title *****/
@@ -97,6 +97,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                         _id: '$_id',
                         status: {$last: '$status'},
                         invoiceDoc: {$last: '$$ROOT'},
+                        items: {$last: '$items'},
                         lastPaymentDate: {$last: '$paymentDoc.paymentDate'},
                         dueAmount: {
                             $last: '$paymentDoc.dueAmount'
@@ -113,6 +114,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                     $project: {
                         _id: 1,
                         invoice: {$concat: 'Invoice'},
+                        items: 1,
                         invoiceDoc: {
                             customerId: 1,
                             invoiceDate: 1
@@ -140,12 +142,47 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                     }
                 },
                 {
+                    $unwind: {path: '$items', preserveNullAndEmptyArrays: true}
+                },
+                {
+                  $lookup: {
+                      from: 'pos_item',
+                      localField: 'items.itemId',
+                      foreignField: '_id',
+                      as: 'itemDoc'
+                  }
+                },
+                {
+                    $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                },
+                {
+                    $group:{
+                        _id: '$_id',
+                        invoice: {$last: '$invoice'},
+                        invoiceDoc: {$last: '$invoiceDoc'},
+                        dueAmount: {$last: '$dueAmount'},
+                        paidAmount: {$last: '$paidAmount'},
+                        balance: {$last: '$balance'},
+                        invoiceDate: {$last: '$invoiceDate'},
+                        lastPaymentDate: {$last: '$lastPaymentDate'},
+                        status: {$last: '$status'},
+                        total: {$last: '$total'},
+                        items: {
+                            $push: {
+                                itemName: '$itemDoc.name',
+                                qty: '$items.qty',
+                                price: '$items.price',
+                                amount: '$items.amount'
+                            }
+                        }
+                    }
+                },
+                {
                     $group: {
                         _id: '$invoiceDoc.customerId',
                         data: {
                             $addToSet: '$$ROOT'
                         },
-                        lastPaymentDate: {$last: '$lastPaymentDate'},
                         invoiceDate: {$last: '$invoiceDate'},
                         lastPaymentDate: {$last: '$lastPaymentDate'},
                         dueAmountSubTotal: {$sum: '$dueAmount'},

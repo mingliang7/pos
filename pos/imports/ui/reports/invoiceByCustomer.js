@@ -11,6 +11,7 @@ import {invoiceSchema} from '../../api/collections/reports/invoice';
 
 //methods
 import {invoiceByCustomerReport} from '../../../common/methods/reports/invoiceByCustomer';
+import RangeDate from "../../api/libs/date";
 //state
 let paramsState = new ReactiveVar();
 let invoiceData = new ReactiveVar();
@@ -37,18 +38,46 @@ Tracker.autorun(function () {
 });
 
 indexTmpl.onCreated(function () {
-    createNewAlertify('invoiceReport');
+    createNewAlertify('invoiceByCustomer');
     paramsState.set(FlowRouter.query.params());
+    this.fromDate = new ReactiveVar(moment().startOf('days').toDate());
+    this.endDate = new ReactiveVar(moment().endOf('days').toDate());
 });
 indexTmpl.helpers({
     schema(){
         return invoiceSchema;
+    },
+    fromDate(){
+        let instance = Template.instance();
+        return instance.fromDate.get();
+    },
+    endDate(){
+        let instance = Template.instance();
+        return instance.endDate.get();
     }
 });
+
 indexTmpl.events({
+    'click .fullScreen'(event, instance){
+        $('.sub-body').addClass('rpt rpt-body');
+        $('.sub-header').addClass('rpt rpt-header');
+        alertify.invoiceByCustomer(fa('', ''), renderTemplate(invoiceDataTmpl)).maximize();
+    },
+    'change #date-range-filter'(event, instance){
+        let currentRangeDate = RangeDate[event.currentTarget.value]();
+        instance.fromDate.set(currentRangeDate.start.toDate());
+        instance.endDate.set(currentRangeDate.end.toDate());
+    },
+});
+
+invoiceDataTmpl.events({
     'click .print'(event, instance){
         $('#to-print').printThis();
     }
+});
+invoiceDataTmpl.onDestroyed(function () {
+    $('.sub-body').removeClass('rpt rpt-body');
+    $('.sub-header').removeClass('rpt rpt-header');
 });
 invoiceDataTmpl.helpers({
     company(){
@@ -65,11 +94,18 @@ invoiceDataTmpl.helpers({
         let data = '';
         this.displayFields.forEach(function (obj) {
             if (obj.field == 'invoiceDate') {
-                data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
+                data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD ')}</td>`
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
             } else if (obj.field == 'total') {
-                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
+                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.00')}</td>`
+            }
+            else if (obj.field == 'items') {
+                let itemString = '';
+                col[obj.field].forEach(function (item) {
+                    itemString += `<b>${item.itemName}</b> ${item.qty} x ${item.price}$ = ${item.amount}$, `;
+                });
+                data += `<td>${itemString}</td>`;
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
@@ -84,7 +120,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td><u>${numeral(total).format('0,0.00')}</u></td>`;
+        string += `<td class="text-right"><u>Total ${_.capitalize(customerName)}:</u></td><td class="text-right"><u>${numeral(total).format('0,0.00')}</u></td>`;
         return string;
     },
     getTotalFooter(total, totalKhr, totalThb){
@@ -93,7 +129,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalKhr).format('0,0')}<small>៛</small></b></td><td><b>${numeral(totalThb).format('0,0')}B</b></td><td><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td><b>Total:</td></b><td class="text-center"><b>${numeral(total).format('0,0.00')}$</b></td>`;
         return string;
     },
     capitalize(customerName){
@@ -109,8 +145,8 @@ AutoForm.hooks({
             FlowRouter.query.unset();
             let params = {};
             if (doc.fromDate && doc.toDate) {
-                let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
-                let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
+                let fromDate = moment(doc.fromDate).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+                let toDate = moment(doc.toDate).endOf('days').format('YYYY-MM-DD HH:mm:ss');
                 params.date = `${fromDate},${toDate}`;
             }
             if (doc.customer) {

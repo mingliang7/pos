@@ -4,20 +4,8 @@ import {moment} from 'meteor/momentjs:moment';
 import {SelectOpts} from '../../../../../core/imports/ui/libs/select-opts.js';
 
 
-export const invoiceSchema = new SimpleSchema({
-    fromDate: {
-        type: Date,
-        defaultValue: moment().toDate(),
-        autoform: {
-            afFieldInput: {
-                type: "bootstrap-datetimepicker",
-                dateTimePickerOptions: {
-                    format: 'DD/MM/YYYY',
-                }
-            }
-        }
-    },
-    toDate: {
+export const customerTermBalanceSchema = new SimpleSchema({
+    date: {
         type: Date,
         defaultValue: moment().toDate(),
         autoform: {
@@ -41,7 +29,7 @@ export const invoiceSchema = new SimpleSchema({
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
                         let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
+                        return {branchId: currentBranch, paymentType: 'Term'};
                     }
                 }
             }
@@ -69,10 +57,6 @@ export const invoiceSchema = new SimpleSchema({
                         value: 'invoiceDate'
                     },
                     {
-                        label: 'Item',
-                        value: 'items'
-                    },
-                    {
                         label: 'Status',
                         value: 'status'
                     }
@@ -98,5 +82,5 @@ export const invoiceSchema = new SimpleSchema({
                 }
             }
         }
-    },
+    }
 });

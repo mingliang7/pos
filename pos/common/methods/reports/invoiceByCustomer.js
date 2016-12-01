@@ -71,11 +71,12 @@ export const invoiceByCustomerReport = new ValidatedMethod({
                 project = {
                     'invoice': '$invoice',
                     '_id': '$_id',
+                    'items': '$items',
                     'invoiceDate': '$invoiceDate',
                     'total': '$total'
                 };
-                data.fields = [{field: 'Type'}, {field: 'ID'}, {field: 'Date'}, {field: 'Amount'}];
-                data.displayFields = [{field: 'invoice'}, {field: '_id'}, {field: 'invoiceDate'}, {field: 'total'}];
+                data.fields = [{field: 'Type'}, {field: 'ID'}, {field: 'Date'}, {field: 'Item'}, {field: 'Amount'}];
+                data.displayFields = [{field: 'invoice'}, {field: '_id'}, {field: 'invoiceDate'}, {field: 'items'}, {field: 'total'}];
             }
             // project['$invoice'] = 'Invoice';
             /****** Title *****/
@@ -84,6 +85,46 @@ export const invoiceByCustomerReport = new ValidatedMethod({
             let invoices = Invoices.aggregate([
                 {
                     $match: selector
+                },
+                {
+                    $unwind: {path: '$items', preserveNullAndEmptyArrays: true}
+                },
+                {
+                    $lookup: {
+                        from: 'pos_item',
+                        localField: 'items.itemId',
+                        foreignField: '_id',
+                        as: 'itemDoc'
+                    }
+                },
+                {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
+                {
+                    $group: {
+                        _id: '$_id',
+                        customerId: {$last: '$customerId'},
+                        total: {$last: '$total'},
+                        dueDate: {$last: '$dueDate'},
+                        invoiceDate: {$last: '$invoiceDate'},
+                        branchId: {$last: '$branchId'},
+                        createdAt: {$last: '$createdAt'},
+                        createdBy: {$last: '$createdBy'},
+                        invoiceType: {$last: '$invoiceType'},
+                        items: {
+                            $push: {
+                                itemName: '$itemDoc.name',
+                                price: '$items.price',
+                                qty: '$items.qty',
+                                amount: '$items.amount'
+                            }
+                        },
+                        profit: {$last: '$profit'},
+                        repId: {$last: '$repId'},
+                        staffId: {$last: '$staffId'},
+                        stockLocationId: {$last: 'stockLocationId'},
+                        totalCost: {$last: '$totalCost'},
+                        status: {$last: '$status'}
+
+                    }
                 },
                 {
                     $lookup: {
