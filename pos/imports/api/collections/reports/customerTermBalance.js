@@ -82,5 +82,15 @@ export const customerTermBalanceSchema = new SimpleSchema({
                 }
             }
         }
+    },
+    sortBy: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: 'select',
+            options(){
+                return [{label: 'Customer ID', value: 'customerId'}, {label: 'Customer Name', value: 'customerName'}];
+            }
+        }
     }
 });

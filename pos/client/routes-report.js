@@ -479,3 +479,16 @@ PosRoutes.route('/report/customer-debt-tracking', {
         parent: 'pos.home'
     }
 });
+import '../imports/ui/reports/customerTotalCredit';
+PosRoutes.route('/report/customer-total-credit', {
+    name: 'pos.customerTotalCredit',
+    title: 'Customer Total Credit',
+    action: function (params, queryParams) {
+        Layout.main('Pos_customerTotalCredit');
+    },
+    breadcrumb: {
+        title: 'Customer Total Credit',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
