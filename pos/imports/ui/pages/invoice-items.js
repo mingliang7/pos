@@ -241,11 +241,19 @@ itemsTmpl.events({
     'click .js-add-item': function (event, instance) {
 
         let itemId = instance.$('[name="itemId"]').val();
-        let qty = parseInt(instance.$('[name="qty"]').val());
+        if(itemId==""){
+            alertify.warning('Please choose item.');
+            return;
+        }
+        let qty = instance.$('[name="qty"]').val();
+        qty = qty == '' ? 1 : parseInt(qty);
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         let amount = math.round(qty * price, 2);
         let stockLocationId = $('[name="stockLocationId"]').val();
-        debugger;
+        if(stockLocationId==""){
+            alertify.warning("Please choose stock location.");
+            return;
+        }
         let invoice = instance.view.parentView.parentView._templateInstance.data;
         if (invoice) {
             let soldQty = 0;
@@ -424,11 +432,11 @@ itemsTmpl.events({
     'change .item-qty'(event, instance) {
         debugger;
         let thisObj = $(event.currentTarget);
-        let currentQty = event.currentTarget.value;
+        let currentQty =parseInt(event.currentTarget.value);
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
         let currentItem = itemsCollection.findOne({itemId: itemId});
         let selector = {};
-        if (currentQty != '') {
+        if (currentQty != '' || currentQty!=0) {
             selector.$set = {
                 amount: currentQty * currentItem.price,
                 qty: currentQty

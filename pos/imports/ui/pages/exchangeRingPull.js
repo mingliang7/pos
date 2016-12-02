@@ -138,6 +138,20 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
+    'change [name="stockLocationId"]'(event, instance){
+        debugger;
+        let stockLocationId = $(event.currentTarget).val();
+        let items = itemsCollection.find().fetch();
+        if (items && items.length > 0) {
+            Meteor.call('checkStockByLocation', stockLocationId, items, function (error, result) {
+                if (!result.isEnoughStock) {
+                    itemsCollection.remove({});
+                    alertify.warning(result.message);
+                }
+            });
+        }
+
+    },
     'click .add-new-customer'(event, instance){
         alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
     },
@@ -233,6 +247,31 @@ editTmpl.onCreated(function () {
 
 
 editTmpl.events({
+    'change [name="stockLocationId"]'(event, instance){
+        debugger;
+        let invoice = instance.data;
+        let stockLocationId = $(event.currentTarget).val();
+        let items = itemsCollection.find().fetch();
+
+        let newItems = [];
+        if (invoice.stockLocationId == stockLocationId) {
+            items.forEach(function (item) {
+                let oldItem = invoice.items.find(x => x.itemId == item.itemId);
+                item.qty -= oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
+                newItems.push(item);
+            });
+        } else {
+            newItems = items;
+        }
+        if (items && items.length > 0) {
+            Meteor.call('checkStockByLocation', stockLocationId, newItems, function (error, result) {
+                if (!result.isEnoughStock) {
+                    itemsCollection.remove({});
+                    alertify.warning(result.message);
+                }
+            });
+        }
+    },
     'click .add-new-customer'(event, instance){
         alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
     },

@@ -193,11 +193,6 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
-    'focus [name="stockLocationId"]'(event, instance){
-        debugger;
-        //let previousId =$(event.currentTarget).data('pre');
-        $(event.currentTarget).data('pre', $(event.currentTarget).val());
-    },
     'change [name="stockLocationId"]'(event, instance){
         debugger;
         let stockLocationId = $(event.currentTarget).val();
@@ -418,28 +413,6 @@ editTmpl.onCreated(function () {
 
 
 editTmpl.events({
-    /*'click .update-invoice'(event, instance){
-        debugger;
-        let invoice = instance.data;
-        let stockLocationId = $('[name = "stockLocationId"]').val();
-        let items = itemsCollection.find().fetch();
-        let newItems = [];
-        if (invoice.stockLocationId == stockLocationId) {
-            items.forEach(function (item) {
-                let oldItem = invoice.items.find(x => x.itemId == item.itemId);
-                item.qty -= oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
-                newItems.push(item);
-            });
-        } else {
-            newItems = items;
-        }
-        Meteor.call('checkStockByLocation', stockLocationId, newItems, function (error, result) {
-            if (!result.isEnoughStock) {
-                itemsCollection.remove({});
-                alertify.warning(result.message);
-            }
-        });
-    },*/
     'change [name="stockLocationId"]'(event, instance){
         debugger;
         let invoice = instance.data;

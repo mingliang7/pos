@@ -9,10 +9,53 @@ import {AccountIntegrationSetting} from '../../imports/api/collections/accountIn
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
 import StockFunction from '../../imports/api/libs/stock';
 ExchangeRingPulls.before.insert(function (userId, doc) {
+    let isEnoughStock = true;
+    let message = "";
+    Meteor.call('checkStockByLocation', doc.stockLocationId, doc.items, function (error, result) {
+        if (!result.isEnoughStock) {
+            isEnoughStock = false;
+            message = result.message;
+        }
+    });
+    if (!isEnoughStock) {
+        throw new Meteor.Error(message);
+    }
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
     doc._id = idGenerator.genWithPrefix(ExchangeRingPulls, prefix, 4);
 });
+
+ExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, options) {
+    /*console.log(doc);
+     console.log('---------------------');
+     console.log(modifier.$set);*/
+
+    let invoice = doc;
+    let items = modifier.$set.items;
+    let stockLocationId = modifier.$set.stockLocationId;
+    let newItems = [];
+    if (invoice.stockLocationId == stockLocationId) {
+        items.forEach(function (item) {
+            let oldItem = invoice.items.find(x => x.itemId == item.itemId);
+            item.qty -= oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
+            newItems.push(item);
+        });
+    } else {
+        newItems = items;
+    }
+    let isEnoughStock = true;
+    let message = "";
+    Meteor.call('checkStockByLocation', stockLocationId, newItems, function (error, result) {
+        if (!result.isEnoughStock) {
+            isEnoughStock = false;
+            message = result.message;
+        }
+    });
+    if (!isEnoughStock) {
+        throw new Meteor.Error(message);
+    }
+});
+
 
 ExchangeRingPulls.after.insert(function (userId, doc) {
     Meteor.defer(function () {

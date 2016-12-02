@@ -13,12 +13,8 @@ Meteor.methods({
             if (item.qty > inventoryQty) {
                 result.isEnoughStock = false;
                 result.message = thisItem.name + " is not enough in stock. Qty on hand: " + inventoryQty;
-                console.log(result);
                 return false;
             }
-            console.log(i);
-            i++;
-
         });
         return result;
 
