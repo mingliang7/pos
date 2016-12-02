@@ -17,7 +17,7 @@ import {TransferMoney} from '../../imports/api/collections/transferMoney.js';
 // Page
 Meteor.isClient && require('../../imports/ui/pages/transferMoney.html');
 
-tabularOpts.name = 'pos.quantityRangeMappingTabular';
+tabularOpts.name = 'pos.transferMoneyTabular';
 tabularOpts.collection = TransferMoney;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_transferMoneyAction},

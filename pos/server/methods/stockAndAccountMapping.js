@@ -29,8 +29,20 @@ Meteor.methods({
             },
             {$unwind: {path: '$userDoc', preserveNullAndEmptyArrays: true}},
             {
+                $lookup: {
+                    from: 'core_branch',
+                    localField: 'branchId',
+                    foreignField: '_id',
+                    as: 'branch'
+                }
+            },
+            {$unwind: {path: '$branch', preserveNullAndEmptyArrays: true}},
+            {
                 $group: {
                     _id: '$_id',
+                    branchId: {$last: '$branchId'},
+                    stockLocationsArr: {$push: '$stockLocations'},
+                    branch: {$last: '$branch'},
                     username: {
                         $last: '$userDoc.username'
                     },
@@ -43,6 +55,17 @@ Meteor.methods({
                         }
                     }
 
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    branch: 1,
+                    branchId: 1,
+                    username: 1,
+                    stockLocationsArr: 1,
+                    userId: 1,
+                    stockLocations: 1
                 }
             }
         ]);

@@ -64,33 +64,13 @@
 <!--Show-->
 <template name="Pos_stockAndAccountMappingShow">
     <div class="box-body">
-        {{#if Template.subscriptionsReady}}
-            {{#with data}}
-                <dl class="dl-horizontal">
-                    <dt>{{_ (i18nLabel "_id")}}</dt>
-                    <dd>{{_id}}</dd>
-                    <dt>{{_ (i18nLabel "name")}}</dt>
-                    <dd>{{name}}</dd>
-                    <dt>{{_ (i18nLabel "gender")}}</dt>
-                    <dd>{{gender}}</dd>
-                    <dt>{{_ (i18nLabel "position")}}</dt>
-                    <dd>{{position}}</dd>
-                    <dt>{{_ (i18nLabel "startDate")}}</dt>
-                    <dd>{{moFormat startDate "DD/MM/YYYY"}}</dd>
-                    <dt>{{_ (i18nLabel "salary")}}</dt>
-                    <dd>{{salary}}</dd>
-                    <dt>{{_ (i18nLabel "status")}}</dt>
-                    <dd>{{status}}</dd>
-                    <dt>{{_ (i18nLabel "telephone")}}</dt>
-                    <dd>{{telephone}}</dd>
-                    <dt>{{_ (i18nLabel "email")}}</dt>
-                    <dd>{{email}}</dd>
-                    <dt>{{_ (i18nLabel "address")}}</dt>
-                    <dd>{{address}}</dd>
-                </dl>
-            {{/with}}
-        {{else}}
-            {{> loading}}
-        {{/if}}
+        <dl class="dl-horizontal">
+            <dt>Username:</dt>
+            <dd>{{username}}</dd>
+            <dt>Stock Locations:</dt>
+            <dd>{{extractStockLocations}}</dd>
+            <dt>Branch</dt>
+            <dd>{{branch}}</dd>
+        </dl>
     </div>
 </template>

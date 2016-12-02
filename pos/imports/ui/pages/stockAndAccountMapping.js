@@ -47,7 +47,7 @@ indexTmpl.onCreated(function () {
 
     // Reactive table filter
     this.filter = new ReactiveTable.Filter('pos.stockAndAccountMappingByBranchFilter', ['branchId']);
-    this.autorun(()=> {
+    this.autorun(() => {
         this.filter.set(Session.get('currentBranch'));
     });
 });
@@ -74,7 +74,9 @@ indexTmpl.events({
         );
     },
     'click .js-display' (event, instance) {
-        alertify.stockAndAccountMappingShow(fa('eye', TAPi18n.__('pos.stockAndAccountMapping.title')), renderTemplate(showTmpl, this));
+        Meteor.call('stockAndAccountMappingInfo', {userId: this.userId, branchId: this.branchId}, function (err, result) {
+            alertify.stockAndAccountMappingShow(fa('eye', TAPi18n.__('pos.stockAndAccountMapping.title')), renderTemplate(showTmpl, result));
+        });
     }
 });
 // destroy
@@ -91,7 +93,7 @@ newTmpl.helpers({
     },
     userBranches(){
         let user = Session.get('userBranches');
-        if(user) {
+        if (user) {
             return `<label class="label label-success">(${user.rolesBranch.join(', ')})</label>`;
         }
         return ''
@@ -101,10 +103,10 @@ newTmpl.onDestroyed(function () {
     Session.set('userBranches', undefined);
 });
 newTmpl.events({
-    'change [name="userId"]'(event,instance){
+    'change [name="userId"]'(event, instance){
         Session.set("userBranches", undefined);
-        if(event.currentTarget.value != '') {
-            Meteor.call('lookupUserBranch', event.currentTarget.value,function(err,result) {
+        if (event.currentTarget.value != '') {
+            Meteor.call('lookupUserBranch', event.currentTarget.value, function (err, result) {
                 Session.set("userBranches", result);
             })
         }
@@ -123,17 +125,17 @@ editTmpl.helpers({
     },
     userBranches(){
         let user = Session.get('userBranches');
-        if(user) {
+        if (user) {
             return `<label class="label label-success">(${user.rolesBranch.join(', ')})</label>`;
         }
         return ''
     }
 });
 editTmpl.events({
-    'change [name="userId"]'(event,instance){
+    'change [name="userId"]'(event, instance){
         Session.set("userBranches", undefined);
-        if(event.currentTarget.value != '') {
-            Meteor.call('lookupUserBranch', event.currentTarget.value,function(err,result) {
+        if (event.currentTarget.value != '') {
+            Meteor.call('lookupUserBranch', event.currentTarget.value, function (err, result) {
                 Session.set("userBranches", result);
             })
         }
@@ -143,20 +145,24 @@ editTmpl.onDestroyed(function () {
     Session.set('userBranches', undefined);
 });
 // Show
-showTmpl.onCreated(function () {
-    this.autorun(()=> {
-        this.subscribe('pos.stockAndAccountMapping', {_id: this.data._id});
-    });
-});
+
 
 showTmpl.helpers({
     i18nLabel(label){
         let i18nLabel = `pos.stockAndAccountMapping.schema.${label}.label`;
         return i18nLabel;
     },
-    data () {
-        let data = StockAndAccountMapping.findOne(this._id);
-        return data;
+    extractStockLocations(){
+        let concateStock = '';
+        if (this.stockLocations) {
+            this.stockLocations.forEach(function (stock) {
+                concateStock += `${stock.name},`
+            });
+        }
+        return concateStock
+    },
+    branch(){
+        return this.branch.khName || this.branch.enName;
     }
 });
 

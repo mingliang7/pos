@@ -11,7 +11,7 @@ import {destroyAction} from '../../../../core/client/libs/destroy-action.js';
 //import tabular
 import  {QuantityMappingTabular} from '../../../common/tabulars/quantityMapping';
 
-import {QuantityRangeMapping, QuantityRangeMappingDetail} from '../../api/collections/quantityRangeMapping.js';
+import {QuantityRangeMapping} from '../../api/collections/quantityRangeMapping.js';
 import {tmpCollection} from '../../api/collections/tmpCollection.js';
 import './quantityRangeMapping.html';
 let indexTmpl = Template.Pos_quantityRangeMapping,
@@ -64,7 +64,6 @@ actionTmpl.events({
     },
     'click .js-display'(event, instance){
         alertify.quantityRangeMapping(fa('pencil', 'Display'), renderTemplate(showTmpl, this));
-
     },
     'click .js-destroy'(event, instance) {
         destroyAction(

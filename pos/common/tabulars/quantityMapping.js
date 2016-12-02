@@ -22,16 +22,19 @@ tabularOpts.collection = QuantityRangeMapping;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_quantityRangeMappingAction},
     {data: "_item.name", title: "Item"},
-    {data: "startQty", title: "Start Qty"
+    {
+        data: "startQty", title: "Start Qty"
     },
-    {data: "endQty", title: "End Qty"
+    {
+        data: "endQty", title: "End Qty"
     },
     {
         data: "price", title: "Price"
-    },{
+    },
+    {
         data: "commission", title: "Commission"
     },
     {data: "description", title: 'Description'}
 ];
-tabularOpts.extraFields = ["itemId","_id"];
+tabularOpts.extraFields = ["itemId", "_id"];
 export const QuantityMappingTabular = new Tabular.Table(tabularOpts);

@@ -25,14 +25,14 @@ tabularOpts.columns = [
     {
         data: "userId",
         title: "User",
-        render: function (value) {
+        render: function (value, type,doc) {
             try {
-                let user = nullCollection.findOne({userId: value});
+                let user = nullCollection.findOne({userId: value, branchId: doc.branchId});
                 if (!user) {
-                    Meteor.call('stockAndAccountMappingInfo', {userId: value}, function (err, result) {
+                    Meteor.call('stockAndAccountMappingInfo', {userId: value, branchId: doc.branchId}, function (err, result) {
                         nullCollection.insert(result);
                     });
-                    return nullCollection.findOne({userId: value}).username;
+                    return nullCollection.findOne({userId: value, branchId: doc.branchId}).username;
                 }
                 return user.username;
             } catch (e) {
@@ -45,7 +45,7 @@ tabularOpts.columns = [
         render: function(val, type, doc) {
             let label = '';
             try {
-                let stockLocations = nullCollection.findOne({userId: doc.userId}).stockLocations;
+                let stockLocations = nullCollection.findOne({userId: doc.userId, branchId: doc.branchId}).stockLocations;
                 stockLocations.forEach(function (stockLocation) {
                     label += `${stockLocation.name}, `;
                 });
