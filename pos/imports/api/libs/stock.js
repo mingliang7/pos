@@ -138,7 +138,7 @@ export  default class StockFunction {
             let lastAmount = 0;
             let averagePrice = 0;
             if (totalQty != 0) {
-                lastAmount = item.lastAmount - (item.qty * item.price);
+                lastAmount = inventory.lastAmount - (item.qty * item.price);
                 averagePrice = lastAmount / totalQty;
             }
             let newInventory = {
@@ -317,5 +317,20 @@ export  default class StockFunction {
             gratisInventoryObj.qty = -item.qty;
             GratisInventories.insert(gratisInventoryObj);
         }
+    }
+    static checkStockByLocation(stockLocationId, items){
+        let result = {isEnoughStock: true, message: ''};
+        let i = 1;
+        items.forEach(function (item) {
+            let thisItem = Item.findOne(item.itemId);
+            let inventoryQty = thisItem.qtyOnHand[stockLocationId] == null ? 0 : thisItem.qtyOnHand[stockLocationId];
+            if (item.qty > inventoryQty) {
+                result.isEnoughStock = false;
+                result.message = thisItem.name + " is not enough in stock. Qty on hand: " + inventoryQty;
+                return false;
+            }
+        });
+        return result;
+
     }
 }

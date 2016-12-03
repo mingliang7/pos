@@ -9,16 +9,10 @@ import {AccountIntegrationSetting} from '../../imports/api/collections/accountIn
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
 import StockFunction from '../../imports/api/libs/stock';
 ExchangeRingPulls.before.insert(function (userId, doc) {
-    let isEnoughStock = true;
-    let message = "";
-    Meteor.call('checkStockByLocation', doc.stockLocationId, doc.items, function (error, result) {
-        if (!result.isEnoughStock) {
-            isEnoughStock = false;
-            message = result.message;
-        }
-    });
-    if (!isEnoughStock) {
-        throw new Meteor.Error(message);
+
+    let result=StockFunction.checkStockByLocation(doc.stockLocationId,doc.items);
+    if(!result.isEnoughStock){
+        throw new Meteor.Error( result.message);
     }
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
@@ -43,16 +37,9 @@ ExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, opt
     } else {
         newItems = items;
     }
-    let isEnoughStock = true;
-    let message = "";
-    Meteor.call('checkStockByLocation', stockLocationId, newItems, function (error, result) {
-        if (!result.isEnoughStock) {
-            isEnoughStock = false;
-            message = result.message;
-        }
-    });
-    if (!isEnoughStock) {
-        throw new Meteor.Error(message);
+    let result=StockFunction.checkStockByLocation(stockLocationId, newItems);
+    if(!result.isEnoughStock){
+        throw new Meteor.Error( result.message);
     }
 });
 
@@ -62,11 +49,7 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
         Meteor._sleepForMs(200);
         //ExchangeRingPullManageStock(doc);
         //---------------------------------------------//
-        let inventoryIdList = [];
-        doc.items.forEach(function (item) {
-            let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'exchangeRillPull', doc._id);
-            inventoryIdList.push(id);
-        });
+
         StockFunction.increaseRingPullInventory(doc);
         //Account Integration
         let total = 0;
@@ -83,6 +66,11 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
             } else {
                 throw new Meteor.Error("Not Found Inventory. @ExchangeRingPull-after-insert.");
             }
+        });
+        let inventoryIdList = [];
+        doc.items.forEach(function (item) {
+            let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'exchangeRillPull', doc._id);
+            inventoryIdList.push(id);
         });
         doc.total = total;
         ExchangeRingPulls.direct.update(doc._id, {$set: {items: doc.items, total: doc.total}});
@@ -131,7 +119,6 @@ ExchangeRingPulls.after.update(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
         returnToInventory(preDoc, 'exchangeRingPull-return');
-        ExchangeRingPullManageStock(doc);
         //Account Integration
         let total = 0;
         doc.items.forEach(function (item) {
@@ -148,6 +135,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
                 throw new Meteor.Error("Not Found Inventory. @ExchangeRingPull-after-insert.");
             }
         });
+        ExchangeRingPullManageStock(doc);
         doc.total = total;
         ExchangeRingPulls.direct.update(doc._id, {$set: {items: doc.items, total: doc.total}});
 

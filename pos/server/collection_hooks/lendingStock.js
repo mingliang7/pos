@@ -14,16 +14,10 @@ import {AccountMapping} from '../../imports/api/collections/accountMapping';
 import StockFunction from '../../imports/api/libs/stock';
 
 LendingStocks.before.insert(function (userId, doc) {
-    let isEnoughStock = true;
-    let message = "";
-    Meteor.call('checkStockByLocation', doc.stockLocationId, doc.items, function (error, result) {
-        if (!result.isEnoughStock) {
-            isEnoughStock = false;
-            message = result.message;
-        }
-    });
-    if (!isEnoughStock) {
-        throw new Meteor.Error(message);
+
+    let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
     }
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
@@ -49,16 +43,9 @@ LendingStocks.before.update(function (userId, doc, fieldNames, modifier, options
     } else {
         newItems = items;
     }
-    let isEnoughStock = true;
-    let message = "";
-    Meteor.call('checkStockByLocation', stockLocationId, newItems, function (error, result) {
-        if (!result.isEnoughStock) {
-            isEnoughStock = false;
-            message = result.message;
-        }
-    });
-    if (!isEnoughStock) {
-        throw new Meteor.Error(message);
+    let result = StockFunction.checkStockByLocation(stockLocationId, newItems);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
     }
 });
 

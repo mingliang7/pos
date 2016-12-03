@@ -100,17 +100,12 @@ Meteor.methods({
         }
         let userId = Meteor.userId();
         let locationTransfer = LocationTransfers.findOne(locationTransferId);
-        let isEnoughStock = true;
-        let message = "";
-        Meteor.call('checkStockByLocation', locationTransfer.fromStockLocationId, locationTransfer.items, function (error, result) {
-            if (!result.isEnoughStock) {
-                isEnoughStock = false;
-                message = result.message;
-            }
-        });
-        if (!isEnoughStock) {
-            throw new Meteor.Error(message);
+
+        let result = StockFunction.checkStockByLocation(locationTransfer.fromStockLocationId, locationTransfer.items);
+        if (!result.isEnoughStock) {
+            throw new Meteor.Error(result.message);
         }
+
         Meteor.defer(function () {
             Meteor._sleepForMs(200);
             //---Open Inventory type block "FIFO Inventory"---
