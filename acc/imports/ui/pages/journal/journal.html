@@ -5,15 +5,25 @@
             <h3 class="box-title">
 
                 <p style="margin-bottom: 10px">
-                    <!--<a href="{{pathFor 'acc.journalInsert'}}" type="button" class="btn btn-primary insert">{{fa "plus"}} Add
+                    <!--<a href="{{pathFor 'acc.journalInsert'}}" type="button" class="btn btn-primary insert">{{fa
+                            "plus"}} Add
                 New</a>-->
-                    <button type="button" class="btn btn-primary insert">{{fa "plus"}} Add
-                        New
-                    </button>
-                    <button type="button" class="btn btn-warning insertPayment">{{fa "plus"}} Payment
-                    </button>
-                    <button type="button" class="btn btn-success insertReceive">{{fa "plus"}} Receive
-                    </button>
+
+
+                    {{#if journalType.journal}}
+                        <button type="button" class="btn btn-primary insert">{{fa "plus"}} Add
+                            New
+                        </button>
+                    {{/if}}
+
+                    {{#if journalType.payment}}
+                        <button type="button" class="btn btn-warning insertPayment">{{fa "plus"}} Payment
+                        </button>
+                    {{/if}}
+                    {{#if journalType.received}}
+                        <button type="button" class="btn btn-success insertReceive">{{fa "plus"}} Receive
+                        </button>
+                    {{/if}}
                     <!--<button type="button" class="btn btn-primary otherSystem_journalInsert">{{fa "plus"}} Add New Other
                     </button>-->
                 </p>

@@ -4,7 +4,7 @@
       "home": "Home",
       "item": "Item",
       "customer": "Customer",
-      "prepaidOrder": "Prepaid Order",
+      "prepaidOrder": "Paid to Order",
       "order": "Sale Order",
       "purchaseOrder": "Purchase Order",
       "category": "Category",
@@ -122,7 +122,7 @@
       }
     },
     "prepaidOrder": {
-      "title": "Prepaid Order",
+      "title": "Paid to Order",
       "invoiceAction": "Bill",
       "schema": {
         "_id": {

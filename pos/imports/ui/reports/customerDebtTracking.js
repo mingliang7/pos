@@ -6,6 +6,7 @@ import {renderTemplate} from '../../../../core/client/libs/render-template.js';
 import './customerDebtTracking.html';
 //import DI
 import  'printthis';
+import {JSPanel} from '../../api/libs/jspanel';
 //import collection
 import {customerBalanceSchema} from '../../api/collections/reports/customerBalance';
 
@@ -62,7 +63,20 @@ indexTmpl.events({
         $('.rpt-body').addClass('rpt');
         $('.sub-body').addClass('rpt rpt-body');
         $('.sub-header').addClass('rpt rpt-header');
-        alertify.customerHistory(fa('', ''), renderTemplate(invoiceDataTmpl)).maximize();
+        let arrFooterTool = [
+            {
+                item: "<button type='button'></button>",
+                event: "click",
+                btnclass: 'btn btn-sm btn-primary',
+                btntext: 'Print',
+                callback: function (event) {
+                    setTimeout(function () {
+                        $('#to-print').printThis();
+                    }, 500);
+                }
+            }
+        ];
+        JSPanel({footer: arrFooterTool,title: 'Customer History', content: renderTemplate(invoiceDataTmpl).html}).maximize();
     },
     'change #date-range-filter'(event, instance){
         let currentRangeDate = RangeDate[event.currentTarget.value]();

@@ -58,6 +58,8 @@ var showTpl = Template.acc_journalShow;
 var fixAssetDepCollection = new Mongo.Collection(null);
 var journalDetailCollection = new Mongo.Collection(null);
 var journalDetailPaymentReceiveCollection = new Mongo.Collection(null);
+
+
 stateFixAsset = new ReactiveObj({
     isFixAsset: false
 })
@@ -93,6 +95,7 @@ Tracker.autorun(function () {
 
     }
 
+
     if (Session.get('isTotal')) {
         let totalDr = 0;
         let totalCr = 0;
@@ -116,6 +119,8 @@ Tracker.autorun(function () {
 indexTpl.onCreated(function () {
     createNewAlertify(['journal']);
     stateFixAsset.set('isFixAsset', false);
+
+
 });
 
 //Render
@@ -145,6 +150,21 @@ indexTpl.helpers({
     },
     tabularTable(){
         return JournalTabular;
+    },
+    journalType(){
+        let routeName = FlowRouter.getRouteName();
+        let data = {};
+        data.journal = false;
+        data.payment = false;
+        data.received = false;
+        if (routeName == "acc.journal") {
+            data.journal = true;
+        } else if (routeName == "acc.payment") {
+            data.payment = true;
+        } else if (routeName == "acc.received") {
+            data.received = true;
+        }
+        return data;
     }
 });
 
@@ -645,12 +665,13 @@ AutoForm.hooks({
                     let transactionData = journalDetailPaymentReceiveCollection.find().fetch();
                     var total = 0;
                     var transactionList = [];
+
                     transactionData.forEach(function (obj) {
                         total += obj.amount;
-                        transactionList.push({account: obj.account, dr: obj.amount, cr: 0, drcr: obj.amount})
+                        transactionList.push({account: obj.account, dr: 0, cr: obj.amount, drcr: -obj.amount})
                     });
 
-                    transactionList.push({account: paymentMethod, dr: 0, cr: total, drcr: -total})
+                    transactionList.unshift({account: paymentMethod, dr: total, cr: 0, drcr: total})
 
                     doc.transaction = transactionList;
                     let transactionAssetList = [];

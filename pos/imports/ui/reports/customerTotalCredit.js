@@ -8,7 +8,7 @@ import './customerTotalCredit.html';
 import  'printthis';
 //import collection
 import {customerTermBalanceSchema} from '../../api/collections/reports/customerTermBalance';
-
+import {JSPanel} from '../../api/libs/jspanel';
 //methods
 import {customerTotalCreditReport} from '../../../common/methods/reports/customerTotalCredit';
 //state
@@ -49,7 +49,21 @@ indexTmpl.events({
     'click .fullScreen'(event, instance){
         $('.sub-body').addClass('rpt rpt-body');
         $('.sub-header').addClass('rpt rpt-header');
-        alertify.customerTotalCredit(fa('', ''), renderTemplate(invoiceDataTmpl)).maximize();
+        let arrFooterTool = [
+            {
+                item: "<button type='button'></button>",
+                event: "click",
+                btnclass: 'btn btn-sm btn-primary',
+                btntext: 'Print',
+                callback: function (event) {
+                    setTimeout(function () {
+                        $('#customer-total-credit-print').printThis();
+                    }, 500);
+                }
+            }
+        ];
+        JSPanel({footer: arrFooterTool,title: 'Customer Total Credit', content: renderTemplate(invoiceDataTmpl).html}).maximize();
+
     }
 });
 invoiceDataTmpl.onDestroyed(function () {
@@ -94,11 +108,11 @@ invoiceDataTmpl.helpers({
     },
     getTotalFooter(total){
         let string = '';
-        let fieldLength = this.displayFields.length - 2;
+        let fieldLength = this.displayFields.length - 3;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td ><b>Total:</td></b><td class="text-right">${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td ><b>Total:</td></b><td style="border-top: 1px solid black;" class="text-right"><b>${numeral(total).format('0,0.00')}$</b></td>`;
         return string;
     },
     capitalize(customerName){

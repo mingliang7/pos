@@ -93,25 +93,16 @@ invoiceDataTmpl.helpers({
     display(col){
         let data = '';
         this.displayFields.forEach(function (obj) {
+            console.log(obj);
             if (obj.field == 'invoiceDate') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD ')}</td>`
-            } else if (obj.field == 'customerId') {
-                data += `<td>${col._customer.name}</td>`
             } else if (obj.field == 'total') {
                 data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.00')}</td>`
-            }
-            else if (obj.field == 'items') {
-                let itemString = '';
-                col[obj.field].forEach(function (item) {
-                    itemString += `<b>${item.itemName}</b> ${item.qty} x ${item.price}$ = ${item.amount}$, `;
-                });
-                data += `<td>${itemString}</td>`;
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
             }
         });
-
         return data;
     },
     getTotal(total, customerName){
@@ -120,16 +111,16 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td class="text-right"><u>Total ${_.capitalize(customerName)}:</u></td><td class="text-right"><u>${numeral(total).format('0,0.00')}</u></td>`;
+        string += `<td class="text-right"><u>Total ${_.capitalize(customerName)}:</u></td><td style="border-top: 1px solid black;" class="text-right"><u>${numeral(total).format('0,0.00')}</u></td>`;
         return string;
     },
     getTotalFooter(total, totalKhr, totalThb){
         let string = '';
-        let fieldLength = this.displayFields.length - 4;
+        let fieldLength = this.displayFields.length - 2;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td class="text-center"><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td><b>Grand Total:</td></b><td style="1px solid black;" class="text-right"><b>${numeral(total).format('0,0.00')}$</b></td>`;
         return string;
     },
     capitalize(customerName){

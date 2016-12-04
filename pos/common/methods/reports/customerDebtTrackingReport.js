@@ -26,7 +26,9 @@ export const customerDebtTrackingReport = new ValidatedMethod({
                 fields: [],
                 displayFields: [],
                 content: [{index: 'No Result'}],
-                footer: {}
+                footer: {
+                    totalBalance: 0
+                }
             };
             let branchId = [];
             if (params.branchId) {
@@ -178,10 +180,19 @@ export const customerDebtTrackingReport = new ValidatedMethod({
                     }
                 },
                 {$unwind: {path: '$customerDoc', preserveNullAndEmptyArrays: true}},
-
+                {
+                    $group: {
+                        _id: null,
+                        data: {
+                            $push: '$$ROOT'
+                        },
+                        totalBalance: {$sum: '$balanceAmount'}
+                    }
+                }
             ]);
             if (invoices.length > 0) {
-                data.content = invoices;
+                data.content = invoices[0].data;
+                data.footer.totalBalance = invoices[0].totalBalance;
             }
             return data
         }

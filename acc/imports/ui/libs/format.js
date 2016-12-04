@@ -6,7 +6,11 @@ import '../../../client/subscription/subscriptionGlobal';
 
 Template.registerHelper('formatMoney', function (val) {
     if(val != "title"){
-        return numeral(val).format('(0,0.00)');
+        if(val!= 0){
+            return numeral(val).format('(0,0.00)');
+        }else {
+            return "";
+        }
     }else {
         return "";
     }
@@ -14,7 +18,11 @@ Template.registerHelper('formatMoney', function (val) {
 });
 
 Template.registerHelper('formatMoneyABS', function (val) {
-    return numeral(Math.abs(val)).format('(0,0.00)');
+    if(val!=0){
+        return numeral(Math.abs(val)).format('(0,0.00)');
+    }else {
+        return "";
+    }
 });
 Template.registerHelper('formatPercentage', function (val) {
     return numeral(val / 100).format('0%');
@@ -22,7 +30,11 @@ Template.registerHelper('formatPercentage', function (val) {
 
 Template.registerHelper('formatMoneyNormal', function (val) {
     if (val != "title") {
+        if(val !=0){
             return numeral(val).format('(0,0.00)');
+        }else{
+            return "";
+        }
     } else {
         return "";
     }

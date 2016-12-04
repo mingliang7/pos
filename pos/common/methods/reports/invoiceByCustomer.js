@@ -75,8 +75,8 @@ export const invoiceByCustomerReport = new ValidatedMethod({
                     'invoiceDate': '$invoiceDate',
                     'total': '$total'
                 };
-                data.fields = [{field: 'Type'}, {field: 'ID'}, {field: 'Date'}, {field: 'Item'}, {field: 'Amount'}];
-                data.displayFields = [{field: 'invoice'}, {field: '_id'}, {field: 'invoiceDate'}, {field: 'items'}, {field: 'total'}];
+                data.fields = [{field: 'Type'}, {field: 'ID'}, {field: 'Date'}, {field: 'Item'}, {field: 'Qty'}, {field: 'Price'}, {field: 'Amount'}];
+                data.displayFields = [{field: 'invoice'}, {field: '_id'}, {field: 'invoiceDate'}, {field: 'items'}, {field: 'qty'}, {field: 'price'},{field: 'amount'}];
             }
             // project['$invoice'] = 'Invoice';
             /****** Title *****/
@@ -99,6 +99,9 @@ export const invoiceByCustomerReport = new ValidatedMethod({
                 },
                 {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
                 {
+                  $sort: {'itemDoc.name': 1, _id: 1},
+                },
+                {
                     $group: {
                         _id: '$_id',
                         customerId: {$last: '$customerId'},
@@ -111,10 +114,24 @@ export const invoiceByCustomerReport = new ValidatedMethod({
                         invoiceType: {$last: '$invoiceType'},
                         items: {
                             $push: {
+                                total: '$total',
+                                _id: '$_id',
+                                dueDate: '$dueDate',
+                                invoiceDate: '$invoiceDate',
+                                branchId: '$branchId',
+                                createdAt: '$createdAt',
+                                createdBy: '$createdBy',
+                                invoiceType: '$invoiceType',
                                 itemName: '$itemDoc.name',
                                 price: '$items.price',
                                 qty: '$items.qty',
-                                amount: '$items.amount'
+                                amount: '$items.amount',
+                                profit: '$profit',
+                                repId: '$repId',
+                                staffId: '$staffId',
+                                stockLocationId: '$stockLocationId',
+                                totalCost: '$totalCost',
+                                status: '$status'
                             }
                         },
                         profit: {$last: '$profit'},

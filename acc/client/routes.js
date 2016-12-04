@@ -92,6 +92,61 @@ AccRoutes.route('/journal', {
     }
 });
 
+//Payment
+AccRoutes.route('/payment', {
+    name: 'acc.payment',
+    // subscriptions: function (params, queryParams) {
+    //     this.register(
+    //         'acc_Journal',
+    //         Meteor.subscribe('acc_Journal')
+    //     ),this.register(
+    //         'accChartAccount',
+    //         Meteor.subscribe('accChartAccount')
+    //     ),this.register(
+    //         'accDateEndOfProcess',
+    //         Meteor.subscribe('accDateEndOfProcess')
+    //     );
+    // },
+    title: __('acc.payment.title'),
+    action: function (params, queryParams) {
+        Layout.main('acc_journal');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('acc.payment.title'),
+        parent: 'acc.home'
+    }
+});
+
+//Received
+AccRoutes.route('/received', {
+    name: 'acc.received',
+    // subscriptions: function (params, queryParams) {
+    //     this.register(
+    //         'acc_Journal',
+    //         Meteor.subscribe('acc_Journal')
+    //     ),this.register(
+    //         'accChartAccount',
+    //         Meteor.subscribe('accChartAccount')
+    //     ),this.register(
+    //         'accDateEndOfProcess',
+    //         Meteor.subscribe('accDateEndOfProcess')
+    //     );
+    // },
+    title: __('acc.received.title'),
+    action: function (params, queryParams) {
+        Layout.main('acc_journal');
+    },
+    breadcrumb: {
+        //params: ['id'],
+        //queryParams: ['show', 'color'],
+        title: __('acc.received.title'),
+        parent: 'acc.home'
+    }
+});
+
+
 // Insert
 /*AccRoutes.route('/journalInsert', {
  name: 'acc.journalInsert',

@@ -7,6 +7,9 @@
       "order": "Order",
       "chartAccount": "Chart Account",
       "journal": "Journal Entry",
+      "payment": "Payment",
+      "received": "Received",
+
       "configDep": "Config Depreciation",
       "endOfProcess": "End Of Process",
       "exchangeNBC": "Exchange NBC",
@@ -130,6 +133,13 @@
     },
     "journal": {
       "title": "Journal Entry"
+    },
+
+    "payment": {
+      "title": "Payment"
+    },
+    "received": {
+      "title": "Received"
     },
     "configDep": {
       "title": "Config Depreciation"

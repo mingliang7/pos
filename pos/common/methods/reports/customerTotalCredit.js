@@ -44,9 +44,9 @@ export const customerTotalCreditReport = new ValidatedMethod({
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.invoiceType = {$eq: 'term'};
-            selector.status = 'active';
+            selector.status = {$in: ['active', 'partial']};
             let sortBy = {'customer.name': 1};
-            if(params.sortBy) {
+            if (params.sortBy) {
                 switch (params.sortBy) {
                     case 'customerId':
                         sortBy = {'customer._id': 1};
@@ -91,8 +91,8 @@ export const customerTotalCreditReport = new ValidatedMethod({
                     'customerId': '$_id',
                     'amountDue': '$amountDue',
                 };
-                data.fields = [{field: 'Cust ID'}, {field: 'Customer Name'}, {field: 'Address'}, {field: 'Telephone'}, {field: 'Amt due'}];
-                data.displayFields = [{field: 'customerId'}, {field: 'customerName'}, {field: 'customerAddress'}, {field: 'customerTelephone'}, {field: 'amountDue'}];
+                data.fields = [{field: 'Cust ID'}, {field: 'Customer Name'}, {field: 'Address'}, {field: 'Amt due'}, {field: 'Telephone'}];
+                data.displayFields = [{field: 'customerId'}, {field: 'customerName'}, {field: 'customerAddress'}, {field: 'amountDue'}, {field: 'customerTelephone'}];
             }
             // project['$invoice'] = 'Invoice';
             /****** Title *****/
@@ -101,10 +101,50 @@ export const customerTotalCreditReport = new ValidatedMethod({
             let invoices = Invoices.aggregate([
                 {$match: selector},
                 {
+                    $lookup: {
+                        from: 'pos_receivePayment',
+                        localField: '_id',
+                        foreignField: 'invoiceId',
+                        as: 'paymentDoc'
+                    }
+                },
+                {
+                    $unwind: {path: '$paymentDoc', preserveNullAndEmptyArrays: true}
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        customerId: 1,
+                        total: 1,
+                        paidAmount: {
+                            $cond: [
+                                {
+                                    $lt: ["$paymentDoc.paymentDate", date]
+                                },
+                                '$paymentDoc.paidAmount',
+                                0
+                            ]
+                        }
+                    }
+                },
+                {
                     $group: {
                         _id: '$customerId',
-                        amountDue: {
+                        total: {
                             $sum: '$total'
+                        },
+                        paidAmount: {
+                            $sum: '$paidAmount'
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        total: 1,
+                        paidAmount: 1,
+                        amountDue: {
+                            $subtract: ["$total", "$paidAmount"]
                         }
                     }
                 },
@@ -119,7 +159,7 @@ export const customerTotalCreditReport = new ValidatedMethod({
                 {$unwind: {path: '$customer', preserveNullAndEmptyArrays: true}},
                 {$sort: sortBy},
                 {
-                    $group:{
+                    $group: {
                         _id: null,
                         data: {
                             $push: project
