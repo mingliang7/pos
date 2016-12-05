@@ -6,8 +6,9 @@ import {renderTemplate} from '../../../../core/client/libs/render-template.js';
 import './invoiceByCustomer.html';
 //import DI
 import  'printthis';
+import {JSPanel} from '../../api/libs/jspanel';
 //import collection
-import {invoiceSchema} from '../../api/collections/reports/invoice';
+import {invoiceByCustomerSchema} from '../../api/collections/reports/invoiceByCustomer';
 
 //methods
 import {invoiceByCustomerReport} from '../../../common/methods/reports/invoiceByCustomer';
@@ -45,7 +46,7 @@ indexTmpl.onCreated(function () {
 });
 indexTmpl.helpers({
     schema(){
-        return invoiceSchema;
+        return invoiceByCustomerSchema;
     },
     fromDate(){
         let instance = Template.instance();
@@ -61,7 +62,27 @@ indexTmpl.events({
     'click .fullScreen'(event, instance){
         $('.sub-body').addClass('rpt rpt-body');
         $('.sub-header').addClass('rpt rpt-header');
-        alertify.invoiceByCustomer(fa('', ''), renderTemplate(invoiceDataTmpl)).maximize();
+        // alertify.invoiceByCustomer(fa('', ''), renderTemplate(invoiceDataTmpl)).maximize();
+        let arrFooterTool = [
+            {
+                item: "<button type='button'></button>",
+                event: "click",
+                btnclass: 'btn btn-sm btn-primary',
+                btntext: 'Print',
+                callback: function (event) {
+                    setTimeout(function () {
+                        $('#invoice-by-customer').printThis();
+                    }, 500);
+                }
+            }
+        ];
+        JSPanel(
+            {
+                title: 'Invoice By Customer',
+                content: renderTemplate(invoiceDataTmpl).html,
+                footer: arrFooterTool
+            }
+        ).maximize();
     },
     'change #date-range-filter'(event, instance){
         let currentRangeDate = RangeDate[event.currentTarget.value]();
@@ -130,11 +151,12 @@ invoiceDataTmpl.helpers({
 
 
 AutoForm.hooks({
-    invoiceReport: {
+    invoiceByCustomerReport: {
         onSubmit(doc){
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
+            console.log(doc);
             if (doc.fromDate && doc.toDate) {
                 let fromDate = moment(doc.fromDate).startOf('days').format('YYYY-MM-DD HH:mm:ss');
                 let toDate = moment(doc.toDate).endOf('days').format('YYYY-MM-DD HH:mm:ss');
@@ -145,6 +167,9 @@ AutoForm.hooks({
             }
             if (doc.filter) {
                 params.filter = doc.filter.join(',');
+            }
+            if (doc.itemId) {
+                params.items = doc.itemId.join(',');
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());

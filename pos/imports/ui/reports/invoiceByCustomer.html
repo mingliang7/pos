@@ -23,7 +23,7 @@
                                     </select>
                                 </div>
                             </div>
-                            {{#autoForm schema=schema id='invoiceReport'}}
+                            {{#autoForm schema=schema id='invoiceByCustomerReport'}}
                                 <div class="row">
                                     <div class="col-md-2">
                                         {{> afQuickField name="fromDate" label= 'From Date' value=fromDate}}
@@ -34,9 +34,9 @@
                                     <div class="col-md-2">
                                         {{> afQuickField name="customer" label="Customer"}}
                                     </div>
-                                    <!--<div class="col-md-4">-->
-                                        <!--{{> afQuickField name="filter" label="Custom Fields"}}-->
-                                    <!--</div>-->
+                                    <div class="col-md-4">
+                                        {{> afQuickField name="itemId"}}
+                                    </div>
                                 </div>
                                 <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
                                 </button>
@@ -53,15 +53,7 @@
 </template>
 
 <template name="invoiceByCustomerReportData">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-4">
-                <br>
-                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid" id="to-print">
+    <div class="container-fluid" id="invoice-by-customer">
         {{#with company}}
             <table class="table">
                 <tr>
@@ -120,7 +112,7 @@
                                 <td>{{moFormat item.invoiceDate 'YYYY/MM/DD'}}</td>
                                 <td>{{item.itemName}}</td>
                                 <td class="text-right">{{numFormat item.qty '0,0'}}</td>
-                                <td class="text-right">{{numFormat item.price '0,0.00'}}</td>
+                                <td class="text-right" style="width: 10%;">{{numFormat item.price '0,0.00'}}</td>
                                 <td class="text-right">{{numFormat item.amount '0,0.00'}}</td>
                             </tr>
                         {{/each}}

@@ -64,7 +64,7 @@ SelectOptMethods.stockLocationMapping = new ValidatedMethod({
             if (params.stockLocations) {
                 selector._id = params.stockLocations;
             }
-            if(params.branchId){
+            if (params.branchId) {
                 selector.branchId = params.branchId;
             }
             if (searchText && params.branchId) {
@@ -109,7 +109,7 @@ SelectOptMethods.rep = new ValidatedMethod({
 
             let data = Reps.find(selector, {limit: 10});
             data.forEach(function (value) {
-                let label = value._id + ' : ' + value.name;
+                let label = value.name;
                 list.push({label: label, value: value._id});
             });
 
@@ -144,7 +144,7 @@ SelectOptMethods.customer = new ValidatedMethod({
             let data = Customers.find(selector, {limit: 10});
             data.forEach(function (value) {
                 let termOrGroup = value._term ? ` (Term ${value._term.name})` : ` (Group ${value._paymentGroup.name})`;
-                let label = value._id + ' : ' + value.name + termOrGroup;
+                let label = value.name;
                 list.push({label: label, value: value._id});
             });
             return list;
@@ -181,7 +181,7 @@ SelectOptMethods.vendor = new ValidatedMethod({
             let data = Vendors.find(selector, {limit: 10});
             data.forEach(function (value) {
                 let termOrGroup = value._term ? ` (Term ${value._term.name})` : ` (Group ${value._paymentGroup.name})`;
-                let label = value._id + ' : ' + value.name + termOrGroup;
+                let label = value.name;
                 list.push({label: label, value: value._id});
             });
 
@@ -218,7 +218,7 @@ SelectOptMethods.item = new ValidatedMethod({
             }
             let data = Item.find(selector, {limit: 10});
             data.forEach(function (value) {
-                let label = value._id + ' : ' + value.name;
+                let label = value.name;
                 list.push({label: label, value: value._id});
             });
 

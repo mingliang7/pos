@@ -32,13 +32,17 @@ export const invoiceByCustomerReport = new ValidatedMethod({
             let user = Meteor.users.findOne(Meteor.userId());
             let exchange = Exchange.findOne({}, {sort: {_id: -1}});
             let coefficient = exchangeCoefficient({exchange, fieldToCalculate: '$total'})
-
+            let filterItems = {'items.itemId': {$ne: ''}};
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.invoiceType = {$ne: 'group'};
             selector.status = {$in: ['active', 'partial', 'closed']};
+            if (params.items) {
+                let arr = params.items.split(',');
+                filterItems = {'items.itemId': {$in: arr}};
+            }
             if (params.date) {
-                let dateAsArray = params.date.split(',')
+                let dateAsArray = params.date.split(',');
                 let fromDate = moment(dateAsArray[0]).toDate();
                 let toDate = moment(dateAsArray[1]).toDate();
                 data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
@@ -76,7 +80,7 @@ export const invoiceByCustomerReport = new ValidatedMethod({
                     'total': '$total'
                 };
                 data.fields = [{field: 'Type'}, {field: 'ID'}, {field: 'Date'}, {field: 'Item'}, {field: 'Qty'}, {field: 'Price'}, {field: 'Amount'}];
-                data.displayFields = [{field: 'invoice'}, {field: '_id'}, {field: 'invoiceDate'}, {field: 'items'}, {field: 'qty'}, {field: 'price'},{field: 'amount'}];
+                data.displayFields = [{field: 'invoice'}, {field: '_id'}, {field: 'invoiceDate'}, {field: 'items'}, {field: 'qty'}, {field: 'price'}, {field: 'amount'}];
             }
             // project['$invoice'] = 'Invoice';
             /****** Title *****/
@@ -99,13 +103,14 @@ export const invoiceByCustomerReport = new ValidatedMethod({
                 },
                 {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
                 {
-                  $sort: {'itemDoc.name': 1, _id: 1},
+                    $sort: {'itemDoc.name': 1, _id: 1},
                 },
+                {$match: filterItems},
                 {
                     $group: {
                         _id: '$_id',
                         customerId: {$last: '$customerId'},
-                        total: {$last: '$total'},
+                        total: {$sum: '$items.amount'},
                         dueDate: {$last: '$dueDate'},
                         invoiceDate: {$last: '$invoiceDate'},
                         branchId: {$last: '$branchId'},
@@ -130,15 +135,15 @@ export const invoiceByCustomerReport = new ValidatedMethod({
                                 repId: '$repId',
                                 staffId: '$staffId',
                                 stockLocationId: '$stockLocationId',
-                                totalCost: '$totalCost',
+                                totalCost: '$amountCost',
                                 status: '$status'
                             }
                         },
-                        profit: {$last: '$profit'},
+                        profit: {$sum: '$items.profit'},
                         repId: {$last: '$repId'},
                         staffId: {$last: '$staffId'},
                         stockLocationId: {$last: 'stockLocationId'},
-                        totalCost: {$last: '$totalCost'},
+                        totalCost: {$last: '$items.amountCost'},
                         status: {$last: '$status'}
 
                     }
