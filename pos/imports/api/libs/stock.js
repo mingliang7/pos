@@ -318,7 +318,8 @@ export  default class StockFunction {
             GratisInventories.insert(gratisInventoryObj);
         }
     }
-    static checkStockByLocation(stockLocationId, items){
+
+    static checkStockByLocation(stockLocationId, items) {
         let result = {isEnoughStock: true, message: ''};
         let i = 1;
         items.forEach(function (item) {
@@ -332,5 +333,34 @@ export  default class StockFunction {
         });
         return result;
 
+    }
+
+    static checkStockByLocationWhenUpdate(stockLocationId, items, doc) {
+        /*   let items = [];
+         if (doc.stockLocationId == stockLocationId) {
+         newitems.forEach(function (item) {
+         let oldItem = doc.items.find(x => x.itemId == item.itemId);
+         item.qty -= oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
+         items.push(item);
+         });
+         } else {
+         items = newitems;
+         }*/
+        let result = {isEnoughStock: true, message: ''};
+        items.forEach(function (item) {
+            let qty = 0;
+            if (doc.stockLocationId == stockLocationId) {
+                let oldItem = doc.items.find(x => x.itemId == item.itemId);
+                qty = oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
+            }
+            let thisItem = Item.findOne(item.itemId);
+            let inventoryQty = thisItem.qtyOnHand[stockLocationId] == null ? 0 : thisItem.qtyOnHand[stockLocationId];
+            if (item.qty > inventoryQty + qty) {
+                result.isEnoughStock = false;
+                result.message = thisItem.name + " is not enough in stock. Qty on hand: " + (inventoryQty + qty);
+                return false;
+            }
+        });
+        return result;
     }
 }

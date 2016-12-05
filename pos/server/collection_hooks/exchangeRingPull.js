@@ -20,29 +20,14 @@ ExchangeRingPulls.before.insert(function (userId, doc) {
 });
 
 ExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, options) {
-    /*console.log(doc);
-     console.log('---------------------');
-     console.log(modifier.$set);*/
-
-    let invoice = doc;
-    let items = modifier.$set.items;
+    let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
-    let newItems = [];
-    if (invoice.stockLocationId == stockLocationId) {
-        items.forEach(function (item) {
-            let oldItem = invoice.items.find(x => x.itemId == item.itemId);
-            item.qty -= oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
-            newItems.push(item);
-        });
-    } else {
-        newItems = items;
-    }
-    let result=StockFunction.checkStockByLocation(stockLocationId, newItems);
-    if(!result.isEnoughStock){
-        throw new Meteor.Error( result.message);
+    let data = {stockLocationId: doc.stockLocationId, items: doc.items};
+    let result = StockFunction.checkStockByLocationWhenUpdate(stockLocationId, postDoc.itemList, data);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
     }
 });
-
 
 ExchangeRingPulls.after.insert(function (userId, doc) {
     Meteor.defer(function () {
@@ -115,8 +100,8 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
     });
 });
 ExchangeRingPulls.after.update(function (userId, doc) {
-    let preDoc = this.previous;
-    Meteor.defer(function () {
+    Meteor.defer(()=> {
+        let preDoc = this.previous;
         Meteor._sleepForMs(200);
         returnToInventory(preDoc, 'exchangeRingPull-return');
         //Account Integration

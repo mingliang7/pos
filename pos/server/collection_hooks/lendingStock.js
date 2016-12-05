@@ -24,31 +24,15 @@ LendingStocks.before.insert(function (userId, doc) {
     let tmpBillId = doc._id;
     doc._id = idGenerator.genWithPrefix(LendingStocks, prefix, 4);
 });
-
 LendingStocks.before.update(function (userId, doc, fieldNames, modifier, options) {
-    /*console.log(doc);
-     console.log('---------------------');
-     console.log(modifier.$set);*/
-
-    let invoice = doc;
-    let items = modifier.$set.items;
+    let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
-    let newItems = [];
-    if (invoice.stockLocationId == stockLocationId) {
-        items.forEach(function (item) {
-            let oldItem = invoice.items.find(x => x.itemId == item.itemId);
-            item.qty -= oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
-            newItems.push(item);
-        });
-    } else {
-        newItems = items;
-    }
-    let result = StockFunction.checkStockByLocation(stockLocationId, newItems);
+    let data = {stockLocationId: doc.stockLocationId, items: doc.items};
+    let result = StockFunction.checkStockByLocationWhenUpdate(stockLocationId, postDoc.itemList, data);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
     }
 });
-
 LendingStocks.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
@@ -81,7 +65,7 @@ LendingStocks.after.insert(function (userId, doc) {
 
 LendingStocks.after.update(function (userId, doc, fieldNames, modifier, options) {
     let preDoc = this.previous;
-    Meteor.defer(function () {
+    Meteor.defer(()=> {
         Meteor._sleepForMs(200);
         returnToInventoryAndLendingStock(preDoc);
         lendingStockManageStock(doc);
