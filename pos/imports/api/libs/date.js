@@ -25,4 +25,20 @@ export default class RangeDate {
             end: moment().subtract(1, 'months').endOf('months')
         };
     }
-}
+
+    static subtractMonthBy({date, amountOfSubtract}) {
+        return {date: moment(date).subtract(amountOfSubtract, 'months')}
+    }
+
+    static addMonthBy({date, amountOfAdd}) {
+        return {date: moment(date).add(amountOfAdd, 'months')}
+    }
+
+    static subtractDayBy({date, amountOfSubtract}) {
+        return {date: moment(date).subtract(amountOfSubtract, 'days')}
+    }
+
+    static addDayBy({date, amountOfAdd}) {
+        return {date: moment(date).subtract(amountOfAdd, 'days')}
+    }
+};

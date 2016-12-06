@@ -4,6 +4,11 @@
             <i class="fa fa-home"></i> <span>{{_ "pos.sidebarMenu.home"}}</span>
         </a>
     </li>
+    <li class="{{isActiveRoute name='pos.adminDashboard'}}">
+        <a href="{{pathFor 'pos.adminDashboard'}}">
+            <i class="fa fa-home"></i> <span>Admin Dashboard</span>
+        </a>
+    </li>
 
     <!--Data-->
     {{#if isInRole 'data-insert,data-update,data-remove' 'Pos'}}
