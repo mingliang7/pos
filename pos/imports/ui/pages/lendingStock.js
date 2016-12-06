@@ -131,15 +131,21 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
-    'click #btn-save-print'(event, instance){
-        Session.set('btnType', 'save-print');
+    'change [name="stockLocationId"]'(event, instance){
+        debugger;
+        let stockLocationId = $(event.currentTarget).val();
+
+        let items = itemsCollection.find().fetch();
+        if (items && items.length > 0) {
+            Meteor.call('checkStockByLocation', stockLocationId, items, function (error, result) {
+                if (!result.isEnoughStock) {
+                    itemsCollection.remove({});
+                    alertify.warning(result.message);
+                }
+            });
+        }
+
     },
-    'click #btn-save'(event, instance){
-        Session.set('btnType', 'save');
-    },
-    'click #btn-pay'(event, instance){
-        Session.set('btnType', 'pay');
-    }
 });
 newTmpl.helpers({
     totalOrder(){
@@ -240,14 +246,30 @@ editTmpl.onCreated(function () {
     }
 });
 editTmpl.events({
-    'click #btn-save-print'(event, instance){
-        Session.set('btnType', 'save-print');
-    },
-    'click #btn-save'(event, instance){
-        Session.set('btnType', 'save');
-    },
-    'click #btn-pay'(event, instance){
-        Session.set('btnType', 'pay');
+    'change [name="stockLocationId"]'(event, instance){
+        debugger;
+        let invoice = instance.data;
+        let stockLocationId = $(event.currentTarget).val();
+        let items = itemsCollection.find().fetch();
+
+        let newItems = [];
+        if (invoice.stockLocationId == stockLocationId) {
+            items.forEach(function (item) {
+                let oldItem = invoice.items.find(x => x.itemId == item.itemId);
+                item.qty -= oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
+                newItems.push(item);
+            });
+        } else {
+            newItems = items;
+        }
+        if (items && items.length > 0) {
+            Meteor.call('checkStockByLocation', stockLocationId, newItems, function (error, result) {
+                if (!result.isEnoughStock) {
+                    itemsCollection.remove({});
+                    alertify.warning(result.message);
+                }
+            });
+        }
     },
     'click .add-new-vendor'(event, instance){
         alertify.vendor(fa('plus', 'New Vendor'), renderTemplate(Template.Pos_vendorNew));

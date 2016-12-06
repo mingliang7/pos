@@ -11,13 +11,28 @@ import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder';
 import {GroupBill} from '../../imports/api/collections/groupBill.js'
 import {PayBills} from '../../imports/api/collections/payBill.js';
 import {AccountMapping} from '../../imports/api/collections/accountMapping';
+import StockFunction from '../../imports/api/libs/stock';
+
 LendingStocks.before.insert(function (userId, doc) {
+
+    let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
+    }
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
     let tmpBillId = doc._id;
     doc._id = idGenerator.genWithPrefix(LendingStocks, prefix, 4);
 });
-
+LendingStocks.before.update(function (userId, doc, fieldNames, modifier, options) {
+    let postDoc = {itemList: modifier.$set.items};
+    let stockLocationId = modifier.$set.stockLocationId;
+    let data = {stockLocationId: doc.stockLocationId, items: doc.items};
+    let result = StockFunction.checkStockByLocationWhenUpdate(stockLocationId, postDoc.itemList, data);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
+    }
+});
 LendingStocks.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
@@ -50,7 +65,7 @@ LendingStocks.after.insert(function (userId, doc) {
 
 LendingStocks.after.update(function (userId, doc, fieldNames, modifier, options) {
     let preDoc = this.previous;
-    Meteor.defer(function () {
+    Meteor.defer(()=> {
         Meteor._sleepForMs(200);
         returnToInventoryAndLendingStock(preDoc);
         lendingStockManageStock(doc);
@@ -176,49 +191,8 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
     Item.direct.update(item.itemId, setModifier);
 }
 function lendingStockManageStock(lendingStock) {
-    // let lendingStock = LendingStocks.findOne(lendingStockId);
-    let prefix = lendingStock.stockLocationId + "-";
-    let lendingPrefix = lendingStock.branchId + '-';
     lendingStock.items.forEach(function (item) {
-        //---Open Inventory type block "Average Inventory"---
-        let inventory = AverageInventories.findOne({
-            branchId: lendingStock.branchId,
-            itemId: item.itemId,
-            stockLocationId: lendingStock.stockLocationId
-        }, {sort: {_id: -1}});
-        if (inventory) {
-            let newInventory = {
-                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                branchId: lendingStock.branchId,
-                stockLocationId: lendingStock.stockLocationId,
-                itemId: item.itemId,
-                qty: item.qty,
-                price: inventory.price,
-                remainQty: inventory.remainQty - item.qty,
-                coefficient: -1,
-                type: 'lendingStock',
-                refId: lendingStock._id
-            };
-            AverageInventories.insert(newInventory);
-        }
-        else {
-            let thisItem = Item.findOne(item.itemId);
-            let newInventory = {
-                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
-                branchId: lendingStock.branchId,
-                stockLocationId: lendingStock.stockLocationId,
-                itemId: item.itemId,
-                qty: item.qty,
-                price: thisItem.purchasePrice,
-                remainQty: 0 - item.qty,
-                coefficient: -1,
-                type: 'lendingStock',
-                refId: lendingStock._id
-            };
-            AverageInventories.insert(newInventory);
-        }
-        //--- End Inventory type block "Average Inventory"---
-
+        StockFunction.minusAverageInventoryInsert(lendingStock.branchId, item, lendingStock.stockLocationId, 'lendingStock', lendingStock._id);
         //Manage Lending Stock
         /*let lendingInventory = LendingInventories.findOne({
          itemId: item.itemId,
@@ -249,7 +223,7 @@ function returnToInventoryAndLendingStock(lendingStock) {
     // let lendingStock = Invoices.findOne(lendingStockId);
     lendingStock.items.forEach(function (item) {
         //---Open Inventory type block "Average Inventory"---
-        averageInventoryInsert(
+        StockFunction.averageInventoryInsert(
             lendingStock.branchId,
             item,
             lendingStock.stockLocationId,

@@ -165,39 +165,116 @@ itemsTmpl.events({
     'click .js-add-item': function (event, instance) {
         let itemId = instance.$('[name="itemId"]').val();
         if (itemId == "") {
-            sAlert.warning("Please select Item");
+            alertify.warning("Please select Item");
             return;
         }
         let qty = instance.$('[name="qty"]').val();
         qty = qty == "" ? 1 : parseInt(qty);
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         let amount = math.round(qty * price, 2);
-        // Check exist
-        let exist = itemsCollection.findOne({
-            itemId: itemId
-        });
-        if (exist) {
-            qty += parseInt(exist.qty);
-            amount = math.round(qty * price, 2);
-
-            itemsCollection.update({
-                _id: exist._id
-            }, {
-                $set: {
-                    qty: qty,
-                    price: price,
-                    amount: amount
+        let stockLocationId = $('[name="stockLocationId"]').val();
+        if (stockLocationId == "") {
+            alertify.warning("Please choose stock location.");
+            return;
+        }
+        let invoice = instance.view.parentView.parentView._templateInstance.data;
+        if (invoice) {
+            let soldQty = 0;
+            if (stockLocationId == invoice.stockLocationId) {
+                let oldItem = invoice.items.find(x => x.itemId == itemId);
+                soldQty = oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
+            }
+            Meteor.call('findItem', itemId, function (error, itemResult) {
+                let itemOfCollectionNull = itemsCollection.findOne({
+                    itemId: itemId
+                });
+                let checkQty = 0;
+                if (itemOfCollectionNull) {
+                    checkQty = qty + parseInt(itemOfCollectionNull.qty);
+                } else {
+                    checkQty = qty;
                 }
+                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                inventoryQty += soldQty;
+                if (checkQty <= inventoryQty) {
+                    let exist = itemsCollection.findOne({
+                        itemId: itemId
+                    });
+                    if (exist) {
+                        qty += parseInt(exist.qty);
+                        amount = math.round(qty * price, 2);
+
+                        itemsCollection.update({
+                            _id: exist._id
+                        }, {
+                            $set: {
+                                qty: qty,
+                                price: price,
+                                amount: amount
+                            }
+                        });
+                    }
+                    else {
+                        itemsCollection.insert({
+                            itemId: itemId,
+                            qty: qty,
+                            price: price,
+                            amount: amount,
+                            name: instance.name
+                        });
+                    }
+                }
+                else {
+                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + inventoryQty);
+                }
+
             });
         } else {
-            itemsCollection.insert({
-                itemId: itemId,
-                qty: qty,
-                price: price,
-                amount: amount,
-                name: instance.name
+            Meteor.call('findItem', itemId, function (error, itemResult) {
+                let itemOfCollectionNull = itemsCollection.findOne({
+                    itemId: itemId
+                });
+                let checkQty = 0;
+                if (itemOfCollectionNull) {
+                    checkQty = qty + parseInt(itemOfCollectionNull.qty);
+                } else {
+                    checkQty = qty;
+                }
+                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                if (checkQty <= inventoryQty) {
+                    let exist = itemsCollection.findOne({
+                        itemId: itemId
+                    });
+                    if (exist) {
+                        qty += parseInt(exist.qty);
+                        amount = math.round(qty * price, 2);
+
+                        itemsCollection.update({
+                            _id: exist._id
+                        }, {
+                            $set: {
+                                qty: qty,
+                                price: price,
+                                amount: amount
+                            }
+                        });
+                    }
+                    else {
+                        itemsCollection.insert({
+                            itemId: itemId,
+                            qty: qty,
+                            price: price,
+                            amount: amount,
+                            name: instance.name
+                        });
+                    }   }
+                else {
+                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + inventoryQty);
+                }
+
             });
         }
+
     },
     // Reactive table for item
     'click .js-update-item': function (event, instance) {
@@ -245,7 +322,7 @@ itemsTmpl.events({
 
     },
     'change .item-qty'(event, instance){
-        let currentQty = event.currentTarget.value;
+       /* let currentQty = event.currentTarget.value;
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
         let currentItem = itemsCollection.findOne({itemId: itemId});
         let selector = {};
@@ -254,13 +331,81 @@ itemsTmpl.events({
                 amount: currentQty * currentItem.price,
                 qty: currentQty
             }
-        } else {
+        }
+        else {
             selector.$set = {
                 amount: 1 * currentItem.price,
                 qty: 1
             }
         }
         itemsCollection.update({itemId: itemId}, selector);
+        //--------------------------*/
+        debugger;
+        let thisObj = $(event.currentTarget);
+        let currentQty = parseInt(event.currentTarget.value);
+        let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
+        let currentItem = itemsCollection.findOne({itemId: itemId});
+        let selector = {};
+        if (currentQty != '' || currentQty!=0) {
+            selector.$set = {
+                amount: currentQty * currentItem.price,
+                qty: currentQty
+            }
+        } else {
+            selector.$set = {
+                amount: currentItem.qty * currentItem.price,
+                qty: currentItem.qty
+            };
+            currentQty = currentItem.qty;
+            thisObj.val(currentItem.qty);
+        }
+
+        let invoice = instance.view.parentView.parentView._templateInstance.data;
+        let stockLocationId = $('[name="stockLocationId"]').val();
+        if (invoice) {
+            let soldQty = 0;
+            if (stockLocationId == invoice.stockLocationId) {
+                soldQty = invoice.items.find(x => x.itemId == itemId).qty;
+            }
+            Meteor.call('findItem', itemId, function (error, itemResult) {
+
+                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                inventoryQty += soldQty;
+                if (currentQty <= inventoryQty) {
+                    itemsCollection.update({itemId: itemId}, selector);
+                }
+                else {
+                    selector.$set = {
+                        amount: currentItem.qty * currentItem.price,
+                        qty: currentItem.qty
+                    };
+                    itemsCollection.update({itemId: itemId}, selector);
+                    thisObj.val(currentItem.qty);
+                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + inventoryQty);
+                }
+
+            });
+        }
+        else {
+            Meteor.call('findItem', itemId, function (error, itemResult) {
+                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                if (currentQty <= inventoryQty) {
+                    itemsCollection.update({itemId: itemId}, selector);
+                }
+                else {
+                    selector.$set = {
+                        amount: currentItem.qty * currentItem.price,
+                        qty: currentItem.qty
+                    };
+                    itemsCollection.update({itemId: itemId}, selector);
+                    thisObj.val(currentItem.qty);
+                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + inventoryQty);
+                }
+
+            });
+        }
+
+
     },
     "keypress .item-qty" (evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;

@@ -37,7 +37,7 @@ EnterBills.after.insert(function (userId, doc) {
             Meteor.call('pos.generateInvoiceGroup', {doc});
         }
         doc.items.forEach(function (item) {
-            let id = StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'insert-bill', doc._id);
+            let id = StockFunction.averageInventoryInsertForBill(doc.branchId, item, doc.stockLocationId, 'insert-bill', doc._id);
             inventoryIdList.push(id);
         });
         //Account Integration
@@ -72,8 +72,7 @@ EnterBills.after.insert(function (userId, doc) {
         }
         //End Account Integration
     });
-})
-;
+});
 
 EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
     let preDoc = this.previous;
@@ -98,12 +97,12 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
         Meteor._sleepForMs(200);
         let inventoryIdList = [];
         preDoc.items.forEach(function (preItem) {
-            let id = StockFunction.minusAverageInventoryInsert(preDoc.branchId, preItem, preDoc.stockLocationId, 'reduce-from-bill', doc._id);
+            let id = StockFunction.minusAverageInventoryInsertForBill(preDoc.branchId, preItem, preDoc.stockLocationId, 'reduce-from-bill', doc._id);
             inventoryIdList.push(id);
         });
         //reduceFromInventory(preDoc);
         doc.items.forEach(function (item) {
-            let id = StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
+            let id = StockFunction.averageInventoryInsertForBill(doc.branchId, item, doc.stockLocationId, 'enterBill', doc._id);
             inventoryIdList.push(id);
         });
 
@@ -162,7 +161,7 @@ EnterBills.after.remove(function (userId, doc) {
         if (type.group) {
             //reduceFromInventory(doc);
             doc.items.forEach(function (item) {
-                let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'reduce-from-bill', doc._id);
+                let id = StockFunction.minusAverageInventoryInsertForBill(doc.branchId, item, doc.stockLocationId, 'reduce-from-bill', doc._id);
                 inventoryIdList.push(id);
             });
             removeBillFromGroup(doc);
@@ -175,7 +174,7 @@ EnterBills.after.remove(function (userId, doc) {
         } else {
             //  reduceFromInventory(doc);
             doc.items.forEach(function (item) {
-                let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'reduce-from-bill', doc._id);
+                let id = StockFunction.minusAverageInventoryInsertForBill(doc.branchId, item, doc.stockLocationId, 'reduce-from-bill', doc._id);
                 inventoryIdList.push(id);
             });
         }
