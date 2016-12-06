@@ -211,7 +211,6 @@ function returnToInventory(exchangeRingPull, type) {
     //---Open Inventory type block "Average Inventory"---
     // let exchangeRingPull = Invoices.findOne(exchangeRingPullId);
     exchangeRingPull.items.forEach(function (item) {
-        item.price = item.cost;
         StockFunction.averageInventoryInsert(
             exchangeRingPull.branchId,
             item,
@@ -219,7 +218,6 @@ function returnToInventory(exchangeRingPull, type) {
             type,
             exchangeRingPull._id
         );
-
         //---Reduce from Ring Pull Stock---
         let ringPullInventory = RingPullInventories.findOne({
             branchId: exchangeRingPull.branchId,

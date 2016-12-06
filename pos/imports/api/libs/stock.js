@@ -33,6 +33,7 @@ export  default class StockFunction {
             nextInventory.refId = refId;
             //lastPurchasePrice = price;
             remainQuantity = totalQty;
+            console.log(nextInventory);
             AverageInventories.insert(nextInventory);
         }
         else {
