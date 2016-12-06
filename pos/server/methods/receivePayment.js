@@ -11,7 +11,7 @@ Meteor.methods({
     },
     removedReceivePayment({doc}){
         let payments = ReceivePayment.find({invoiceId: doc.invoiceId, status: {$ne: 'removed'}});
-        let selector = {$set: {status: 'active'}};
+        let selector = {$set: {status: 'active'}, $unset: {closedAt: ''}};
         let collections = doc.paymentType == 'term' ? Invoices : GroupInvoice;
         if (payments.count() == 1) {
             collections.direct.update(doc.invoiceId, selector)
@@ -29,6 +29,7 @@ Meteor.methods({
                 $set: {status: 'partial'}
             }, {multi: true});
             selector.$set.status = 'partial';
+            selector.$unset.closedAt = '';
             collections.direct.update(doc.invoiceId, selector);
         }
         ReceivePayment.remove({_id: doc._id});

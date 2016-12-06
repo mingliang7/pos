@@ -1,27 +1,27 @@
 //component
 import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
 //page
-import './prepaidOrderReport.html';
+import './prepaidOrderDetail.html';
 //import DI
 import  'printthis';
 //import collection
 import {prepaidOrderReportSchema} from '../../api/collections/reports/prepaidOrderReport';
 
 //methods
-import {prepaidOrderReport} from '../../../common/methods/reports/prepaidOrder';
+import {prepaidOrderDetail} from '../../../common/methods/reports/prepaidOrderDetail';
 //state
 let paramsState = new ReactiveVar();
 let invoiceData = new ReactiveVar();
 //declare template
-let indexTmpl = Template.Pos_prepaidOrderReport,
-    invoiceDataTmpl = Template.prepaidOrderReportData;
+let indexTmpl = Template.Pos_prepaidOrderDetail,
+    invoiceDataTmpl = Template.prepaidOrderDetailData;
 Tracker.autorun(function () {
     if (paramsState.get()) {
         swal({
             title: "Pleas Wait",
             text: "Fetching Data....", showConfirmButton: false
         });
-        prepaidOrderReport.callPromise(paramsState.get())
+        prepaidOrderDetail.callPromise(paramsState.get())
             .then(function (result) {
                 invoiceData.set(result);
                 setTimeout(function () {
@@ -47,9 +47,9 @@ indexTmpl.events({
     'click .print'(event, instance){
         $('#to-print').printThis();
     },
-    'change #go-to-prepaid-order-detail'(event, instance){
-        if (event.currentTarget.value == 'prepaidOrderDetail') {
-            FlowRouter.go(`/pos/report/prepaid-order-detail?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD 23:59:59')}&branchId=${Session.get('currentBranch')}`);
+    'change #go-to-prepaid-order'(event, instance){
+        if (event.currentTarget.value == 'prepaidOrder') {
+            FlowRouter.go(`/pos/report/prepaidOrderReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`);
         }
     }
 });
@@ -96,12 +96,15 @@ invoiceDataTmpl.helpers({
         }
         string += `<td><b>Total:</td></b><td><b>${numeral(totalRemainQty).format('0,0')}</b></td></td><td><b>${numeral(total).format('0,0.00')}</b></td>`;
         return string;
+    },
+    checkIfZero(val){
+        return val == 0 ? '' : val;
     }
 });
 
 
 AutoForm.hooks({
-    prepaidOrderReport: {
+    prepaidOrderDetail: {
         onSubmit(doc){
             this.event.preventDefault();
             FlowRouter.query.unset();
@@ -114,8 +117,11 @@ AutoForm.hooks({
             if (doc.vendorId) {
                 params.vendor = doc.vendor
             }
-            if (doc.branchId) {
+            if(doc.branchId) {
                 params.branchId = doc.branchId.join(',');
+            }
+            if (doc.filter) {
+                params.filter = doc.filter.join(',');
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());

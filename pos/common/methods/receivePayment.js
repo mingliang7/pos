@@ -43,7 +43,13 @@ export const receivePayment = new ValidatedMethod({
                 let customer = Customers.findOne(obj.customerId);
                 obj.paymentType = customer.termId ? 'term' : 'group';
                 ReceivePayment.insert(obj);
-                obj.status == 'closed' ? selector.$set = {status: 'closed'} : selector.$set = {status: 'partial'};
+                if(obj.status == 'closed'){
+                    selector.$set = {status: 'closed', closedAt: obj.paymentDate}
+                }else{
+                    selector.$set = {
+                        status: 'partial',
+                    };
+                }
                 if(customer.termId) {
                     Invoices.direct.update(k, selector)
                 }else{

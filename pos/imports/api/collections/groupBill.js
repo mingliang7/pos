@@ -31,5 +31,9 @@ GroupBill_schema = new SimpleSchema({
     branchId: {
         type: String,
         optional: true
+    },
+    closedAt: {
+        type: Date,
+        optional: true
     }
 });

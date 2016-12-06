@@ -1,4 +1,4 @@
-<template name="Pos_prepaidOrderReport">
+<template name="Pos_prepaidOrderDetail">
     <div class="panel-group" id="accordion1">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -11,7 +11,7 @@
                 <div class="panel-body">
                     <div class="container-fluid">
                         <div class="inbox-head report-header">
-                            {{#autoForm schema=schema id='prepaidOrderReport'}}
+                            {{#autoForm schema=schema id='prepaidOrderDetail'}}
                                 <div class="row">
                                     <div class="col-md-2">
                                         {{> afQuickField name="fromDate" label= 'From Date'}}
@@ -22,16 +22,19 @@
                                     <div class="col-md-2">
                                         {{> afQuickField name="vendor" label="Vendor"}}
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
                                         {{> afQuickField name="branchId" label="Branch"}}
                                     </div>
+                                    <!--<div class="col-md-4">-->
+                                    <!--{{> afQuickField name="filter" label="Custom Fields"}}-->
+                                    <!--</div>-->
 
                                 </div>
                                 <div class="row">
                                     <label for="">Goto:</label>
-                                    <select id="go-to-prepaid-order-detail" class="form-group">
+                                    <select id="go-to-prepaid-order" class="form-group">
                                         <option value="">--Please Select--</option>
-                                        <option value="prepaidOrderDetail">Prepaid Order Detail</option>
+                                        <option value="prepaidOrder">Prepaid Order</option>
                                     </select>
                                 </div>
                                 <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
@@ -41,12 +44,12 @@
                     </div>
                 </div>
             </div>
-            {{>prepaidOrderReportData}}
+            {{>prepaidOrderDetailData}}
         </div>
     </div>
 </template>
 
-<template name="prepaidOrderReportData">
+<template name="prepaidOrderDetailData">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4">
@@ -86,7 +89,7 @@
 
             </div>
         </div>
-        <table class="table table-bordered">
+        <table class="table">
             <thead>
             <tr>
                 {{#each data.fields }}
@@ -97,38 +100,46 @@
             </thead>
             <tbody>
             {{#with data}}
-                {{#each col in content}}
-                    {{#each field in col.data}}
-                        <tr style="background: #dddddd">
-                            {{{display field}}}
-                        </tr>
-                    {{/each}}
-                    <tr>
-                        {{{reduceField}}}
-                        <th>ITEM</th>
-                        <th>PRICE</th>
-                        <th>QTY</th>
-                        <th>AMOUNT</th>
-                        <th>REMAIN QTY</th>
+                {{#each content}}
+                    <tr style="background: #dddddd">
+                        <td>{{_id}}</td>
+                        <td>{{moFormat prepaidOrderDate 'YYYY/MM/DD HH:mm:ss'}}</td>
+                        <td>{{vendorDoc.name}}</td>
+                        <td>{{vendorDoc.telephone}}</td>
+                        <td>{{status}}</td>
+                        <td>{{sumRemainQty}}</td>
+                        <td>{{total}}</td>
                     </tr>
-                    {{#each item in col.items}}
-
-                        <tr>
-                            {{{reduceField}}}
-                            <td>{{item.itemName}}</td>
-                            <td>{{item.price}}</td>
-                            <td>{{item.qty}}</td>
-                            <td>{{item.amount}}</td>
-                            <td>{{item.remainQty}}</td>
-                        </tr>
+                    <tr>
+                        <th></th>
+                        <th>ITEM</th>
+                        <th>Order</th>
+                        <th>Receive</th>
+                        <th>Balance</th>
+                        <th>Price</th>
+                        <th>Amount</th>
+                    </tr>
+                    {{#each item in items}}
+                        {{#each item.receiveItemsDoc}}
+                            <tr>
+                                <td></td>
+                                <td>{{itemName}}</td>
+                                <td>{{checkIfZero order}}</td>
+                                <td>{{checkIfZero receive}}</td>
+                                <td>{{balance}}</td>
+                                <td>{{price}}</td>
+                                <td>{{numFormat amount '0,0.00'}}</td>
+                                <!--<td>{{item.remainQty}}</td>-->
+                            </tr>
+                        {{/each}}
                     {{/each}}
                     <tr>
                         {{{getTotal col.total}}}
                     </tr>
                 {{/each}}
-                <tr>
-                    {{{getTotal footer.totalRemainQty footer.total}}}
-                </tr>
+                <!--<tr>-->
+                    <!--{{{getTotal footer.totalRemainQty footer.total}}}-->
+                <!--</tr>-->
             {{/with}}
             </tbody>
         </table>

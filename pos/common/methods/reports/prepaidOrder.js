@@ -10,6 +10,7 @@ import {Company} from '../../../../core/imports/api/collections/company.js';
 import {PrepaidOrders} from '../../../imports/api/collections/prepaidOrder';
 // lib func
 import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
+import ReportFn from '../../../imports/api/libs/report';
 export const prepaidOrderReport = new ValidatedMethod({
     name: 'pos.prepaidOrderReport',
     mixins: [CallPromiseMixin],
@@ -26,13 +27,19 @@ export const prepaidOrderReport = new ValidatedMethod({
                 content: [{index: 'No Result'}],
                 footer: {}
             };
-            let branch = [];
-            let user = Meteor.users.findOne(Meteor.userId());
+            let branchId = [];
+            if(params.branchId) {
+                branchId = params.branchId.split(',');
+                selector.branchId = {
+                    $in: branchId
+                };
+                selector = ReportFn.checkIfUserHasRights({currentUser: Meteor.userId(), selector});
+            }
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.status = {$in: ['active', 'closed']};
             if (params.date) {
-                let dateAsArray = params.date.split(',')
+                let dateAsArray = params.date.split(',');
                 let fromDate = moment(dateAsArray[0]).toDate();
                 let toDate = moment(dateAsArray[1]).toDate();
                 data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');

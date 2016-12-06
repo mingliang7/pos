@@ -453,3 +453,16 @@ PosRoutes.route('/report/unpaidGroupInvoiceOverdue', {
         parent: 'pos.home'
     }
 });
+import '../imports/ui/reports/prepaidOrderDetail';
+PosRoutes.route('/report/prepaid-order-detail', {
+    name: 'pos.prepaidOrderDetail',
+    title: 'Prepaid Order Detail',
+    action: function (params, queryParams) {
+        Layout.main('Pos_prepaidOrderDetail');
+    },
+    breadcrumb: {
+        title: 'Prepaid Order Detail',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
