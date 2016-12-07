@@ -30,3 +30,11 @@ customerDebt.helpers({
         return data;
     }
 });
+
+customerDebt.events({
+    'click .goToCustomerTotalCredit'(event,instance){
+        let date = moment().endOf('days').format('YYYY-MM-DD HH:mm:ss');
+        let url = `/pos/report/customer-total-credit?date=${date}&branchId=${this.branchDoc._id}`;
+        FlowRouter.go(url);
+    }
+});

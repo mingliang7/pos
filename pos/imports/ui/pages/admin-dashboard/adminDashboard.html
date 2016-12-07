@@ -4,9 +4,9 @@
             {{>pos_dashboardCustomerDebt}}
             <hr>
         </div>
-        <div class="col-xs-12">
-            {{> pos_dashboardDailySale}}
-        </div>
+        <!--<div class="col-xs-12">-->
+            <!--{{> pos_dashboardDailySale}}-->
+        <!--</div>-->
     </div>
 </template>
 
@@ -15,7 +15,8 @@
     <div class="pricingTable">
         {{#with customerDebtData}}
             <h1 class="pricingTable-title">របាយការណ៍បំណុលអតិថិជន</h1>
-            <h3 class="pricingTable-subtitle text-black">សរុបទាំងអស់: </h3>
+            <h3 class="pricingTable-subtitle text-black">សរុបទាំងអស់: <b>${{numFormat data.footer.balanceAmount '0,0.00'}}</b>
+            </h3>
             {{#if notReady}}
                 <h4 class="text-center">
                     {{> Pos_loader}}
@@ -30,11 +31,10 @@
                                     <span>$</span><span>{{numFormat balanceAmount '0,0.00'}}</span><span></span>
                                 </p>
                                 <ul class="pricingTable-firstTable_table__options">
-                                    <li>Unlimited Listing</li>
-                                    <li>Edit Your Listing</li>
-                                    <li>Approve Reviews</li>
+                                    <li>ចំនួនវិក័យប័ត្រលក់: {{invoiceCount}}</li>
+                                    <li>ចំនួនវិក័យប័ត្របង់ប្រាក់: {{paidCount}}</li>
                                 </ul>
-                                <div class="pricingTable-firstTable_table__getstart">Go to Detail</div>
+                                <div class="pricingTable-firstTable_table__getstart goToCustomerTotalCredit">Go to Report</div>
                             </li>
                         {{/each}}
                     {{/with}}

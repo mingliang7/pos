@@ -1,7 +1,7 @@
 import {Invoices} from '../../../imports/api/collections/invoice';
 Meteor.methods({
     'dashboard.customerTotalCredit'({date}){
-        Meteor._sleepForMs(2000);
+        Meteor._sleepForMs(100);
         let obj = {dataByBranches: [], footer: {total: 0, paidAmount: 0, balanceAmount: 0}, branches: []};
         let invoices = Invoices.aggregate([
             {$match: {status: {$in: ["active", "partial"]}, invoiceType: {$ne: 'group'}}},
@@ -22,6 +22,12 @@ Meteor.methods({
                     customerId: 1,
                     total: 1,
                     branchId: 1,
+                    paidCount: {
+                        $cond: [
+                            {$eq: [{$type: '$paymentDoc'}, 'missing']},
+                            0, 1
+                        ]
+                    },
                     paidAmount: {
                         $cond: [
                             {
@@ -36,6 +42,8 @@ Meteor.methods({
             {
                 $group: {
                     _id: '$branchId',
+                    invoiceCount: {$sum: 1},
+                    paidCount: {$sum: '$paidCount'},
                     total: {$sum: '$total'},
                     paidAmount: {$sum: '$paidAmount'},
                 }
@@ -43,6 +51,8 @@ Meteor.methods({
             {
                 $project: {
                     _id: 1,
+                    invoiceCount: 1,
+                    paidCount: 1,
                     total: 1,
                     paidAmount: 1,
                     balanceAmount: {$subtract: ["$total", "$paidAmount"]}
