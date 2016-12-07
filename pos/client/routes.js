@@ -667,3 +667,18 @@ PosRoutes.route('/transferMoneyRequest', {
     }
 
 });
+
+import '../imports/ui/pages/admin-dashboard/adminDashboard';
+PosRoutes.route('/admin-dashboard', {
+    name: 'pos.adminDashboard',
+    title: 'Admin Dashboard',
+    action: function (params, queryParams) {
+        Layout.main('Pos_adminDashboard');
+    },
+    breadcrumb: {
+        title: 'Admin Dashboard',
+        icon: '',
+        parent: 'pos.home'
+    }
+
+});
