@@ -13,6 +13,24 @@
                 <span>{{_ "acc.sidebarMenu.journal"}}</span>
             </a>
         </li>
+        <li class="treeview {{isActiveRoute name='pos.prepaidOrder'}}">
+            <a href="{{pathFor 'pos.prepaidOrder'}}">
+                <i class="fa fa-plus"></i>
+                <span>{{_ "pos.sidebarMenu.prepaidOrder"}}</span>
+            </a>
+        </li>
+        <li class="treeview {{isActiveRoute name='acc.payment'}}">
+            <a href="{{pathFor 'acc.payment'}}">
+                <i class="fa fa-plus"></i>
+                <span>{{_ "acc.sidebarMenu.payment"}}</span>
+            </a>
+        </li>
+        <li class="treeview {{isActiveRoute name='acc.received'}}">
+            <a href="{{pathFor 'acc.received'}}">
+                <i class="fa fa-plus"></i>
+                <span>{{_ "acc.sidebarMenu.received"}}</span>
+            </a>
+        </li>
 <li class="treeview {{isActiveRoute name='pos.prepaidOrder'}}">
             <a href="{{pathFor 'pos.prepaidOrder'}}">
                 <i class="fa fa-plus"></i>
