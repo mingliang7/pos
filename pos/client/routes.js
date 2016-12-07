@@ -667,3 +667,12 @@ PosRoutes.route('/transferMoneyRequest', {
     }
 
 });
+
+import '../imports/ui/pages/mart/martUI';
+PosRoutes.route('/mart-ui', {
+    name: 'pos.martUi',
+    title: 'Mart',
+    action: function (params, queryParams) {
+        BlazeLayout.render('MartLayout', {splitLeft: 'pos_martUi'});
+    }
+});

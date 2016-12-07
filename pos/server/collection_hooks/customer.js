@@ -24,3 +24,4 @@ Customers.after.update(function(userId, doc){
     }
   })
 });
+

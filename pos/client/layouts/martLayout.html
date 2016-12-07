@@ -1,0 +1,14 @@
+<template name="MartLayout">
+    <div class="container-split">
+        <div class="eft">
+            <div class="container">
+                {{>Template.dynamic template=splitLeft}}
+            </div>
+        </div>
+        <div class="right">
+            <div class="container">
+                {{>Template.dynamic template=splitRight}}
+            </div>
+        </div>
+    </div>
+</template>

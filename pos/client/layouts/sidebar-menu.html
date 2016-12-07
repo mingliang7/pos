@@ -4,6 +4,11 @@
             <i class="fa fa-home"></i> <span>{{_ "pos.sidebarMenu.home"}}</span>
         </a>
     </li>
+    <li class="{{isActiveRoute name='pos.martUi'}}">
+        <a href="{{pathFor 'pos.martUi'}}">
+            <i class="fa fa-money"></i> <span>Sale</span>
+        </a>
+    </li>
 
     <!--Data-->
     {{#if isInRole 'data-insert,data-update,data-remove' 'Pos'}}
