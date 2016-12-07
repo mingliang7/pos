@@ -24,14 +24,17 @@ Meteor.methods({
                     branchId: 1,
                     paidCount: {
                         $cond: [
-                            {$eq: [{$type: '$paymentDoc'}, 'missing']},
+                            {
+                                $eq: [
+                                    {$type: '$paymentDoc'}, 'missing'],
+                            },
                             0, 1
                         ]
                     },
                     paidAmount: {
                         $cond: [
                             {
-                                $lt: ["$paymentDoc.paymentDate", date]
+                                $lte: ["$paymentDoc.paymentDate", date]
                             },
                             '$paymentDoc.paidAmount',
                             0
@@ -40,8 +43,17 @@ Meteor.methods({
                 }
             },
             {
+              $group: {
+                  _id: {invoiceId: '$_id', branchId: '$branchId'},
+                  invoiceCount: {$last: 1},
+                  paidCount: {$sum: '$paidCount'},
+                  total: {$last: '$total'},
+                  paidAmount: {$sum: '$paidAmount'}
+              }
+            },
+            {
                 $group: {
-                    _id: '$branchId',
+                    _id: '$_id.branchId',
                     invoiceCount: {$sum: 1},
                     paidCount: {$sum: '$paidCount'},
                     total: {$sum: '$total'},

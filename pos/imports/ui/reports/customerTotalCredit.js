@@ -126,8 +126,8 @@ AutoForm.hooks({
         onSubmit(doc){
             this.event.preventDefault();
             FlowRouter.query.unset();
-            params.branchId = Session.get('currentBranch');
             let params = {};
+            params.branchId = Session.get('currentBranch');
             if (doc.date) {
                 let formatDate = moment(doc.date).format('YYYY-MM-DD');
                 params.date = `${formatDate}`;
