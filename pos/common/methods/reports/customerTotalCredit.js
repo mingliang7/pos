@@ -129,7 +129,14 @@ export const customerTotalCreditReport = new ValidatedMethod({
                 },
                 {
                     $group: {
-                        _id: '$customerId',
+                        _id: {customerId: '$customerId', invoiceId: '$_id'},
+                        total: {$last: '$total'},
+                        paidAmount: {$sum: '$paidAmount'}
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$_id.customerId',
                         total: {
                             $sum: '$total'
                         },

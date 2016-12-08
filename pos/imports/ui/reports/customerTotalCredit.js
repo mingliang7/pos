@@ -127,6 +127,7 @@ AutoForm.hooks({
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
+            params.branchId = Session.get('currentBranch');
             if (doc.date) {
                 let formatDate = moment(doc.date).format('YYYY-MM-DD');
                 params.date = `${formatDate}`;
@@ -139,6 +140,9 @@ AutoForm.hooks({
             }
             if(doc.sortBy && doc.sortBy != '') {
                 params.sortBy = doc.sortBy;
+            }
+            if(doc.branchId) {
+                params.branchId = doc.branchId.join(',');
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());

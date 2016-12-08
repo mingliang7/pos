@@ -61,23 +61,28 @@ export const stockBalanceReport = new ValidatedMethod({
                     project[correctDotObject(filters[i], false)] = `$${filters[i]}`;
 
                 }
+                data.fields.push({field: 'Avg Price'}); //map total field for default
+                data.displayFields.push({field: 'averagePrice'});
                 data.fields.push({field: 'Remain QTY'}); //map total field for default
                 data.displayFields.push({field: 'remainQty'});
-                data.fields.push({field: 'Amount'}); //map total field for default
-                data.displayFields.push({field: 'amount'});
+                data.fields.push({field: 'Last Amount'}); //map total field for default
+                data.displayFields.push({field: 'lastAmount'});
+                project['averagePrice'] = '$lastDoc.averagePrice'; //get total projection for default
                 project['remainQty'] = '$lastDoc.remainQty'; //get total projection for default
-                project['amount'] = '$lastDoc.amount'; //get total projection for default
+                project['lastAmount'] = '$lastDoc.lastAmount'; //get total projection for default
             } else {
                 project = {
                     'item': '$lastDoc.itemDoc.name',
                     'price': '$lastDoc.price',
                     'unit': '$lastDoc.itemDoc._unit.name',
                     'remainQty': '$lastDoc.remainQty',
-                    'amount': '$lastDoc.amount'
+                    'amount': '$lastDoc.amount',
+                    'lastAmount': '$lastDoc.lastAmount',
+                    'averagePrice': '$lastDoc.averagePrice'
 
                 };
-                data.fields = [{field: 'Item'}, {field: 'Unit'}, {field: 'Price'}, {field: 'Remain QTY'}, {field: 'Amount'}];
-                data.displayFields = [{field: 'item'}, {field: 'unit'}, {field: 'price'}, {field: 'remainQty'}, {field: 'amount'}];
+                data.fields = [{field: 'Item'}, {field: 'Unit'}, {field: 'Avg Price'}, {field: 'Remain QTY'}, {field: 'Last Amount'}];
+                data.displayFields = [{field: 'item'}, {field: 'unit'}, {field: 'averagePrice'}, {field: 'remainQty'}, {field: 'lastAmount'}];
             }
 
             /****** Title *****/
@@ -135,7 +140,9 @@ export const stockBalanceReport = new ValidatedMethod({
                         qty: 1,
                         price: 1,
                         remainQty: 1,
-                        amount: {$multiply: ["$price", "$remainQty"]}
+                        amount: 1,
+                        lastAmount: 1,
+                        averagePrice: 1
                     }
                 },
                 {
@@ -151,7 +158,7 @@ export const stockBalanceReport = new ValidatedMethod({
                             $addToSet: project
                         },
                         total: {
-                            $sum: '$lastDoc.amount'
+                            $sum: '$lastDoc.lastAmount'
                         },
                         totalRemainQty: {
                             $sum: '$lastDoc.remainQty'

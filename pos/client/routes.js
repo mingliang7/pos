@@ -668,6 +668,7 @@ PosRoutes.route('/transferMoneyRequest', {
 
 });
 
+
 import '../imports/ui/pages/mart/martUI';
 import '../imports/ui/pages/mart/productUi'
 PosRoutes.route('/mart-ui', {
@@ -675,5 +676,18 @@ PosRoutes.route('/mart-ui', {
     title: 'Mart',
     action: function (params, queryParams) {
         BlazeLayout.render('MartLayout', {splitLeft: 'pos_martUi', splitRight: 'pos_martProduct'});
+    }
+});
+import '../imports/ui/pages/admin-dashboard/adminDashboard';
+PosRoutes.route('/admin-dashboard', {
+    name: 'pos.adminDashboard',
+    title: 'Admin Dashboard',
+    action: function (params, queryParams) {
+        Layout.main('Pos_adminDashboard');
+    },
+    breadcrumb: {
+        title: 'Admin Dashboard',
+        icon: '',
+        parent: 'pos.home'
     }
 });
