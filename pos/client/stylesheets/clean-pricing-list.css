@@ -2,6 +2,7 @@
 .pricingTable {
     margin: 40px auto;
 }
+
 .pricingTable > .pricingTable-title {
     text-align: center;
     color: #6e768d;
@@ -10,6 +11,7 @@
     margin-bottom: 20px;
     letter-spacing: 0.04em;
 }
+
 .pricingTable > .pricingTable-subtitle {
     text-align: center;
     color: #b4bdc6;
@@ -17,17 +19,20 @@
     letter-spacing: 0.04em;
     margin-bottom: 60px;
 }
+
 @media screen and (max-width: 480px) {
     .pricingTable > .pricingTable-subtitle {
         margin-bottom: 30px;
     }
 }
+
 .pricingTable-firstTable {
     list-style: none;
     padding-left: 2em;
     padding-right: 2em;
     text-align: center;
 }
+
 .pricingTable-firstTable_table {
     vertical-align: middle;
     width: 31%;
@@ -40,6 +45,7 @@
     transition: all 0.3s ease;
     border-radius: 5px;
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table {
         display: block;
@@ -51,18 +57,21 @@
         padding-left: 20px;
     }
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table > * {
         display: inline-block;
         vertical-align: middle;
     }
 }
+
 @media screen and (max-width: 480px) {
     .pricingTable-firstTable_table > * {
         display: block;
         float: none;
     }
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table:after {
         display: table;
@@ -70,32 +79,39 @@
         clear: both;
     }
 }
+
 .pricingTable-firstTable_table:hover {
     -webkit-transform: scale(1.08);
     transform: scale(1.08);
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table:hover {
         -webkit-transform: none;
         transform: none;
     }
 }
+
 .pricingTable-firstTable_table:not(:last-of-type) {
     margin-right: 3.5%;
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table:not(:last-of-type) {
         margin-right: auto;
     }
 }
+
 .pricingTable-firstTable_table:nth-of-type(2) {
     position: relative;
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table:nth-of-type(2) h1 {
         padding-top: 8%;
     }
 }
+
 .pricingTable-firstTable_table:nth-of-type(2):before {
     content: '';
     position: absolute;
@@ -116,11 +132,13 @@
     -webkit-transition: all 0.5s ease;
     transition: all 0.5s ease;
 }
+
 @media screen and (max-width: 988px) {
     .pricingTable-firstTable_table:nth-of-type(2):before {
         font-size: 0.6em;
     }
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table:nth-of-type(2):before {
         left: 10px;
@@ -130,26 +148,31 @@
         padding-top: 13px;
     }
 }
+
 @media screen and (max-width: 480px) {
     .pricingTable-firstTable_table:nth-of-type(2):before {
         font-size: 0.8em;
     }
 }
+
 .pricingTable-firstTable_table:nth-of-type(2):hover:before {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
 }
+
 .pricingTable-firstTable_table__header {
     font-size: 1.6em;
     padding: 40px 0px;
     border-bottom: 2px solid #ebedec;
     letter-spacing: 0.03em;
 }
+
 @media screen and (max-width: 1068px) {
     .pricingTable-firstTable_table__header {
         font-size: 1.45em;
     }
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table__header {
         padding: 0px;
@@ -160,11 +183,13 @@
         padding-bottom: 2%;
     }
 }
+
 @media screen and (max-width: 610px) {
     .pricingTable-firstTable_table__header {
         font-size: 1.3em;
     }
 }
+
 @media screen and (max-width: 480px) {
     .pricingTable-firstTable_table__header {
         float: none;
@@ -173,17 +198,20 @@
         margin-bottom: 5px;
     }
 }
+
 .pricingTable-firstTable_table__pricing {
     font-size: 3em;
     padding: 30px 0px;
     border-bottom: 2px solid #ebedec;
     line-height: 0.7;
 }
+
 @media screen and (max-width: 1068px) {
     .pricingTable-firstTable_table__pricing {
         font-size: 2.8em;
     }
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table__pricing {
         border-bottom: none;
@@ -193,11 +221,13 @@
         width: 33%;
     }
 }
+
 @media screen and (max-width: 610px) {
     .pricingTable-firstTable_table__pricing {
         font-size: 2.4em;
     }
 }
+
 @media screen and (max-width: 480px) {
     .pricingTable-firstTable_table__pricing {
         float: none;
@@ -206,38 +236,45 @@
         margin-bottom: 10px;
     }
 }
+
 .pricingTable-firstTable_table__pricing span:first-of-type {
     font-size: 0.35em;
     vertical-align: top;
     letter-spacing: 0.15em;
 }
+
 @media screen and (max-width: 1068px) {
     .pricingTable-firstTable_table__pricing span:first-of-type {
         font-size: 0.3em;
     }
 }
+
 .pricingTable-firstTable_table__pricing span:last-of-type {
     vertical-align: bottom;
     font-size: 0.30em;
     letter-spacing: 0.04em;
     padding-left: 0.2em;
 }
+
 @media screen and (max-width: 1068px) {
     .pricingTable-firstTable_table__pricing span:last-of-type {
         font-size: 0.25em;
     }
 }
+
 .pricingTable-firstTable_table__options {
     list-style: none;
     padding: 15px;
     font-size: 0.9em;
     border-bottom: 2px solid #ebedec;
 }
+
 @media screen and (max-width: 1068px) {
     .pricingTable-firstTable_table__options {
         font-size: 0.85em;
     }
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table__options {
         border-bottom: none;
@@ -245,12 +282,14 @@
         margin-right: 10%;
     }
 }
+
 @media screen and (max-width: 610px) {
     .pricingTable-firstTable_table__options {
         font-size: 0.7em;
         margin-right: 8%;
     }
 }
+
 @media screen and (max-width: 480px) {
     .pricingTable-firstTable_table__options {
         font-size: 1.3em;
@@ -258,24 +297,29 @@
         margin-bottom: 10px;
     }
 }
+
 .pricingTable-firstTable_table__options > li {
     padding: 8px 0px;
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table__options > li {
         text-align: left;
     }
 }
+
 @media screen and (max-width: 610px) {
     .pricingTable-firstTable_table__options > li {
         padding: 5px 0;
     }
 }
+
 @media screen and (max-width: 480px) {
     .pricingTable-firstTable_table__options > li {
         text-align: center;
     }
 }
+
 .pricingTable-firstTable_table__options > li:before {
     content: '✓';
     display: inline-block;
@@ -289,6 +333,7 @@
     padding: 2px;
     text-align: center;
 }
+
 @media screen and (max-width: 1068px) {
     .pricingTable-firstTable_table__options > li:before {
         width: 14px;
@@ -296,12 +341,14 @@
         padding: 1.5px;
     }
 }
+
 @media screen and (max-width: 767px) {
     .pricingTable-firstTable_table__options > li:before {
         width: 12px;
         height: 12px;
     }
 }
+
 .pricingTable-firstTable_table__getstart {
     color: white;
     background-color: #71ce73;
@@ -314,48 +361,79 @@
     -webkit-transition: all 0.4s ease;
     transition: all 0.4s ease;
 }
+
+.pricingTable-firstTable_table__primary {
+    color: white;
+    background-color: #7B5A9E;
+    margin-top: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 15px;
+    box-shadow: 0px 3px 0px 0px #005983;
+    letter-spacing: 0.07em;
+    -webkit-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+
 @media screen and (max-width: 1068px) {
-    .pricingTable-firstTable_table__getstart {
+    .pricingTable-firstTable_table__getstart, .pricingTable-firstTable_table__primary {
         font-size: 0.95em;
     }
 }
+
 @media screen and (max-width: 767px) {
-    .pricingTable-firstTable_table__getstart {
+    .pricingTable-firstTable_table__getstart, .pricingTable-firstTable_table__primary {
         margin-top: 0;
     }
 }
+
 @media screen and (max-width: 610px) {
-    .pricingTable-firstTable_table__getstart {
+    .pricingTable-firstTable_table__getstart, .pricingTable-firstTable_table__primary {
         font-size: 0.9em;
         padding: 10px;
     }
 }
+
 @media screen and (max-width: 480px) {
-    .pricingTable-firstTable_table__getstart {
+    .pricingTable-firstTable_table__getstart, .pricingTable-firstTable_table__primary {
         font-size: 1em;
         width: 50%;
         margin: 10px auto;
     }
 }
+
 .pricingTable-firstTable_table__getstart:hover {
     -webkit-transform: translateY(-10px);
     transform: translateY(-10px);
     box-shadow: 0px 40px 29px -19px rgba(102, 172, 100, 0.9);
 }
+.pricingTable-firstTable_table__primary:hover {
+    -webkit-transform: translateY(-10px);
+    transform: translateY(-10px);
+    box-shadow: 0px 40px 29px -19px rgba(102, 172, 100, 0.9);
+}
+
 @media screen and (max-width: 767px) {
-    .pricingTable-firstTable_table__getstart:hover {
+    .pricingTable-firstTable_table__getstart:hover, .pricingTable-firstTable_table__getstart:hover {
         -webkit-transform: none;
         transform: none;
         box-shadow: none;
     }
 }
+
 .pricingTable-firstTable_table__getstart:active {
     box-shadow: inset 0 0 10px 1px #66a564, 0px 40px 29px -19px rgba(102, 172, 100, 0.95);
     -webkit-transform: scale(0.95) translateY(-9px);
     transform: scale(0.95) translateY(-9px);
 }
+.pricingTable-firstTable_table__primary:active {
+    box-shadow: inset 0 0 10px 1px #005983, 0px 40px 29px -19px rgba(102, 172, 100, 0.95);
+    -webkit-transform: scale(0.95) translateY(-9px);
+    transform: scale(0.95) translateY(-9px);
+}
+
 @media screen and (max-width: 767px) {
-    .pricingTable-firstTable_table__getstart:active {
+    .pricingTable-firstTable_table__getstart:active, .pricingTable-firstTable_table__getstart:active {
         -webkit-transform: scale(0.95) translateY(0);
         transform: scale(0.95) translateY(0);
         box-shadow: none;
@@ -367,16 +445,19 @@
         font-size: 80%;
     }
 }
+
 @media screen and (max-width: 776px) {
     body {
         font-size: 70%;
     }
 }
+
 @media screen and (max-width: 496px) {
     body {
         font-size: 50%;
     }
 }
+
 @media screen and (max-width: 320px) {
     body {
         font-size: 40%;
