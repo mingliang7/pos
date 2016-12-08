@@ -31,7 +31,7 @@ customerDebt.helpers({
 });
 
 customerDebt.events({
-    'click .goToCustomerTotalCredit'(event,instance){
+    'click .goToCustomerTotalCredit'(event, instance){
         let date = moment().endOf('days').format('YYYY-MM-DD HH:mm:ss');
         let url = `/pos/report/customer-total-credit?date=${date}&branchId=${this.branchDoc._id}`;
         FlowRouter.go(url);
@@ -60,6 +60,22 @@ dailySaleTmpl.helpers({
     dailySaleData(){
         let instance = Template.instance();
         let data = instance.dailySaleData.get();
+        console.log(data);
         return data;
+    },
+    matchItem(item,obj, branchId){
+        let concat = '';
+        let excludeSameBranch = '';
+        obj.items.forEach(function (itemByBranch) {
+            if (item._id == itemByBranch.items._id) {
+                concat += `<td>${itemByBranch.amount}</td>`
+            } else {
+                if (excludeSameBranch != branchId) {
+                    concat += '<td></td>'
+                }
+            }
+            excludeSameBranch = branchId;
+        });
+        return concat;
     }
 });
