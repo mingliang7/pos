@@ -60,22 +60,23 @@ dailySaleTmpl.helpers({
     dailySaleData(){
         let instance = Template.instance();
         let data = instance.dailySaleData.get();
-        console.log(data);
         return data;
     },
-    matchItem(item,obj, branchId){
+    displayQtyByBranch(item){
+        let instance = Template.instance();
+        let data = instance.dailySaleData.get();
         let concat = '';
-        let excludeSameBranch = '';
-        obj.items.forEach(function (itemByBranch) {
-            if (item._id == itemByBranch.items._id) {
-                concat += `<td>${itemByBranch.amount}</td>`
+        let total = 0;
+        data.data.branches.forEach(function (branch) {
+            let itemBranch = item.branches.find(x => x._id == branch._id);
+            let itemBranchId = itemBranch == null ? '' : itemBranch._id;
+            if (branch._id == itemBranchId) {
+                concat += `<td>${itemBranch.qty} ${item.itemDoc && item.itemDoc._unit.name || ''}</td>`;
             } else {
-                if (excludeSameBranch != branchId) {
-                    concat += '<td></td>'
-                }
+                concat += `<td></td>`
             }
-            excludeSameBranch = branchId;
         });
+        concat += `<td>${item.totalQty} ${item.itemDoc && item.itemDoc._unit.name || ''}</td>`;
         return concat;
     }
 });

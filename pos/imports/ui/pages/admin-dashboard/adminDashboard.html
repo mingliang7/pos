@@ -51,7 +51,7 @@
     <div class="pricingTable">
         <h2 class="pricingTable-title">របាយការណ៍លក់ប្រចាំថ្ងៃ</h2>
         {{#with dailySaleData}}
-            <h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.00'}}</h3>
+            <!--<h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.00'}}</h3>-->
             <!-- Responsive table starts here -->
             <!-- For correct display on small screens you must add 'data-title' to each 'td' in your table -->
             <div class="table-responsive-vertical shadow-z-1">
@@ -67,19 +67,17 @@
                             <tr>
                                 <th>មុខទំនិញ</th>
                                 {{#each branches}}
-                                    <th>{{khName}}</th>
+                                    <th>{{branchDoc.khName}}</th>
                                 {{/each}}
-                                <th></th>
                                 <th>សរុប</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {{#each item in items}}
+                            {{#each field in dataByBranches}}
                                 <tr>
-                                    <td>{{item.itemDoc.name}}</td>
-                                    {{#each obj in dataByBranches}}
-                                        {{{matchItem item obj obj._id}}}
-                                    {{/each}}
+                                    <td>{{field.itemDoc.name}}</td>
+                                    {{{displayQtyByBranch field}}}
+                                    <!--<td>{{field.totalQty}}</td>-->
                                 </tr>
                             {{/each}}
                             </tbody>

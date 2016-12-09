@@ -2,7 +2,7 @@ import {Invoices} from '../../../imports/api/collections/invoice';
 Meteor.methods({
     'dashboard.customerTotalCredit'({date}){
         Meteor._sleepForMs(100);
-        let obj = {items: [],dataByBranches: [], footer: {total: 0, paidAmount: 0, balanceAmount: 0}, branches: []};
+        let obj = {items: [], dataByBranches: [], footer: {total: 0, paidAmount: 0, balanceAmount: 0}, branches: []};
         let invoices = Invoices.aggregate([
             {$match: {status: {$in: ["active", "partial"]}, invoiceType: {$ne: 'group'}}},
             {
@@ -114,11 +114,11 @@ Meteor.methods({
                     dailySale: [
                         {
                             $match: {
-                                invoiceDate: { $gte: fromDate, $lte: toDate }, invoiceType: { $ne: 'group' }
+                                invoiceDate: {$gte: fromDate, $lte: toDate}, invoiceType: {$ne: 'group'}
                             }
                         },
                         {
-                            $unwind: { path: '$items', preserveNullAndEmptyArrays: true }
+                            $unwind: {path: '$items', preserveNullAndEmptyArrays: true}
                         },
                         {
                             $lookup: {
@@ -129,95 +129,95 @@ Meteor.methods({
                             }
                         },
                         {
-                            $unwind: { path: '$items.itemsDoc', preserveNullAndEmptyArrays: true }
+                            $unwind: {path: '$items.itemsDoc', preserveNullAndEmptyArrays: true}
                         },
-                        { $sort: { 'items.itemsDoc.name': 1 } },
+                        {$sort: {'items.itemsDoc.name': 1}},
                         {
                             $group: {
-                                _id: { branchId: '$branchId', itemId: '$items.itemId' },
-                                items: { $last: '$items.itemsDoc' },
-                                amount: { $sum: '$items.amount' }
-                            }
-                        },
-                        {
-                            $group: {
-                                _id: '$_id.branchId',
-                                items: {
-                                    $push: {
-                                        items: '$items',
-                                        amount: '$amount'
-                                    },
-                                },
-                                total: { $sum: '$amount' }
+                                _id: {branchId: '$branchId', itemId: '$items.itemId'},
+                                items: {$last: '$items.itemsDoc'},
+                                qty: {$sum: '$items.qty'}
                             }
                         },
                         {
                             $lookup: {
                                 from: "core_branch",
+                                localField: "_id.branchId",
+                                foreignField: "_id",
+                                as: "branchDoc"
+                            }
+                        },
+                        {$unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}},
+                        {$sort: {'branchDoc.khName': 1}},
+                        {
+                            $group: {
+                                _id: '$_id.itemId',
+                                branches: {
+                                    $push: {
+                                        _id: '$branchDoc._id',
+                                        qty: '$qty',
+                                        khName: '$branchDoc.khName',
+                                        enName: '$branchDoc.enName'
+                                    }
+                                },
+                                totalQty: {$sum: '$qty'}
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "pos_item",
                                 localField: "_id",
+                                foreignField: "_id",
+                                as: "itemDoc"
+                            }
+                        },
+                        {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
+                        {$sort: {'itemDoc.name': 1}},
+                        {
+                            $group: {
+                                _id: null,
+                                data: {
+                                    $push: '$$ROOT'
+                                },
+                                totalSumQty: {$sum: '$totalQty'}
+                            }
+                        }
+
+                    ],
+                    branches: [
+                        {
+                            $match: {
+                                invoiceDate: {$gte: fromDate, $lte: toDate}, invoiceType: {$ne: 'group'}
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "core_branch",
+                                localField: "branchId",
                                 foreignField: "_id",
                                 as: "branchDoc"
                             }
                         },
                         {
-                            $unwind: { path: '$branchDoc', preserveNullAndEmptyArrays: true }
-                        },
-                        { $sort: { 'branchDoc.khName': 1 } },
-                        {
-                            $group: {
-                                _id: null,
-                                branches: {
-                                    $push: '$branchDoc'
-                                },
-                                data: {
-                                    $push: '$$ROOT'
-                                },
-                                total: {
-                                    $sum: '$total'
-                                }
-                            }
-                        }
-                    ],
-                    dailySaleItems: [
-                        {
-                            $match: {
-                                invoiceDate: { $gte: fromDate, $lte: toDate }, invoiceType: { $ne: 'group' }
-                            },
-                        },
-                        {
-                            $unwind: {
-                                path: '$items', preserveNullAndEmptyArrays: true
-                            }
+                            $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                         },
                         {
                             $group: {
-                                _id: '$items.itemId',
-                                total: {
-                                    $sum: '$items.amount'
-                                }
+                                _id: '$branchId',
+                                branchDoc: {$last: '$branchDoc'}
                             }
+
                         },
-                        {
-                            $lookup: {
-                                from: 'pos_item',
-                                localField: '_id',
-                                foreignField: '_id',
-                                as: 'itemDoc'
-                            }
-                        },
-                        {
-                            $unwind: {path: '$itemDoc'}
-                        },
-                        {$sort: {'itemDoc.name': 1}}
+                        {$sort: {'branchDoc.khName': 1}}
                     ]
                 }
             }
         ]);
         if (dailySale[0].dailySale.length > 0) {
             obj.dataByBranches = dailySale[0].dailySale[0].data;
-            obj.branches = dailySale[0].dailySale[0].branches;
-            obj.footer.total = dailySale[0].dailySale[0].total;
-            obj.items = dailySale[0].dailySaleItems;
+            obj.branches = dailySale[0].branches;
+            obj.footer.total = dailySale[0].dailySale[0].totalSumQty;
+            // obj.items = dailySale[0].dailySaleItems;
         }
         return obj;
     }
