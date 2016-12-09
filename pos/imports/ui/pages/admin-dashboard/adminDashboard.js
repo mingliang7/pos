@@ -5,7 +5,7 @@ let customerDebt = Template.pos_dashboardCustomerDebt;
 let dailySaleTmpl = Template.pos_dashboardDailySale;
 customerDebt.onCreated(function () {
     this.customerDebtData = new ReactiveVar({notReady: true, data: {}});
-    this.selectDate = new ReactiveVar(moment().toDate());
+    this.selectDate = new ReactiveVar(moment().endOf('days').toDate());
     this.autorun(() => {
         if (this.selectDate.get()) {
             Meteor.call('dashboard.customerTotalCredit', {date: this.selectDate.get()}, (err, result) => {
@@ -23,6 +23,11 @@ customerDebt.onCreated(function () {
 });
 
 customerDebt.helpers({
+    displayAsDate(){
+        let instance = Template.instance();
+        let date = moment(instance.selectDate.get()).format('YYYY/MM/DD');
+        return date;
+    },
     customerDebtData(){
         let instance = Template.instance();
         let data = instance.customerDebtData.get();

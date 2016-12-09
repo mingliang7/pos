@@ -13,7 +13,7 @@
 <template name="pos_dashboardCustomerDebt">
     <div class="pricingTable">
         {{#with customerDebtData}}
-            <h1 class="pricingTable-title">របាយការណ៍បំណុលអតិថិជន</h1>
+            <h1 class="pricingTable-title">របាយការណ៍បំណុលអតិថិជន (<small>គិតត្រឹម:</small> {{displayAsDate}})</h1>
             <h3 class="pricingTable-subtitle text-black">សរុបទាំងអស់: <b>${{numFormat data.footer.balanceAmount
                                                                                       '0,0.00'}}</b>
             </h3>
