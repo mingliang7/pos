@@ -11,7 +11,7 @@ Meteor.methods({
         let flag = '';
         let todayDate = moment(data.date).format('YYYYMMDD');
         let prefix = data.branchId + '-' + todayDate;
-        obj._id = !data.invoiceId ? idGenerator.genWithPrefix(Invoices, prefix, 4) : obj._id;
+        obj._id = !data.invoiceId ? idGenerator.genWithPrefix(Invoices, prefix, 4) : data.invoiceId;
         obj.flag = !data.invoiceId ? 'insert' : 'update';
         flag = !data.invoiceId ? 'insert' : 'update';
         obj.item = {
@@ -19,7 +19,7 @@ Meteor.methods({
             itemId: data.product._id,
             qty: data.qty || 1,
             price: data.product.price,
-            amount:  (data.qty || 1) * data.product.price
+            amount:  (data.qty || 1) * data.product.price,
         };
         if (obj.flag == 'insert') {
             let customer = Customers.findOne({}, {_id: 1});
@@ -55,7 +55,6 @@ Meteor.methods({
             obj.total = obj.item.amount;
         }
         Mutation.addNewInvoice({obj});
-        console.log({_id: obj._id, flag});
         return {_id: obj._id, flag};
     }
 });

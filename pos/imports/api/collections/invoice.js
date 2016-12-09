@@ -223,7 +223,7 @@ Invoices.schema = new SimpleSchema({
         index: true,
         autoValue(){
             if (this.isInsert) {
-                return false
+                return false;
             }
         }
     }

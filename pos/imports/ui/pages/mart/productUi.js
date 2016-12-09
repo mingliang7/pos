@@ -45,7 +45,7 @@ tmplIndex.events({
             if (result && result.flag == 'insert') {
                 FlowRouter.query.set({inv: result._id});
             } else {
-                console.log(err.message);
+                console.log(err);
             }
         });
     }
