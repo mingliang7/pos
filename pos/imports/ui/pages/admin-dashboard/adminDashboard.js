@@ -40,7 +40,7 @@ customerDebt.events({
 
 dailySaleTmpl.onCreated(function () {
     this.dailySaleData = new ReactiveVar({notReady: true, data: {}});
-    this.selectDate = new ReactiveVar(moment().toDate());
+    this.selectDate = new ReactiveVar(moment().endOf('days').toDate());
     this.autorun(() => {
         if (this.selectDate.get()) {
             Meteor.call('dashboard.dailySale', {date: this.selectDate.get()}, (err, result) => {
@@ -57,6 +57,11 @@ dailySaleTmpl.onCreated(function () {
     });
 });
 dailySaleTmpl.helpers({
+    displayDailyDate(){
+        let instance = Template.instance();
+        let date = moment(instance.selectDate.get()).format('YYYY/MM/DD');
+        return date;
+    },
     dailySaleData(){
         let instance = Template.instance();
         let data = instance.dailySaleData.get();
