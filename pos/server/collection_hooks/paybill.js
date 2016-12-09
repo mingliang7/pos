@@ -101,8 +101,8 @@ PayBills.after.update(function (userId, doc) {
                 transaction.push({
                     account: purchaseDiscountChartAccount.account,
                     dr: 0,
-                    cr: +discountAmount,
-                    drcr: -+discountAmount
+                    cr: discountAmount,
+                    drcr: -discountAmount
                 });
             }
             /*  let invoice = Invoices.findOne(doc.invoiceId);
