@@ -11,6 +11,10 @@ import {SelectOpts} from '../../ui/libs/select-opts.js';
 export const Invoices = new Mongo.Collection("pos_invoices");
 // Items sub schema
 Invoices.itemsSchema = new SimpleSchema({
+    name: {
+        type: String,
+        optional: true
+    },
     itemId: {
         type: String
     },
@@ -122,7 +126,7 @@ Invoices.schema = new SimpleSchema({
     staffId: {
         type: String,
         autoValue(){
-            if(this.isInsert) {
+            if (this.isInsert) {
                 return Meteor.user()._id;
             }
         }
@@ -171,8 +175,8 @@ Invoices.schema = new SimpleSchema({
                     if (Meteor.isClient) {
                         let currentUserStockAndAccountMappingDoc = Session.get('currentUserStockAndAccountMappingDoc');
                         let stockLocations = [];
-                        if(currentUserStockAndAccountMappingDoc && currentUserStockAndAccountMappingDoc.stockLocations) {
-                            stockLocations = currentUserStockAndAccountMappingDoc.stockLocations ;
+                        if (currentUserStockAndAccountMappingDoc && currentUserStockAndAccountMappingDoc.stockLocations) {
+                            stockLocations = currentUserStockAndAccountMappingDoc.stockLocations;
                         }
                         let currentBranch = Session.get('currentBranch');
                         return {
@@ -204,6 +208,24 @@ Invoices.schema = new SimpleSchema({
     closedAt: {
         type: Date,
         optional: true
+    },
+    holdOrder: {
+        type: Boolean,
+        index: true,
+        autoValue(){
+            if (this.isInsert) {
+                return false
+            }
+        }
+    },
+    unsaved: {
+        type: Boolean,
+        index: true,
+        autoValue(){
+            if (this.isInsert) {
+                return false
+            }
+        }
     }
 });
 
