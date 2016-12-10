@@ -19,17 +19,21 @@
                 <ul class="nav navbar-nav">
                     <li><a href="#"><i class="glyphicon glyphicon-adjust"></i></a></li>
                     <li><a href="#"><i class="glyphicon glyphicon-bell"></i></a></li>
-                    <li><a href="#"><i class="glyphicon glyphicon-user"></i></a></li>
+                    <li><a href="/pos/enterBill"><i class="glyphicon glyphicon-user"></i></a></li>
+                     <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Unsaved INV<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            {{#each unsavedInvoices}}
+                                <li><a class="cursor-pointer unsavedInvoiceId">{{_id}}</a></li>
+                            {{/each}}
+                        </ul>
+                    </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hold Order <b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Action</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">Separated link</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">One more separated link</a></li>
+                            {{#each holdOrderInvoices}}
+                                <li><a class="cursor-pointer holderInvoiceId">{{_id}}</a></li>
+                            {{/each}}
                         </ul>
                     </li>
                 </ul>
@@ -41,10 +45,10 @@
         <!-- For correct display on small screens you must add 'data-title' to each 'td' in your table -->
         <div class="table-responsive-vertical shadow-z-1">
             <!-- Table starts here -->
-            <table id="table" class="table table-hover table-mc-light-blue">
+            <table id="table" class="table table-lg table-hover table-mc-light-blue">
                 <thead>
                 <tr>
-                    <th>Name</th>
+                    <th >Name</th>
                     <th>Qty</th>
                     <th>Price</th>
                     <th>Total</th>
@@ -64,53 +68,58 @@
                 </tbody>
             </table>
         </div>
-        <table width='0' border='0' align='right' cellpadding='0' cellspacing='0'>
+        <div class="row">
+            <hr>
+            <div class="col-xs-6"></div>
+            <div class="col-xs-6">
+                <table width='0' border='0' cellpadding='0' cellspacing='0'>
             <tbody>
             <tr>
                 <td width='0' align='left' valign='top'
-                    style='color:#404041;font-size:12px;line-height:16px;padding:15px 0px 3px 0px'>
+                    style='color:#404041;font-size:15px;line-height:13px;padding:15px 0px 3px 0px'>
                     <strong>Sub-total:</strong>
-                    <span style='font-size:11px;color:#666666'>(VAT included)</span>
                 </td>
                 <td width='0' align='right' valign='top'
-                    style='color:#404041;font-size:12px;line-height:16px;padding:15px 5px 3px 5px'>
-                    <h3>$1,234.00</h3>
+                    style='color:#404041;font-size:20px;line-height:16px;padding:15px 5px 3px 5px'>
+                    ${{numFormat invoiceById.total '0,0.00'}}
                 </td>
             </tr>
             <tr>
                 <td align='left' valign='top'
-                    style='color:#404041;font-size:12px;line-height:16px;padding:5px 0px 3px 0px;border-bottom:solid 1px #999999'>
+                    style='color:#404041;font-size:15px;line-height:16px;padding:5px 0px 3px 0px;border-bottom:solid 1px #999999'>
                     <strong>Order discount:</strong>
                 </td>
                 <td width='62' align='right' valign='top'
-                    style='color:#404041;font-size:12px;line-height:16px;padding:5px 5px 3px 5px;border-bottom:solid 1px #999999'>
-                    $0.00
+                    style='color:#404041;font-size:16px;line-height:16px;padding:5px 5px 3px 5px;border-bottom:solid 1px #999999'>
+                    ${{numFormat invoiceById.discount '0,0.00'}}
                 </td>
             </tr>
             <tr>
                 <td align='left' valign='bottom'
-                    style='color:#404041;font-size:13px;line-height:16px;padding:5px 0px 3px 0px'>
+                    style='color:#404041;font-size:15px;line-height:16px;padding:5px 0px 3px 0px'>
                     <strong>Grand Total:</strong>
                 </td>
                 <td width='62' align='right' valign='bottom'
-                    style='color:#339933;font-size:13px;line-height:16px;padding:5px 5px 3px 5px'>
-                    <strong>$1,234.00</strong>
+                    style='color:#339933;font-size:21px;line-height:16px;padding:5px 5px 3px 5px'>
+                    <strong>${{numFormat invoiceById.total '0,0.00'}}</strong>
                 </td>
             </tr>
             </tbody>
 
 
         </table>
+            </div>
+        </div>
         <div class="col-xs-12">
             <div class="row">
                 <div class="col-sm-4">
-                    <div class="pricingTable-firstTable_table__getstart ">HOLD ORDER</div>
+                    <div class="pricingTable-firstTable_table__getstart handleHoldOrder">HOLD ORDER</div>
                 </div>
                 <div class="col-sm-4">
-                    <div class="pricingTable-firstTable_table__primary ">PAY</div>
+                    <div class="pricingTable-firstTable_table__primary handlePay">PAY</div>
                 </div>
                 <div class="col-sm-4">
-                    <div class="pricingTable-firstTable_table__getstart ">CANCEL</div>
+                    <div class="pricingTable-firstTable_table__getstart handleCancel">CANCEL</div>
                 </div>
             </div>
         </div>
@@ -139,7 +148,7 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a href="#" class="btn btn-default bg-teal"><i class="fa fa-usd"></i> PAY</a></li>
+                    <li><a href="/pos/mart-ui/payment?inv={{invoiceId}}" class="btn btn-default bg-teal"><i class="fa fa-usd"></i> PAY</a></li>
                     <!--<li><a href="#">PAY</a></li>-->
                 </ul>
             </div>

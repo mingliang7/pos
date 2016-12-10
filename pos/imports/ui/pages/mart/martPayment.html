@@ -1,0 +1,89 @@
+<template name="pos_martPayment">
+    <section>
+        <div class="credit-card-module animated bounceIn _1">
+            <div class="text-area-outer">
+                <div class="text-area-inner">
+                    <form>
+                        <div class="names">
+                            <h1>Payment Details</h1>
+                            <div class="half">
+                                <h3>first name</h3>
+                                <input type="text">
+                            </div>
+                            <div class="half">
+                                <h3>last name</h3>
+                                <input type="text">
+                            </div>
+                        </div>
+                        <div class="full">
+                            <h3>credit card</h3>
+                            <input placeholder="****" class="inputCard" type="text" min="1000" max="9999" name="creditCard1" maxlength="4" id="creditCard1"
+                                required/>
+                            <input placeholder="****" class="inputCard" type="text" min="1000" max="9999" name="creditCard2" maxlength="4" id="creditCard2"
+                                required/>
+                            <input placeholder="****" class="inputCard" type="text" min="1000" max="9999" name="creditCard3" maxlength="4" id="creditCard3"
+                                required/>
+                            <input placeholder="****" class="inputCard" type="text" min="1000" max="9999" name="creditCard4" maxlength="4" id="creditCard4"
+                                required/>
+                            <input placeholder="csv" class="csv" type="text" min="100" max="999" name="creditCard5" maxlength="3" id="creditCard5" required/>
+                        </div>
+                        <div class="expiration">
+                            <h3>expiration date</h3>
+                            <div id="dd" class="wrapper-dropdown-5" tabindex="1">
+                                <p>Month</p>
+                                <ul class="dropdown">
+                                    <li><a href="#">January</a></li>
+                                    <li><a href="#">Febuary</a></li>
+                                    <li><a href="#">March</a></li>
+                                    <li><a href="#">April</a></li>
+                                    <li><a href="#">May</a></li>
+                                    <li><a href="#">June</a></li>
+                                    <li><a href="#">July</a></li>
+                                    <li><a href="#">August</a></li>
+                                    <li><a href="#">September</a></li>
+                                    <li><a href="#">October</a></li>
+                                    <li><a href="#">November</a></li>
+                                    <li><a href="#">December</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="dd2" class="wrapper-dropdown-5" tabindex="1">
+                            <p>Year</p>
+                            <ul class="dropdown">
+                                <li><a href="#">2016</a></li>
+                                <li><a href="#">2017</a></li>
+                                <li><a href="#">2018</a></li>
+                                <li><a href="#">2019</a></li>
+                                <li><a href="#">2020</a></li>
+                                <li><a href="#">2021</a></li>
+                                <li><a href="#">2022</a></li>
+                                <li><a href="#">2023</a></li>
+                                <li><a href="#">2024</a></li>
+                            </ul>
+                        </div>
+                    </form>
+                    <a href="/pos/mart-ui" class="btn btn-lg btn-default">Back</a>
+                </div>
+            </div>
+            <div class="purchase-total">
+                <div class="purchase-total-inner">
+                    <h2 class="bottom-margin">Your Total</h2>
+                    <div class="subtotal total-line">
+                        <h3>Subtotal</h3>
+                        <h2>$13.12</h2>
+                    </div>
+                    <div class="tax total-line">
+                        <h3>+ Tax</h3>
+                        <h2>$04.12</h2>
+                    </div>
+                    <hr>
+                    <div class="total total-line">
+                        <h1>$17.24</h1>
+                    </div>
+                </div>
+                <button class="payNow">Pay Now</button><br>
+                <button class="done">Done</button>
+            </div>
+        </div>
+    </section>
+</template>

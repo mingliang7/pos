@@ -33,21 +33,29 @@ tmplIndex.events({
         instance.queryProduct.set(query)
     },
     'click .addProduct'(event, instance){
-        let invoiceId = FlowRouter.query.get('inv');
-        if (invoiceId) {
-            this.invoiceId = invoiceId;
-        }
-        this.date = moment().toDate();
-        this.userId = Meteor.userId();
-        this.branchId = Session.get('currentBranch');
-        Meteor.call('mart.addProductToInvoice', {data: this}, function (err, result) {
-            console.log(result);
-            if (result && result.flag == 'insert') {
-                FlowRouter.query.set({inv: result._id});
-            } else {
-                console.log(err);
+        Meteor.call('mart.checkStock', {itemId: this.product._id, branchId: Session.get('currentBranch')}, (err,result) =>{
+            if(result && result.qty > 0){
+                let invoiceId = FlowRouter.query.get('inv');
+                console.log(invoiceId);
+                if (invoiceId) {
+                    this.invoiceId = invoiceId;
+                }
+                this.date = moment().toDate();
+                this.userId = Meteor.userId();
+                this.branchId = Session.get('currentBranch');
+                Meteor.call('mart.addProductToInvoice', {data: this}, function (err, result) {
+                    console.log(result);
+                    if (result && result.flag == 'insert') {
+                        FlowRouter.query.set({inv: result._id});
+                    } else {
+                        console.log(err);
+                    }
+                });
+            }else if(result && result.qty <=0){
+                alertify.error(`${result.name} is out of stock`)
             }
         });
+      
     }
 });
 tmplIndex.helpers({

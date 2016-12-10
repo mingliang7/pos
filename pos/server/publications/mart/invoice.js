@@ -8,14 +8,14 @@ Meteor.publish('pos.martPubInvoiceById', function martPubInvoiceById({invoiceId}
 
 Meteor.publish('pos.martPubInvoiceByUnsaved', function martPubInvoiceByUnsaved(selector) {
     if (this.userId) {
-        return Invoices.find(selector, {limit: 10});
+        return Invoices.find(selector, {limit: 11});
     }
     return this.ready();
 });
 
-Meteor.publish('pos.martPubInvoiceByHolderOrder', function martPubInvoiceByHolderOrder(selector) {
+Meteor.publish('pos.martPubInvoiceByHoldOrder', function martPubInvoiceByHolderOrder(selector) {
     if (this.userId) {
-        return Invoices.find(selector, {limit: 10});
+        return Invoices.find(selector, {limit: 11});
     }
     return this.ready();
 });

@@ -13,5 +13,11 @@ tmplLayout.onRendered(function(){
         if(e.altKey && e.keyCode == 83){
             FlowRouter.query.set({k: 'search'});
         }
+        if(e.altKey && e.keyCode == 13){
+            let invoiceId = FlowRouter.query.get('inv');
+            if(invoiceId){
+                FlowRouter.go(`/pos/mart-ui/payment?inv=${invoiceId}`);
+            }
+        }
     });
 });

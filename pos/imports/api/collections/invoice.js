@@ -83,6 +83,19 @@ Invoices.schema = new SimpleSchema({
             }
         }
     },
+    subTotal: {
+        type: Number,
+        decimal: true
+    },
+    discount: {
+        type: Number,
+        decimal: true,
+        autoValue(){
+            if(this.isInsert){
+                return 0;
+            }
+        }     
+    },
     customerId: {
         type: String,
         autoform: {

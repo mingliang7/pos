@@ -678,6 +678,14 @@ PosRoutes.route('/mart-ui', {
         BlazeLayout.render('MartLayout', {splitLeft: 'pos_martUi', splitRight: 'pos_martProduct'});
     }
 });
+import '../imports/ui/pages/mart/martPayment'
+PosRoutes.route('/mart-ui/payment', {
+    name: 'pos.martUiPayment',
+    title: 'Mart',
+    action: function (params, queryParams) {
+        BlazeLayout.render('MartLayout', {splitLeft: 'pos_martUi', splitRight: 'pos_martPayment'});
+    }
+});
 import '../imports/ui/pages/admin-dashboard/adminDashboard';
 PosRoutes.route('/admin-dashboard', {
     name: 'pos.adminDashboard',

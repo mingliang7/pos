@@ -42,11 +42,6 @@ Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
     let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
     let data = {stockLocationId: doc.stockLocationId, items: doc.items};
-    console.log(modifier)
-    console.log(doc)
-    console.log(postDoc)
-    console.log(stockLocationId)
-    console.log(data)
     let result = StockFunction.checkStockByLocationWhenUpdate(stockLocationId, postDoc.itemList, data);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);

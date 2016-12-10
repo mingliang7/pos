@@ -827,7 +827,7 @@ let hooksObject = {
     before: {
         insert: function (doc) {
             let items = [];
-
+            doc.subTotal = doc.total;
             itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 if (obj.saleId) {
@@ -841,6 +841,7 @@ let hooksObject = {
         },
         update: function (doc) {
             let items = [];
+            doc.$set.subTotal = doc.$set.total;
             itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
