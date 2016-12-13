@@ -682,3 +682,18 @@ PosRoutes.route('/admin-dashboard', {
     }
 
 });
+
+import '../imports/ui/pages/targetItem';
+PosRoutes.route('/target-item', {
+    name: 'pos.targetItem',
+    title: 'Target Item',
+    action: function (params, queryParams) {
+        Layout.main('Pos_targetItem');
+    },
+    breadcrumb: {
+        title: 'Target Item',
+        icon: '',
+        parent: 'pos.home'
+    }
+
+});
