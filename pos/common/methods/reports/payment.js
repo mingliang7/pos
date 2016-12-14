@@ -10,6 +10,7 @@ import {Company} from '../../../../core/imports/api/collections/company.js';
 import {ReceivePayment} from '../../../imports/api/collections/receivePayment';
 //lib func
 import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
+import ReportFn from "../../../imports/api/libs/report";
 export const receivePaymentReport = new ValidatedMethod({
     name: 'pos.receivePaymentReport',
     mixins: [CallPromiseMixin],
@@ -32,6 +33,20 @@ export const receivePaymentReport = new ValidatedMethod({
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.status = {
                 $in: ['partial', 'closed']
+            };
+            let branchId = [];
+            if(!params.branchId) {
+                let user = Meteor.users.findOne(Meteor.userId());
+                selector.branchId = {
+                    $in: user.rolesBranch
+                }
+            }
+            if (params.branchId) {
+                branchId = params.branchId.split(',');
+                selector.branchId = {
+                    $in: branchId
+                };
+                selector = ReportFn.checkIfUserHasRights({currentUser: Meteor.userId(), selector});
             }
             if (params.skip) {
                 skip = parseInt(params.skip);

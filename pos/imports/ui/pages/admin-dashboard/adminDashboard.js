@@ -125,7 +125,6 @@ dailyStockTmpl.helpers({
         let data = instance.dailyStockData.get();
         let concat = '';
         let total = 0;
-        console.log(item);
         data.data.branches.forEach(function (branch) {
             let itemBranch = item.lastDoc.find(x => x.branchId == branch._id);
             let itemBranchId = itemBranch == null ? '' : itemBranch.branchId;
@@ -159,6 +158,13 @@ dailyCash.onCreated(function () {
     });
 });
 dailyCash.helpers({
+    url(branchId){
+        let instance = Template.instance();
+        let fromDate = moment(instance.selectDate.get()).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+        let toDate = moment(instance.selectDate.get()).endOf('days').format('YYYY-MM-DD HH:mm:ss');
+        url = `/pos/report/payment?branchId=${branchId}&date=${fromDate},${toDate}`;
+        return url;
+    },
     displayDailyDate(){
         let instance = Template.instance();
         let date = moment(instance.selectDate.get()).format('YYYY/MM/DD');

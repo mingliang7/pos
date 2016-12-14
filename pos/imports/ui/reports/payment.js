@@ -11,6 +11,7 @@ import {paymentSchema} from '../../api/collections/reports/payment';
 
 //methods
 import {receivePaymentReport} from '../../../common/methods/reports/payment';
+import RangeDate from "../../api/libs/date";
 //state
 let paramsState = new ReactiveVar();
 let receivePayment = new ReactiveVar();
@@ -39,14 +40,29 @@ Tracker.autorun(function () {
 
 indexTmpl.onCreated(function () {
     createNewAlertify('receivePaymentReport');
+    this.fromDate = new ReactiveVar(moment().startOf('days').toDate());
+    this.endDate = new ReactiveVar(moment().endOf('days').toDate());
     paramsState.set(FlowRouter.query.params());
 });
 indexTmpl.helpers({
     schema(){
         return paymentSchema;
+    },
+    fromDate(){
+        let instance = Template.instance();
+        return instance.fromDate.get();
+    },
+    endDate(){
+        let instance = Template.instance();
+        return instance.endDate.get();
     }
 });
 indexTmpl.events({
+    'change #date-range-filter'(event, instance){
+        let currentRangeDate = RangeDate[event.currentTarget.value]();
+        instance.fromDate.set(currentRangeDate.start.toDate());
+        instance.endDate.set(currentRangeDate.end.toDate());
+    },
     'click .print'(event, instance){
         $('#to-print').printThis();
     },
@@ -130,6 +146,7 @@ AutoForm.hooks({
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
+            params.branchId = Session.get('currentBranch');
             if (doc.fromDate && doc.toDate) {
                 let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
                 let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
@@ -140,6 +157,9 @@ AutoForm.hooks({
             }
             if (doc.filter) {
                 params.filter = doc.filter.join(',');
+            }
+            if(doc.branchId) {
+                params.branchId = doc.branchId.join(',');
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());
