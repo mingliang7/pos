@@ -4,6 +4,7 @@ import '../../components/loader';
 let customerDebt = Template.pos_dashboardCustomerDebt;
 let dailySaleTmpl = Template.pos_dashboardDailySale;
 let dailyStockTmpl = Template.pos_dashboardDailyStock;
+let dailyCash = Template.pos_dashboardCash;
 customerDebt.onCreated(function () {
     this.customerDebtData = new ReactiveVar({notReady: true, data: {}});
     this.selectDate = new ReactiveVar(moment().endOf('days').toDate());
@@ -22,7 +23,6 @@ customerDebt.onCreated(function () {
         }
     });
 });
-
 customerDebt.helpers({
     displayAsDate(){
         let instance = Template.instance();
@@ -35,7 +35,6 @@ customerDebt.helpers({
         return data;
     }
 });
-
 customerDebt.events({
     'click .goToCustomerTotalCredit'(event, instance){
         let date = moment().endOf('days').format('YYYY-MM-DD HH:mm:ss');
@@ -46,7 +45,7 @@ customerDebt.events({
 
 dailySaleTmpl.onCreated(function () {
     this.dailySaleData = new ReactiveVar({notReady: true, data: {}});
-    this.selectDate = new ReactiveVar(moment().endOf('days').toDate());
+    this.selectDate = new ReactiveVar(moment().subtract(1, 'days').endOf('days').toDate());
     this.autorun(() => {
         if (this.selectDate.get()) {
             Meteor.call('dashboard.dailySale', {date: this.selectDate.get()}, (err, result) => {
@@ -110,7 +109,6 @@ dailyStockTmpl.onCreated(function () {
         }
     });
 });
-
 dailyStockTmpl.helpers({
     displayDailyDate(){
         let instance = Template.instance();
@@ -139,5 +137,36 @@ dailyStockTmpl.helpers({
         });
         concat += `<td>${item.totalRemainQty} ${item.itemDoc && item.itemDoc._unit.name || ''}</td>`;
         return concat;
+    }
+});
+
+dailyCash.onCreated(function () {
+    this.dailyCashData = new ReactiveVar({notReady: true, data: {}});
+    this.selectDate = new ReactiveVar(moment().subtract(1, 'days').endOf('days').toDate());
+    this.autorun(() => {
+        if (this.selectDate.get()) {
+            Meteor.call('dashboard.dailyCash', {date: this.selectDate.get()}, (err, result) => {
+                if (result) {
+                    this.dailyCashData.set({
+                        notReady: false,
+                        data: result
+                    });
+                } else {
+                    console.log(err.message);
+                }
+            });
+        }
+    });
+});
+dailyCash.helpers({
+    displayDailyDate(){
+        let instance = Template.instance();
+        let date = moment(instance.selectDate.get()).format('YYYY/MM/DD');
+        return date;
+    },
+    dailyCashData(){
+        let instance = Template.instance();
+        let data = instance.dailyCashData.get();
+        return data;
     }
 });

@@ -1,4 +1,5 @@
 import {Invoices} from '../../../imports/api/collections/invoice'
+import {ReceivePayment} from '../../../imports/api/collections/receivePayment'
 import {AverageInventories} from '../../../imports/api/collections/inventory'
 Meteor.methods({
     'dashboard.customerTotalCredit' ({date}) {
@@ -510,6 +511,52 @@ Meteor.methods({
             obj.dataByBranches = invoices[0].stocks;
             obj.branches = invoices[0].stockBranches;
             // obj.items = dailySale[0].dailySaleItems
+        }
+        return obj;
+    },
+    'dashboard.dailyCash'({date}){
+        Meteor._sleepForMs(100);
+        let obj = {items: [], dataByBranches: [], footer: {total: 0, paidAmount: 0, balanceAmount: 0}};
+        let selector = {};
+        let toDate = moment(date).endOf('days').toDate();
+        let fromDate = moment(date).startOf('days').toDate();
+        selector = {
+            paymentDate: {$gte: fromDate, $lte: toDate},
+            status: {
+                $in: [ "partial", "closed"]
+            }
+        };
+        let invoices = ReceivePayment.aggregate([
+            {$match: selector},
+            {
+                $group: {
+                    _id: '$branchId',
+                    total: {$sum: '$paidAmount'}
+                }
+            },
+            {
+                $lookup: {
+                    from: "core_branch",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "branchDoc"
+                }
+            },
+            {
+                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+            },
+            {
+                $sort: {'branchDoc.khName': 1}
+            },
+            {
+                $group: {
+                    _id: null, data: {$push: '$$ROOT'},total: {$sum: '$total'}
+                }
+            }
+        ]);
+        if (invoices.length > 0) {
+            obj.dataByBranches = invoices[0].data;
+            obj.footer.total = invoices[0].total;
         }
         return obj;
     }
