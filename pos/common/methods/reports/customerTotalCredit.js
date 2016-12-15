@@ -91,8 +91,8 @@ export const customerTotalCreditReport = new ValidatedMethod({
                     'customerId': '$_id',
                     'amountDue': '$amountDue',
                 };
-                data.fields = [{field: 'Cust ID'}, {field: 'Customer Name'}, {field: 'Address'}, {field: 'Amt due'}, {field: 'Telephone'}];
-                data.displayFields = [{field: 'customerId'}, {field: 'customerName'}, {field: 'customerAddress'}, {field: 'amountDue'}, {field: 'customerTelephone'}];
+                data.fields = [{field: 'Cust ID'}, {field: 'Customer Name'}, {field: 'Address'}, {field: 'Telephone'}, {field: 'Amt due'}];
+                data.displayFields = [{field: 'customerId'}, {field: 'customerName'}, {field: 'customerAddress'}, {field: 'customerTelephone'}, {field: 'amountDue'}];
             }
             // project['$invoice'] = 'Invoice';
             /****** Title *****/

@@ -678,12 +678,12 @@ PosRoutes.route('/mart-ui', {
         BlazeLayout.render('MartLayout', {splitLeft: 'pos_martUi', splitRight: 'pos_martProduct'});
     }
 });
-import '../imports/ui/pages/mart/martPayment'
-PosRoutes.route('/mart-ui/payment', {
+import '../imports/ui/pages/receivePayment'
+PosRoutes.route('/mart-ui/customer/:customerId/receive-payment/:invoiceId', {
     name: 'pos.martUiPayment',
-    title: 'Mart',
+    title: 'Payment',
     action: function (params, queryParams) {
-        BlazeLayout.render('MartLayout', {splitLeft: 'pos_martUi', splitRight: 'pos_martPayment'});
+        BlazeLayout.render('MartLayout', {splitLeft: 'pos_martUi', splitRight: 'Pos_receivePayment'});
     }
 });
 import '../imports/ui/pages/admin-dashboard/adminDashboard';
@@ -695,6 +695,20 @@ PosRoutes.route('/admin-dashboard', {
     },
     breadcrumb: {
         title: 'Admin Dashboard',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
+
+import '../imports/ui/pages/targetItem';
+PosRoutes.route('/target-item', {
+    name: 'pos.targetItem',
+    title: 'Target Item',
+    action: function (params, queryParams) {
+        Layout.main('Pos_targetItem');
+    },
+    breadcrumb: {
+        title: 'Target Item',
         icon: '',
         parent: 'pos.home'
     }

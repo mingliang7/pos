@@ -3,9 +3,11 @@ import '../../components/loader';
 
 let customerDebt = Template.pos_dashboardCustomerDebt;
 let dailySaleTmpl = Template.pos_dashboardDailySale;
+let dailyStockTmpl = Template.pos_dashboardDailyStock;
+let dailyCash = Template.pos_dashboardCash;
 customerDebt.onCreated(function () {
     this.customerDebtData = new ReactiveVar({notReady: true, data: {}});
-    this.selectDate = new ReactiveVar(moment().toDate());
+    this.selectDate = new ReactiveVar(moment().endOf('days').toDate());
     this.autorun(() => {
         if (this.selectDate.get()) {
             Meteor.call('dashboard.customerTotalCredit', {date: this.selectDate.get()}, (err, result) => {
@@ -21,15 +23,18 @@ customerDebt.onCreated(function () {
         }
     });
 });
-
 customerDebt.helpers({
+    displayAsDate(){
+        let instance = Template.instance();
+        let date = moment(instance.selectDate.get()).format('YYYY/MM/DD');
+        return date;
+    },
     customerDebtData(){
         let instance = Template.instance();
         let data = instance.customerDebtData.get();
         return data;
     }
 });
-
 customerDebt.events({
     'click .goToCustomerTotalCredit'(event, instance){
         let date = moment().endOf('days').format('YYYY-MM-DD HH:mm:ss');
@@ -40,7 +45,7 @@ customerDebt.events({
 
 dailySaleTmpl.onCreated(function () {
     this.dailySaleData = new ReactiveVar({notReady: true, data: {}});
-    this.selectDate = new ReactiveVar(moment().toDate());
+    this.selectDate = new ReactiveVar(moment().subtract(1, 'days').endOf('days').toDate());
     this.autorun(() => {
         if (this.selectDate.get()) {
             Meteor.call('dashboard.dailySale', {date: this.selectDate.get()}, (err, result) => {
@@ -57,6 +62,11 @@ dailySaleTmpl.onCreated(function () {
     });
 });
 dailySaleTmpl.helpers({
+    displayDailyDate(){
+        let instance = Template.instance();
+        let date = moment(instance.selectDate.get()).format('YYYY/MM/DD');
+        return date;
+    },
     dailySaleData(){
         let instance = Template.instance();
         let data = instance.dailySaleData.get();
@@ -78,5 +88,91 @@ dailySaleTmpl.helpers({
         });
         concat += `<td>${item.totalQty} ${item.itemDoc && item.itemDoc._unit.name || ''}</td>`;
         return concat;
+    }
+});
+
+dailyStockTmpl.onCreated(function () {
+    this.dailyStockData = new ReactiveVar({notReady: true, data: {}});
+    this.selectDate = new ReactiveVar(moment().endOf('days').toDate());
+    this.autorun(() => {
+        if (this.selectDate.get()) {
+            Meteor.call('dashboard.dailyStock', {date: this.selectDate.get()}, (err, result) => {
+                if (result) {
+                    this.dailyStockData.set({
+                        notReady: false,
+                        data: result
+                    });
+                } else {
+                    console.log(err.message);
+                }
+            });
+        }
+    });
+});
+dailyStockTmpl.helpers({
+    displayDailyDate(){
+        let instance = Template.instance();
+        let date = moment(instance.selectDate.get()).format('YYYY/MM/DD');
+        return date;
+    },
+    dailyStockData(){
+        let instance = Template.instance();
+        let data = instance.dailyStockData.get();
+        return data;
+    },
+    displayQtyByBranch(item){
+        let instance = Template.instance();
+        let data = instance.dailyStockData.get();
+        let concat = '';
+        let total = 0;
+        data.data.branches.forEach(function (branch) {
+            let itemBranch = item.lastDoc.find(x => x.branchId == branch._id);
+            let itemBranchId = itemBranch == null ? '' : itemBranch.branchId;
+            if (branch._id == itemBranchId) {
+                concat += `<td>${itemBranch.remainQty} ${item.itemDoc && item.itemDoc._unit.name || ''}</td>`;
+            } else {
+                concat += `<td></td>`
+            }
+        });
+        concat += `<td>${item.totalRemainQty} ${item.itemDoc && item.itemDoc._unit.name || ''}</td>`;
+        return concat;
+    }
+});
+
+dailyCash.onCreated(function () {
+    this.dailyCashData = new ReactiveVar({notReady: true, data: {}});
+    this.selectDate = new ReactiveVar(moment().subtract(1, 'days').endOf('days').toDate());
+    this.autorun(() => {
+        if (this.selectDate.get()) {
+            Meteor.call('dashboard.dailyCash', {date: this.selectDate.get()}, (err, result) => {
+                if (result) {
+                    this.dailyCashData.set({
+                        notReady: false,
+                        data: result
+                    });
+                } else {
+                    console.log(err.message);
+                }
+            });
+        }
+    });
+});
+dailyCash.helpers({
+    url(branchId){
+        let instance = Template.instance();
+        let fromDate = moment(instance.selectDate.get()).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+        let toDate = moment(instance.selectDate.get()).endOf('days').format('YYYY-MM-DD HH:mm:ss');
+        url = `/pos/report/payment?branchId=${branchId}&date=${fromDate},${toDate}`;
+        return url;
+    },
+    displayDailyDate(){
+        let instance = Template.instance();
+        let date = moment(instance.selectDate.get()).format('YYYY/MM/DD');
+        return date;
+    },
+    dailyCashData(){
+        let instance = Template.instance();
+        let data = instance.dailyCashData.get();
+        return data;
     }
 });

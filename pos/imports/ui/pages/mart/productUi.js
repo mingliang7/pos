@@ -2,6 +2,7 @@ import './productUi.html'
 import {Template} from 'meteor/templating'
 //import collection
 import {Item} from '../../../api/collections/item';
+import {Invoices} from '../../../api/collections/invoice';
 //import resolver
 import Resolver from '../../../api/libs/resolver';
 let tmplIndex = Template.pos_martProduct;
@@ -33,12 +34,19 @@ tmplIndex.events({
         instance.queryProduct.set(query)
     },
     'click .addProduct'(event, instance){
+        console.log(this);
         Meteor.call('mart.checkStock', {itemId: this.product._id, branchId: Session.get('currentBranch')}, (err,result) =>{
+            console.log(result)
             if(result && result.qty > 0){
                 let invoiceId = FlowRouter.query.get('inv');
                 console.log(invoiceId);
                 if (invoiceId) {
-                    this.invoiceId = invoiceId;
+                    let invoice = Invoices.findOne(invoiceId);
+                    if(invoice){
+                        this.invoiceId = invoiceId;
+                    }else{
+                        FlowRouter.query.unset('inv');
+                    }
                 }
                 this.date = moment().toDate();
                 this.userId = Meteor.userId();
@@ -51,11 +59,10 @@ tmplIndex.events({
                         console.log(err);
                     }
                 });
-            }else if(result && result.qty <=0){
+            }else if(!result.qty || result && result.qty <=0){
                 alertify.error(`${result.name} is out of stock`)
             }
         });
-      
     }
 });
 tmplIndex.helpers({

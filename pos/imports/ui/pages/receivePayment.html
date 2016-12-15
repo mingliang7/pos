@@ -22,29 +22,30 @@
                                 <h2 class="text-blue text-center">${{numFormat totalPaid '0,0.00'}}</h2>
                                 </p>
                             </div>
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <label for=""><i class="fa fa-user"></i> Customer Balance</label>
+                                    {{> afQuickField name="customerBalance" label=false value=customerBalance readonly=true}}
+                                </div>
+                                <div class="col-xs-3">
+                                    <label for="">
+                                        <i class="fa fa-calendar"></i> Date
+                                    </label>
+                                    {{> afFieldInput name="paymentDate" value=defaultDate}}
+                                </div>
+                                <div class="col-xs-3">
+                                    {{> afQuickField name="voucherId"}}<br>
+                                </div>
+                                <!--<div class="col-xs-3">-->
+                                <!--<label for="">-->
+                                <!--<i class="fa fa-credit-card"></i> Payment Methods-->
+                                <!--</label>-->
+                                <!--{{> afQuickField name="paymentMethods" label=false}}<br>-->
+                                <!--</div>-->
+                            </div>
                         </div>
                         <hr>
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <label for=""><i class="fa fa-user"></i> Customer Balance</label>
-                                {{> afQuickField name="customerBalance" label=false value=customerBalance readonly=true}}
-                            </div>
-                            <div class="col-xs-3">
-                                <label for="">
-                                    <i class="fa fa-calendar"></i> Date
-                                </label>
-                                {{> afFieldInput name="paymentDate" value=defaultDate}}
-                            </div>
-                            <div class="col-xs-3">
-                                {{> afQuickField name="voucherId"}}<br>
-                            </div>
-                            <!--<div class="col-xs-3">-->
-                            <!--<label for="">-->
-                            <!--<i class="fa fa-credit-card"></i> Payment Methods-->
-                            <!--</label>-->
-                            <!--{{> afQuickField name="paymentMethods" label=false}}<br>-->
-                            <!--</div>-->
-                        </div>
+
                         <!--<div class="row">-->
 
                         <!--<div class="col-xs-3">-->
@@ -219,6 +220,8 @@
                                 </div>
                                 <br>
                                 <span class="pull-right">
+                                     <a href="/pos/mart-ui" class="btn btn-default">Back to Sale</a>
+                                    <button class="btn btn-success" id="saveNPrint"><i class="fa fa-check"></i>Save & Print</button>
                                     <button class="btn btn-primary"><i class="fa fa-check"></i>Save</button>
                                 <a href="/pos/customer" class="btn btn-default">Back</a>
                                 </span>

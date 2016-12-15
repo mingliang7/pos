@@ -61,7 +61,6 @@ Meteor.methods({
     'mart.checkStock'({itemId, branchId}){
         let stockLocation = StockLocations.findOne({branchId: '003'}, {_id: 1});
         let item = Item.findOne(itemId);
-        console.log(item);
         return {qty: !item.qtyOnHand && !item.qtyOnHand[stockLocation._id] ? 0 : item.qtyOnHand[stockLocation._id], name: item.name};
     },
     'mart.handleCancel'({invoiceId}){

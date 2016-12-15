@@ -21,11 +21,14 @@ let currentPaymentDate = new ReactiveVar(moment().toDate());
 let isPenalty = new ReactiveVar(true);
 let indexTmpl = Template.Pos_receivePayment;
 Tracker.autorun(function () {
+    if(FlowRouter.query.get('k') == 'printPayment') {
+        $('#saveNPrint').trigger('click');
+    }
     if (Session.get('customerId')) {
-        swal({
-            title: "Pleas Wait",
-            text: "Getting Invoices....", showConfirmButton: false
-        });
+        // swal({
+        //     title: "Pleas Wait",
+        //     text: "Getting Invoices....", showConfirmButton: false
+        // });
         Meteor.subscribe('pos.customer', {
             _id: Session.get('customerId')
         });
@@ -48,9 +51,9 @@ Tracker.autorun(function () {
             Meteor.call('calculateLateInvoice', {invoices}, function (err, result) {
                 countLateInvoice.set(result);
             });
-            setTimeout(function () {
-                swal.close()
-            }, 500);
+            // setTimeout(function () {
+            //     swal.close()
+            // }, 500);
         }
     }
     if (Session.get('createPenalty')) {
@@ -186,7 +189,7 @@ indexTmpl.helpers({
     },
     lastPaymentDate(){
         var lastPaymentDate = getLastPaymentDate(this._id);
-        if(lastPaymentDate) {
+        if (lastPaymentDate) {
             return `<br><span class="label label-success"><i class="fa fa-money"></i> Last Paid: ${moment(lastPaymentDate).format('YYYY-MM-DD HH:mm:ss')}</span>`;
         }
         return '';
@@ -592,57 +595,37 @@ let hooksObject = {
         let branch = Session.get('currentBranch');
         delete invoicesObj.count;
         if (_.isEmpty(invoicesObj)) {
-            swal({
-                title: "Warning",
-                text: "Your payments can't be blank",
-                type: "error",
-                confirmButtonClass: "btn-danger",
-                showConfirmButton: true,
-                timer: 3000
-            });
+            // swal({
+            //     title: "Warning",
+            //     text: "Your payments can't be blank",
+            //     type: "error",
+            //     confirmButtonClass: "btn-danger",
+            //     showConfirmButton: true,
+            //     timer: 3000
+            // });
         } else {
             let paymentDate = this.insertDoc.paymentDate || new Date();
-            let voucherId = this.insertDoc.voucherId || '' ;
-            swal({
-                title: "Processing Payment..",
-                text: "Click OK to continue!",
-                type: "info",
-                showCancelButton: true,
-                closeOnConfirm: false,
-                showLoaderOnConfirm: true,
-            }).then(function () {
-                receivePayment.callPromise({paymentDate, invoicesObj, branch, voucherId})
-                    .then(function (result) {
-                        clearChecbox();
-                        swal({
-                            title: "Receive Payment",
-                            text: "Successfully paid!",
-                            type: "success",
-                            confirmButtonClass: "btn-success",
-                            showConfirmButton: true,
-                            timer: 3000
-                        });
-                    })
-                    .catch(function (err) {
-                        Session.set('invoicesObj', {count: 0});
-                        swal({
-                            title: "[Error]",
-                            text: err.message,
-                            type: "danger",
-                            confirmButtonClass: "btn-danger",
-                            showConfirmButton: true,
-                            timer: 3000
-                        });
-                    })
-            });
-
+            let voucherId = this.insertDoc.voucherId || '';
+            receivePayment.callPromise({paymentDate, invoicesObj, branch, voucherId})
+                .then(function (result) {
+                    clearChecbox();
+                    // alertify.success("Paid Success");
+                    // swal({
+                    //     title: "Receive Payment",
+                    //     text: "Successfully paid!",
+                    //     type: "success",
+                    //     confirmButtonClass: "btn-success",
+                    //     showConfirmButton: true,
+                    //     timer: 3000
+                    // });
+                })
         }
         return false;
     },
 };
 
 function paymentDate(element) {
-    element.on("dp.change", (e)=> {
+    element.on("dp.change", (e) => {
         clearChecbox();
         currentPaymentDate.set(e.date.toDate());
     });

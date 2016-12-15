@@ -5,8 +5,8 @@ let indexTmpl = Template.pos_martUi;
 let indexFooter = Template.pos_martUiFooter;
 indexTmpl.onCreated(function () {
 
-    Meteor.subscribe('pos.martPubInvoiceByUnsaved', {unsaved: false});
-    Meteor.subscribe('pos.martPubInvoiceByHoldOrder', {holdOrder: true});
+    Meteor.subscribe('pos.martPubInvoiceByUnsaved', {unsaved: false, status: {$ne: 'closed'}});
+    Meteor.subscribe('pos.martPubInvoiceByHoldOrder', {holdOrder: true, status: {$ne: 'closed'}});
     this.autorun(() => {
         let invoiceId = FlowRouter.query.get('inv');
         if (invoiceId) {
@@ -66,6 +66,12 @@ indexTmpl.events({
                 }
              });
          }
+    },
+    'click .handlePay'(event,instance){
+        let invoice = Invoices.findOne(FlowRouter.query.get('inv'));
+        if(invoice) {
+            FlowRouter.go(`/pos/mart-ui/customer/${invoice.customerId}/receive-payment/${invoice._id}`);
+        }
     }
 });
 
