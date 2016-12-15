@@ -74,6 +74,23 @@ EnterBills.after.insert(function (userId, doc) {
     });
 });
 
+
+
+EnterBills.before.update(function (userId, doc, fieldNames, modifier, options) {
+    let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
+    }
+});
+
+EnterBills.before.remove(function (userId, doc) {
+    let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
+    }
+});
+
+
 EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
     let preDoc = this.previous;
     let type = {

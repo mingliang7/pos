@@ -23,6 +23,21 @@ ReceiveItems.before.insert(function (userId, doc) {
     doc._id = idGenerator.genWithPrefix(ReceiveItems, prefix, 4);
 });
 
+
+ReceiveItems.before.update(function (userId, doc, fieldNames, modifier, options) {
+    let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
+    }
+});
+
+ReceiveItems.before.remove(function (userId, doc) {
+    let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
+    }
+});
+
 ReceiveItems.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);

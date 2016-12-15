@@ -38,7 +38,7 @@ export const destroyAction = (collection, selector = {}, options = {}) => {
         collection.remove(selector, function (error) {
             if (error) {
                 // sAlert.error(options.errorMsg ? options.errorMsg : error.message);
-                displayError(options.errorMsg, options.i18n);
+                displayError(error.message, options.i18n);
             } else {
                 swal({
                     title: "Deleted!",
