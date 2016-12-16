@@ -29,22 +29,60 @@ tmplIndex.events({
     'click .view a'() {
         $('.products ul').toggleClass('list')
     },
+    'keyup #mart-barcode'(event, instance){
+        if (event.which == 13) {
+            Meteor.call('mart.findItemByBarcode', {
+                barcode: event.currentTarget.value,
+                branchId: Session.get('currentBranch')
+            }, function (err, result) {
+                if (result.exist == 'true' && result.qtyOnHand > 0) {
+                    let invoiceId = FlowRouter.query.get('inv');
+                    if (invoiceId) {
+                        let invoice = Invoices.findOne(invoiceId);
+                        if (invoice) {
+                            result.invoiceId = invoiceId;
+                        } else {
+                            FlowRouter.query.unset('inv');
+                        }
+                    }
+                    result.date = moment().toDate();
+                    result.userId = Meteor.userId();
+                    result.branchId = Session.get('currentBranch');
+                    result.product = result.item;
+                    Meteor.call('mart.addProductToInvoice', {data: result}, function (err, result) {
+                        console.log(result);
+                        if (result && result.flag == 'insert') {
+                            FlowRouter.query.set({inv: result._id});
+                        } else {
+                            console.log(err);
+                        }
+                    });
+                }
+                else if (result.exist == 'true' && result.qtyOnHand <= 0) {
+                    alertify.warning(`${result.item.name} is out of stock`)
+                } else {
+                    alertify.warning('No Item match!');
+                }
+            });
+            $(event.currentTarget).val('');
+        }
+    },
     'keyup #mart-search-product'(event, instance){
         let query = event.currentTarget.value;
         instance.queryProduct.set(query)
     },
     'click .addProduct'(event, instance){
-        console.log(this);
-        Meteor.call('mart.checkStock', {itemId: this.product._id, branchId: Session.get('currentBranch')}, (err,result) =>{
-            console.log(result)
-            if(result && result.qty > 0){
+        Meteor.call('mart.checkStock', {
+            itemId: this.product._id,
+            branchId: Session.get('currentBranch')
+        }, (err, result) => {
+            if (result && result.qty > 0) {
                 let invoiceId = FlowRouter.query.get('inv');
-                console.log(invoiceId);
                 if (invoiceId) {
                     let invoice = Invoices.findOne(invoiceId);
-                    if(invoice){
+                    if (invoice) {
                         this.invoiceId = invoiceId;
-                    }else{
+                    } else {
                         FlowRouter.query.unset('inv');
                     }
                 }
@@ -59,8 +97,8 @@ tmplIndex.events({
                         console.log(err);
                     }
                 });
-            }else if(!result.qty || result && result.qty <=0){
-                alertify.error(`${result.name} is out of stock`)
+            } else if (!result.qty || result && result.qty <= 0) {
+                alertify.warning(`${result.name} is out of stock`)
             }
         });
     }

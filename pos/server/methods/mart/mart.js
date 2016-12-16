@@ -19,7 +19,7 @@ Meteor.methods({
             itemId: data.product._id,
             qty: data.qty || 1,
             price: data.product.price,
-            amount:  (data.qty || 1) * data.product.price,
+            amount: (data.qty || 1) * data.product.price,
         };
         if (obj.flag == 'insert') {
             let customer = Customers.findOne({}, {_id: 1});
@@ -59,20 +59,38 @@ Meteor.methods({
         return {_id: obj._id, flag};
     },
     'mart.checkStock'({itemId, branchId}){
-        let stockLocation = StockLocations.findOne({branchId: '003'}, {_id: 1});
+        let stockLocation = StockLocations.findOne({branchId: branchId}, {_id: 1});
         let item = Item.findOne(itemId);
-        return {qty: !item.qtyOnHand && !item.qtyOnHand[stockLocation._id] ? 0 : item.qtyOnHand[stockLocation._id], name: item.name};
+        return {
+            qty: !item.qtyOnHand && !item.qtyOnHand[stockLocation._id] ? 0 : item.qtyOnHand[stockLocation._id],
+            name: item.name
+        };
     },
     'mart.handleCancel'({invoiceId}){
-        if(invoiceId){
+        if (invoiceId) {
             Invoices.remove(invoiceId);
         }
         return true;
     },
     'mart.handleHoldOrder'({invoiceId}){
-        if(invoiceId){
+        if (invoiceId) {
             Invoices.direct.update(invoiceId, {$set: {unsaved: true, holdOrder: true}});
         }
         return true;
+    },
+    'mart.removeProduct'({currentSelectItem, invoiceId}){
+        Mutation.removeProduct({currentSelectItem, invoiceId});
+    },
+    'mart.updateProductQty'({currentSelectItem, invoiceId}){
+        Mutation.updateProductQty({currentSelectItem, invoiceId});
+    },
+    'mart.findItemByBarcode'({barcode, branchId}){
+        let stockLocation = StockLocations.findOne({branchId: branchId});
+        let qtyOnHand = 0;
+        let item = Item.findOne({barcode});
+        if(item && item.qtyOnHand) {
+            qtyOnHand = item.qtyOnHand[stockLocation ? stockLocation._id: ''] || 0;
+        }
+        return {exist: item ? 'true' : 'false', qtyOnHand,item}
     }
 });

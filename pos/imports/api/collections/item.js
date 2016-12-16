@@ -127,6 +127,7 @@ Item.schema = new SimpleSchema({
     },
     barcode: {
         type: String,
+        unique: true,
         optional: true
     },
     unitId: {

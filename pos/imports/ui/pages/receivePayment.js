@@ -609,6 +609,9 @@ let hooksObject = {
             receivePayment.callPromise({paymentDate, invoicesObj, branch, voucherId})
                 .then(function (result) {
                     clearChecbox();
+                    if(FlowRouter.query.get('k') == 'printPayment') {
+                        FlowRouter.go(`/pos/print?inv=${result.invoiceId[0]}`);
+                    }
                     // alertify.success("Paid Success");
                     // swal({
                     //     title: "Receive Payment",

@@ -24,8 +24,9 @@ export const receivePayment = new ValidatedMethod({
         invoicesObj, paymentDate, branch, voucherId
     }) {
         if (!this.isSimulation) {
+            let invoiceId = [];
             for (let k in invoicesObj) {
-                let selector = {}
+                let selector = {};
                 let obj = {
                     invoiceId: k,
                     voucherId: voucherId,
@@ -42,7 +43,7 @@ export const receivePayment = new ValidatedMethod({
                 };
                 let customer = Customers.findOne(obj.customerId);
                 obj.paymentType = customer.termId ? 'term' : 'group';
-                ReceivePayment.insert(obj);
+                ReceivePayment.insert(obj, function(err,result) {});
                 if(obj.status == 'closed'){
                     selector.$set = {status: 'closed', closedAt: obj.paymentDate}
                 }else{
@@ -55,8 +56,9 @@ export const receivePayment = new ValidatedMethod({
                 }else{
                     GroupInvoice.direct.update(k, selector);
                 }
+                invoiceId.push(obj.invoiceId);
             }
-            return true;
+            return {invoiceId};
         }
     }
 });

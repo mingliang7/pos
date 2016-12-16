@@ -17,8 +17,9 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a href="#"><i class="glyphicon glyphicon-adjust"></i></a></li>
+                    <li><a href="#"><i class="glyphicon glyphicon-wrench"></i></a></li>
                     <li><a href="#"><i class="glyphicon glyphicon-bell"></i></a></li>
+                    <li><a href="/pos/payment-transaction-list"><i class="glyphicon glyphicon-usd"></i></a></li>
                     <li><a href="/pos/enterBill"><i class="glyphicon glyphicon-user"></i></a></li>
                      <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Unsaved INV<b class="caret"></b></a>
@@ -60,9 +61,11 @@
                 {{#each invoiceById.items}}
                     <tr>
                         <td>{{name}}</td>
-                        <td>{{numFormat qty '0,0'}}</td>
+                        <td><input type="number" class="changeQty input-sm" value="{{qty}}"></td>
                         <td>{{numFormat price '0,0.00'}}</td>
                         <td>{{numFormat amount '0,0.00'}}</td>
+                        <td></td>
+                        <td><a class="removeProduct cursor-pointer"><i class="fa fa-trash-o"></i></a></td>
                     </tr>
                 {{/each}}
                 </tbody>

@@ -713,3 +713,11 @@ PosRoutes.route('/target-item', {
         parent: 'pos.home'
     }
 });
+import '../imports/ui/pages/print/printPayment'
+PosRoutes.route('/print', {
+    name: 'pos.print',
+    title: 'Print',
+    action: function (params,queryParams) {
+        BlazeLayout.render('PrintLayout', {printLayout: 'pos_printPayment'});
+    }
+});

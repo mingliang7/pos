@@ -4,9 +4,7 @@ import {Invoices} from '../../imports/api/collections/invoice';
 let tmplLayout = Template.MartLayout;
 
 tmplLayout.onRendered(function () {
-    console.log('this is on rendered')
     $(window).keydown(function (e) {
-        console.log(e.keyCode)
         if (e.altKey && e.keyCode == 65) {
             FlowRouter.query.set({k: 'barcode'});
         }
@@ -23,7 +21,10 @@ tmplLayout.onRendered(function () {
             }
         }
         else if(e.keyCode == 13) {
-            FlowRouter.query.set({k: 'printPayment'})
+            let invoiceId = FlowRouter.getParam('invoiceId');
+            if(invoiceId) {
+                FlowRouter.query.set({k: 'printPayment'})
+            }
         }else if(e.keyCode == 8 && e.altKey) {
             FlowRouter.go('/pos/mart-ui');
         }
