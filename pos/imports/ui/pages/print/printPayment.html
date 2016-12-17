@@ -86,21 +86,21 @@
                                     </tr>
                                 {{/each}}
 
-                                {{#if hasPayment}}
+                                {{#if hasPayment paymentObj}}
                                     <tr style="text-align: right;">
                                         <td colspan="5">
                                             <hr>
                                         </td>
                                     </tr>
 
-                                    {{#each paymentObj.payments}}
+                                    {{#with paymentObj}}
                                         <tr>
                                             <td>Paid {{currencyId}}:</td>
-                                            <td style="font-weight: bold">{{payAmount}}</td>
+                                            <td style="font-weight: bold">{{paidAmount}}</td>
                                             <td style="text-align: right">Change {{currencyId}}:</td>
-                                            <td style="text-align: right;font-weight: bold">{{formatFixTwo return}}</td>
+                                            <td style="text-align: right;font-weight: bold">{{balanceAmount}}</td>
                                         </tr>
-                                    {{/each}}
+                                    {{/with}}
 
 
                                 {{/if}}

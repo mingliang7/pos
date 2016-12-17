@@ -1,8 +1,10 @@
 import './martUI.html';
 //collection
 import {Invoices} from '../../../api/collections/invoice';
+import {Item} from '../../../api/collections/item';
 let indexTmpl = Template.pos_martUi;
 let indexFooter = Template.pos_martUiFooter;
+let itemIndex = Template._addNewItem;
 indexTmpl.onCreated(function () {
 
     Meteor.subscribe('pos.martPubInvoiceByUnsaved', {unsaved: false, status: {$ne: 'closed'}});
@@ -36,6 +38,9 @@ indexTmpl.helpers({
 });
 
 indexTmpl.events({
+    'click .enableItemSidebar'(event, instance){
+        $('.menu-btn').click();
+    },
     'click .unsavedInvoiceId'(event, instance){
         FlowRouter.query.set({inv: this._id});
     },
@@ -95,5 +100,29 @@ indexFooter.helpers({
     invoiceId(){
         let invoiceId = FlowRouter.query.get('inv') || '';
         return invoiceId;
+    }
+});
+itemIndex.onCreated(function () {
+    this.categoryList = new ReactiveVar();
+    Meteor.call('categoryList', 'Select One | No Parent', null, (err, result) => {
+        this.categoryList.set(result);
+    });
+});
+itemIndex.helpers({
+    collection(){
+        return Item;
+    },
+    categoryList(){
+        //let categoryId = Session.get('CategoryIdSession');
+        //return ReactiveMethod.call('categoryList', 'Select One | No Parent',categoryId);
+        let list = [];
+        let categories = Template.instance().categoryList.get();
+        categories.forEach(function (category) {
+            list.push({
+                label: Spacebars.SafeString(category.label),
+                value: category.value
+            });
+        });
+        return list;
     }
 });

@@ -62,7 +62,7 @@ Meteor.methods({
         let stockLocation = StockLocations.findOne({branchId: branchId}, {_id: 1});
         let item = Item.findOne(itemId);
         return {
-            qty: !item.qtyOnHand && !item.qtyOnHand[stockLocation._id] ? 0 : item.qtyOnHand[stockLocation._id],
+            qty: !item.qtyOnHand || (item.qtyOnHand && !item.qtyOnHand[stockLocation._id]) ? 0 : item.qtyOnHand[stockLocation._id],
             name: item.name
         };
     },

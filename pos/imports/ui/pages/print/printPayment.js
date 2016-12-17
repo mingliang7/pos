@@ -28,5 +28,8 @@ indexTmpl.helpers({
         let doc = Session.get('currentUserStockAndAccountMappingDoc');
         data.company = doc.company;
         return data;
+    },
+    hasPayment(paymentObj){
+        return !_.isEmpty(paymentObj);
     }
 });

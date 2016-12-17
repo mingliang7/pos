@@ -1,4 +1,20 @@
 <template name="pos_martUi">
+    <input type="checkbox" class="check" id="checked">
+    <label class="menu-btn hidden" for="checked">
+        <span class="bar top"></span>
+        <span class="bar middle"></span>
+        <span class="bar bottom"></span>
+        <span class="menu-btn__text">MENU</span>
+    </label>
+    <label class="close-menu" for="checked"></label>
+    <nav class="drawer-menu">
+        <div class="container">
+            <h2 style="color: #fff;">ADD ITEM</h2>
+            <div class="col-xs-5 well">
+                {{>_addNewItem}}
+            </div>
+        </div>
+    </nav>
     <div class="col-xs-7">
         <nav class="navbar navbar-default navbar-xs " role="navigation"
              style="border: none;background-color: transparent;">
@@ -17,11 +33,11 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a href="#"><i class="glyphicon glyphicon-wrench"></i></a></li>
+                    <li><a href="#" class="enableItemSidebar"><i class="glyphicon glyphicon-wrench"></i></a></li>
                     <li><a href="#"><i class="glyphicon glyphicon-bell"></i></a></li>
                     <li><a href="/pos/payment-transaction-list"><i class="glyphicon glyphicon-usd"></i></a></li>
                     <li><a href="/pos/enterBill"><i class="glyphicon glyphicon-user"></i></a></li>
-                     <li class="dropdown">
+                    <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Unsaved INV<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             {{#each unsavedInvoices}}
@@ -49,7 +65,7 @@
             <table id="table" class="table table-lg table-hover table-mc-light-blue">
                 <thead>
                 <tr>
-                    <th >Name</th>
+                    <th>Name</th>
                     <th>Qty</th>
                     <th>Price</th>
                     <th>Total</th>
@@ -76,41 +92,39 @@
             <div class="col-xs-6"></div>
             <div class="col-xs-6">
                 <table width='0' border='0' cellpadding='0' cellspacing='0'>
-            <tbody>
-            <tr>
-                <td width='0' align='left' valign='top'
-                    style='color:#404041;font-size:15px;line-height:13px;padding:15px 0px 3px 0px'>
-                    <strong>Sub-total:</strong>
-                </td>
-                <td width='0' align='right' valign='top'
-                    style='color:#404041;font-size:20px;line-height:16px;padding:15px 5px 3px 5px'>
-                    ${{numFormat invoiceById.total '0,0.00'}}
-                </td>
-            </tr>
-            <tr>
-                <td align='left' valign='top'
-                    style='color:#404041;font-size:15px;line-height:16px;padding:5px 0px 3px 0px;border-bottom:solid 1px #999999'>
-                    <strong>Order discount:</strong>
-                </td>
-                <td width='62' align='right' valign='top'
-                    style='color:#404041;font-size:16px;line-height:16px;padding:5px 5px 3px 5px;border-bottom:solid 1px #999999'>
-                    ${{numFormat invoiceById.discount '0,0.00'}}
-                </td>
-            </tr>
-            <tr>
-                <td align='left' valign='bottom'
-                    style='color:#404041;font-size:15px;line-height:16px;padding:5px 0px 3px 0px'>
-                    <strong>Grand Total:</strong>
-                </td>
-                <td width='62' align='right' valign='bottom'
-                    style='color:#339933;font-size:21px;line-height:16px;padding:5px 5px 3px 5px'>
-                    <strong>${{numFormat invoiceById.total '0,0.00'}}</strong>
-                </td>
-            </tr>
-            </tbody>
-
-
-        </table>
+                    <tbody>
+                    <tr>
+                        <td width='0' align='left' valign='top'
+                            style='color:#404041;font-size:15px;line-height:13px;padding:15px 0px 3px 0px'>
+                            <strong>Sub-total:</strong>
+                        </td>
+                        <td width='0' align='right' valign='top'
+                            style='color:#404041;font-size:20px;line-height:16px;padding:15px 5px 3px 5px'>
+                            ${{numFormat invoiceById.total '0,0.00'}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align='left' valign='top'
+                            style='color:#404041;font-size:15px;line-height:16px;padding:5px 0px 3px 0px;border-bottom:solid 1px #999999'>
+                            <strong>Order discount:</strong>
+                        </td>
+                        <td width='62' align='right' valign='top'
+                            style='color:#404041;font-size:16px;line-height:16px;padding:5px 5px 3px 5px;border-bottom:solid 1px #999999'>
+                            ${{numFormat invoiceById.discount '0,0.00'}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align='left' valign='bottom'
+                            style='color:#404041;font-size:15px;line-height:16px;padding:5px 0px 3px 0px'>
+                            <strong>Grand Total:</strong>
+                        </td>
+                        <td width='62' align='right' valign='bottom'
+                            style='color:#339933;font-size:21px;line-height:16px;padding:5px 5px 3px 5px'>
+                            <strong>${{numFormat invoiceById.total '0,0.00'}}</strong>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         <div class="col-xs-12">
@@ -129,34 +143,65 @@
         {{> pos_martUiFooter}}
     </div>
 </template>
+<template name="_addNewItem">
+    {{#autoForm collection=collection id="Pos_itemNew" type="insert"}}
+        <div class="row">
+            <div class="col-xs-6">
+                {{> afQuickField name='name'}}
+            </div>
+            <div class="col-xs-6">
+                {{> afQuickField name='unitId' label="+Base Unit"}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4">{{> afQuickField name='categoryId' label="Category" options=categoryList}}
+            </div>
+            <div class="col-xs-4">{{> afQuickField name='itemType' label="Item Type"}}</div>
+            <div class="col-xs-4">{{> afQuickField name='barcode' label="Barcode"}}</div>
+        </div>
 
+        <div class="row">
+            <div class="col-xs-4">{{> afQuickField name='price'}}
+            </div>
+            <div class="col-xs-4">{{> afQuickField name='purchasePrice'}}
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-5">{{> afQuickField name='photo'}}</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="reset" class="btn btn-default">Reset</button>
+    {{/autoForm}}
+</template>
 
 <template name="pos_martUiFooter">
     <!--<nav class="navbar navbar-lg navbar-default navbar-fixed-bottom"-->
-         <!--style="border: none;background-color: transparent;">-->
-        <!--<div class="container-fluid">-->
-            <!--&lt;!&ndash; Brand and toggle get grouped for better mobile display &ndash;&gt;-->
-            <!--<div class="navbar-header">-->
-                <!--<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"-->
-                        <!--data-target="#bs-example-navbar-collapse-1"-->
-                        <!--aria-expanded="false">-->
-                    <!--<span class="sr-only">Toggle navigation</span>-->
-                    <!--<span class="icon-bar"></span>-->
-                    <!--<span class="icon-bar"></span>-->
-                    <!--<span class="icon-bar"></span>-->
-                <!--</button>-->
-                <!--<a class="navbar-brand" href="#">Brand</a>-->
-            <!--</div>-->
+    <!--style="border: none;background-color: transparent;">-->
+    <!--<div class="container-fluid">-->
+    <!--&lt;!&ndash; Brand and toggle get grouped for better mobile display &ndash;&gt;-->
+    <!--<div class="navbar-header">-->
+    <!--<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"-->
+    <!--data-target="#bs-example-navbar-collapse-1"-->
+    <!--aria-expanded="false">-->
+    <!--<span class="sr-only">Toggle navigation</span>-->
+    <!--<span class="icon-bar"></span>-->
+    <!--<span class="icon-bar"></span>-->
+    <!--<span class="icon-bar"></span>-->
+    <!--</button>-->
+    <!--<a class="navbar-brand" href="#">Brand</a>-->
+    <!--</div>-->
 
-            <!--&lt;!&ndash; Collect the nav links, forms, and other content for toggling &ndash;&gt;-->
-            <!--<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">-->
-                <!--<ul class="nav navbar-nav">-->
-                    <!--<li><a href="/pos/mart-ui/payment?inv={{invoiceId}}" class="btn btn-default bg-teal"><i class="fa fa-usd"></i> PAY</a></li>-->
-                    <!--&lt;!&ndash;<li><a href="#">PAY</a></li>&ndash;&gt;-->
-                <!--</ul>-->
-            <!--</div>-->
-            <!--&lt;!&ndash; /.navbar-collapse &ndash;&gt;-->
-        <!--</div>-->
-        <!--&lt;!&ndash; /.container-fluid &ndash;&gt;-->
+    <!--&lt;!&ndash; Collect the nav links, forms, and other content for toggling &ndash;&gt;-->
+    <!--<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">-->
+    <!--<ul class="nav navbar-nav">-->
+    <!--<li><a href="/pos/mart-ui/payment?inv={{invoiceId}}" class="btn btn-default bg-teal"><i class="fa fa-usd"></i> PAY</a></li>-->
+    <!--&lt;!&ndash;<li><a href="#">PAY</a></li>&ndash;&gt;-->
+    <!--</ul>-->
+    <!--</div>-->
+    <!--&lt;!&ndash; /.navbar-collapse &ndash;&gt;-->
+    <!--</div>-->
+    <!--&lt;!&ndash; /.container-fluid &ndash;&gt;-->
     <!--</nav>-->
 </template>

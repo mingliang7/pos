@@ -97,7 +97,7 @@ tmplIndex.events({
                         console.log(err);
                     }
                 });
-            } else if (!result.qty || result && result.qty <= 0) {
+            } else if (result && !result.qty || result && result.qty <= 0) {
                 alertify.warning(`${result.name} is out of stock`)
             }
         });
