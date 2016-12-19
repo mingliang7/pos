@@ -224,7 +224,7 @@ itemsTmpl.events({
 
     },
     'change [name="itemId"]': function (event, instance) {
-        instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
+        instance.name = event.currentTarget.selectedOptions[0].text;
         instance.defaultItem.set(event.currentTarget.value);
     },
     'change [name="qty"]'(event, instance) {
@@ -239,7 +239,6 @@ itemsTmpl.events({
         instance.defaultPrice.set(price);
     },
     'click .js-add-item': function (event, instance) {
-
         let itemId = instance.$('[name="itemId"]').val();
         if (itemId == "") {
             alertify.warning('Please choose item.');
@@ -283,7 +282,7 @@ itemsTmpl.events({
                             } else {
                                 checkQty = item.quantity * qty;
                             }
-                            let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                            let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
                             inventoryQty += soldQty;
                             if (checkQty <= inventoryQty) {
                                 itemsCollection.insert({
@@ -316,7 +315,7 @@ itemsTmpl.events({
                         } else {
                             checkQty = qty;
                         }
-                        let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                        let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
                         inventoryQty += soldQty;
                         if (checkQty <= inventoryQty) {
                             let exist = itemsCollection.findOne({
@@ -375,7 +374,7 @@ itemsTmpl.events({
                             } else {
                                 checkQty = item.quantity * qty;
                             }
-                            let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                            let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
                             if (checkQty <= inventoryQty) {
                                 itemsCollection.insert({
                                     itemId: item.itemId,
@@ -406,7 +405,7 @@ itemsTmpl.events({
                         } else {
                             checkQty = qty;
                         }
-                        let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                        let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
                         if (checkQty <= inventoryQty) {
                             let exist = itemsCollection.findOne({
                                 itemId: itemId
