@@ -16,8 +16,7 @@ lendingStockTmpl.helpers({
         let lendingStocks = LendingStocks.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
         if (ReceiveDeletedItem.find().count() > 0) {
             ReceiveDeletedItem.find().forEach(function (item) {
-                console.log(item);
-                lendingStock.forEach(function (lendingStock) {
+                lendingStocks.forEach(function (lendingStock) {
                     lendingStock.items.forEach(function (lendingStockItem) {
                         if (lendingStockItem.itemId == item.itemId) {
                             lendingStockItem.remainQty += item.qty;
@@ -62,10 +61,13 @@ lendingStockTmpl.events({
                     let lendingStockIdExist = _.find(tmpCollection, function (o) {
                         return o.lendingStockId == lendingStockId;
                     });
+                    console.log(lendingStockId);
+                    console.log(tmpCollection);
                     if (lendingStockIdExist) {
                         insertLendingStockItem({
                             self: this,
                             remainQty: parseFloat(remainQty),
+                            lostQty: 0,
                             lendingStockItem: lendingStockIdExist,
                             lendingStockId: lendingStockId
                         });
@@ -73,7 +75,7 @@ lendingStockTmpl.events({
                         swal("Retry!", "Item Must be in the same lendingStockId", "warning")
                     }
                 } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                    Meteor.call('getItem', this.itemId, (err, result) => {
                         this.lendingStockId = lendingStockId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
@@ -116,7 +118,7 @@ lendingStockTmpl.events({
                         swal("Retry!", "Item Must be in the same lendingStockId", "warning")
                     }
                 } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                    Meteor.call('getItem', this.itemId, (err, result) => {
                         this.lendingStockId = lendingStockId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
@@ -138,10 +140,11 @@ lendingStockTmpl.events({
 });
 //insert lendingStock order item to itemsCollection
 let insertLendingStockItem = ({self, remainQty, lendingStockItem, lendingStockId}) => {
-    Meteor.call('getItem', self.itemId, (err, result)=> {
+    Meteor.call('getItem', self.itemId, (err, result) => {
         self.lendingStockId = lendingStockId;
         self.qty = remainQty;
         self.name = result.name;
+        self.lostQty = 0;
         self.amount = self.qty * self.price;
         let getItem = itemsCollection.findOne({itemId: self.itemId});
         if (getItem) {

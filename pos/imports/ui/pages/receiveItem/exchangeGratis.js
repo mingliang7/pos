@@ -17,7 +17,7 @@ exchangeGratisTmpl.helpers({
         if (ReceiveDeletedItem.find().count() > 0) {
             ReceiveDeletedItem.find().forEach(function (item) {
                 console.log(item);
-                exchangeGratis.forEach(function (exchangeGratis) {
+                exchangeGratises.forEach(function (exchangeGratis) {
                     exchangeGratis.items.forEach(function (exchangeGratisItem) {
                         if (exchangeGratisItem.itemId == item.itemId) {
                             exchangeGratisItem.remainQty += item.qty;
@@ -142,6 +142,7 @@ let insertExchangeGratisItem = ({self, remainQty, exchangeGratisItem, exchangeGr
         self.exchangeGratisId = exchangeGratisId;
         self.qty = remainQty;
         self.name = result.name;
+        self.lostQty=0;
         self.amount = self.qty * self.price;
         let getItem = itemsCollection.findOne({itemId: self.itemId});
         if (getItem) {

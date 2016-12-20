@@ -23,6 +23,7 @@ import '../../../../core/client/components/form-footer.js';
 
 //methods
 import {getUnitName} from '../../../common/methods/item-info.js';
+import {itemInfo} from '../../../common/methods/item-info';
 // Collection
 import {Item} from '../../api/collections/item.js';
 
@@ -122,7 +123,7 @@ newTmpl.helpers({
         return list;
     }
 });
-newTmpl.onDestroyed(()=> {
+newTmpl.onDestroyed(() => {
     tmpCollection.remove({});
 });
 newTmpl.events({
@@ -130,7 +131,7 @@ newTmpl.events({
         alertify.addOn(fa('plus', 'Add Unit'), renderTemplate(Template.Pos_unitNew));
     },
     'change .toggle-scheme'(event, instance){
-        tmpCollection.remove({})
+        tmpCollection.remove({});
         if ($(event.currentTarget).prop('checked')) {
             $('.scheme').removeClass('hidden')
         } else {
@@ -144,7 +145,7 @@ newTmpl.events({
             $('.selling-unit').addClass('hidden');
         }
     },
-})
+});
 
 // Edit
 editTmpl.onCreated(function () {
@@ -154,18 +155,18 @@ editTmpl.onCreated(function () {
         this.categoryList.set(result);
     });
     if (this.data.scheme) {
-        this.data.scheme.forEach((scheme)=> {
+        this.data.scheme.forEach((scheme) => {
             Meteor.call('getItem', scheme.itemId, function (err, result) {
                 scheme.name = result.name;
                 tmpCollection.insert(scheme);
             })
         })
     }
-})
+});
 //on Destroyed
 editTmpl.onDestroyed(function () {
     tmpCollection.remove({});
-})
+});
 
 editTmpl.helpers({
     collection(){
@@ -219,7 +220,7 @@ showTmpl.onCreated(function () {
     this.dict = new ReactiveVar();
     let self = this.data;
     let tmpVar = this.dict;
-    this.autorun(()=> {
+    this.autorun(() => {
         this.subscribe('pos.item', {_id: self._id});
         getUnitName.callPromise({sellingUnit: self.sellingUnit})
             .then((result) => {
@@ -251,7 +252,26 @@ showTmpl.helpers({
     }
 });
 //custom Object
+Template.schemeItem.onCreated(function () {
+    this.defaultPrice = new ReactiveVar(0);
+    this.defaultItem = new ReactiveVar();
+    this.autorun(() => {
+        if (this.defaultItem.get() ) {
+            itemInfo.callPromise({
+                _id: this.defaultItem.get()
+            }).then((result) => {
+                this.defaultPrice.set(result.price);
+            }).catch((err) => {
+                console.log(err.message);
+            });
+        }
+    });
+});
 Template.schemeItem.helpers({
+    defaultPrice(){
+        let instance = Template.instance();
+        return instance.defaultPrice.get() || 0;
+    },
     schema() {
         return ItemsSchema;
     },
@@ -286,10 +306,11 @@ Template.schemeItem.helpers({
 
         return reactiveTableSettings;
     }
-})
+});
 Template.schemeItem.events({
     'change [name="itemId"]': function (event, instance) {
-        instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
+        instance.name = event.currentTarget.selectedOptions[0].text;
+        instance.defaultItem.set(event.currentTarget.value);
         // instance.$('[name="qty"]').val('');
         // instance.$('[name="price"]').val('');
         // instance.$('[name="amount"]').val('');
@@ -300,7 +321,6 @@ Template.schemeItem.events({
         qty = _.isEmpty(qty) ? 0 : parseInt(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
         let amount = qty * price;
-
         instance.state('amount', amount);
     },
     'click .js-add-item': function (event, instance) {

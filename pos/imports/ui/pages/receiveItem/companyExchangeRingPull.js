@@ -13,11 +13,13 @@ var companyExchangeRingPullTmpl = Template.listCompanyExchangeRingPull;
 companyExchangeRingPullTmpl.helpers({
     companyExchangeRingPulls(){
         let item = [];
-        let companyExchangeRingPulls = CompanyExchangeRingPulls.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
+        let companyExchangeRingPulls = CompanyExchangeRingPulls.find({
+            status: 'active',
+            vendorId: FlowRouter.query.get('vendorId')
+        }).fetch();
         if (ReceiveDeletedItem.find().count() > 0) {
             ReceiveDeletedItem.find().forEach(function (item) {
-                console.log(item);
-                companyExchangeRingPull.forEach(function (companyExchangeRingPull) {
+                companyExchangeRingPulls.forEach(function (companyExchangeRingPull) {
                     companyExchangeRingPull.items.forEach(function (companyExchangeRingPullItem) {
                         if (companyExchangeRingPullItem.itemId == item.itemId) {
                             companyExchangeRingPullItem.remainQty += item.qty;
@@ -36,7 +38,10 @@ companyExchangeRingPullTmpl.helpers({
         return companyExchangeRingPulls;
     },
     hasCompanyExchangeRingPulls(){
-        let count = CompanyExchangeRingPulls.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).count();
+        let count = CompanyExchangeRingPulls.find({
+            status: 'active',
+            vendorId: FlowRouter.query.get('vendorId')
+        }).count();
         return count > 0;
     },
     getItemName(itemId){
@@ -73,7 +78,7 @@ companyExchangeRingPullTmpl.events({
                         swal("Retry!", "Item Must be in the same companyExchangeRingPullId", "warning")
                     }
                 } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                    Meteor.call('getItem', this.itemId, (err, result) => {
                         this.companyExchangeRingPullId = companyExchangeRingPullId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
@@ -116,7 +121,7 @@ companyExchangeRingPullTmpl.events({
                         swal("Retry!", "Item Must be in the same companyExchangeRingPullId", "warning")
                     }
                 } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                    Meteor.call('getItem', this.itemId, (err, result) => {
                         this.companyExchangeRingPullId = companyExchangeRingPullId;
                         this.qty = parseFloat(remainQty);
                         this.exactQty = parseFloat(remainQty);
@@ -138,14 +143,15 @@ companyExchangeRingPullTmpl.events({
 });
 //insert companyExchagneRingPull order item to itemsCollection
 let insertCompanyExchangeRingPullItem = ({self, remainQty, companyExchagneRingPullItem, companyExchagneRingPullId}) => {
-    Meteor.call('getItem', self.itemId, (err, result)=> {
+    Meteor.call('getItem', self.itemId, (err, result) => {
         self.companyExchagneRingPullId = companyExchagneRingPullId;
         self.qty = remainQty;
         self.name = result.name;
+        self.lostQty = 0;
         self.amount = self.qty * self.price;
         let getItem = itemsCollection.findOne({itemId: self.itemId});
         if (getItem) {
-            if (getItem.qty + remainQty <= self.remainQty) {
+            if (getItem.qty + remainQty <= self.qty) {
                 itemsCollection.update(getItem._id, {$inc: {qty: self.qty, amount: self.qty * getItem.price}});
                 displaySuccess('Added!')
             } else {

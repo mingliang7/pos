@@ -67,7 +67,7 @@ itemDetailTmpl.events({
     },
     'change [name="itemId"]'(event, instance){
         instance.itemId = event.currentTarget.value;
-        instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
+        instance.name = event.currentTarget.selectedOptions[0].text;
     },
     'change .price'(event, instance){
         if (event.currentTarget.value == '' || event.currentTarget.value == '0') {

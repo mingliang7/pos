@@ -68,6 +68,7 @@ itemsTmpl.helpers({
         return true;
     },
     tableSettings: function () {
+        console.log(itemsCollection.find().fetch());
         let i18nPrefix = 'pos.receiveItem.schema';
 
         reactiveTableSettings.showFilter = false;
@@ -157,7 +158,7 @@ itemsTmpl.events({
         $('#total').val(subTotal * (1 - discount / 100));
     },
     'change [name="itemId"]': function (event, instance) {
-        instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
+        instance.name = event.currentTarget.selectedOptions[0].text;
         instance.$('[name="qty"]').val('');
         // instance.$('[name="price"]').val('');
         instance.$('[name="amount"]').val('');

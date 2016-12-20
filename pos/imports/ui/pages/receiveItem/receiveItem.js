@@ -113,6 +113,7 @@ indexTmpl.events({
         alertify.receiveItem(fa('plus', TAPi18n.__('pos.receiveItem.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
+        itemsCollection.remove({});
         alertify.receiveItem(fa('pencil', TAPi18n.__('pos.receiveItem.title')), renderTemplate(editTmpl, this));
     },
     'click .js-destroy' (event, instance) {
@@ -265,15 +266,15 @@ newTmpl.helpers({
         }
         return {};
     },
-   /* isTerm(){
-        if (Session.get('vendorInfo')) {
-            let vendorInfo = Session.get('vendorInfo');
-            if (vendorInfo._term) {
-                return true;
-            }
-            return false;
-        }
-    },*/
+    /* isTerm(){
+     if (Session.get('vendorInfo')) {
+     let vendorInfo = Session.get('vendorInfo');
+     if (vendorInfo._term) {
+     return true;
+     }
+     return false;
+     }
+     },*/
     dueDate(){
         let date = AutoForm.getFieldValue('receiveItemDate');
         if (Session.get('vendorInfo')) {
@@ -311,6 +312,18 @@ editTmpl.onCreated(function () {
     this.repOptions = new ReactiveVar();
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
+    });
+    let type = FlowRouter.query.get('type');
+    let data = this.data;
+    let typeId = _.lowerFirst(data.type)+'Id';
+    // Add items to local collection
+    _.forEach(data.items, (value) => {
+        Meteor.call('getItem', value.itemId, function (err, result) {
+            value.name = result.name;
+            value[typeId] = data[typeId];
+            value.exactQty = value.qty + value.lostQty;
+            itemsCollection.insert(value);
+        })
     });
 });
 editTmpl.events({
@@ -356,14 +369,6 @@ editTmpl.helpers({
     },
     data () {
         let data = this;
-        // Add items to local collection
-        _.forEach(data.items, (value)=> {
-            Meteor.call('getItem', value.itemId, function (err, result) {
-                value.name = result.name;
-                value.exactQty = value.qty + value.lostQty;
-                itemsCollection.insert(value);
-            })
-        });
         return data;
     },
     itemsCollection(){
@@ -467,10 +472,15 @@ editTmpl.helpers({
 });
 
 editTmpl.onDestroyed(function () {
-    debugger;
     // Remove items collection
     itemsCollection.remove({});
     ReceiveDeletedItem.remove({});
+    Session.set('vendorInfo', undefined);
+    Session.set('vendorId', undefined);
+    FlowRouter.query.unset();
+    Session.set('prepaidOrderItems', undefined);
+    Session.set('totalOrder', undefined);
+    Session.set('getVendorId', undefined);
 });
 
 // Show
@@ -509,7 +519,7 @@ let hooksObject = {
         insert: function (doc) {
             debugger;
             let items = [];
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 if (obj.prepaidOrderId) {
                     doc.prepaidOrderId = obj.prepaidOrderId;
@@ -571,7 +581,6 @@ listPrepaidOrder.helpers({
         let prepaidOrders = PrepaidOrders.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
         if (ReceiveDeletedItem.find().count() > 0) {
             ReceiveDeletedItem.find().forEach(function (item) {
-                console.log(item);
                 prepaidOrders.forEach(function (prepaidOrder) {
                     prepaidOrder.items.forEach(function (prepaidOrderItem) {
                         if (prepaidOrderItem.itemId == item.itemId) {
@@ -583,7 +592,6 @@ listPrepaidOrder.helpers({
             });
         }
         prepaidOrders.forEach(function (prepaidOrder) {
-            debugger
             prepaidOrder.items.forEach(function (prepaidOrderItem) {
                 item.push(prepaidOrderItem.itemId);
             });
@@ -628,7 +636,7 @@ listPrepaidOrder.events({
                         swal("Retry!", "Item Must be in the same prepaidOrderId", "warning")
                     }
                 } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                    Meteor.call('getItem', this.itemId, (err, result) => {
                         this.prepaidOrderId = prepaidOrderId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
@@ -671,7 +679,7 @@ listPrepaidOrder.events({
                         swal("Retry!", "Item Must be in the same prepaidOrderId", "warning")
                     }
                 } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                    Meteor.call('getItem', this.itemId, (err, result) => {
                         this.prepaidOrderId = prepaidOrderId;
                         this.qty = parseFloat(remainQty);
                         this.exactQty = parseFloat(remainQty);
@@ -695,9 +703,10 @@ listPrepaidOrder.events({
 
 //insert prepaidOrder order item to itemsCollection
 let insertPrepaidOrderItem = ({self, remainQty, prepaidOrderItem, prepaidOrderId}) => {
-    Meteor.call('getItem', self.itemId, (err, result)=> {
+    Meteor.call('getItem', self.itemId, (err, result) => {
         self.prepaidOrderId = prepaidOrderId;
         self.qty = remainQty;
+        self.lostQty = 0;
         self.name = result.name;
         self.amount = self.qty * self.price;
         let getItem = itemsCollection.findOne({itemId: self.itemId});

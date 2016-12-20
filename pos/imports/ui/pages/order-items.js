@@ -196,7 +196,7 @@ itemsTmpl.events({
 
     },
     'change [name="itemId"]': function (event, instance) {
-        instance.name = event.currentTarget.selectedOptions[0].text.split(' : ')[1];
+        instance.name = event.currentTarget.selectedOptions[0].text;
         instance.defaultItem.set(event.currentTarget.value);
     },
     'change [name="qty"]'(event, instance) {
