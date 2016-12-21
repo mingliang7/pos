@@ -94,9 +94,10 @@ dailySaleTmpl.helpers({
 dailyStockTmpl.onCreated(function () {
     this.dailyStockData = new ReactiveVar({notReady: true, data: {}});
     this.selectDate = new ReactiveVar(moment().endOf('days').toDate());
+    this.showPOSM = new ReactiveVar(false);
     this.autorun(() => {
-        if (this.selectDate.get()) {
-            Meteor.call('dashboard.dailyStock', {date: this.selectDate.get()}, (err, result) => {
+        if (this.selectDate.get() || this.showPOSM.get()) {
+            Meteor.call('dashboard.dailyStock', {date: this.selectDate.get(), showPOSM: this.showPOSM.get()}, (err, result) => {
                 if (result) {
                     this.dailyStockData.set({
                         notReady: false,
@@ -138,7 +139,16 @@ dailyStockTmpl.helpers({
         return concat;
     }
 });
-
+dailyStockTmpl.events({
+    'change .showPOSM'(event,instance){
+        let currentValue = $(event.currentTarget).prop('checked');
+        if(currentValue) {
+            instance.showPOSM.set(true);
+        }else{
+            instance.showPOSM.set(false);
+        }
+    }
+});
 dailyCash.onCreated(function () {
     this.dailyCashData = new ReactiveVar({notReady: true, data: {}});
     this.selectDate = new ReactiveVar(moment().subtract(1, 'days').endOf('days').toDate());
@@ -158,10 +168,10 @@ dailyCash.onCreated(function () {
     });
 });
 dailyCash.helpers({
-    url(branchId){
+    url(branchId,date){
         let instance = Template.instance();
-        let fromDate = moment(instance.selectDate.get()).startOf('days').format('YYYY-MM-DD HH:mm:ss');
-        let toDate = moment(instance.selectDate.get()).endOf('days').format('YYYY-MM-DD HH:mm:ss');
+        let fromDate = moment(date).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+        let toDate = moment(date).endOf('days').format('YYYY-MM-DD HH:mm:ss');
         url = `/pos/report/payment?branchId=${branchId}&date=${fromDate},${toDate}`;
         return url;
     },

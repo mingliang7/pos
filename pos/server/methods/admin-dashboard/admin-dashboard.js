@@ -335,10 +335,13 @@ Meteor.methods({
         }
         return obj
     },
-    'dashboard.dailyStock' ({date}) {
+    'dashboard.dailyStock' ({date, showPOSM}) {
         Meteor._sleepForMs(100);
         let obj = {items: [], dataByBranches: [], footer: {total: 0, paidAmount: 0, balanceAmount: 0}, branches: []};
-        let selector = {createdAt: {$lte: moment(date).endOf('days').toDate()}};
+        let selector = {price: {$gt: 0},createdAt: {$lte: moment(date).endOf('days').toDate()}};
+        if(showPOSM) {
+            selector.price = {$eq: 0};
+        }
         let project = {
             'item': '$lastDoc.itemDoc.name',
             'price': '$lastDoc.price',
@@ -521,7 +524,7 @@ Meteor.methods({
         let toDate = moment(date).endOf('days').toDate();
         let fromDate = moment(date).startOf('days').toDate();
         selector = {
-            paymentDate: {$gte: fromDate, $lte: toDate},
+            paymentDate: {$lte: toDate},
             status: {
                 $in: [ "partial", "closed"]
             }
@@ -530,8 +533,28 @@ Meteor.methods({
             {$match: selector},
             {
                 $group: {
-                    _id: '$branchId',
-                    total: {$sum: '$paidAmount'}
+                    _id: {invoiceId: '$_id', branchId: '$branchId', day: {$dayOfMonth: "$paymentDate"}, month: {$month: "$paymentDate"},year: {$year: "$paymentDate"}},
+                    doc: {$last: '$$ROOT'}
+                },
+            },
+            {
+                $sort: {'_id.day': 1, '_id.month': 1, '_id.year': 1}
+            },
+            {
+                $group: {
+                    _id: {branchId: '$_id.branchId', day: '$_id.day', month: '$_id.month', year: '$_id.year'},
+                    date: {$last: '$doc.paymentDate'},
+                    total: {$sum: '$doc.paidAmount'}
+                }
+            },
+            {
+                $sort: {date: 1}
+            },
+            {
+                $group: {
+                    _id: '$_id.branchId',
+                    date: {$last: '$date'},
+                    total: {$last: '$total'}
                 }
             },
             {

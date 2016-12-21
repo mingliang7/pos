@@ -95,7 +95,7 @@ Item.schema = new SimpleSchema({
     price: {
         type: Number,
         decimal: true,
-        min: 0.01,
+        min: 0,
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
@@ -106,7 +106,7 @@ Item.schema = new SimpleSchema({
     purchasePrice: {
         type: Number,
         decimal: true,
-        min: 0.01,
+        min: 0,
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
