@@ -168,7 +168,7 @@
                             <tbody>
                             {{#each field in dataByBranches}}
                                 <tr>
-                                    <td><a href="/acc/cashReportGen?branchId={{field.branchDoc._id}}&currencyId=All&date=01%2F12%2F2016+-+31%2F12%2F2016">{{field.branchDoc.khName}}</a></td>
+                                    <td><a href="/acc/cashReportGen?branchId={{field.branchDoc._id}}&currencyId=All&date={{getCurrentDate}}">{{field.branchDoc.khName}}</a></td>
                                     <td class="text-center">${{numFormat field.balance '0,0.00'}}</td>
                                 </tr>
                             {{/each}}

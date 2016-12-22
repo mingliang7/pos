@@ -97,7 +97,10 @@ dailyStockTmpl.onCreated(function () {
     this.showPOSM = new ReactiveVar(false);
     this.autorun(() => {
         if (this.selectDate.get() || this.showPOSM.get()) {
-            Meteor.call('dashboard.dailyStock', {date: this.selectDate.get(), showPOSM: this.showPOSM.get()}, (err, result) => {
+            Meteor.call('dashboard.dailyStock', {
+                date: this.selectDate.get(),
+                showPOSM: this.showPOSM.get()
+            }, (err, result) => {
                 if (result) {
                     this.dailyStockData.set({
                         notReady: false,
@@ -140,11 +143,11 @@ dailyStockTmpl.helpers({
     }
 });
 dailyStockTmpl.events({
-    'change .showPOSM'(event,instance){
+    'change .showPOSM'(event, instance){
         let currentValue = $(event.currentTarget).prop('checked');
-        if(currentValue) {
+        if (currentValue) {
             instance.showPOSM.set(true);
-        }else{
+        } else {
             instance.showPOSM.set(false);
         }
     }
@@ -168,7 +171,7 @@ dailyCash.onCreated(function () {
     });
 });
 dailyCash.helpers({
-    url(branchId,date){
+    url(branchId, date){
         let instance = Template.instance();
         let fromDate = moment(date).startOf('days').format('YYYY-MM-DD HH:mm:ss');
         let toDate = moment(date).endOf('days').format('YYYY-MM-DD HH:mm:ss');
@@ -184,5 +187,8 @@ dailyCash.helpers({
         let instance = Template.instance();
         let data = instance.dailyCashData.get();
         return data;
+    },
+    getCurrentDate(){
+        return `${moment().startOf('months').format('DD/MM/YYYY')} - ${moment().endOf('months').format('DD/MM/YYYY')}`
     }
 });
