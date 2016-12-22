@@ -154,7 +154,7 @@ dailyCash.onCreated(function () {
     this.selectDate = new ReactiveVar(moment().subtract(1, 'days').endOf('days').toDate());
     this.autorun(() => {
         if (this.selectDate.get()) {
-            Meteor.call('dashboard.dailyCash', {date: this.selectDate.get()}, (err, result) => {
+            Meteor.call('dashboard.dailyCash', (err, result) => {
                 if (result) {
                     this.dailyCashData.set({
                         notReady: false,

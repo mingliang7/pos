@@ -145,7 +145,7 @@
 
 <template name="pos_dashboardCash">
     <div class="pricingTable">
-        <h2 class="pricingTable-title">របាយការណ៍សាច់ប្រាក់ ({{displayDailyDate}})</h2>
+        <h2 class="pricingTable-title">របាយការណ៍សាច់ប្រាក់</h2>
         {{#with dailyCashData}}
             <!--<h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.00'}}</h3>-->
             <!-- Responsive table starts here -->
@@ -162,22 +162,19 @@
                             <thead>
                             <tr>
                                 <th>សាខា</th>
-                                <th>ថ្ងៃទី</th>
                                 <th>សរុប</th>
                             </tr>
                             </thead>
                             <tbody>
                             {{#each field in dataByBranches}}
                                 <tr>
-                                    <td><a href="{{url field._id field.date}}">{{field.branchDoc.khName}}</a></td>
-                                    <td class="text-center">{{moFormat field.date 'YYYY/MM/DD'}}</td>
-                                    <td class="text-center">${{numFormat field.total '0,0.00'}}</td>
+                                    <td><a href="/acc/cashReportGen?branchId={{field.branchDoc._id}}&currencyId=All&date=01%2F12%2F2016+-+31%2F12%2F2016">{{field.branchDoc.khName}}</a></td>
+                                    <td class="text-center">${{numFormat field.balance '0,0.00'}}</td>
                                 </tr>
                             {{/each}}
                             <tr style="border-top: 1px dotted black;" class="text-center">
-                                <td></td>
-                                <td>សរុបទាំងអស់:</td>
-                                <td>${{numFormat footer.total '0,0.00'}}</td>
+                                <td class="text-center">សរុបទាំងអស់:</td>
+                                <td>${{numFormat footer '0,0.00'}}</td>
                             </tr>
                             </tbody>
                         {{/with}}

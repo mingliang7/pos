@@ -1,6 +1,13 @@
 import {Invoices} from '../../../imports/api/collections/invoice'
 import {ReceivePayment} from '../../../imports/api/collections/receivePayment'
 import {AverageInventories} from '../../../imports/api/collections/inventory'
+
+import {AccountMapping} from '../../../imports/api/collections/accountMapping'
+
+import {ChartAccount} from '../../../../acc/imports/api/collections/chartAccount'
+import {Branch} from '../../../../core/imports/api/collections/branch';
+
+
 Meteor.methods({
     'dashboard.customerTotalCredit' ({date}) {
         Meteor._sleepForMs(100);
@@ -338,8 +345,8 @@ Meteor.methods({
     'dashboard.dailyStock' ({date, showPOSM}) {
         Meteor._sleepForMs(100);
         let obj = {items: [], dataByBranches: [], footer: {total: 0, paidAmount: 0, balanceAmount: 0}, branches: []};
-        let selector = {price: {$gt: 0},createdAt: {$lte: moment(date).endOf('days').toDate()}};
-        if(showPOSM) {
+        let selector = {price: {$gt: 0}, createdAt: {$lte: moment(date).endOf('days').toDate()}};
+        if (showPOSM) {
             selector.price = {$eq: 0};
         }
         let project = {
@@ -517,70 +524,42 @@ Meteor.methods({
         }
         return obj;
     },
-    'dashboard.dailyCash'({date}){
+    'dashboard.dailyCash'(){
         Meteor._sleepForMs(100);
-        let obj = {items: [], dataByBranches: [], footer: {total: 0, paidAmount: 0, balanceAmount: 0}};
-        let selector = {};
-        let toDate = moment(date).endOf('days').toDate();
-        let fromDate = moment(date).startOf('days').toDate();
-        selector = {
-            paymentDate: {$lte: toDate},
-            status: {
-                $in: [ "partial", "closed"]
-            }
+        let obj = {
+            footer: 0,
+            dataByBranches: []
         };
-        let invoices = ReceivePayment.aggregate([
-            {$match: selector},
-            {
-                $group: {
-                    _id: {invoiceId: '$_id', branchId: '$branchId', day: {$dayOfMonth: "$paymentDate"}, month: {$month: "$paymentDate"},year: {$year: "$paymentDate"}},
-                    doc: {$last: '$$ROOT'}
-                },
-            },
-            {
-                $sort: {'_id.day': 1, '_id.month': 1, '_id.year': 1}
-            },
-            {
-                $group: {
-                    _id: {branchId: '$_id.branchId', day: '$_id.day', month: '$_id.month', year: '$_id.year'},
-                    date: {$last: '$doc.paymentDate'},
-                    total: {$sum: '$doc.paidAmount'}
+        let branches = Branch.find({}, {sort: {khName: 1}});
+        let cashOnHand = AccountMapping.findOne({name: 'Cash on Hand'});
+        let code = cashOnHand.account.split(' | ')[0];
+        let id = ChartAccount.findOne({code})._id;
+
+        let selector = {
+            date: `${moment().startOf('months').format('DD/MM/YYYY')} - ${moment().endOf('months').format('DD/MM/YYYY')}`,
+            currencyId: 'All',
+            branchId: 'All',
+            chartAccountId: id
+        };
+        branches.forEach(function (branch) {
+            let params = {
+                date: `${moment().startOf('months').format('DD/MM/YYYY')} - ${moment().endOf('months').format('DD/MM/YYYY')}`,
+                currencyId: 'All',
+                branchId: branch._id,
+                chartAccountId: id
+            };
+            Meteor.call("acc_cashReport", params, function (err, result) {
+                if (result) {
+                    obj.dataByBranches.push({branchDoc: branch, balance: result.endingBalance});
                 }
-            },
-            {
-                $sort: {date: 1}
-            },
-            {
-                $group: {
-                    _id: '$_id.branchId',
-                    date: {$last: '$date'},
-                    total: {$last: '$total'}
-                }
-            },
-            {
-                $lookup: {
-                    from: "core_branch",
-                    localField: "_id",
-                    foreignField: "_id",
-                    as: "branchDoc"
-                }
-            },
-            {
-                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
-            },
-            {
-                $sort: {'branchDoc.khName': 1}
-            },
-            {
-                $group: {
-                    _id: null, data: {$push: '$$ROOT'},total: {$sum: '$total'}
-                }
+            });
+        });
+
+        Meteor.call("acc_cashReport", selector, function (err, result) {
+            if (result) {
+                obj.footer = result.endingBalance;
             }
-        ]);
-        if (invoices.length > 0) {
-            obj.dataByBranches = invoices[0].data;
-            obj.footer.total = invoices[0].total;
-        }
-        return obj;
+        });
+        return obj
     }
 });
