@@ -65,6 +65,7 @@
                         <th width="40px">No</th>
                         <th>Date</th>
                         <th>Invoice</th>
+                        <th>Name</th>
                         <th>Memo</th>
                         <th>Split Account</th>
                         <th>Debit</th>
@@ -77,7 +78,7 @@
                     {{#each content}}
                         {{#if isHeader}}
                             <tr style="background-color:#EFFFEF;">
-                                <td colspan="7" align="left">
+                                <td colspan="8" align="left">
                                     <b>{{name}}</b>
                                 </td>
                                 <td align="right">
@@ -87,7 +88,7 @@
                         {{else}}
                             {{#if isFooter}}
                                 <tr style="background-color:#EFFFEF;">
-                                    <td colspan="5" align="left">
+                                    <td colspan="6" align="left">
                                         <b>{{name}}</b>
                                     </td>
                                     <td align="right">
@@ -116,6 +117,9 @@
                                         {{voucherId}}
                                     </td>
                                     <td align="left">
+                                        {{cusAndVenname}}
+                                    </td>
+                                    <td align="left">
                                         {{memo}}
                                     </td>
                                     <td align="left" class="report-pointer">
@@ -138,7 +142,7 @@
                         {{/if}}
                     {{/each}}
                     <tr style="background-color:gray;">
-                        <td colspan="5" align="left">
+                        <td colspan="6" align="left">
                             <b>Total</b>
                         </td>
                         <td align="right">

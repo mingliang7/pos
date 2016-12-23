@@ -39,6 +39,7 @@ tabularOpts.columns = [
         }
     },
     {data: "memo", title: "Description"},
+    {data: "cusAndVenname", title: "Name"},
     {
         data: "total", title: "Amount",
         render: function (val, type, doc) {

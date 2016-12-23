@@ -57,9 +57,7 @@ Meteor.methods({
             if (self.branchId != "All") {
                 selector.branchId = self.branchId;
             }
-            if (self.chartAccount != "All") {
-                selector['transaction.accountDoc._id'] = self.chartAccount;
-            }
+
 
             /*if (!_.isArray(self.accountType)) {
              var accountTypeList = self.accountType.split(',');
@@ -80,9 +78,15 @@ Meteor.methods({
 
             let accountList = [];
 
-            PaymentReceiveMethod.find().fetch().forEach(function (obj) {
-                accountList.push(obj.accountDoc._id);
-            })
+
+            if (self.chartAccountId != undefined) {
+                accountList.push(self.chartAccountId);
+            } else {
+                PaymentReceiveMethod.find().fetch().forEach(function (obj) {
+                    accountList.push(obj.accountDoc._id);
+                })
+            }
+
 
             selectorChartAccount._id = {$in: accountList};
 
@@ -101,10 +105,10 @@ Meteor.methods({
             var endingCr = 0;
 
             ChartAccount.find(selectorChartAccount, {
-                    sort: {
-                        code: 1
-                    }
-                })
+                sort: {
+                    code: 1
+                }
+            })
                 .forEach(function (obj) {
 
 
@@ -215,6 +219,7 @@ Meteor.methods({
                         detailObj._id = ob._id;
                         detailObj.journalDate = ob.journalDate;
                         detailObj.memo = ob.memo;
+                        detailObj.cusAndVenname = ob.cusAndVenname;
                         detailObj.voucherId = ob.voucherId;
 
                         //Loop for Detail Transaction

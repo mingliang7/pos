@@ -470,8 +470,7 @@ Meteor.methods({
                         foreignExObj.total = math.abs(foreinExchange);
                         foreignExObj.closingId = closingId;
 
-                        var insertExchangeSuccess = Journal.insert(
-                            foreignExObj);
+                        var insertExchangeSuccess = Journal.insert(foreignExObj);
                         if (insertExchangeSuccess) {
                             data.insertExchangeSuccess = true;
                         }

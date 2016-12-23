@@ -23,8 +23,8 @@ DateEndOfProcess.before.insert(function (userId, doc) {
 });
 
 DateEndOfProcess.after.insert(function (userId, doc) {
+    let closing = Closing.update({month: doc.month, year: doc.year}, {$set: {endId: doc._id}});
 
-    Closing.update({month: doc.month,year : doc.year},{$set : {endId: doc._id}});
 
     try {
         //Close Chart Account
@@ -43,12 +43,14 @@ DateEndOfProcess.after.insert(function (userId, doc) {
             });
 
         if (lastDate != undefined) {
+
             if (lastDate.closeDate < doc.closeDate) {
 
                 var branchId = doc.branchId;
                 var selectorGetLastBalance = {};
                 var selectorGetLastDate = {};
                 var selector = {};
+
                 //Get Last Date Closing
                 if (doc.closeDate != undefined) {
                     selectorGetLastDate.closeDate = {
@@ -89,11 +91,14 @@ DateEndOfProcess.after.insert(function (userId, doc) {
                     }
                 }
 
-                Meteor.call('getEndOfProcess', selector, branchId,
-                    selectorGetLastBalance, lastDate, doc.closeDate, doc._id);
+
+                Meteor.call('getEndOfProcess', selector, branchId, selectorGetLastBalance, lastDate, doc.closeDate, doc._id, function (err, result) {
+                    console.log(err);
+                });
 
             }
-        } else {
+        }
+        else {
 
             var branchId = doc.branchId;
             var selectorGetLastBalance = {};
@@ -106,12 +111,16 @@ DateEndOfProcess.after.insert(function (userId, doc) {
                 };
             }
             selectorGetLastDate.branchId = branchId;
+
+
             var lastDate = CloseChartAccount.findOne(
                 selectorGetLastDate, {
                     sort: {
                         closeDate: -1
                     }
                 });
+
+
 
             //Parameter for Balance Last End Of Process
             if (lastDate != undefined) {
@@ -141,7 +150,9 @@ DateEndOfProcess.after.insert(function (userId, doc) {
 
 
             Meteor.call('getEndOfProcess', selector, branchId,
-                selectorGetLastBalance, lastDate, doc.closeDate, doc._id);
+                selectorGetLastBalance, lastDate, doc.closeDate, doc._id, function (err, result) {
+                    console.log(result);
+                });
         }
 
 
@@ -153,12 +164,17 @@ DateEndOfProcess.after.insert(function (userId, doc) {
         var selectorNetIncome = {};
         selectorNetIncome.branchId = doc.branchId;
         selectorNetIncome.currencyId = "All";
+
+
         // exChangeDate ==exChangeDateId
         selectorNetIncome.exchangeDate = exchangeData._id;
         selectorNetIncome.date = "01/" + moment(doc.closeDate, "DD/MM/YYYY").format("MM/YYYY") + " - " + moment(doc.closeDate, "DD/MM/YYYY").format("DD/MM/YYYY");
 
+
         var data = Meteor.call("acc_profitLostForAll", selectorNetIncome);
+
         var selector = {};
+
         selector.date = doc.closeDate;
         selector.riel = math.round(data.profitR, 2);
         selector.baht = math.round(data.profitB, 2);
@@ -256,10 +272,10 @@ DateEndOfProcess.after.insert(function (userId, doc) {
             Journal.insert(journalInsertNetIncomeBaht);
 
         }
-    }catch(err){
+    } catch (err) {
         DateEndOfProcess.remove({_id: doc._id});
         Journal.remove({endId: doc._id});
-        Closing.update({month: doc.month,year : doc.year},{$set : {endId: ""}});
+        Closing.update({month: doc.month, year: doc.year}, {$set: {endId: ""}});
 
     }
 

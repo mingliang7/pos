@@ -140,7 +140,22 @@ export const SelectOpts = {
     },
     chartAccountId: function (selector) {
         var selector = _.isUndefined(selector) ? {} : selector;
-        var list = [{label: "(Select One)", value: ""}];
+        var list = [];
+
+
+        let result = MapUserAndAccount.findOne({userId: Meteor.user()._id});
+
+        if (result != null) {
+            let accountIdList = [];
+            result.transaction.forEach(function (obj) {
+                accountIdList.push(obj.accountDoc._id);
+            })
+
+            selector._id = {$in: accountIdList};
+        } else {
+            list.push({label: "(Select One)", value: ""});
+        }
+
         ChartAccount.find(selector, {sort: {code: 1}})
             .forEach(function (obj) {
                 list.push({
@@ -177,13 +192,28 @@ export const SelectOpts = {
         return list;
     },
     chartAccount: function () {
-        var list = [{label: "(Select One)", value: ""}];
-        ChartAccount.find({}, {sort: {code: 1}})
+        var list = [];
+        let selector = {};
+
+        let result = MapUserAndAccount.findOne({userId: Meteor.user()._id});
+
+        if (result != null) {
+            let accountIdList = [];
+            result.transaction.forEach(function (obj) {
+                accountIdList.push(obj.accountDoc._id);
+            })
+
+            selector._id = {$in: accountIdList};
+        } else {
+            list.push({label: "(Select One)", value: ""});
+        }
+
+        ChartAccount.find(selector, {sort: {code: 1}})
             .forEach(function (obj) {
                 list.push({
                     label: Spacebars.SafeString(SpaceChar.space(obj.level * 6) + obj.code).string + " | " + obj.name,
                     value: Spacebars.SafeString(SpaceChar.space(obj.level * 6) + obj.code).string + " | " + obj.name
-            })
+                })
             });
         return list;
     }, chartAccountAsset: function () {
@@ -367,10 +397,23 @@ export const SelectOptsReport = {
     },
     chartAccountId: function (selector) {
         var selector = _.isUndefined(selector) ? {} : selector;
-        var list = [{label: "(Select All)", value: "All"}];
+        var list = [];
         var accountType = Session.get('accountTypeIdSession');
         if (accountType != null) {
             selector.accountTypeId = {$in: accountType};
+
+            let result = MapUserAndAccount.findOne({userId: Meteor.user()._id});
+
+            if (result != null) {
+                let accountIdList = [];
+                result.transaction.forEach(function (obj) {
+                    accountIdList.push(obj.accountDoc._id);
+                })
+
+                selector._id = {$in: accountIdList};
+            } else {
+                list.push({label: "(Select All)", value: "All"});
+            }
 
             ChartAccount.find(selector, {sort: {code: 1}})
                 .forEach(function (obj) {

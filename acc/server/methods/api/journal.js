@@ -13,6 +13,7 @@ Meteor.methods({
             branchId: "",
             voucherId: "",
             currencyId: "",
+            cusAndVenname: "",
             memo: "",
             total: 0
         });
@@ -63,6 +64,7 @@ Meteor.methods({
             branchId: data.branchId,
             voucherId: "",
             currencyId: "",
+            cusAndVenname: "",
             memo: "",
             total: 0
         });

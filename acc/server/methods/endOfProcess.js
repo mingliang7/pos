@@ -41,6 +41,7 @@ Meteor.methods({
         ]);
         var curMonth = moment(dateSelect).format("MM");
 
+
         result.forEach(function (obj) {
             data.push({
                 closeChartAccountId: obj._id.account,
@@ -75,7 +76,6 @@ Meteor.methods({
             })
         });
 
-
         if (lastDate !== null) {
             if (curMonth == "12") {
                 selectorGetLastBalance.accountTypeId = {
@@ -104,7 +104,6 @@ Meteor.methods({
                 })
             }
         }
-
 
         data.reduce(function (key, val) {
             if (!key[val.closeChartAccountId + val.currencyId]) {
@@ -144,7 +143,6 @@ Meteor.methods({
             })
         });
 
-
         return "Success";
     },
     removeEndOfProcess: function (id) {
@@ -157,7 +155,7 @@ Meteor.methods({
                 }
                 DateEndOfProcess.remove(id);
                 CloseChartAccountPerMonth.remove({endId: id});
-                Closing.update({month: data.month,year : data.year},{$set : {endId: ""}});
+                Closing.update({month: data.month, year: data.year}, {$set: {endId: ""}});
             }
         });
 

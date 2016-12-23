@@ -51,8 +51,11 @@ reportTpl.events({
         Meteor.call('print', true);
     },
     'click .remove': function (e, t) {
+        debugger;
         var id = this._id;
-        var lastEnd = Closing.findOne({}, {
+        let selector = {};
+        selector.branchId = Session.get("currentBranch");
+        var lastEnd = Closing.findOne(selector, {
             sort: {
                 dateTo: -1
             }
@@ -60,7 +63,7 @@ reportTpl.events({
         var cur = Closing.findOne({
             _id: id
         });
-        if (moment(lastEnd.dateTo).format("YYYY-MM-DD") == moment(cur.dateTo).format("YYYY-MM-DD") && cur.endId==undefined) {
+        if (moment(lastEnd.dateTo).format("YYYY-MM-DD") == moment(cur.dateTo).format("YYYY-MM-DD") && cur.endId == undefined) {
             alertify.confirm("Are you sure to delete ?")
                 .set({
                     onok: function (closeEvent) {

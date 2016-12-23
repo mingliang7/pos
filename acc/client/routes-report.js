@@ -279,7 +279,6 @@ AccRoutes.route('/ledgerReport', {
     title: __('acc.ledgerReport.title'),
     subscriptions: function (params, queryParams) {
         this.register('cpanel_exchange', Meteor.subscribe('cpanel_exchange'));
-        this.register('acc.mapUserAndAccount', Meteor.subscribe('acc.mapUserAndAccount'));
     },
     action: function (params, queryParams) {
         Layout.main('acc_ledgerReport');

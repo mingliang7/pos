@@ -212,6 +212,7 @@ Meteor.methods({
                         detailObj._id = ob._id;
                         detailObj.journalDate = ob.journalDate;
                         detailObj.memo = ob.memo;
+                        detailObj.cusAndVenname = ob.cusAndVenname;
                         detailObj.voucherId = ob.voucherId;
 
                         //Loop for Detail Transaction

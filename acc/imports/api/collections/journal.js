@@ -52,6 +52,11 @@ Journal.schema = new SimpleSchema({
         },
         defaultValue: "USD"
     },
+    cusAndVenname: {
+        type: String,
+        label: "Name",
+        optional: true
+    },
     branchId: {
         type: String,
         label: "Branch"
