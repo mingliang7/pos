@@ -23,7 +23,13 @@ DateEndOfProcess.before.insert(function (userId, doc) {
 });
 
 DateEndOfProcess.after.insert(function (userId, doc) {
-    let closing = Closing.update({month: doc.month, year: doc.year}, {$set: {endId: doc._id}});
+    let closing = Closing.update(
+        {month: doc.month, year: doc.year, branchId: doc.branchId},
+        {$set: {endId: doc._id}}, function (err, result) {
+            if (err) {
+                console.log(err);
+            }
+        });
 
 
     try {
@@ -119,7 +125,6 @@ DateEndOfProcess.after.insert(function (userId, doc) {
                         closeDate: -1
                     }
                 });
-
 
 
             //Parameter for Balance Last End Of Process

@@ -189,10 +189,14 @@ Meteor.methods({
                     selectorClose.dateFrom = fDate;
                     selectorClose.dateTo = moment(date[1], "DD/MM/YYYY").toDate();
                     selectorClose.branchId = self.branchId;
-                    selectorClose.month = moment(date[1], "MM");
-                    selectorClose.year = moment(date[1], "YYYY");
+                    selectorClose.month = moment(date[1], "DD/MM/YYYY").format("MM");
+                    selectorClose.year = moment(date[1], "DD/MM/YYYY").format("YYYY");
 
-                    var closingId = Closing.insert(selectorClose);
+                    var closingId = Closing.insert(selectorClose, function (err, result) {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
 
                     var arr = [];
 
@@ -268,7 +272,7 @@ Meteor.methods({
                         var doc = {};
 
 
-                        var voucher = Meteor.call('getVoucherId', data.currencySelect);
+                        var voucher = Meteor.call('acc_getVoucherId', data.currencySelect, branchId);
 
                         if (voucher != null) {
                             var lastVoucherId = currentBranch + "-" + year + s.pad(parseInt(
@@ -344,7 +348,7 @@ Meteor.methods({
                             accountDoc: accountDocDetail
                         });
 
-                        var voucher = Meteor.call('getVoucherId', data.currencySelectBase);
+                        var voucher = Meteor.call('acc_getVoucherId', data.currencySelectBase, branchId);
                         if (voucher != null) {
                             var lastVoucherId = currentBranch + "-" + year + s.pad(parseInt(
                                         (voucher.voucherId).substr(8, 13)) + 1, 6, "0");
@@ -362,6 +366,7 @@ Meteor.methods({
                         docBase.branchId = branchId;
                         docBase.total = data.grandTotalDrBase;
                         docBase.closingId = closingId;
+
 
                         var insertBaseSuccess = Journal.insert(docBase);
                         if (insertBaseSuccess) {
@@ -494,7 +499,7 @@ Meteor.methods({
     closingRemove: function (id) {
         Journal.remove({closingId: id});
         Closing.remove(id);
-        FixAssetExpense.update({closing: id}, {$set: {closingId: ""}});
+        FixAssetExpense.update({closingId: id}, {$set: {closingId: ""}});
 
     }
 });

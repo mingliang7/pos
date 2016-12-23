@@ -25,7 +25,7 @@ tabularOpts.order = ['2', 'desc'],
     tabularOpts.extraFields = ['currencyId', 'transactionAsset', 'transaction', 'endId', 'fixAssetExpenseId', 'closingId', 'refId', 'refFrom'];
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.acc_journalAction},
-    {data: "_id", title: "Id"},
+    {data: "_id", title: "Id", visible: false},
     {
         data: "journalDate", title: "Journal Date",
         render: function (val, type, doc) {
@@ -54,17 +54,18 @@ tabularOpts.columns = [
         }
     },
     {data: "currencyId", title: "Currency"},
-    {data: "endId", title: "Status",
-        render:function (val,type,doc) {
-            if(doc.endId>0){
+    {
+        data: "endId", title: "Status",
+        render: function (val, type, doc) {
+            if (doc.endId > 0) {
                 return "<p class='label label-success'>End Process</p>";
-            }else if(doc.closingId>0){
+            } else if (doc.closingId > 0) {
                 return "<p class='label label-warning'>Currency Closing</p>";
-            }else if(doc.refFrom!= undefined){
-                return "<p class='label label-info'>"+doc.refFrom+"</p>";
-            }else if(doc.fixAssetExpenseId>0){
+            } else if (doc.refFrom != undefined) {
+                return "<p class='label label-info'>" + doc.refFrom + "</p>";
+            } else if (doc.fixAssetExpenseId > 0) {
                 return "<p class='label label-danger'>Depreciation</p>";
-            }else {
+            } else {
                 return "<p class='label label-default'>Normal</p>";
             }
         }

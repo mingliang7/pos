@@ -47,6 +47,14 @@ Meteor.methods({
 
         Journal.remove({fixAssetExpenseId: id});
         FixAssetExpense.remove(id);
+    },
+    getLastFixAssetExpense: function (branchId, id) {
+
+        let lastId = FixAssetExpense.findOne({branchId: branchId}, {sort: {date: -1}});
+        if (lastId._id == id) {
+            return true;
+        }
+        return false;
     }
 })
 

@@ -155,7 +155,7 @@ Meteor.methods({
                 }
                 DateEndOfProcess.remove(id);
                 CloseChartAccountPerMonth.remove({endId: id});
-                Closing.update({month: data.month, year: data.year}, {$set: {endId: ""}});
+                Closing.update({endId: id}, {$set: {endId: ""}});
             }
         });
 

@@ -18,7 +18,7 @@ import {FixAssetExpense} from '../../imports/api/collections/fixAssetExpense';
 Meteor.isClient && require('../../imports/ui/pages/fixAssetExpense/fixAssetExpense.html');
 
 tabularOpts.name = 'acc.fixAssetExpense';
-tabularOpts.extraFields = ['journalId', '_id'];
+tabularOpts.extraFields = ['journalId', '_id',"closingId"];
 tabularOpts.collection = FixAssetExpense;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.acc_fixAssetExpenseAction},

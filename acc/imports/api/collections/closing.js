@@ -20,7 +20,8 @@ Closing.schema = new SimpleSchema({
     dateFrom: {
         type: Date,
         label: "Close Date From"
-    }, dateTo: {
+    },
+    dateTo: {
         type: Date,
         label: "Close Date To"
     },
