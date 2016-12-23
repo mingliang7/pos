@@ -16,6 +16,11 @@ FixAssetExpense.before.insert(function (userId, doc) {
 
     var date = moment(doc.date, "DD/MM/YYYY").format("YYMM");
     var prefix = doc.branchId + "-" + date;
+
+    doc.month= moment(doc.date, "DD/MM/YYYY").format("MM");
+    doc.year= moment(doc.date, "DD/MM/YYYY").format("YYYY");
+
+
     doc._id = idGenerator.genWithPrefix(FixAssetExpense, prefix, 6);
     try {
         var depType = ConfigDep.findOne();

@@ -51,7 +51,6 @@ reportTpl.events({
         Meteor.call('print', true);
     },
     'click .remove': function (e, t) {
-        debugger;
         var id = this._id;
         let selector = {};
         selector.branchId = Session.get("currentBranch");

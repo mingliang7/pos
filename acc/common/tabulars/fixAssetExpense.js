@@ -34,7 +34,7 @@ tabularOpts.columns = [
             var exp = "";
             if (val != undefined) {
                 val.forEach(function (obj) {
-                    exp += moment(obj.buyDate).format("DD/MM/YYYY") + "    :     " + obj.account + "  :  <b>" + obj.value + obj.currencyId + "</b><br>"
+                    exp += moment(obj.buyDate).format("DD/MM/YYYY") + "    :     " + obj.account + "  :  <b>" + numeral(obj.value).format("0,00.00") + obj.currencyId + "</b><br>"
                 })
             }
             return exp;

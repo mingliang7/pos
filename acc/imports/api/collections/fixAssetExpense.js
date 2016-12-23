@@ -35,6 +35,22 @@ FixAssetExpense.schema = new SimpleSchema({
         type: String,
         label: "Branch",
         optional: true
+    },
+    month: {
+        type: String,
+        label: "Month",
+        optional: true
+    },
+    year: {
+        type: String,
+        label: "Year",
+        optional: true
+    },
+    closingId: {
+        type: String,
+        label: "Closing",
+        optional: true,
+        defaultValue: undefined
     }, transactionExpense: {
         type: [Object],
         minCount: 1,

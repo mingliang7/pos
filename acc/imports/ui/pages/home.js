@@ -42,7 +42,7 @@ if (Meteor.isClient) {
     indexTpl.helpers({
         createChartDailyIncomeExpense: function () {
 
-            Meteor.call('chart_dailyIncomeExpense', function (err, obj) {
+            Meteor.call('chart_dailyIncomeExpense',Session.get("currentBranch"), function (err, obj) {
 
                 Meteor.defer(function () {
                     // Create standard Highcharts chart with options:

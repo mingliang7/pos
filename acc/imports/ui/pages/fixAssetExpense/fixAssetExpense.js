@@ -97,9 +97,10 @@ AutoForm.hooks({
             }
         },
         onSuccess: function(formType, result) {
-            event.preventDefault();
             alertify.depreciationExpense().close();
             alertify.success("Success");
+
+            event.preventDefault();
         },
         onError: function(formType, error) {
             alertify.error(error.message);

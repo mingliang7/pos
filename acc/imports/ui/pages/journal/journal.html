@@ -293,9 +293,6 @@
     <div class="box-body">
         {{#autoForm collection=collection id="acc_journalInsertReceive" type="insert"}}
             <div class="container-fluid ">
-                {{#if isFixAsset}}
-                    {{> acc_FixAsset fixAssetDepCollection=fixAssetDepCollection}}
-                {{/if}}
                 <br>
                 <div class="row">
                     <div class="col-md-9">
@@ -331,10 +328,7 @@
                     <div class="col-md-3">
                         <div class="box box-primary">
                             <div class="box-header with-border">
-                                <div class="box-header with-header">
-                                    <h3 class="box-title pull-right"><input type="checkbox" class="js-switch"/> <span
-                                            class="label label-primary pull-right">Is Fixed Asset</span></h3>
-                                </div>
+
                                 <div class="box-body">
                                     {{> afQuickField name='journalDate' id='journalDate' }}
                                     {{> afQuickField name='currencyId' id='currencyId' }}

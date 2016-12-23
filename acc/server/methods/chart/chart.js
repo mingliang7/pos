@@ -23,6 +23,7 @@ Meteor.methods({
 
         var selector = {};
         selector.year = param.year;
+        selector.branchId = param.branchId;
 
         var arr = [];
         for (let i = 1; i < 13; i++) {
@@ -33,7 +34,7 @@ Meteor.methods({
 
             var netIncome = NetInCome.find(selector).fetch();
             if (netIncome.length > 0) {
-                netIncome.forEach((obj)=> {
+                netIncome.forEach((obj) => {
                     if (param.currency == "usd") {
                         valueList.push(obj.dollar)
                     } else if (param.currency == "khr") {
@@ -58,7 +59,7 @@ Meteor.methods({
         return dataMain;
 
     }
-    , chart_dailyIncomeExpense(param){
+    , chart_dailyIncomeExpense(branchId){
         let data = {};
 
         var currentDate = moment().toDate();
@@ -70,12 +71,12 @@ Meteor.methods({
         let startDate = moment('01-' + month + '-' + curYear, "DD/MM/YYYY").toDate();
 
 
-        let dataIncome= [
+        let dataIncome = [
             {_id: 'USD', dayList: [], value: []},
             {_id: 'KHR', dayList: [], value: []},
             {_id: 'THB', dayList: [], value: []}]
 
-        let dataExpense= [
+        let dataExpense = [
             {_id: 'USD', dayList: [], value: []},
             {_id: 'KHR', dayList: [], value: []},
             {_id: 'THB', dayList: [], value: []}]
@@ -86,7 +87,8 @@ Meteor.methods({
         }, {
             $match: {
                 'transaction.accountDoc.accountTypeId': {$in: ['40', '41']},
-                journalDate: {$gte: startDate}
+                journalDate: {$gte: startDate},
+                branchId: branchId
             }
         },
             {
@@ -134,7 +136,7 @@ Meteor.methods({
 
 
         dataIncomeOrg.forEach(function (obj) {
-            for(var i=0;i<dataIncome.length;i++){
+            for (var i = 0; i < dataIncome.length; i++) {
                 if (dataIncome[i]._id === obj._id) {
                     dataIncome[i].dayList = obj.dayList;
                     dataIncome[i].value = obj.value;
@@ -174,7 +176,8 @@ Meteor.methods({
         }, {
             $match: {
                 'transaction.accountDoc.accountTypeId': {$in: ['50', '51']},
-                journalDate: {$gte: startDate}
+                journalDate: {$gte: startDate},
+                branchId: branchId
             }
         },
             {
@@ -221,7 +224,7 @@ Meteor.methods({
         ]);
 
         dataExpenseOrg.forEach(function (obj) {
-            for(var i=0;i<dataExpense.length;i++){
+            for (var i = 0; i < dataExpense.length; i++) {
                 if (dataExpense[i]._id === obj._id) {
                     dataExpense[i].dayList = obj.dayList;
                     dataExpense[i].value = obj.value;
@@ -362,7 +365,7 @@ Meteor.methods({
         thisSelector.year = selector.year;
         // thisSelector.month = selector.year;
         thisSelector.currencyId = selector.currencyId;
-        thisSelector.month=selector.month;
+        thisSelector.month = selector.month;
 
         let amountList = CloseChartAccountPerMonth.find(thisSelector).fetch();
 

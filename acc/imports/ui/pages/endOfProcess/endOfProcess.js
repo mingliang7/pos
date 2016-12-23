@@ -94,7 +94,7 @@ dateEndOfProcessTpl.events({
     'click .remove': function (e, t) {
         var id = this._id;
         let selector={};
-        selector.branchId=Session.set("currentBranch");
+        selector.branchId=Session.get("currentBranch");
         var lastEnd = DateEndOfProcess.findOne(selector, {
             sort: {
                 closeDate: -1
