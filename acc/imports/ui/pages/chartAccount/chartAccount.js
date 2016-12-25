@@ -31,6 +31,7 @@ import {ChartAccountTabular} from '../../../../common/tabulars/chartAccount.js';
 
 // Page
 import './chartAccount.html';
+import '../../libs/select2-for-chartAccount.js';
 
 // Declare template
 /**
@@ -42,6 +43,12 @@ Template.acc_chartAccount.onRendered(function () {
     /* Create new alertify */
     createNewAlertify("chartAccount");
 
+});
+Template.acc_chartAccountInsert.onRendered(function () {
+    select2chartAccount($("[name='parentId']"));
+});
+Template.acc_chartAccountUpdate.onRendered(function () {
+    select2chartAccount($("[name='parentId']"));
 });
 
 var actionTpl = Template.acc_chartAccountAction;

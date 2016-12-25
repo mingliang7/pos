@@ -32,7 +32,7 @@ import {PaymentReceiveMethodTabular} from '../../../../common/tabulars/paymentRe
 
 // Page
 import './paymentReceiveMethod.html';
-
+import '../../libs/select2-for-chartAccount.js';
 // Declare template
 var indexTpl = Template.acc_paymentReceiveMethod,
   insertTpl = Template.acc_paymentReceiveMethodInsert,
@@ -53,6 +53,14 @@ indexTpl.helpers({
     return PaymentReceiveMethodTabular;
   }
 })
+
+insertTpl.onRendered(function () {
+    select2chartAccount($("[name='chartAccount']"));
+})
+updateTpl.onRendered(function () {
+    select2chartAccount($("[name='chartAccount']"));
+})
+
 
 insertTpl.helpers({
   collection(){

@@ -37,7 +37,9 @@ tabularOpts.columns = [
                 re = ChartAccount.findOne({
                     _id: val
                 });
-                result = re.code + " | " + re.name;
+                if(re){
+                    result = re.code + " | " + re.name;
+                }
             }
             return result;
         }

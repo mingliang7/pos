@@ -39,7 +39,7 @@ import {SpaceChar} from '../../../../common/configs/space';
 import './journalDetailPaymentReceive.html';
 import '../../libs/format.js';
 import '../../components/style.css';
-
+import '../../libs/select2-for-chartAccount.js';
 // Declare template
 
 // Declare template
@@ -63,7 +63,9 @@ journalDetailPaymentReceiveTpl.onCreated(function () {
 
     createNewAlertify('journalDetailPaymentReceive');
 })
-
+journalDetailPaymentReceiveTpl.onRendered(function () {
+    select2chartAccount($("[name='account']"));
+})
 
 //Helper
 journalDetailPaymentReceiveTpl.helpers({

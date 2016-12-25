@@ -30,7 +30,7 @@ import {mapAccountDetail} from '../../../api/collections/mapUserAndAccount';
 import {SpaceChar} from '../../../../common/configs/space';
 // Page
 import './mapAccountDetail.html';
-
+import '../../libs/select2-for-chartAccount.js';
 // Declare template
 var mapAccountDetailTPL = Template.acc_mapAccountDetail;
 
@@ -48,6 +48,11 @@ mapAccountDetailTPL.onCreated(function () {
             mapAccountDetailCollection.insert(obj);
         })
     }
+})
+
+
+mapAccountDetailTPL.onRendered(function () {
+    select2chartAccount($("[name='chartAccount']"));
 })
 
 /**

@@ -32,7 +32,7 @@ import {MapFixAssetTabular} from '../../../../common/tabulars/mapFixAsset.js';
 
 // Page
 import './mapFixAsset.html';
-
+import '../../libs/select2-for-chartAccount.js';
 // Declare template
 var indexTpl = Template.acc_mapFixAsset,
     insertTpl = Template.acc_mapFixAssetInsert,
@@ -51,6 +51,17 @@ indexTpl.helpers({
     tabularTable(){
         return MapFixAssetTabular;
     }
+})
+
+insertTpl.onRendered(function () {
+    select2chartAccount($("[name='fixAsset']"));
+    select2chartAccount($("[name='accuFixAsset']"));
+    select2chartAccount($("[name='fixAssetExpense']"));
+})
+updateTpl.onRendered(function () {
+    select2chartAccount($("[name='fixAsset']"));
+    select2chartAccount($("[name='accuFixAsset']"));
+    select2chartAccount($("[name='fixAssetExpense']"));
 })
 
 insertTpl.helpers({

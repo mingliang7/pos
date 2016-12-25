@@ -30,7 +30,7 @@ import {chartAccountDetail} from '../../../api/collections/mapNBCBalance';
 import {SpaceChar} from '../../../../common/configs/space';
 // Page
 import './chartAccountDetail.html';
-
+import '../../libs/select2-for-chartAccount.js';
 // Declare template
 var chartAccountDetailTPL = Template.acc_chartAccountDetail;
 
@@ -49,6 +49,10 @@ chartAccountDetailTPL.onCreated(function () {
             chartAccountDetailCollection.insert(obj);
         })
     }
+})
+
+chartAccountDetailTPL.onRendered(function () {
+    select2chartAccount($("[name='chartAccount']"));
 })
 
 /**

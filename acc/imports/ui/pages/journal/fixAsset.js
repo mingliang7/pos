@@ -36,6 +36,7 @@ import '../../../../../core/client/components/form-footer.js';
 // Page
 import './fixAsset.html';
 import '../../components/style.css';
+import '../../libs/select2-for-chartAccount.js';
 
 // Declare template
 var fixAssetTpl = Template.acc_FixAsset,
@@ -65,6 +66,10 @@ fixAssetTpl.onCreated(function () {
         })
     }
     createNewAlertify('fixAsset');
+})
+
+fixAssetTpl.onRendered(function () {
+    select2chartAccount($("[name='account']"));
 })
 
 fixAssetTpl.helpers({
@@ -160,6 +165,10 @@ fixAssetTpl.events({
         alertify.fixAsset(fa("pencil", "Fix Asset"), renderTemplate(updateTpl, doc));
     }
 });
+
+updateTpl.onRendered(function () {
+    select2chartAccount($("[name='account']"));
+})
 
 updateTpl.helpers({
     schema(){

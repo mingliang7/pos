@@ -32,7 +32,7 @@ import {MapCLosingTabular} from '../../../../common/tabulars/mapClosing';
 
 // Page
 import './mapCLosing.html';
-
+import '../../libs/select2-for-chartAccount.js';
 // Declare template
 var indexTpl = Template.acc_mapClosing,
   updateTpl = Template.acc_mapClosingUpdate;
@@ -53,6 +53,9 @@ indexTpl.helpers({
   }
 })
 
+updateTpl.onRendered(function () {
+    select2chartAccount($("[name='chartAccount']"));
+})
 updateTpl.helpers({
   collection(){
     return MapClosing;

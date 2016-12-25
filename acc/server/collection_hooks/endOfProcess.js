@@ -261,7 +261,7 @@ DateEndOfProcess.after.insert(function (userId, doc) {
             journalInsertNetIncomeBaht.journalDate = moment("01-01-" + (parseInt(year) + 1), "DD/MM/YYYY").toDate();
             journalInsertNetIncomeBaht.currencyId = "THB";
             journalInsertNetIncomeBaht.voucherId = doc.branchId + (parseInt(year) + 1) + "000003";
-            journalInsertNetIncomeBaht.memo = "Convert Net Income to Retain Earning in Riel";
+            journalInsertNetIncomeBaht.memo = "Convert Net Income to Retain Earning in Baht";
             journalInsertNetIncomeBaht.branchId = doc.branchId;
             journalInsertNetIncomeBaht.total = baht;
             journalInsertNetIncomeBaht.endId = doc._id;

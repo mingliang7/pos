@@ -39,7 +39,7 @@ import {SpaceChar} from '../../../../common/configs/space';
 import './journalDetail.html';
 import '../../libs/format.js';
 import '../../components/style.css';
-
+import '../../libs/select2-for-chartAccount.js';
 // Declare template
 
 // Declare template
@@ -112,6 +112,10 @@ updateTpl.helpers({
     }
 });
 
+journalDetailTpl.onRendered(function () {
+    select2chartAccount($("[name='account']"));
+})
+
 // Event
 journalDetailTpl.events({
     'change [name="account"]': function (e, t) {
@@ -120,7 +124,7 @@ journalDetailTpl.events({
         let totalDr = state.get("totalDr");
         let totalCr = state.get("totalCr");
         let bal = totalDr - totalCr;
-        
+
         if (bal > 0) {
             state.set('dr', 0);
             state.set('cr', bal);
@@ -176,6 +180,9 @@ journalDetailTpl.events({
         alertify.journalDetail(fa("pencil", "Journal Detail"), renderTemplate(updateTpl, doc));
     }
 });
+updateTpl.onRendered(function () {
+    select2chartAccount($("[name='account']"));
+})
 
 updateTpl.events({
     'keyup [name="dr"]': function (e, t) {
@@ -229,7 +236,7 @@ AutoForm.hooks({
         onError: function (formType, error) {
             alertify.error(error.message);
         }
-}
+    }
 });
 
 
