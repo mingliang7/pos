@@ -35,8 +35,8 @@ export const stockDetailReportMethod = new ValidatedMethod({
                     $lte: moment(data[1]).endOf('days').toDate()
                 };
             }
-            if (params.branchId) {
-                branchId = params.branchId.split(',');
+            if (params.branch) {
+                branchId = params.branch.split(',');
                 selector.branchId = {
                     $in: branchId
                 };
