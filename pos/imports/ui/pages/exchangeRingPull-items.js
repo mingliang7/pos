@@ -281,7 +281,7 @@ itemsTmpl.events({
                 } else {
                     checkQty = qty;
                 }
-                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
                 inventoryQty += soldQty;
                 if (checkQty <= inventoryQty) {
                     Meteor.call('addScheme', {itemId}, function (err, result) {
@@ -348,7 +348,7 @@ itemsTmpl.events({
                 } else {
                     checkQty = qty;
                 }
-                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
                 if (checkQty <= inventoryQty) {
                     Meteor.call('addScheme', {itemId}, function (err, result) {
                         if (!_.isEmpty(result[0])) {
@@ -486,7 +486,7 @@ itemsTmpl.events({
             }
             Meteor.call('findItem', itemId, function (error, itemResult) {
 
-                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
                 inventoryQty += soldQty;
                 if (currentQty <= inventoryQty) {
                     itemsCollection.update({itemId: itemId}, selector);
@@ -505,7 +505,7 @@ itemsTmpl.events({
         }
         else {
             Meteor.call('findItem', itemId, function (error, itemResult) {
-                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
                 if (currentQty <= inventoryQty) {
                     itemsCollection.update({itemId: itemId}, selector);
                 }

@@ -251,6 +251,105 @@ itemsTmpl.events({
                 }
             }
         });
+
+        /*let invoice = instance.view.parentView.parentView._templateInstance.data;
+        if (invoice) {
+            let soldQty = 0;
+            if (stockLocationId == invoice.stockLocationId) {
+                let oldItem = invoice.items.find(x => x.itemId == itemId);
+                soldQty = oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
+            }
+            Meteor.call('findItem', itemId, function (error, itemResult) {
+                let itemOfCollectionNull = itemsCollection.findOne({
+                    itemId: itemId
+                });
+                let checkQty = 0;
+                if (itemOfCollectionNull) {
+                    checkQty = qty + parseInt(itemOfCollectionNull.qty);
+                } else {
+                    checkQty = qty;
+                }
+                let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
+                inventoryQty += soldQty;
+                if (checkQty <= inventoryQty) {
+                    let exist = itemsCollection.findOne({
+                        itemId: itemId
+                    });
+                    if (exist) {
+                        qty += parseInt(exist.qty);
+                        amount = math.round(qty * price, 2);
+
+                        itemsCollection.update({
+                            _id: exist._id
+                        }, {
+                            $set: {
+                                qty: qty,
+                                price: price,
+                                amount: amount
+                            }
+                        });
+                    }
+                    else {
+                        itemsCollection.insert({
+                            itemId: itemId,
+                            qty: qty,
+                            price: price,
+                            amount: amount,
+                            name: instance.name
+                        });
+                    }
+                }
+                else {
+                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + inventoryQty);
+                }
+
+            });
+        } else {
+            Meteor.call('findItem', itemId, function (error, itemResult) {
+                let itemOfCollectionNull = itemsCollection.findOne({
+                    itemId: itemId
+                });
+                let checkQty = 0;
+                if (itemOfCollectionNull) {
+                    checkQty = qty + parseInt(itemOfCollectionNull.qty);
+                } else {
+                    checkQty = qty;
+                }
+                let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
+                if (checkQty <= inventoryQty) {
+                    let exist = itemsCollection.findOne({
+                        itemId: itemId
+                    });
+                    if (exist) {
+                        qty += parseInt(exist.qty);
+                        amount = math.round(qty * price, 2);
+
+                        itemsCollection.update({
+                            _id: exist._id
+                        }, {
+                            $set: {
+                                qty: qty,
+                                price: price,
+                                amount: amount
+                            }
+                        });
+                    }
+                    else {
+                        itemsCollection.insert({
+                            itemId: itemId,
+                            qty: qty,
+                            price: price,
+                            amount: amount,
+                            name: instance.name
+                        });
+                    }   }
+                else {
+                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + inventoryQty);
+                }
+
+            });
+        }*/
+
     },
     // Reactive table for item
     'click .js-update-item': function (event, instance) {

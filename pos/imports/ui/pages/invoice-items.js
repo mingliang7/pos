@@ -506,8 +506,7 @@ itemsTmpl.events({
                 soldQty = invoice.items.find(x => x.itemId == itemId).qty;
             }
             Meteor.call('findItem', itemId, function (error, itemResult) {
-
-                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
                 inventoryQty += soldQty;
                 if (currentQty <= inventoryQty) {
                     itemsCollection.update({itemId: itemId}, selector);
@@ -526,7 +525,7 @@ itemsTmpl.events({
         }
         else {
             Meteor.call('findItem', itemId, function (error, itemResult) {
-                let inventoryQty = itemResult.qtyOnHand[stockLocationId] == null ? 0 : itemResult.qtyOnHand[stockLocationId];
+                let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
                 if (currentQty <= inventoryQty) {
                     itemsCollection.update({itemId: itemId}, selector);
                 }
