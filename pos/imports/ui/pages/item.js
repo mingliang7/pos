@@ -93,7 +93,7 @@ indexTmpl.events({
     },
     'click .js-display' (event, instance) {
         alertify.item(fa('eye', TAPi18n.__('pos.item.title')), renderTemplate(showTmpl, this));
-    }
+    },
 });
 
 // New
@@ -133,9 +133,15 @@ newTmpl.events({
     'change .toggle-scheme'(event, instance){
         tmpCollection.remove({});
         if ($(event.currentTarget).prop('checked')) {
-            $('.scheme').removeClass('hidden')
+            $('.scheme').removeClass('hidden');
+            $('.price-div').addClass('hidden');
+            $('[name="price"]').val(0);
+            $('[name="purchasePrice"]').val(0);
         } else {
             $('.scheme').addClass('hidden');
+            $('.price-div').removeClass('hidden');
+            $('[name="price"]').val();
+            $('[name="purchasePrice"]').val();
         }
     },
     'change .toggle-selling-unit'(event, instance){
@@ -144,7 +150,7 @@ newTmpl.events({
         } else {
             $('.selling-unit').addClass('hidden');
         }
-    },
+    }
 });
 
 // Edit
@@ -256,7 +262,7 @@ Template.schemeItem.onCreated(function () {
     this.defaultPrice = new ReactiveVar(0);
     this.defaultItem = new ReactiveVar();
     this.autorun(() => {
-        if (this.defaultItem.get() ) {
+        if (this.defaultItem.get()) {
             itemInfo.callPromise({
                 _id: this.defaultItem.get()
             }).then((result) => {

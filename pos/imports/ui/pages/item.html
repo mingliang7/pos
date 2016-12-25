@@ -32,7 +32,7 @@
                 </div>
 
             </div>
-            <div class="row">
+         <!--   <div class="row">
                 <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-selling-unit"><span
                         class="label label-primary"> Add Selling-Unit </span></label></div>
             </div>
@@ -40,13 +40,13 @@
                 <div class="col-md-12 selling-unit hidden">
                     {{> afArrayField name="sellingUnit" id="sellingUnit" template="customArrayFieldSellingUnit" subtemplate="customObjectFieldSellingUnit"}}
                 </div>
-            </div>
+            </div>-->
             <div class="row">
                 <div class="col-md-3">{{> afQuickField name='categoryId' label="Category" options=categoryList}}
                 </div>
                 <div class="col-md-3">{{> afQuickField name='itemType' label="Item Type"}}</div>
                 <div class="col-md-3">{{> afQuickField name='barcode' label="Barcode"}}</div>
-                <div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>
+                <!--<div class="col-md-3">{{> afQuickField name='accountId' label="Account"}}</div>-->
             </div>
             <div class="row">
                 <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-scheme"><span
@@ -57,7 +57,7 @@
                     {{>schemeItem}}
                 </div>
             </div>
-            <div class="row">
+            <div class="row price-div">
                 <div class="col-md-3">{{> afQuickField name='price'}}
                 </div>
                 <div class="col-md-3">{{> afQuickField name='purchasePrice'}}
@@ -275,10 +275,10 @@
                 {{> afQuickField name="itemId" label=false}}
             </div>
             <div class="col-sm-2">
-                {{> afQuickField name="qty" label=false}}
+                {{> afQuickField name="qty" label=false placeholder="Qty"}}
             </div>
             <div class="col-sm-2">
-                {{> afQuickField name="price" label=false value=defaultPrice}}
+                {{> afQuickField name="price" label=false value=defaultPrice placeholder="Price"}}
             </div>
             <div class="col-sm-1">
                 <button type="button" class="btn btn-primary js-add-item" {{disabledAddItemBtn}}>+</button>

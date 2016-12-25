@@ -743,6 +743,12 @@
     },
     "accountMapping": {
       "title": "Account Mapping"
+    },
+    "stockAndAccountMapping":{
+      "title":"Stock And Account Mapping"
+    },
+    "penalty":{
+      "title":"Penalty"
     }
   }
 }

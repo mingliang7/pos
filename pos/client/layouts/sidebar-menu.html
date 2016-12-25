@@ -97,6 +97,12 @@
                         <i class="fa fa-share-square-o"></i> <span>{{_ "pos.sidebarMenu.lendingStock"}}</span>
                     </a>
                 </li>
+                <li class="{{isActiveRoute name='pos.receiveItem'}}">
+                    <a href="{{pathFor 'pos.receiveItem'}}">
+                        <i class="fa fa-arrow-circle-o-down" aria-hidden="true"></i>
+                        <span>Receive Item</span>
+                    </a>
+                </li>
             </ul>
         </li>
         <li class="treeview">
@@ -116,18 +122,6 @@
                     <a href="{{pathFor 'pos.transferMoneyRequest'}}">
                         <i class="fa fa-money" aria-hidden="true"></i>
                         <span>Transfer Money Request</span>
-                    </a>
-                </li>
-                <li class="{{isActiveRoute name='pos.receiveItem'}}">
-                    <a href="{{pathFor 'pos.receiveItem'}}">
-                        <i class="fa fa-arrow-circle-o-down" aria-hidden="true"></i>
-                        <span>Receive Item</span>
-                    </a>
-                </li>
-                <li class="{{isActiveRoute name='pos.stockLocation'}}">
-                    <a href="{{pathFor 'pos.stockLocation'}}">
-                        <i class="fa fa-tasks" aria-hidden="true"></i>
-                        <span>{{_ "pos.sidebarMenu.stockLocation"}}</span>
                     </a>
                 </li>
                 <li class="{{isActiveRoute name='pos.locationTransfer'}}">
@@ -479,6 +473,12 @@
                 <!--<i class="fa fa-angle-right"></i> <span>Account Mapping</span>-->
                 <!--</a>-->
                 <!--</li>-->
+                <li class="{{isActiveRoute name='pos.stockLocation'}}">
+                    <a href="{{pathFor 'pos.stockLocation'}}">
+                        <i class="fa fa-tasks" aria-hidden="true"></i>
+                        <span>{{_ "pos.sidebarMenu.stockLocation"}}</span>
+                    </a>
+                </li>
                 <li class="{{isActiveRoute name='pos.stockAndAccountMapping'}}">
                     <a href="{{pathFor 'pos.stockAndAccountMapping'}}">
                         <i class="fa fa-angle-right"></i> <span>Stock Mapping</span>
