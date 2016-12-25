@@ -492,3 +492,16 @@ PosRoutes.route('/report/customer-total-credit', {
         parent: 'pos.home'
     }
 });
+import '../imports/ui/reports/stockDetail';
+PosRoutes.route('/report/stockDetail', {
+    name: 'pos.stockDetail',
+    title: 'Stock Detail',
+    action: function (params, queryParams) {
+        Layout.main('Pos_stockDetailReport');
+    },
+    breadcrumb: {
+        title: 'Stock Detail',
+        icon: '',
+        parent: 'pos.home'
+    }
+});

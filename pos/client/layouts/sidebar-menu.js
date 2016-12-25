@@ -106,5 +106,8 @@ Template.Pos_sidebarMenu.helpers({
     },
     stockBalance(){
         return `/pos/report/stockBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
+    },
+    stockDetail(){
+        return `/pos/report/stockDetail?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
     }
 });

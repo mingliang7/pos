@@ -54,7 +54,7 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
         });
         let inventoryIdList = [];
         doc.items.forEach(function (item) {
-            let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'exchangeRillPull', doc._id);
+            let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'exchangeRingPull', doc._id);
             inventoryIdList.push(id);
         });
         doc.total = total;
@@ -181,7 +181,7 @@ function ExchangeRingPullManageStock(exchangeRingPull) {
     let prefix = exchangeRingPull.stockLocationId + "-";
     let newItems = [];
     exchangeRingPull.items.forEach(function (item) {
-        StockFunction.minusAverageInventoryInsert(exchangeRingPull.branchId, item, exchangeRingPull.stockLocationId, 'exchangeRillPull', exchangeRingPull._id);
+        StockFunction.minusAverageInventoryInsert(exchangeRingPull.branchId, item, exchangeRingPull.stockLocationId, 'exchangeRingPull', exchangeRingPull._id);
         //---insert to Ring Pull Stock---
         let ringPullInventory = RingPullInventories.findOne({
             branchId: exchangeRingPull.branchId,
