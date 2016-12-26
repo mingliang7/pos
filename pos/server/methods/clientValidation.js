@@ -1,4 +1,5 @@
 import {Item} from '../../imports/api/collections/item.js'
+import {RingPullInventories} from '../../imports/api/collections/ringPullInventory.js'
 
 Meteor.methods({
     findItem(itemId){
@@ -18,5 +19,13 @@ Meteor.methods({
         });
         return result;
 
+    },
+    findStockRingPull(itemId, branchId){
+        let ringPullStock = RingPullInventories.findOne({itemId: itemId, branchId: branchId});
+        if (ringPullStock) {
+            return ringPullStock.qty;
+        } else {
+            return 0;
+        }
     }
 });
