@@ -1,9 +1,11 @@
 //component
 import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
+import {renderTemplate} from '../../../../core/client/libs/render-template.js';
 //page
 import './stockDetail.html';
 //import DI
 import  'printthis';
+import {JSPanel} from '../../api/libs/jspanel';
 //import collection
 import {stockDetailSchema} from '../../api/collections/reports/stockDetail';
 
@@ -62,6 +64,26 @@ indexTmpl.events({
         let currentRangeDate = RangeDate[event.currentTarget.value]();
         instance.fromDate.set(currentRangeDate.start.toDate());
         instance.endDate.set(currentRangeDate.end.toDate());
+    },
+    'click .fullScreen'(event, instance){
+        $('.rpt-header').addClass('rpt');
+        $('.rpt-body').addClass('rpt');
+        $('.sub-body').addClass('rpt rpt-body');
+        $('.sub-header').addClass('rpt rpt-header');
+        let arrFooterTool = [
+            {
+                item: "<button type='button'></button>",
+                event: "click",
+                btnclass: 'btn btn-sm btn-primary',
+                btntext: 'Print',
+                callback: function (event) {
+                    setTimeout(function () {
+                        $('#to-printStockDetail').printThis();
+                    }, 500);
+                }
+            }
+        ];
+        JSPanel({footer: arrFooterTool,title: 'Stock Detail', content: renderTemplate(invoiceDataTmpl).html}).maximize();
     }
 });
 invoiceDataTmpl.helpers({
@@ -81,7 +103,12 @@ invoiceDataTmpl.helpers({
         return `<td>${numeral(this.qty).format('0,0.00')}</td><td></td>`;
     }
 });
-
+invoiceDataTmpl.onDestroyed(function () {
+    $('.rpt-header').removeClass('rpt');
+    $('.rpt-body').removeClass('rpt');
+    $('.sub-body').removeClass('rpt rpt-body');
+    $('.sub-header').removeClass('rpt rpt-header');
+});
 
 AutoForm.hooks({
     stockDetailReport: {

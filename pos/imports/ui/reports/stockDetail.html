@@ -45,6 +45,7 @@
                                 </div>
                                 <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
                                 </button>
+                                <a class="btn btn-default fullScreen"><i class="fa fa-print" aria-hidden="true"></i> Full Screen</a>
                             {{/autoForm}}
                         </div>
                     </div>
@@ -56,15 +57,7 @@
 </template>
 
 <template name="stockDetailReportData">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-4">
-                <br>
-                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid" id="to-print">
+    <div class="container-fluid" id="to-printStockDetail">
         {{#with company}}
             <div class="col-xs-12">
                 <h3 class="text-center">{{khName}}</h3>
@@ -96,12 +89,13 @@
             </div>
         </div>
         <table class="table table-bordered">
-            <thead>
+            <thead class="rpt-header">
             <tr>
                 <th>Date</th>
                 <th>N៖</th>
                 <th>Name</th>
                 <th>Description</th>
+                <th>Branch</th>
                 <th>Item</th>
                 <th>Stock In</th>
                 <th>Stock Out</th>
@@ -110,7 +104,7 @@
                 <th>Amount</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody class="rpt-body">
             {{#with data}}
                 {{#each content}}
                     {{#each items}}
@@ -119,6 +113,7 @@
                             <td>{{number}}</td>
                             <td>{{name}}</td>
                             <td>{{description}}</td>
+                            <td>{{branchDoc.khName}}</td>
                             <td>{{item.name}}</td>
                             {{{displayStockOutQty}}}
                             <td>{{numFormat remainQty '0,0'}}</td>

@@ -120,6 +120,17 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 }
                             },
                             {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
                                 $project: projectionField({
                                     description: {$ifNull: ["$invoiceDescription", 'លក់ចេញ(Invoice)']},
                                     number: {$ifNull: ['$invoiceDoc.voucherId', '$invoiceDoc._id']},
@@ -159,6 +170,17 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             },
                             {
                                 $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
                             {
                                 $project: projectionField({
@@ -203,6 +225,17 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
                             },
                             {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
                                 $project: projectionField({
                                     description: {$ifNull: ["$lendingStockDescription", 'ខ្ចីស្តុក(Lending Stock)']},
                                     number: {$ifNull: ['$lendingStockDoc.voucherId', '$lendingStockDoc._id']},
@@ -243,6 +276,17 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             },
                             {
                                 $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
                             {
                                 $project: projectionField({
@@ -288,10 +332,125 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
                             },
                             {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
                                 $project: projectionField({
                                     description: {$ifNull: ["$receiveBeerDescription", 'ទទួលស្រាបៀរ(Receive Beer)']},
                                     number: {$ifNull: ['$receiveItemDoc.voucherId', '$receiveItemDoc._id']},
                                     name: '$receiveItemDoc._vendor.name',
+                                    item: '$itemDoc'
+                                })
+                            }
+                        ],
+                        transferTo: [
+                            {
+                                $match: {
+                                    type: "transfer-to",
+                                    createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            }, {
+                                $lookup: {
+                                    from: "pos_locationTransfers",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "transferToDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$transferToDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$transferDescription", '']},
+                                    number: {$ifNull: ['$transferToDoc.voucherId', '$transferToDoc._id']},
+                                    name: {$concat: ["ផ្ទេរចូលមកពី","$transferToDoc._fromBranch.khName", "(Transfer From ", "$transferToDoc._fromBranch.enName", ")"]},
+                                    item: '$itemDoc'
+                                })
+                            }
+                        ],
+                        transferFrom: [
+                            {
+                                $match: {
+                                    type: "transfer-from",
+                                    createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            }, {
+                                $lookup: {
+                                    from: "pos_locationTransfers",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "transferFromDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$transferFromDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$transferDescription", '']},
+                                    number: {$ifNull: ['$transferFromDoc.voucherId', '$transferFromDoc._id']},
+                                    name: {$concat: ["ផ្ទេរចេញទៅ","$transferFromDoc._toBranch.khName", "(Transfer To", "$transferFromDoc._toBranch.enName", ")"]},
                                     item: '$itemDoc'
                                 })
                             }
@@ -303,16 +462,22 @@ export const stockDetailReportMethod = new ValidatedMethod({
             if (inventoryDocs[0].stockDate.length > 0) {
                 inventoryDocs[0].stockDate.forEach(function (obj) {
                     var currentStockDate = moment(obj.createdAt).format('YYYY-MM-DD');
-                    inventoryDocs[0].invoices.forEach(function (invoice) {
-                        if (moment(currentStockDate).isSame(moment(invoice.createdAt).format('YYYY-MM-DD'))) {
-                            obj.items.push(invoice);
-                        }
-                    });
                     inventoryDocs[0].bills.forEach(function (bill) {
                         if (moment(currentStockDate).isSame(moment(bill.createdAt).format('YYYY-MM-DD'))) {
                             obj.items.push(bill);
                         }
                     });
+                    inventoryDocs[0].receiveBeers.forEach(function (receiveBeer) {
+                        if (moment(currentStockDate).isSame(moment(receiveBeer.createdAt).format('YYYY-MM-DD'))) {
+                            obj.items.push(receiveBeer);
+                        }
+                    });
+                    inventoryDocs[0].invoices.forEach(function (invoice) {
+                        if (moment(currentStockDate).isSame(moment(invoice.createdAt).format('YYYY-MM-DD'))) {
+                            obj.items.push(invoice);
+                        }
+                    });
+
                     inventoryDocs[0].lendingStocks.forEach(function (lendingStock) {
                         if (moment(currentStockDate).isSame(moment(lendingStock.createdAt).format('YYYY-MM-DD'))) {
                             obj.items.push(lendingStock);
@@ -323,12 +488,21 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             obj.items.push(exchangeRingPull);
                         }
                     });
-                    inventoryDocs[0].receiveBeers.forEach(function (receiveBeer) {
-                        if (moment(currentStockDate).isSame(moment(receiveBeer.createdAt).format('YYYY-MM-DD'))) {
-                            obj.items.push(receiveBeer);
+                    inventoryDocs[0].transferTo.forEach(function (transfer) {
+                        if (moment(currentStockDate).isSame(moment(transfer.createdAt).format('YYYY-MM-DD'))) {
+                            obj.items.push(transfer);
+                        }
+                    });
+                    inventoryDocs[0].transferFrom.forEach(function (transfer) {
+                        if (moment(currentStockDate).isSame(moment(transfer.createdAt).format('YYYY-MM-DD'))) {
+                            obj.items.push(transfer);
                         }
                     });
                 });
+                inventoryDocs[0].stockDate.sort(compare);
+                for(let i = 0 ; i < inventoryDocs[0].stockDate.length;i++){
+                    inventoryDocs[0].stockDate[i].items.sort(compare);
+                }
                 data.content = inventoryDocs[0].stockDate;
             }
             return data;
@@ -365,6 +539,7 @@ function projectionField({item,description, name, number}) {
     return {
         _id: 1,
         branchId: 1,
+        branchDoc: 1,
         stockLocationId: 1,
         itemId: 1,
         qty: 1,
@@ -386,7 +561,14 @@ function projectionField({item,description, name, number}) {
 
 function handleUndefined(value) {
     if(!value) {
-        return {$ne: value || ''}
+        return {$ne:  value || ''}
     }
     return value
+}
+function compare(a,b) {
+    if (a.createdAt < b.createdAt)
+        return -1;
+    if (a.createdAt > b.createdAt)
+        return 1;
+    return 0;
 }
