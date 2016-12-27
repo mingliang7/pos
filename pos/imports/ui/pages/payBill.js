@@ -19,10 +19,6 @@ let indexTmpl = Template.Pos_payBill;
 let currentPaymentDate = new ReactiveVar(moment().toDate());
 Tracker.autorun(function () {
     if (Session.get('vendorIdState')) {
-        swal({
-            title: "Pleas Wait",
-            text: "Getting Bills....", showConfirmButton: false
-        });
         Meteor.subscribe('pos.vendor', {
             _id: Session.get('vendorIdState')
         }, {});
@@ -41,9 +37,6 @@ Tracker.autorun(function () {
             });
         }
         if (billSub.ready()) {
-            setTimeout(function () {
-                swal.close()
-            }, 500);
         }
     }
     if (Session.get('invoices')) {
