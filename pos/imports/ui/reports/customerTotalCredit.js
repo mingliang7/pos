@@ -62,7 +62,7 @@ indexTmpl.events({
                 }
             }
         ];
-        JSPanel({footer: arrFooterTool,title: 'Customer Total Credit', content: renderTemplate(invoiceDataTmpl).html}).maximize();
+        JSPanel({footer: arrFooterTool,title: 'Total Credit', content: renderTemplate(invoiceDataTmpl).html}).maximize();
 
     }
 });

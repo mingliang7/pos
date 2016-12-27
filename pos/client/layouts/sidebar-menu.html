@@ -187,14 +187,14 @@
                 </li>
                 <li class="treeview">
                     <a href="#">
-                        <span>Customer</span>
+                        <span>Sale Report</span>
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
                         <li>
                             <a href="{{groupInvoice}}">
                                 <i class="fa fa-file-o"></i>
-                                <span>Group Invoice Report</span>
+                                <span>Group Sale Report</span>
                             </a>
                         </li>
                         <li>
@@ -204,11 +204,37 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{termBalance}}">
+                            <a href="{{invoiceByCustomer}}">
                                 <i class="fa fa-file-o"></i>
-                                <span>Term Balance Report</span>
+                                <span>Sale By Customer</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{invoiceByItem}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Sale By Item</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{invoiceSummary}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Total Sale</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{saleOrder}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Sale Order</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <span>Customer & A/R</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu" style="display: none;">
                         <li>
                             <a href="{{customerDebtTracking}}">
                                 <i class="fa fa-file-o"></i>
@@ -216,27 +242,29 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{termBalance}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Unpaid by Customer</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{groupInvoice}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Group Total Sale</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{groupBalance}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Group Balance Report</span>
+                            </a>
+                        </li>
+
+
+                        <li>
                             <a href="{{customerTotalCredit}}">
                                 <i class="fa fa-file-o"></i>
-                                <span>Customer Total Credit</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{invoiceByCustomer}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Invoice By Customer</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{invoiceByItem}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Invoice By Item</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{invoiceSummary}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Invoice Summary</span>
+                                <span>Total Credit</span>
                             </a>
                         </li>
                         <li>
@@ -257,11 +285,68 @@
                                 <span>Receive Payment</span>
                             </a>
                         </li>
-
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <span>Ring Pull</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu" style="display: none;">
                         <li>
-                            <a href="{{saleOrder}}">
+                            <a href="{{exchangeRingPull}}">
                                 <i class="fa fa-file-o"></i>
-                                <span>Sale Order</span>
+                                <span>Ring Pull Exchange</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{companyExchangeRingPull}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Ring Pull To KHB</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{exchangeRingPullStockBalance}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Exchange Ringpull Ending </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ringPullTransfer}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Ring Pull Transfer</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <span>Stock Report</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu" style="display: none;">
+                        <li>
+                            <a href="{{locationTransfer}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Stock Transfer</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{stockBalance}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Stock Ending</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{stockDetail}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Stock Detail</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{lendingStock}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Stock Borrow</span>
                             </a>
                         </li>
                     </ul>
@@ -334,12 +419,7 @@
                                 <span>Exchange Gratis</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{{exchangeRingPull}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Exchange Ringpull</span>
-                            </a>
-                        </li>
+
                         <li>
                             <a href="{{exchangeRingPullStockBalance}}">
                                 <i class="fa fa-file-o"></i>
@@ -390,6 +470,7 @@
                         </li>
                     </ul>
                 </li>
+
             </ul>
 
         </li>

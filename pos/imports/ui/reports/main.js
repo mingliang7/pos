@@ -76,7 +76,7 @@ indexTmpl.helpers({
                 label: 'Receive Item Summary', value: 'receiveItemSummary'
             },
             {
-                label: 'Exchange Ring Pull Stock Balance', value: 'exchangeRingPullStockBalance'
+                label: 'Ring Pull Exchange Ending', value: 'exchangeRingPullStockBalance'
             },
             {
                 label: 'Transfer Money', value: 'transferMoney'

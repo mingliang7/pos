@@ -77,13 +77,13 @@ PosRoutes.route('/report', {
 import '../imports/ui/reports/invoice';
 PosRoutes.route('/report/invoice', {
     name: 'pos.invoiceReport',
-    title: 'Invoice Report',
+    title: 'Total Sale',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_invoiceReport');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Invoice Report',
+        title: 'Total Sale',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
@@ -92,13 +92,13 @@ PosRoutes.route('/report/invoice', {
 import '../imports/ui/reports/invoiceByCustomer';
 PosRoutes.route('/report/invoiceByCustomer', {
     name: 'pos.invoiceByCustomerReport',
-    title: 'Invoice By Customer Report',
+    title: 'Sale by Customer Report',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_invoiceByCustomerReport');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Invoice By Customer Report',
+        title: 'Sale by Customer Report',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
@@ -107,13 +107,13 @@ PosRoutes.route('/report/invoiceByCustomer', {
 import '../imports/ui/reports/invoiceByItem';
 PosRoutes.route('/report/invoiceByItemReport', {
     name: 'pos.invoiceByItemReport',
-    title: 'Invoice By Item Report',
+    title: 'Sale by Item Report',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_invoiceByItemReport');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Invoice By Item Report',
+        title: 'Sale by Item Report',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
@@ -151,13 +151,13 @@ PosRoutes.route('/report/payment', {
 import '../imports/ui/reports/stockBalance';
 PosRoutes.route('/report/stockBalance', {
     name: 'pos.paymentReport',
-    title: 'Stock Balance Report',
+    title: 'Stock Ending',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_stockBalanceReport');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Stock Balance Report',
+        title: 'Stock Ending',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
@@ -167,13 +167,13 @@ PosRoutes.route('/report/stockBalance', {
 import '../imports/ui/reports/locationTransfer';
 PosRoutes.route('/report/locationTransfer', {
     name: 'pos.locationTransferReport',
-    title: 'Location Transfer Report',
+    title: 'Stock Transfer',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_locationTransferReport');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Location Transfer Report',
+        title: 'Stock Transfer',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
@@ -242,13 +242,13 @@ PosRoutes.route('/report/prepaidOrderReport', {
 import '../imports/ui/reports/exchangeRingPull';
 PosRoutes.route('/report/exchangeRingPullReport', {
     name: 'pos.exchangeRingPullReport',
-    title: 'Exchange Ring Pull Report',
+    title: 'Ring Pull Exchange  Report',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_exchangeRingPullReport');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Exchange Ring Pull Report',
+        title: 'Ring Pull Exchange  Report',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
@@ -256,13 +256,13 @@ PosRoutes.route('/report/exchangeRingPullReport', {
 import '../imports/ui/reports/lendingStockReport';
 PosRoutes.route('/report/lendingStockReport', {
     name: 'pos.lendingStockReport',
-    title: 'Lending Stock Report',
+    title: 'Stock Borrow',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_lendingStockReport');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Lending Stock Report',
+        title: 'Stock Borrow',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
@@ -270,13 +270,13 @@ PosRoutes.route('/report/lendingStockReport', {
 import '../imports/ui/reports/companyExchangeRingPullReport';
 PosRoutes.route('/report/companyExchangeRingPullReport', {
     name: 'pos.companyExchangeRingPullReport',
-    title: 'Company Exchange Ring Pull Report',
+    title: 'Ring Pull to KHB',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_companyExchangeRingPullReport');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Company Exchange Ring Pull Report',
+        title: 'Company Ring Pull Exchange  Report',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
@@ -315,13 +315,13 @@ PosRoutes.route('/report/saleOrderReport', {
 import '../imports/ui/reports/groupReport';
 PosRoutes.route('/report/groupReport', {
     name: 'pos.groupReport',
-    title: 'Group Invoice Report',
+    title: 'Group Total Sale',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_groupReport');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Group Invoice Report',
+        title: 'Group Total Sale',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
@@ -345,13 +345,13 @@ PosRoutes.route('/report/groupBillReport', {
 import '../imports/ui/reports/termCustomerBalance';
 PosRoutes.route('/report/termCustomerBalance', {
     name: 'pos.termCustomerBalance',
-    title: 'Term Customer Balance Report',
+    title: 'Unpaid by Customer',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_termCustomerBalance');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Term Customer Balance Report',
+        title: 'Unpaid by Customer',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
@@ -387,13 +387,13 @@ PosRoutes.route('/report/receiveItemSummary', {
 import '../imports/ui/reports/exchangeRingPullStockBalance';
 PosRoutes.route('/report/exchangeRingPullStockBalance', {
     name: 'pos.exchangeRingPullStockBalanceReport',
-    title: 'Exchange Ring Pull Stock Balance',
+    title: 'Ring Pull Exchange Ending',
     action: function (params, queryParams) {
         Layout.customReportLayout('Pos_exchangeRingPullStockBalance');
     },
     breadcrumb:{
         // params:['vendorId'],
-        title: 'Exchange Ring Pull Stock Balance',
+        title: 'Ring Pull Exchange Ending',
         // icon: 'cart-plus',
         parent: 'pos.mainReport'
     }
@@ -482,12 +482,12 @@ PosRoutes.route('/report/customer-debt-tracking', {
 import '../imports/ui/reports/customerTotalCredit';
 PosRoutes.route('/report/customer-total-credit', {
     name: 'pos.customerTotalCredit',
-    title: 'Customer Total Credit',
+    title: 'Total Credit',
     action: function (params, queryParams) {
         Layout.main('Pos_customerTotalCredit');
     },
     breadcrumb: {
-        title: 'Customer Total Credit',
+        title: 'Total Credit',
         icon: '',
         parent: 'pos.home'
     }
