@@ -274,7 +274,7 @@ itemsTmpl.events({
                     });
                 }
                 else {
-                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + soldQty);
+                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + qtyResult);
                 }
 
             });
@@ -343,7 +343,7 @@ itemsTmpl.events({
                     });
                 }
                 else {
-                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + soldQty);
+                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + qtyResult);
                 }
 
             });
@@ -386,22 +386,68 @@ itemsTmpl.events({
 
     },
     'change .item-qty'(event, instance){
+        let branchId = Session.get('currentBranch');
         let currentQty = event.currentTarget.value;
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
         let currentItem = itemsCollection.findOne({itemId: itemId});
         let selector = {};
-        if (currentQty != '') {
+        let thisObj = $(event.currentTarget);
+        if (currentQty != '' || currentQty != 0) {
             selector.$set = {
                 amount: currentQty * currentItem.price,
                 qty: currentQty
             }
         } else {
             selector.$set = {
-                amount: 1 * currentItem.price,
-                qty: 1
-            }
+                amount: currentItem.qty * currentItem.price,
+                qty: currentItem.qty
+            };
+            currentQty = currentItem.qty;
+            thisObj.val(currentItem.qty);
         }
-        itemsCollection.update({itemId: itemId}, selector);
+
+        let invoice = instance.view.parentView.parentView._templateInstance.data;
+        if (invoice) {
+            let soldQty = 0;
+            let oldItem = invoice.items.find(x => x.itemId == itemId);
+            soldQty = oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
+
+            Meteor.call('findStockRingPull', itemId, branchId, function (error, qtyResult) {
+
+                qtyResult += soldQty;
+                if (currentQty <= qtyResult) {
+                    itemsCollection.update({itemId: itemId}, selector);
+                }
+                else {
+                    selector.$set = {
+                        amount: currentItem.qty * currentItem.price,
+                        qty: currentItem.qty
+                    };
+                    itemsCollection.update({itemId: itemId}, selector);
+                    thisObj.val(currentItem.qty);
+                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + qtyResult);
+                }
+
+            });
+        }
+        else {
+            Meteor.call('findStockRingPull', itemId, branchId, function (error, qtyResult) {
+
+                if (currentQty <= qtyResult) {
+                    itemsCollection.update({itemId: itemId}, selector);
+                }
+                else {
+                    selector.$set = {
+                        amount: currentItem.qty * currentItem.price,
+                        qty: currentItem.qty
+                    };
+                    itemsCollection.update({itemId: itemId}, selector);
+                    thisObj.val(currentItem.qty);
+                    alertify.warning('Qty not enough for lending. QtyOnHand is ' + qtyResult);
+                }
+
+            });
+        }
     },
     "keypress .item-qty" (evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
