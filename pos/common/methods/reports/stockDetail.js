@@ -6,8 +6,8 @@ import {_} from 'meteor/erasaur:meteor-lodash';
 import {moment} from  'meteor/momentjs:moment';
 
 // Collection
-import {Company} from '../../../../core/imports/api/collections/company.js';
 import {AverageInventories} from '../../../imports/api/collections/inventory';
+import {Branch} from '../../../../core/imports/api/collections/branch';
 // lib func
 import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
 import ReportFn from "../../../imports/api/libs/report";
@@ -36,19 +36,25 @@ export const stockDetailReportMethod = new ValidatedMethod({
                 };
             }
             if (params.branch) {
+                let branch = '';
+                let branchArr = params.branch.split(',');
+                for(let i = 0; i < branchArr.length; i++){
+                    branch += Branch.findOne(branchArr[i]).khName + ', ' || '';
+                }
                 branchId = params.branch.split(',');
+                data.title.branch = branch;
                 selector.branchId = {
                     $in: branchId
                 };
                 selector = ReportFn.checkIfUserHasRights({currentUser: Meteor.userId(), selector});
             }
-            if(params.items) {
+            if (params.items) {
                 let items = params.items.split(',');
                 selector.itemId = {
                     $in: items
                 }
             }
-            if(params.location) {
+            if (params.location) {
                 let locations = params.location.split(',');
                 selector.stockLocationId = {
                     $in: locations
@@ -91,18 +97,21 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 $match: {
                                     type: "invoice",
                                     createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
-                                    branchId: handleUndefined(selector.branchId) ,
+                                    branchId: handleUndefined(selector.branchId),
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
                                 }
                             },
                             {
-                              $lookup: {
-                                  from: 'pos_item',
-                                  localField: 'itemId',
-                                  foreignField: '_id',
-                                  as: 'itemDoc'
-                              }
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
                             },
                             {
                                 $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
@@ -130,11 +139,13 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
+
                             {
                                 $project: projectionField({
                                     description: {$ifNull: ["$invoiceDescription", 'លក់ចេញ(Invoice)']},
                                     number: {$ifNull: ['$invoiceDoc.voucherId', '$invoiceDoc._id']},
-                                    name: '$invoiceDoc._rep.name',
+                                    name: '$invoiceDoc._customer.name',
+                                    rep: '$invoiceDoc._rep.name',
                                     item: '$itemDoc'
                                 })
                             }
@@ -148,7 +159,11 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
                                 }
-                            }, {
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
                                 $lookup: {
                                     from: "pos_enterBills",
                                     localField: "refId",
@@ -187,6 +202,7 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     description: {$ifNull: ["$billDescription", 'ទិញចូល(Purchase)']},
                                     number: {$ifNull: ['$billDoc.voucherId', '$billDoc._id']},
                                     name: '$billDoc._vendor.name',
+                                    rep: {$ifNull: ["$billDoc._rep.name", ""]},
                                     item: '$itemDoc'
                                 })
 
@@ -201,7 +217,11 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
                                 }
-                            }, {
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
                                 $lookup: {
                                     from: "pos_lendingStocks",
                                     localField: "refId",
@@ -248,13 +268,17 @@ export const stockDetailReportMethod = new ValidatedMethod({
                         exchangeRingPulls: [
                             {
                                 $match: {
-                                    type: "exchangeRingPull",
+                                    $or: [{type: "exchangeRingPull"}, {type: "exchangeRillPull"}],
                                     createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
                                     branchId: handleUndefined(selector.branchId),
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
                                 }
-                            }, {
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
                                 $lookup: {
                                     from: "pos_exchangeRingPulls",
                                     localField: "refId",
@@ -292,7 +316,8 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 $project: projectionField({
                                     description: {$ifNull: ["$exchangeRingPullDescription", 'ប្តូរក្រវិលអោយអតិថិជន(Exchange Ring Pull)']},
                                     number: {$ifNull: ['$exchangeRingPullDoc.voucherId', '$exchangeRingPullDoc._id']},
-                                    name: '$exchangeRingPullDoc._customer.name',
+                                    name: {$ifNull: ["$exchangeRingPullDoc.fkyou", "ក្រវិល"]},
+                                    rep: {$ifNull: ["$exchangeRingPullDoc._rep.name", ""]},
                                     item: '$itemDoc'
                                 })
 
@@ -308,7 +333,11 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
                                 }
-                            }, {
+                            },
+                            {
+                              $group: groupLast()
+                            },
+                            {
                                 $lookup: {
                                     from: "pos_receiveItems",
                                     localField: "refId",
@@ -347,6 +376,7 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     description: {$ifNull: ["$receiveBeerDescription", 'ទទួលស្រាបៀរ(Receive Beer)']},
                                     number: {$ifNull: ['$receiveItemDoc.voucherId', '$receiveItemDoc._id']},
                                     name: '$receiveItemDoc._vendor.name',
+                                    rep: {$ifNull: ['$receiveItemDoc._rep.name', '']},
                                     item: '$itemDoc'
                                 })
                             }
@@ -360,7 +390,11 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
                                 }
-                            }, {
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
                                 $lookup: {
                                     from: "pos_locationTransfers",
                                     localField: "refId",
@@ -398,7 +432,8 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 $project: projectionField({
                                     description: {$ifNull: ["$transferDescription", '']},
                                     number: {$ifNull: ['$transferToDoc.voucherId', '$transferToDoc._id']},
-                                    name: {$concat: ["ផ្ទេរចូលមកពី","$transferToDoc._fromBranch.khName", "(Transfer From ", "$transferToDoc._fromBranch.enName", ")"]},
+                                    name: {$concat: ["ផ្ទេរចូលមកពី", "$transferToDoc._fromBranch.khName", "(Transfer From ", "$transferToDoc._fromBranch.enName", ")"]},
+                                    rep: {$ifNull: ['$transferToDoc._rep.name', ""]},
                                     item: '$itemDoc'
                                 })
                             }
@@ -412,7 +447,11 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
                                 }
-                            }, {
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
                                 $lookup: {
                                     from: "pos_locationTransfers",
                                     localField: "refId",
@@ -450,7 +489,8 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 $project: projectionField({
                                     description: {$ifNull: ["$transferDescription", '']},
                                     number: {$ifNull: ['$transferFromDoc.voucherId', '$transferFromDoc._id']},
-                                    name: {$concat: ["ផ្ទេរចេញទៅ","$transferFromDoc._toBranch.khName", "(Transfer To", "$transferFromDoc._toBranch.enName", ")"]},
+                                    name: {$concat: ["ផ្ទេរចេញទៅ", "$transferFromDoc._toBranch.khName", "(Transfer To", "$transferFromDoc._toBranch.enName", ")"]},
+                                    rep: {$ifNull: ["$transferFromDoc._rep.name", ""]},
                                     item: '$itemDoc'
                                 })
                             }
@@ -500,7 +540,7 @@ export const stockDetailReportMethod = new ValidatedMethod({
                     });
                 });
                 inventoryDocs[0].stockDate.sort(compare);
-                for(let i = 0 ; i < inventoryDocs[0].stockDate.length;i++){
+                for (let i = 0; i < inventoryDocs[0].stockDate.length; i++) {
                     inventoryDocs[0].stockDate[i].items.sort(compare);
                 }
                 data.content = inventoryDocs[0].stockDate;
@@ -535,7 +575,7 @@ function correctDotObject(prop, forLabel) {
 }
 
 
-function projectionField({item,description, name, number}) {
+function projectionField({item, description, name, number, rep}) {
     return {
         _id: 1,
         branchId: 1,
@@ -553,19 +593,39 @@ function projectionField({item,description, name, number}) {
         refId: 1,
         createdAt: 1,
         number: number,
+        rep: rep,
         description: description,
         name: name,
         item: item
     }
 }
+function groupLast() {
+    return {
+        _id: '$refId',
+        branchId: {$last: '$branchId'},
+        stockLocationId: {$last: '$stockLocationId'},
+        itemId: {$last: '$itemId'},
+        qty: {$last: '$qty'},
+        price: {$last: '$price'},
+        amount: {$last: '$amount'},
+        lastAmount: {$last: '$lastAmount'},
+        remainQty: {$last: '$remainQty'},
+        averagePrice: {$last: '$averagePrice'},
+        type: {$last: '$type'},
+        coefficient: {$last: '$coefficient'},
+        refId: {$last: '$refId'},
+        createdAt: {$last: '$createdAt'},
+    }
 
+
+}
 function handleUndefined(value) {
-    if(!value) {
-        return {$ne:  value || ''}
+    if (!value) {
+        return {$ne: value || ''}
     }
     return value
 }
-function compare(a,b) {
+function compare(a, b) {
     if (a.createdAt < b.createdAt)
         return -1;
     if (a.createdAt > b.createdAt)

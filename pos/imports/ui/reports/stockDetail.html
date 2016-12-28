@@ -75,7 +75,9 @@
                     <div class="col-xs-3">
                         <address class="">
                             <strong>Date:</strong>
-                            {{data.title.date}}
+                            {{data.title.date}}<br>
+                            <strong>Branch:</strong>
+                            {{data.title.branch}}
                         </address>
                     </div>
                     <div class="col-xs-6 text-right">
@@ -94,7 +96,8 @@
                 <th>Date</th>
                 <th>N៖</th>
                 <th>Name</th>
-                <th>Description</th>
+                <th>Rep</th>
+                <th>Des</th>
                 <th>Branch</th>
                 <th>Item</th>
                 <th>Stock In</th>
@@ -112,6 +115,7 @@
                             <td>{{moFormat createdAt 'DD/MM/YYYY'}}</td>
                             <td>{{number}}</td>
                             <td>{{name}}</td>
+                            <td>{{rep}}</td>
                             <td>{{description}}</td>
                             <td>{{branchDoc.khName}}</td>
                             <td>{{item.name}}</td>
