@@ -11,10 +11,29 @@ import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
 import StockFunction from '../../imports/api/libs/stock';
 
 CompanyExchangeRingPulls.before.insert(function (userId, doc) {
+
+    let result = StockFunction.checkRingPullByBranch(doc.branchId, doc.items);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
+    }
+
+
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
     doc._id = idGenerator.genWithPrefix(CompanyExchangeRingPulls, prefix, 4);
 });
+
+CompanyExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, options) {
+    let postDoc = {itemList: modifier.$set.items};
+    let branchId = modifier.$set.branchId;
+    let data = {stockLocationId: doc.stockLocationId, items: doc.items};
+    let result = StockFunction.checkRingPullByBranchWhenUpdate(branchId, postDoc.itemList, data);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
+    }
+});
+
+
 CompanyExchangeRingPulls.after.insert(function (userId, doc) {
     Meteor.defer(function () {
         StockFunction.reduceRingPullInventory(doc);
@@ -38,7 +57,7 @@ CompanyExchangeRingPulls.after.insert(function (userId, doc) {
             total += item.amount;
         });
         doc.total = total;
-        CompanyExchangeRingPulls.direct.update(doc._id,{$set:{items:doc.items,total:doc.total}});
+        CompanyExchangeRingPulls.direct.update(doc._id, {$set: {items: doc.items, total: doc.total}});
 
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -90,7 +109,7 @@ CompanyExchangeRingPulls.after.update(function (userId, doc) {
             total += item.amount;
         });
         doc.total = total;
-        CompanyExchangeRingPulls.direct.update(doc._id,{$set:{items:doc.items,total:doc.total}});
+        CompanyExchangeRingPulls.direct.update(doc._id, {$set: {items: doc.items, total: doc.total}});
 
 
         let setting = AccountIntegrationSetting.findOne();

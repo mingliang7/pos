@@ -356,7 +356,7 @@ export  default class StockFunction {
             }
             let thisItem = Item.findOne(item.itemId);
             let inventoryQty = thisItem.qtyOnHand[stockLocationId] == null ? 0 : thisItem.qtyOnHand[stockLocationId];
-            if (item.qty > inventoryQty + qty) {
+            if (item.qty > (inventoryQty + qty)) {
                 result.isEnoughStock = false;
                 result.message = thisItem.name + " is not enough in stock. Qty on hand: " + (inventoryQty + qty);
                 return false;
@@ -364,4 +364,51 @@ export  default class StockFunction {
         });
         return result;
     }
+
+    static checkRingPullByBranch(branchId, items) {
+        console.log(items);
+        let result = {isEnoughStock: true, message: ''};
+        items.forEach(function (item) {
+            let thisItem = Item.findOne(item.itemId);
+            let ringPullStock = RingPullInventories.findOne({itemId: item.itemId, branchId: branchId});
+            if (ringPullStock) {
+                if (item.qty > ringPullStock.qty) {
+                    result.isEnoughStock = false;
+                    result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + ringPullStock.qty;
+                    return false;
+                }
+            } else {
+                result.isEnoughStock = false;
+                result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + ringPullStock.qty;
+                return false;
+            }
+        });
+        return result;
+    }
+
+    static checkRingPullByBranchWhenUpdate(branchId, items, doc) {
+        let result = {isEnoughStock: true, message: ''};
+        items.forEach(function (item) {
+            let qty = 0;
+            let oldItem = doc.items.find(x => x.itemId == item.itemId);
+            qty = oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
+
+            let thisItem = Item.findOne(item.itemId);
+            let ringPullStock = RingPullInventories.findOne({itemId: item.itemId, branchId: branchId});
+            if (ringPullStock) {
+                if (item.qty > (ringPullStock.qty + qty)) {
+                    result.isEnoughStock = false;
+                    result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + ringPullStock.qty;
+                    return false;
+                }
+            } else {
+                result.isEnoughStock = false;
+                result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + ringPullStock.qty;
+                return false;
+            }
+        });
+        return result;
+    }
+
+
 }

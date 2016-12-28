@@ -17,6 +17,7 @@ import {invoiceState} from '../../common/globalState/invoice'
 import {updateItemInSaleOrder} from '../../common/methods/sale-order'
 Invoices.before.insert(function (userId, doc) {
 
+    console.log(doc.items);
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
