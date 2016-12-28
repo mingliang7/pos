@@ -243,7 +243,7 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
         } else {
             throw Meteor.Error('Require Receive Item type');
         }
-        reduceFromInventory(preDoc, 'receive-item-return');
+        reduceFromInventory(preDoc, 'receiveItem-return');
         doc.items.forEach(function (item) {
             StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'receiveItem', doc._id);
         });
@@ -280,7 +280,7 @@ ReceiveItems.after.remove(function (userId, doc) {
         } else {
             throw Meteor.Error('Require Receive Item type');
         }
-        reduceFromInventory(doc, 'receive-item-return');
+        reduceFromInventory(doc, 'receiveItem-return');
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
