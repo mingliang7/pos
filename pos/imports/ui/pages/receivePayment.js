@@ -464,7 +464,12 @@ indexTmpl.events({
     },
     "keypress .discount" (evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
-        return !(charCode > 31 && (charCode < 48 || charCode > 57));
+        if ($(evt.currentTarget).val().indexOf('.') != -1) {
+            if (charCode == 46) {
+                return false;
+            }
+        }
+        return !(charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57));
     },
     'change .total' (event, instance) {
         var selectedInvoices = Session.get('invoicesObj');
@@ -499,7 +504,12 @@ indexTmpl.events({
     },
     "keypress .total" (evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
-        return !(charCode > 31 && (charCode < 48 || charCode > 57));
+        if ($(evt.currentTarget).val().indexOf('.') != -1) {
+            if (charCode == 46) {
+                return false;
+            }
+        }
+        return !(charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57));
     },
     "click .create-penalty"(event, instance){
         alertify.penalty(fa('', 'Create New Penalty'), renderTemplate(Template.Pos_penaltyNew));

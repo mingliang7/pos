@@ -191,42 +191,56 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
-                        <li>
-                            <a href="{{groupInvoice}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Group Sale Report</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{groupBalance}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Group Balance Report</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{invoiceByCustomer}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Sale By Customer</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{invoiceByItem}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Sale By Item</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{invoiceSummary}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Total Sale</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{saleOrder}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Sale Order</span>
-                            </a>
-                        </li>
+                        {{#if isInRole 'group-sale-report' 'pos'}}
+                            <li>
+                                <a href="{{groupInvoice}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Group Sale Report</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'group-Balance-report' 'pos'}}
+
+                            <li>
+                                <a href="{{groupBalance}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Group Balance Report</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'sale-by-customer-report' 'Pos'}}
+                            <li>
+                                <a href="{{invoiceByCustomer}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Sale By Customer</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'sale-by-item-report' 'Pos'}}
+
+                            <li>
+                                <a href="{{invoiceByItem}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Sale By Item</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'total-sale-report' 'Pos'}}
+                            <li>
+                                <a href="{{invoiceSummary}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Total Sale</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'sale-order-report' 'Pos'}}
+                            <li>
+                                <a href="{{saleOrder}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Sale Order</span>
+                                </a>
+                            </li>
+                        {{/if}}
                     </ul>
                 </li>
                 <li class="treeview">
@@ -235,56 +249,70 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
-                        <li>
-                            <a href="{{customerDebtTracking}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Customer History</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{termBalance}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Unpaid by Customer</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{groupInvoice}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Group Total Sale</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{groupBalance}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Group Balance Report</span>
-                            </a>
-                        </li>
-
-
-                        <li>
-                            <a href="{{customerTotalCredit}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Total Credit</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{unpaidInvoiceOverdue}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Unpaid Invoice Overdue</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{unpaidGroupInvoiceOverdue}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Unpaid Group Invoice <br>&nbsp;Overdue</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{receivePayment}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Receive Payment</span>
-                            </a>
-                        </li>
+                        {{#if isInRole 'customer-history-report' 'Pos'}}
+                            <li>
+                                <a href="{{customerDebtTracking}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Customer History</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'unpaid-by-customer-report' 'Pos'}}
+                            <li>
+                                <a href="{{termBalance}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Unpaid by Customer</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'group-total-sale-report' 'Pos'}}
+                            <li>
+                                <a href="{{groupInvoice}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Group Total Sale</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'group-balance-report' 'Pos'}}
+                            <li>
+                                <a href="{{groupBalance}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Group Balance Report</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'total-credit-report' 'Pos'}}
+                            <li>
+                                <a href="{{customerTotalCredit}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Total Credit</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'unpaid-invoice-over-due-report' 'Pos'}}
+                            <li>
+                                <a href="{{unpaidInvoiceOverdue}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Unpaid Invoice Overdue</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'unpaid-group-invoice-report' 'Pos'}}
+                            <li>
+                                <a href="{{unpaidGroupInvoiceOverdue}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Unpaid Group Invoice <br>&nbsp;Overdue</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'receive-payment-report' 'Pos'}}
+                            <li>
+                                <a href="{{receivePayment}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Receive Payment</span>
+                                </a>
+                            </li>
+                        {{/if}}
                     </ul>
                 </li>
                 <li class="treeview">
@@ -293,30 +321,38 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
-                        <li>
-                            <a href="{{exchangeRingPull}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Ring Pull Exchange</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{companyExchangeRingPull}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Ring Pull To KHB</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{exchangeRingPullStockBalance}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Exchange Ringpull Ending </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ringPullTransfer}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Ring Pull Transfer</span>
-                            </a>
-                        </li>
+                        {{#if isInRole 'ring-pull-exchange-report' 'Pos'}}
+                            <li>
+                                <a href="{{exchangeRingPull}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Ring Pull Exchange</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'ring-pull-to-khb-report' 'Pos'}}
+                            <li>
+                                <a href="{{companyExchangeRingPull}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Ring Pull To KHB</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'exchange-ring-pull-ending-report' 'Pos'}}
+                            <li>
+                                <a href="{{exchangeRingPullStockBalance}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Exchange Ringpull Ending </span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'ring-pull-transfer-report' 'Pos'}}
+                            <li>
+                                <a href="{{ringPullTransfer}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Ring Pull Transfer</span>
+                                </a>
+                            </li>
+                        {{/if}}
                     </ul>
                 </li>
                 <li class="treeview">
@@ -325,30 +361,38 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
-                        <li>
-                            <a href="{{locationTransfer}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Stock Transfer</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{stockBalance}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Stock Ending</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{stockDetail}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Stock Detail</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{lendingStock}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Stock Borrow</span>
-                            </a>
-                        </li>
+                        {{#if isInRole 'stock-transfer-report' 'Pos'}}
+                            <li>
+                                <a href="{{locationTransfer}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Stock Transfer</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'stock-ending-report' 'Pos'}}
+                            <li>
+                                <a href="{{stockBalance}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Stock Ending</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'stock-detail-report' 'Pos'}}
+                            <li>
+                                <a href="{{stockDetail}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Stock Detail</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'stock-borrow-report' 'Pos'}}
+                            <li>
+                                <a href="{{lendingStock}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Stock Borrow</span>
+                                </a>
+                            </li>
+                        {{/if}}
                     </ul>
                 </li>
                 <li class="treeview">
@@ -357,48 +401,62 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
-                        <li>
-                            <a href="{{bill}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Enter Bill Summary</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{billByItem}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Enter Bill By Item</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{billByVendor}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Enter Bill By Vendor</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{groupBill}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Group Enter Bill</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{payEnterBill}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Pay Enter Bill</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{prepaidOrder}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Prepaid Order</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{prepaidOrderDetail}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Prepaid Order Detail</span>
-                            </a>
-                        </li>
+                        {{#if isInRole 'enter-bill-summary-report' 'Pos'}}
+                            <li>
+                                <a href="{{bill}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Enter Bill Summary</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'enter-bill-by-item-report' 'Pos'}}
+                            <li>
+                                <a href="{{billByItem}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Enter Bill By Item</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'enter-bill-by-vendor-report' 'Pos'}}
+                            <li>
+                                <a href="{{billByVendor}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Enter Bill By Vendor</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'group-enter-bill-report' 'Pos'}}
+                            <li>
+                                <a href="{{groupBill}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Group Enter Bill</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'pay-enter-bill-report' 'Pos'}}
+                            <li>
+                                <a href="{{payEnterBill}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Pay Enter Bill</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'prepaid-order-report' 'Pos'}}
+                            <li>
+                                <a href="{{prepaidOrder}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Prepaid Order</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'prepaid-order-detail-report' 'Pos'}}
+                            <li>
+                                <a href="{{prepaidOrderDetail}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Prepaid Order Detail</span>
+                                </a>
+                            </li>
+                        {{/if}}
                     </ul>
                 </li>
                 <li class="treeview">
@@ -407,72 +465,33 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
-                        <li>
-                            <a href="{{companyExchangeRingPull}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Company Exchange <br>&emsp;&emsp;Ring Pull</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{exchangeGratis}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Exchange Gratis</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{{exchangeRingPullStockBalance}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Exchange Ringpull <br>&emsp;&emsp;Stock Balance</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{lendingStock}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Lending Stock</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{locationTransfer}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Location Transfer</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{receiveItemSummary}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Receive Item Summary</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ringPullTransfer}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Ring Pull Transfer</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{transferMoney}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Transfer Money</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{stockBalance}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Stock Balance</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{stockDetail}}">
-                                <i class="fa fa-file-o"></i>
-                                <span>Stock Detail</span>
-                            </a>
-                        </li>
+                        {{#if isInRole 'exchange-gratis-report' 'Pos'}}
+                            <li>
+                                <a href="{{exchangeGratis}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Exchange Gratis</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'receive-item-summary-report' 'Pos'}}
+                            <li>
+                                <a href="{{receiveItemSummary}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Receive Item Summary</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'transfer-money-report' 'Pos'}}
+                            <li>
+                                <a href="{{transferMoney}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Transfer Money</span>
+                                </a>
+                            </li>
+                        {{/if}}
                     </ul>
                 </li>
-
             </ul>
-
         </li>
     {{/if}}
 
