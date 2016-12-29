@@ -150,6 +150,64 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 })
                             }
                         ],
+                        invoicesFree: [
+                            {
+                                $match: {
+                                    type: "invoice-free",
+                                    createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_invoices",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "invoiceDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$invoiceDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$invoiceDescription", 'Free Item(Invoice)']},
+                                    number: {$ifNull: ['$invoiceDoc.voucherId', '$invoiceDoc._id']},
+                                    name: '$invoiceDoc._customer.name',
+                                    rep: '$invoiceDoc._rep.name',
+                                    item: '$itemDoc'
+                                })
+                            }
+                        ],
                         bills: [
                             {
                                 $match: {
@@ -517,7 +575,11 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             obj.items.push(invoice);
                         }
                     });
-
+                    inventoryDocs[0].invoicesFree.forEach(function (invoice) {
+                        if (moment(currentStockDate).isSame(moment(invoice.createdAt).format('YYYY-MM-DD'))) {
+                            obj.items.push(invoice);
+                        }
+                    });
                     inventoryDocs[0].lendingStocks.forEach(function (lendingStock) {
                         if (moment(currentStockDate).isSame(moment(lendingStock.createdAt).format('YYYY-MM-DD'))) {
                             obj.items.push(lendingStock);
@@ -616,8 +678,6 @@ function groupLast() {
         refId: {$last: '$refId'},
         createdAt: {$last: '$createdAt'},
     }
-
-
 }
 function handleUndefined(value) {
     if (!value) {
