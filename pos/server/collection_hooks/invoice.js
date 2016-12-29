@@ -607,6 +607,10 @@ function invoiceManageStock(invoice) {
     let prefix = invoice.stockLocationId + '-';
     let newItems = [];
     invoice.items.forEach(function (item) {
+        let refType='invoice';
+        if(item.price==0){
+            refType='invoice-free';
+        }
         let inventory = AverageInventories.findOne({
             branchId: invoice.branchId,
             itemId: item.itemId,
@@ -638,7 +642,7 @@ function invoiceManageStock(invoice) {
                 remainQty: remainQty,
                 averagePrice: averagePrice,
                 coefficient: -1,
-                type: 'invoice',
+                type: refType,
                 refId: invoice._id
             };
             id = AverageInventories.insert(newInventory);
