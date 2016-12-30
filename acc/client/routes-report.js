@@ -336,8 +336,7 @@ AccRoutes.route('/cashReportGen', {
     action: function (params, queryParams) {
         Layout.report('acc_cashReportGen');
     }
-})
-;
+});
 
 //Profit Lost
 import '../imports/ui/reports/profitLost/profitLost';

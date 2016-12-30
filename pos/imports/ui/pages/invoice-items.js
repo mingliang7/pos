@@ -257,7 +257,7 @@ itemsTmpl.events({
         if (invoice) {
             let soldQty = 0;
             //-----------------------
-            let docItems=[];
+            let docItems = [];
             invoice.items.reduce(function (res, value) {
                 if (!res[value.itemId]) {
                     res[value.itemId] = {
@@ -498,9 +498,25 @@ itemsTmpl.events({
     'change .item-qty'(event, instance) {
         debugger;
         let thisObj = $(event.currentTarget);
+        let price = numeral().unformat(thisObj.parents('tr').find('.price').text());
+        let amount = numeral().unformat(thisObj.parents('tr').find('.amount').text());
         let currentQty = parseInt(event.currentTarget.value);
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
-        let currentItem = itemsCollection.findOne({itemId: itemId});
+        let currentItem = itemsCollection.findOne({itemId: itemId, price: price, amount: amount});
+        let checkQty = 0;
+        let itemOfCollectionNull = itemsCollection.find({
+            itemId: itemId
+        });
+        if (itemOfCollectionNull.count() > 0) {
+            let addedQty = 0;
+            itemOfCollectionNull.forEach(function (itemNull) {
+                addedQty += itemNull.qty;
+            });
+            checkQty = addedQty - currentItem.qty + currentQty;
+        } else {
+            checkQty = currentQty;
+        }
+
         let selector = {};
         if (currentQty != '' || currentQty != 0) {
             selector.$set = {
@@ -521,7 +537,7 @@ itemsTmpl.events({
         if (invoice) {
             let soldQty = 0;
             //-----------------------
-            let docItems=[];
+            let docItems = [];
             invoice.items.reduce(function (res, value) {
                 if (!res[value.itemId]) {
                     res[value.itemId] = {
@@ -544,15 +560,15 @@ itemsTmpl.events({
             Meteor.call('findItem', itemId, function (error, itemResult) {
                 let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
                 inventoryQty += soldQty;
-                if (currentQty <= inventoryQty) {
-                    itemsCollection.update({itemId: itemId}, selector);
+                if (checkQty <= inventoryQty) {
+                    itemsCollection.update({itemId: itemId, price: price, amount: amount}, selector);
                 }
                 else {
                     selector.$set = {
                         amount: currentItem.qty * currentItem.price,
                         qty: currentItem.qty
                     };
-                    itemsCollection.update({itemId: itemId}, selector);
+                    itemsCollection.update({itemId: itemId, price: price, amount: amount}, selector);
                     thisObj.val(currentItem.qty);
                     alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
                 }
@@ -562,15 +578,15 @@ itemsTmpl.events({
         else {
             Meteor.call('findItem', itemId, function (error, itemResult) {
                 let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
-                if (currentQty <= inventoryQty) {
-                    itemsCollection.update({itemId: itemId}, selector);
+                if (checkQty <= inventoryQty) {
+                    itemsCollection.update({itemId: itemId, price: price, amount: amount}, selector);
                 }
                 else {
                     selector.$set = {
                         amount: currentItem.qty * currentItem.price,
                         qty: currentItem.qty
                     };
-                    itemsCollection.update({itemId: itemId}, selector);
+                    itemsCollection.update({itemId: itemId, price: price, amount: amount}, selector);
                     thisObj.val(currentItem.qty);
                     alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
                 }

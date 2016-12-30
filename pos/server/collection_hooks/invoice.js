@@ -329,11 +329,6 @@ Invoices.after.update(function (userId, doc) {
                 let oweInventoryCustomerChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
 
-                let customerDoc = Customers.findOne({_id: doc.customerId});
-                if (customerDoc) {
-                    data.name = customerDoc.name;
-                }
-
                 transaction.push({
                     account: oweInventoryCustomerChartAccount.account,
                     dr: doc.total,
@@ -390,10 +385,6 @@ Invoices.after.update(function (userId, doc) {
                 let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
 
-                let customerDoc = Customers.findOne({_id: doc.customerId});
-                if (customerDoc) {
-                    data.name = customerDoc.name;
-                }
 
                 transaction.push(
                     {
@@ -472,10 +463,6 @@ Invoices.after.update(function (userId, doc) {
                 let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
 
-                let customerDoc = Customers.findOne({_id: doc.customerId});
-                if (customerDoc) {
-                    data.name = customerDoc.name;
-                }
 
                 transaction.push(
                     {

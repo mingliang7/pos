@@ -57,10 +57,6 @@ ReceiveItems.after.insert(function (userId, doc) {
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             let lostInventoryChartAccount = AccountMapping.findOne({name: 'Lost Inventory'});
 
-            let vendorDoc = Vendors.findOne({_id: doc.vendorId});
-            if (vendorDoc) {
-                data.name = vendorDoc.name;
-            }
 
             transaction.push({
                 account: inventoryChartAccount.account,
@@ -181,10 +177,6 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             let lostInventoryChartAccount = AccountMapping.findOne({name: 'Lost Inventory'});
 
-            let vendorDoc = Vendors.findOne({_id: doc.vendorId});
-            if (vendorDoc) {
-                data.name = vendorDoc.name;
-            }
 
             transaction.push({
                 account: inventoryChartAccount.account,

@@ -8,6 +8,7 @@ import {moment} from  'meteor/momentjs:moment';
 // Collection
 import {Company} from '../../../../core/imports/api/collections/company.js';
 import {Setting} from '../../../../core/imports/api/collections/setting';
+import {Exchange} from '../../../../core/imports/api/collections/exchange';
 
 import {ChartAccount} from '../../../imports/api/collections/chartAccount';
 import {PaymentReceiveMethod} from '../../../imports/api/collections/paymentReceiveMethod';
@@ -15,7 +16,7 @@ import {CloseChartAccount} from '../../../imports/api/collections/closeChartAcco
 import {Journal} from '../../../imports/api/collections/journal';
 
 Meteor.methods({
-    acc_cashReport: function (params) {
+    acc_cashReportMethod: function (params) {
         if (!this.isSimulation) {
             var data = {
                 title: {},
@@ -34,6 +35,11 @@ Meteor.methods({
             data.title = Company.findOne();
 
             /****** Header *****/
+
+            let exchangeData=Exchange.findOne({_id: params.exchangeDate});
+            params.exchangeData=moment(exchangeData.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(exchangeData.rates)
+
+
             data.header = params;
             /****** Content *****/
             var self = params;

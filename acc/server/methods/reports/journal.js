@@ -8,6 +8,7 @@ import {moment} from  'meteor/momentjs:moment';
 // Collection
 import {Company} from '../../../../core/imports/api/collections/company.js';
 import {Setting} from '../../../../core/imports/api/collections/setting';
+import {Exchange} from '../../../../core/imports/api/collections/exchange';
 
 import {Journal} from '../../../imports/api/collections/journal';
 
