@@ -320,7 +320,26 @@ export  default class StockFunction {
         }
     }
 
-    static checkStockByLocation(stockLocationId, items) {
+    static checkStockByLocation(stockLocationId, ArgItems) {
+        let items=[];
+        ArgItems.reduce(function (res, value) {
+            if (!res[value.itemId]) {
+                res[value.itemId] = {
+                    price: value.price,
+                    amount: value.amount,
+                    qty: 0,
+                    itemId: value.itemId
+                };
+                items.push(res[value.itemId])
+            } else {
+                res[value.itemId].amount += value.amount;
+            }
+            res[value.itemId].qty += value.qty;
+            return res;
+        }, {});
+
+
+
         let result = {isEnoughStock: true, message: ''};
         let i = 1;
         items.forEach(function (item) {
@@ -336,7 +355,42 @@ export  default class StockFunction {
 
     }
 
-    static checkStockByLocationWhenUpdate(stockLocationId, items, doc) {
+    static checkStockByLocationWhenUpdate(stockLocationId, ArgItems, doc) {
+        let items=[];
+        ArgItems.reduce(function (res, value) {
+            if (!res[value.itemId]) {
+                res[value.itemId] = {
+                    price: value.price,
+                    amount: value.amount,
+                    qty: 0,
+                    itemId: value.itemId
+                };
+                items.push(res[value.itemId])
+            } else {
+                res[value.itemId].amount += value.amount;
+            }
+            res[value.itemId].qty += value.qty;
+            return res;
+        }, {});
+
+        let docItems=[];
+        doc.items.reduce(function (res, value) {
+            if (!res[value.itemId]) {
+                res[value.itemId] = {
+                    price: value.price,
+                    amount: value.amount,
+                    qty: 0,
+                    itemId: value.itemId
+                };
+                docItems.push(res[value.itemId])
+            } else {
+                res[value.itemId].amount += value.amount;
+            }
+            res[value.itemId].qty += value.qty;
+            return res;
+        }, {});
+        doc.items=docItems;
+
         /*   let items = [];
          if (doc.stockLocationId == stockLocationId) {
          newitems.forEach(function (item) {

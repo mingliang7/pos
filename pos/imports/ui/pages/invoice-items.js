@@ -256,8 +256,26 @@ itemsTmpl.events({
         let invoice = instance.view.parentView.parentView._templateInstance.data;
         if (invoice) {
             let soldQty = 0;
+            //-----------------------
+            let docItems=[];
+            invoice.items.reduce(function (res, value) {
+                if (!res[value.itemId]) {
+                    res[value.itemId] = {
+                        price: value.price,
+                        amount: value.amount,
+                        qty: 0,
+                        itemId: value.itemId
+                    };
+                    docItems.push(res[value.itemId])
+                } else {
+                    res[value.itemId].amount += value.amount;
+                }
+                res[value.itemId].qty += value.qty;
+                return res;
+            }, {});
+            //-----------------------
             if (stockLocationId == invoice.stockLocationId) {
-                let oldItem = invoice.items.find(x => x.itemId == itemId);
+                let oldItem = docItems.find(x => x.itemId == itemId);
                 soldQty = oldItem == null || oldItem.qty == null ? 0 : oldItem.qty;
             }
             Meteor.call('addScheme', {itemId}, function (err, result) {
@@ -502,8 +520,26 @@ itemsTmpl.events({
         let stockLocationId = $('[name="stockLocationId"]').val();
         if (invoice) {
             let soldQty = 0;
+            //-----------------------
+            let docItems=[];
+            invoice.items.reduce(function (res, value) {
+                if (!res[value.itemId]) {
+                    res[value.itemId] = {
+                        price: value.price,
+                        amount: value.amount,
+                        qty: 0,
+                        itemId: value.itemId
+                    };
+                    docItems.push(res[value.itemId])
+                } else {
+                    res[value.itemId].amount += value.amount;
+                }
+                res[value.itemId].qty += value.qty;
+                return res;
+            }, {});
+            //-----------------------
             if (stockLocationId == invoice.stockLocationId) {
-                soldQty = invoice.items.find(x => x.itemId == itemId).qty;
+                soldQty = docItems.find(x => x.itemId == itemId).qty;
             }
             Meteor.call('findItem', itemId, function (error, itemResult) {
                 let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId]
