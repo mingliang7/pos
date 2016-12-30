@@ -30,6 +30,7 @@ Meteor.methods({
             data.title = Company.findOne();
 
             /****** Header *****/
+
             data.header = params;
             /****** Content *****/
 
@@ -75,6 +76,11 @@ Meteor.methods({
 
             /****** Header *****/
             params.date = moment().format('DD/MMMM/YYYY');
+
+            let exchangeData=Exchange.findOne({_id: params.exchangeId});
+            params.exchangeData=moment(exchangeData.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(exchangeData.rates)
+
+
             data.header = params;
             /****** Content *****/
 

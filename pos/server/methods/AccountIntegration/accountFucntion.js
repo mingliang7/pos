@@ -1,5 +1,6 @@
 Meteor.methods({
     insertAccountJournal(doc){
+        console.log(doc);
         let id;
         let data = {};
         data.journalDate = moment().toDate();
@@ -11,6 +12,7 @@ Meteor.methods({
         data.refFrom = doc.type;
         data.total = doc.total;
         data.transaction = doc.transaction;
+        data.cusAndVenname=doc.name;
         Meteor.call('api_journalInsert', data, function (err, res) {
             if (res) {
                 id = res;
@@ -19,7 +21,7 @@ Meteor.methods({
         return id;
     },
     updateAccountJournal(doc){
-
+        console.log(doc);
         let isTrue = false;
         let data = {};
         data.journalDate = moment().toDate();
@@ -31,6 +33,7 @@ Meteor.methods({
         data.refFrom = doc.type;
         data.total = doc.total;
         data.transaction = doc.transaction;
+        data.cusAndVenname=doc.name;
         Meteor.call('api_journalUpdate', data, function (err, res) {
             if (res) {
                 isTrue = res;
