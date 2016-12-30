@@ -11,6 +11,7 @@ import {Item} from '../../imports/api/collections/item.js'
 import {GratisInventories} from '../../imports/api/collections/gratisInventory.js'
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
 import {AccountMapping} from '../../imports/api/collections/accountMapping'
+import {Customers} from '../../imports/api/collections/customer.js'
 // import invoice state
 import {invoiceState} from '../../common/globalState/invoice'
 // import methods
@@ -82,6 +83,12 @@ Invoices.after.insert(function (userId, doc) {
             if (setting && setting.integrate) {
                 let oweInventoryCustomerChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+
+                let customerDoc = Customers.findOne({_id: doc.customerId});
+                if (customerDoc) {
+                    data.name = customerDoc.name;
+                }
+
                 doc.total = total;
                 transaction.push(
                     {
@@ -141,6 +148,12 @@ Invoices.after.insert(function (userId, doc) {
                 let cogsChartAccount = AccountMapping.findOne({name: 'COGS'});
                 let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+
+                let customerDoc = Customers.findOne({_id: doc.customerId});
+                if (customerDoc) {
+                    data.name = customerDoc.name;
+                }
+
                 transaction.push(
                     {
                         account: arChartAccount.account,
@@ -221,6 +234,12 @@ Invoices.after.insert(function (userId, doc) {
                 let cogsChartAccount = AccountMapping.findOne({name: 'COGS'});
                 let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+
+                let customerDoc = Customers.findOne({_id: doc.customerId});
+                if (customerDoc) {
+                    data.name = customerDoc.name;
+                }
+
                 transaction.push(
                     {
                         account: arChartAccount.account,
@@ -282,6 +301,12 @@ Invoices.after.insert(function (userId, doc) {
              })
              }
              });*/
+
+            let customerDoc = Customers.findOne({_id: doc.customerId});
+            if (customerDoc) {
+                data.name = customerDoc.name;
+            }
+
             data.transaction = transaction;
             Meteor.call('insertAccountJournal', data)
         }
@@ -319,6 +344,12 @@ Invoices.after.update(function (userId, doc) {
             if (setting && setting.integrate) {
                 let oweInventoryCustomerChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+
+                let customerDoc = Customers.findOne({_id: doc.customerId});
+                if (customerDoc) {
+                    data.name = customerDoc.name;
+                }
+
                 transaction.push({
                     account: oweInventoryCustomerChartAccount.account,
                     dr: doc.total,
@@ -374,6 +405,12 @@ Invoices.after.update(function (userId, doc) {
                 let cogsChartAccount = AccountMapping.findOne({name: 'COGS'});
                 let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+
+                let customerDoc = Customers.findOne({_id: doc.customerId});
+                if (customerDoc) {
+                    data.name = customerDoc.name;
+                }
+
                 transaction.push(
                     {
                         account: arChartAccount.account,
@@ -450,6 +487,12 @@ Invoices.after.update(function (userId, doc) {
                 let cogsChartAccount = AccountMapping.findOne({name: 'COGS'});
                 let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+
+                let customerDoc = Customers.findOne({_id: doc.customerId});
+                if (customerDoc) {
+                    data.name = customerDoc.name;
+                }
+
                 transaction.push(
                     {
                         account: arChartAccount.account,
@@ -494,6 +537,12 @@ Invoices.after.update(function (userId, doc) {
             let data = doc;
             data.type = accountRefType;
             data.transaction = transaction;
+
+            let customerDoc = Customers.findOne({_id: doc.customerId});
+            if (customerDoc) {
+                data.name = customerDoc.name;
+            }
+
             Meteor.call('updateAccountJournal', data)
         }
         // End Account Integration

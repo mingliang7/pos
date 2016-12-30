@@ -5,6 +5,7 @@ import {AccountIntegrationSetting} from '../../imports/api/collections/accountIn
 import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder.js';
 import {Item} from '../../imports/api/collections/item.js';
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js';
+import {Vendors} from '../../imports/api/collections/vendor.js';
 
 PrepaidOrders.before.insert(function (userId, doc) {
     let prefix = doc.vendorId;
@@ -22,6 +23,12 @@ PrepaidOrders.after.insert(function (userId,doc) {
         data.type = "PrepaidOrder";
         let oweInventoryChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
         let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+
+        let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+        if (vendorDoc) {
+            data.name = vendorDoc.name;
+        }
+
         transaction.push({
             account: oweInventoryChartAccount.account,
             dr: doc.total,
@@ -49,6 +56,12 @@ PrepaidOrders.after.update(function (userId,doc) {
             data.type = "PrepaidOrder";
             let oweInventoryChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+
+            let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+            if (vendorDoc) {
+                data.name = vendorDoc.name;
+            }
+
             transaction.push({
                 account: oweInventoryChartAccount.account,
                 dr: doc.total,

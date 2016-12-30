@@ -9,6 +9,7 @@ import {Item} from '../../imports/api/collections/item.js'
 import {Vendors} from '../../imports/api/collections/vendor.js'
 import {AverageInventories} from '../../imports/api/collections/inventory.js'
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
+import {Customers} from '../../imports/api/collections/customer.js'
 Order.before.insert(function (userId, doc) {
     let prefix = doc.customerId;
     doc._id = idGenerator.genWithPrefix(Order, prefix, 6);
@@ -95,6 +96,12 @@ Order.after.insert(function (userId, doc) {
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let saleIncomeChartAccount = AccountMapping.findOne({name: 'Sale Income'});
             let cogsChartAccount = AccountMapping.findOne({name: 'COGS'});
+
+            let customerDoc = Customers.findOne({_id: doc.customerId});
+            if (customerDoc) {
+                data.name = customerDoc.name;
+            }
+
             transaction.push(
                 {
                     account: cashChartAccount.account,
@@ -165,6 +172,12 @@ Order.after.update(function (userId, doc) {
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let saleIncomeChartAccount = AccountMapping.findOne({name: 'Sale Income'});
             let cogsChartAccount = AccountMapping.findOne({name: 'COGS'});
+
+            let customerDoc = Customers.findOne({_id: doc.customerId});
+            if (customerDoc) {
+                data.name = customerDoc.name;
+            }
+
             transaction.push(
                 {
                     account: cashChartAccount.account,

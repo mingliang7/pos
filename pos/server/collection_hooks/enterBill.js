@@ -8,6 +8,7 @@ import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {Item} from '../../imports/api/collections/item.js';
 import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder';
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js';
+import {Vendors} from '../../imports/api/collections/vendor.js';
 //import state
 import {billState} from '../../common/globalState/enterBill';
 import {GroupBill} from '../../imports/api/collections/groupBill.js'
@@ -49,6 +50,12 @@ EnterBills.after.insert(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "EnterBill";
+
+            let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+            if (vendorDoc) {
+                data.name = vendorDoc.name;
+            }
+
             /* data.items.forEach(function (item) {
              let itemDoc = Item.findOne(item.itemId);
              if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
@@ -148,6 +155,13 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
                     })
                 }
             });*/
+
+            let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+            if (vendorDoc) {
+                data.name = vendorDoc.name;
+            }
+
+
             transaction.push({
                 account: inventoryChartAccount.account,
                 dr: doc.total,

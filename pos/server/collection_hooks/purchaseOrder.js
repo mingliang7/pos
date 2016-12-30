@@ -5,6 +5,7 @@ import {idGenerator} from 'meteor/theara:id-generator';
 import {PurchaseOrder} from '../../imports/api/collections/purchaseOrder.js';
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js';
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js';
+import {Vendors} from '../../imports/api/collections/vendor.js';
 
 PurchaseOrder.before.insert(function (userId, doc) {
     let prefix = doc.vendorId;
@@ -20,6 +21,12 @@ PurchaseOrder.after.insert(function (userId, doc) {
         data.type = "SaleOrder";
         let oweInventoryChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
         let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+
+        let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+        if (vendorDoc) {
+            data.name = vendorDoc.name;
+        }
+
         transaction.push({
             account: cashChartAccount.account,
             dr: doc.total,
