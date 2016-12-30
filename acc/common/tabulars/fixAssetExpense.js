@@ -39,14 +39,15 @@ tabularOpts.columns = [
             }
             return exp;
         }
-    },
+    }
+    /*,
 
     {
         data: "createdBy", title: "User Create",
         render: function (val, type, doc) {
             return Meteor.users.findOne({_id: val}).username;
         }
-    }
+    }*/
 
 
 ];

@@ -107,7 +107,9 @@ Tracker.autorun(function () {
         state.set('totalDr', math.round(totalDr, 2));
         state.set('totalCr', math.round(totalCr, 2));
 
-        if (math.round(totalDr, 2) == math.round(totalCr, 2) && math.round(totalCr, 2) > 0) {
+        let fixAssetLength = fixAssetDepCollection.find().count();
+
+        if (math.round(totalDr, 2) == math.round(totalCr, 2) && (math.round(totalCr, 2) > 0 || fixAssetLength > 0)) {
             state.set('cssClassForSubmit', '');
         } else {
             state.set('cssClassForSubmit', 'disabled');

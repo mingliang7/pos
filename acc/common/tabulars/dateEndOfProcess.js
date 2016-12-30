@@ -25,7 +25,7 @@ tabularOpts.columns = [
         render: function (val, type, doc) {
             return moment(val).format("DD/MM/YYYY");
         }
-    },
+    }/*,
     {
         data: "createdBy", title: "User Create",
         render: function (val, type, doc) {
@@ -34,7 +34,7 @@ tabularOpts.columns = [
                 return userName.username;
             }
         }
-    }
+    }*/
 ];
 export const DateEndOfProcessTabular = new Tabular.Table(tabularOpts);
 

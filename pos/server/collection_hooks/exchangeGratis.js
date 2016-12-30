@@ -8,6 +8,7 @@ import {Item} from '../../imports/api/collections/item.js';
 import {GratisInventories} from '../../imports/api/collections/gratisInventory.js';
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
 import {AccountMapping} from '../../imports/api/collections/accountMapping'
+import {Vendors} from '../../imports/api/collections/vendor.js'
 import StockFunction from '../../imports/api/libs/stock';
 
 ExchangeGratis.before.insert(function (userId, doc) {
@@ -50,6 +51,12 @@ ExchangeGratis.after.insert(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "ExchangeGratis";
+
+            let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+            if (vendorDoc) {
+                data.name = vendorDoc.name;
+            }
+
             let oweInventoryGratisChartAccount = AccountMapping.findOne({name: 'Inventory Gratis Owing'});
             let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
             transaction.push({
@@ -108,6 +115,12 @@ ExchangeGratis.after.update(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "ExchangeGratis";
+
+            let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+            if (vendorDoc) {
+                data.name = vendorDoc.name;
+            }
+
             let oweInventoryGratisChartAccount = AccountMapping.findOne({name: 'Inventory Gratis Owing'});
             let gratisChartAccount = AccountMapping.findOne({name: 'Gratis'});
             transaction.push({

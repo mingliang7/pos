@@ -5,6 +5,7 @@ import {Invoices} from '../../imports/api/collections/invoice';
 import {Item} from '../../imports/api/collections/item.js';
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js';
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
+import {Vendors} from '../../imports/api/collections/vendor.js'
 PayBills.before.insert(function (userId, doc) {
     doc._id = idGenerator.genWithPrefix(PayBills, `${doc.branchId}-`, 9);
 });
@@ -26,6 +27,12 @@ PayBills.after.insert(function (userId, doc) {
             let purchaseDiscountChartAccount = AccountMapping.findOne({name: 'Purchase Discount'});
             let discountAmount = doc.dueAmount * doc.discount / 100;
             data.total = doc.paidAmount + discountAmount;
+
+            let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+            if (vendorDoc) {
+                data.name = vendorDoc.name;
+            }
+
             transaction.push({
                 account: apChartAccount.account,
                 dr: doc.paidAmount + discountAmount,
@@ -85,6 +92,12 @@ PayBills.after.update(function (userId, doc) {
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let purchaseDiscountChartAccount = AccountMapping.findOne({name: 'Purchase Discount'});
             let discountAmount = doc.dueAmount * doc.discount / 100;
+
+            let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+            if (vendorDoc) {
+                data.name = vendorDoc.name;
+            }
+
             data.total = doc.paidAmount + discountAmount;
             transaction.push({
                 account: apChartAccount.account,

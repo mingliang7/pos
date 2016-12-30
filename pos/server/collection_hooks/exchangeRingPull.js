@@ -7,6 +7,7 @@ import {Item} from '../../imports/api/collections/item.js'
 import {RingPullInventories} from '../../imports/api/collections/ringPullInventory.js'
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
+import {Customers} from '../../imports/api/collections/customer.js'
 import StockFunction from '../../imports/api/libs/stock';
 ExchangeRingPulls.before.insert(function (userId, doc) {
 
@@ -65,6 +66,12 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "ExchangeRingPull";
+
+            let customerDoc = Customers.findOne({_id: doc.customerId});
+            if (customerDoc) {
+                data.name = customerDoc.name;
+            }
+
             let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             transaction.push({
@@ -129,6 +136,12 @@ ExchangeRingPulls.after.update(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "ExchangeRingPull";
+
+            let customerDoc = Customers.findOne({_id: doc.customerId});
+            if (customerDoc) {
+                data.name = customerDoc.name;
+            }
+
             let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             transaction.push({
