@@ -70,6 +70,7 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
             let customerDoc = Customers.findOne({_id: doc.customerId});
             if (customerDoc) {
                 data.name = customerDoc.name;
+                data.des = data.des == "" || data.des == null ? ("ប្តូរក្រវិលពីអតិថិជនៈ " + data.name) : data.des;
             }
 
             let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
@@ -86,6 +87,7 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
                 drcr: -data.total
             });
             data.transaction = transaction;
+            data.journalDate = data.exchangeRingPullDate;
             Meteor.call('insertAccountJournal', data);
             /*Meteor.call('insertAccountJournal', data, function (er, re) {
              if (er) {
@@ -140,6 +142,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
             let customerDoc = Customers.findOne({_id: doc.customerId});
             if (customerDoc) {
                 data.name = customerDoc.name;
+                data.des = data.des == "" || data.des == null ? ("ប្តូរក្រវិលពីអតិថិជនៈ " + data.name) : data.des;
             }
 
             let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
@@ -156,6 +159,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
                 drcr: -data.total
             });
             data.transaction = transaction;
+            data.journalDate = data.exchangeRingPullDate;
             Meteor.call('updateAccountJournal', data);
         }
         //End Account Integration

@@ -31,6 +31,7 @@ PayBills.after.insert(function (userId, doc) {
             let vendorDoc = Vendors.findOne({_id: doc.vendorId});
             if (vendorDoc) {
                 data.name = vendorDoc.name;
+                data.des = data.des == "" || data.des == null ? ('បង់ប្រាក់ឱ្យក្រុមហ៊ុនៈ ' + data.name) : data.des;
             }
 
             transaction.push({
@@ -72,6 +73,7 @@ PayBills.after.insert(function (userId, doc) {
              }
              });*/
             data.transaction = transaction;
+            data.journalDate = data.paymentDate;
             Meteor.call('insertAccountJournal', data);
             console.log(data);
         }
@@ -96,6 +98,7 @@ PayBills.after.update(function (userId, doc) {
             let vendorDoc = Vendors.findOne({_id: doc.vendorId});
             if (vendorDoc) {
                 data.name = vendorDoc.name;
+                data.des = data.des == "" || data.des == null ? ('បង់ប្រាក់ឱ្យក្រុមហ៊ុនៈ ' + data.name) : data.des;
             }
 
             data.total = doc.paidAmount + discountAmount;
@@ -138,6 +141,7 @@ PayBills.after.update(function (userId, doc) {
              }
              });*/
             data.transaction = transaction;
+            data.journalDate = data.paymentDate;
             Meteor.call('updateAccountJournal', data);
         }
         //End Account Integration

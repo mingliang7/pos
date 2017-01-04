@@ -27,6 +27,7 @@ PrepaidOrders.after.insert(function (userId,doc) {
         let vendorDoc = Vendors.findOne({_id: doc.vendorId});
         if (vendorDoc) {
             data.name = vendorDoc.name;
+            data.des = data.des == "" || data.des == null ? ('កក់ទំនិញពីក្រុមហ៊ុនៈ ' + data.name) : data.des;
         }
 
         transaction.push({
@@ -41,6 +42,7 @@ PrepaidOrders.after.insert(function (userId,doc) {
             drcr: -doc.total
         });
         data.transaction = transaction;
+        data.journalDate = data.prepaidOrderDate;
         Meteor.call('insertAccountJournal', data);
     }
     //End Account Integration
@@ -60,6 +62,8 @@ PrepaidOrders.after.update(function (userId,doc) {
             let vendorDoc = Vendors.findOne({_id: doc.vendorId});
             if (vendorDoc) {
                 data.name = vendorDoc.name;
+                data.des = data.des == "" || data.des == null ? ('កក់ទំនិញពីក្រុមហ៊ុនៈ ' + data.name) : data.des;
+
             }
 
             transaction.push({
@@ -74,6 +78,7 @@ PrepaidOrders.after.update(function (userId,doc) {
                 drcr: -doc.total
             });
             data.transaction = transaction;
+            data.journalDate = data.prepaidOrderDate;
             Meteor.call('updateAccountJournal', data);
         }
         //End Account Integration

@@ -52,12 +52,14 @@ Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
 
 Invoices.after.insert(function (userId, doc) {
     Meteor.defer(function () {
+        let des="វិក្កយបត្រ អតិថិជនៈ ";
         Meteor._sleepForMs(200);
         let setting = AccountIntegrationSetting.findOne();
         let transaction = [];
         let totalRemain = 0;
         let accountRefType = 'Invoice';
         if (doc.saleId) {
+            des="វិក្កយបត្រ SO អតិថិជនៈ ";
             accountRefType = 'Invoice-SaleOrder';
             let total = 0;
             let totalCost = 0;
@@ -289,9 +291,11 @@ Invoices.after.insert(function (userId, doc) {
             let customerDoc = Customers.findOne({_id: doc.customerId});
             if (customerDoc) {
                 data.name = customerDoc.name;
+                data.des = data.des == "" || data.des == null ? (des + data.name) : data.des;
             }
 
             data.transaction = transaction;
+            data.journalDate = data.invoiceDate;
             Meteor.call('insertAccountJournal', data)
         }
         // End Account Integration
@@ -300,6 +304,7 @@ Invoices.after.insert(function (userId, doc) {
 
 Invoices.after.update(function (userId, doc) {
     Meteor.defer(()=> {
+        let des="វិក្កយបត្រ អតិថិជនៈ ";
         let preDoc = this.previous;
         let setting = AccountIntegrationSetting.findOne();
         let type = {
@@ -311,6 +316,7 @@ Invoices.after.update(function (userId, doc) {
         let accountRefType = 'Invoice';
         let transaction = [];
         if (type.saleOrder) {
+            des="វិក្កយបត្រ SO អតិថិជនៈ ";
             accountRefType = 'Invoice-SaleOrder';
             recalculateQty(preDoc);
             updateQtyInSaleOrder(doc);
@@ -508,10 +514,11 @@ Invoices.after.update(function (userId, doc) {
             let data = doc;
             data.type = accountRefType;
             data.transaction = transaction;
-
+            data.journalDate = data.invoiceDate;
             let customerDoc = Customers.findOne({_id: doc.customerId});
             if (customerDoc) {
                 data.name = customerDoc.name;
+                data.des = data.des == "" || data.des == null ? (des + data.name) : data.des;
             }
 
             Meteor.call('updateAccountJournal', data)

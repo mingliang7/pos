@@ -55,6 +55,7 @@ ExchangeGratis.after.insert(function (userId, doc) {
             let vendorDoc = Vendors.findOne({_id: doc.vendorId});
             if (vendorDoc) {
                 data.name = vendorDoc.name;
+                data.des = data.des == "" || data.des == null ? ("ប្តូរ Gratis ពីក្រុមហ៊ុនៈ " + data.name) : data.des;
             }
 
             let oweInventoryGratisChartAccount = AccountMapping.findOne({name: 'Inventory Gratis Owing'});
@@ -71,6 +72,7 @@ ExchangeGratis.after.insert(function (userId, doc) {
                 drcr: -doc.total
             });
             data.transaction = transaction;
+            data.journalDate = data.exchangeGratisDate;
             Meteor.call('insertAccountJournal', data);
         }
         //End Account Integration
@@ -119,6 +121,7 @@ ExchangeGratis.after.update(function (userId, doc) {
             let vendorDoc = Vendors.findOne({_id: doc.vendorId});
             if (vendorDoc) {
                 data.name = vendorDoc.name;
+                data.des = data.des == "" || data.des == null ? ("ប្តូរ Gratis ពីក្រុមហ៊ុនៈ " + data.name) : data.des;
             }
 
             let oweInventoryGratisChartAccount = AccountMapping.findOne({name: 'Inventory Gratis Owing'});
@@ -135,6 +138,7 @@ ExchangeGratis.after.update(function (userId, doc) {
                 drcr: -doc.total
             });
             data.transaction = transaction;
+            data.journalDate = data.exchangeGratisDate;
             Meteor.call('updateAccountJournal', data);
         }
         //End Account Integration
