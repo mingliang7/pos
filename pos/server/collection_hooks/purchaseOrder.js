@@ -25,6 +25,7 @@ PurchaseOrder.after.insert(function (userId, doc) {
         let vendorDoc = Vendors.findOne({_id: doc.vendorId});
         if (vendorDoc) {
             data.name = vendorDoc.name;
+            data.des = data.des == "" || data.des == null ? ('កម្ម៉ង់ទំនិញពីក្រុមហ៊ុនៈ' + data.name) : data.des;
         }
 
         transaction.push({
@@ -39,6 +40,7 @@ PurchaseOrder.after.insert(function (userId, doc) {
             drcr: -doc.total
         });
         data.transaction = transaction;
+        data.journalDate = data.purchaseOrderDate;
         Meteor.call('updateAccountJournal', data);
     }
     //End Account Integration

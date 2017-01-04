@@ -100,6 +100,7 @@ Order.after.insert(function (userId, doc) {
             let customerDoc = Customers.findOne({_id: doc.customerId});
             if (customerDoc) {
                 data.name = customerDoc.name;
+                data.des = data.des == "" || data.des == null ? ('កម្ម៉ង់ទិញទំនិញពីអតិថិជនៈ ' + data.name) : data.des;
             }
 
             transaction.push(
@@ -128,6 +129,7 @@ Order.after.insert(function (userId, doc) {
                     drcr: -totalCOGS
                 });
             data.transaction = transaction;
+            data.journalDate = data.orderDate;
             Meteor.call('insertAccountJournal', data);
         }
         //End Account Integration
@@ -176,6 +178,7 @@ Order.after.update(function (userId, doc) {
             let customerDoc = Customers.findOne({_id: doc.customerId});
             if (customerDoc) {
                 data.name = customerDoc.name;
+                data.des = data.des == "" || data.des == null ? ('កម្ម៉ង់ទិញទំនិញពីអតិថិជនៈ ' + data.name) : data.des;
             }
 
             transaction.push(
@@ -204,6 +207,7 @@ Order.after.update(function (userId, doc) {
                     drcr: -totalCOGS
                 });
             data.transaction = transaction;
+            data.journalDate = data.orderDate;
             Meteor.call('updateAccountJournal', data);
         }
         //End Account Integration

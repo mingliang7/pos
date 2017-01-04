@@ -7,6 +7,7 @@ import {RingPullInventories} from '../../imports/api/collections/ringPullInvento
 import {RingPullTransfers} from '../../imports/api/collections/ringPullTransfer.js'
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js'
 import {AccountMapping} from '../../imports/api/collections/accountMapping'
+import {Branch} from '../../../core/imports/api/collections/branch.js'
 import {TransferMoney} from '../../imports/api/collections/transferMoney.js'
 import {idGenerator} from 'meteor/theara:id-generator';
 import 'meteor/matb33:collection-hooks';
@@ -164,6 +165,10 @@ Meteor.methods({
                 //Account Integration
                 let totalAmount = 0;
                 let doc = locationTransfer;
+                let fromBranchName = Branch.findOne(doc.fromBranchId).khName;
+                let toBranchName = Branch.findOne(doc.toBranchId).khName;
+                let des = "ផ្ទេរស្តុកពីសាខាៈ " + fromBranchName + " ទៅ " + toBranchName;
+                doc.des = doc.des == "" || doc.des == null ? des : doc.des;
                 doc.items.forEach(function (item) {
                     let inventoryObj = AverageInventories.findOne({
                         itemId: item.itemId,
@@ -189,6 +194,7 @@ Meteor.methods({
                     data1.transaction = [];
                     data1.branchId = doc.fromBranchId;
                     data1.type = "LocationTransferFrom";
+                    data1.journalDate = moment().toDate();
                     data1.transaction.push({
                         account: inventoryChartAccount.account,
                         dr: 0,
@@ -200,6 +206,7 @@ Meteor.methods({
                     let data2 = doc;
                     data2.transaction = [];
                     data2.branchId = doc.toBranchId;
+                    data2.journalDate = moment().toDate();
                     data2.type = "LocationTransferTo";
                     data2.transaction.push({
                         account: inventoryChartAccount.account,
@@ -433,6 +440,10 @@ Meteor.methods({
 
             //Account Integration
             let doc = ringPullTransfer;
+            let fromBranchName = Branch.findOne(doc.fromBranchId).khName;
+            let toBranchName = Branch.findOne(doc.toBranchId).khName;
+            let des = "ផ្ទេរក្រវិលពីសាខាៈ " + fromBranchName + " ទៅ " + toBranchName;
+            doc.des = doc.des == "" || doc.des == null ? des : doc.des;
             let setting = AccountIntegrationSetting.findOne();
             if (setting && setting.integrate) {
 
@@ -441,6 +452,7 @@ Meteor.methods({
                 data1.transaction = [];
                 data1.branchId = doc.fromBranchId;
                 data1.type = "RingPullTransferFrom";
+                data1.journalDate = moment().toDate();
                 data1.transaction.push({
                     account: ringPullChartAccount.account,
                     dr: 0,
@@ -453,6 +465,7 @@ Meteor.methods({
                 data2.transaction = [];
                 data2.branchId = doc.toBranchId;
                 data2.type = "RingPullTransferTo";
+                data2.journalDate = moment().toDate();
                 data2.transaction.push({
                     account: ringPullChartAccount.account,
                     dr: data2.total,
@@ -498,11 +511,17 @@ Meteor.methods({
             let setting = AccountIntegrationSetting.findOne();
             if (setting && setting.integrate) {
                 let doc = moneyTransfer;
+                let fromBranchName = Branch.findOne(doc.fromBranchId).khName;
+                let toBranchName = Branch.findOne(doc.toBranchId).khName;
+                let des = "ផ្ទេរប្រាក់ពីសាខាៈ " + fromBranchName + " ទៅ " + toBranchName;
+                doc.des = doc.des == "" || doc.des == null ? des : doc.des;
+
                 let ringPullChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
                 let data1 = doc;
                 data1.total = doc.transferAmount;
                 data1.transaction = [];
                 data1.branchId = doc.fromBranchId;
+                data1.journalDate = moment().toDate();
                 data1.type = "MoneyTransferFrom";
                 data1.transaction.push({
                     account: ringPullChartAccount.account,
@@ -515,6 +534,7 @@ Meteor.methods({
                 data2.transaction = [];
                 data2.branchId = doc.toBranchId;
                 data2.type = "MoneyTransferTo";
+                data2.journalDate = moment().toDate();
                 data2.total = doc.transferAmount;
                 data2.transaction.push({
                     account: ringPullChartAccount.account,
