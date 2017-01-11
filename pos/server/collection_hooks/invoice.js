@@ -17,8 +17,6 @@ import {invoiceState} from '../../common/globalState/invoice'
 // import methods
 import {updateItemInSaleOrder} from '../../common/methods/sale-order'
 Invoices.before.insert(function (userId, doc) {
-
-    console.log(doc.items);
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
@@ -103,7 +101,38 @@ Invoices.after.insert(function (userId, doc) {
                 )
             }
             // End Account Integration
-
+            let totalGratis = 0;
+            let totalCOGS = 0;
+            doc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                    let inventoryObj = AverageInventories.findOne({
+                        itemId: item.itemId,
+                        branchId: doc.branchId,
+                        stockLocationId: doc.stockLocationId
+                    }, {sort: {_id: -1}});
+                    if (inventoryObj) {
+                        totalGratis += item.qty * inventoryObj.averagePrice;
+                    } else {
+                        throw new Meteor.Error('Not Found Inventory. @Invoices-after-insert. refId:' + doc._id);
+                    }
+                }
+                else {
+                    let inventoryObj = AverageInventories.findOne({
+                        itemId: item.itemId,
+                        branchId: doc.branchId,
+                        stockLocationId: doc.stockLocationId
+                    }, {sort: {_id: -1}});
+                    if (inventoryObj) {
+                        totalCOGS += item.qty * inventoryObj.averagePrice;
+                    } else {
+                        throw new Meteor.Error('Not Found Inventory. @Invoices-after-insert. refId:' + doc._id);
+                    }
+                }
+            });
+            invoiceManageStock(doc);
+            let totalInventory = totalCOGS + totalGratis;
+            // more to do .......
         }
         else if (doc.invoiceType == 'term') {
             accountRefType = 'Invoice';
@@ -348,6 +377,34 @@ Invoices.after.update(function (userId, doc) {
                 })
             }
             // End Account Integration
+            preDoc.items.forEach(function (item) {
+                if (item.price == 0) {
+                    reduceGratisInventory(item, preDoc.branchId, preDoc.stockLocationId)
+                }
+            });
+            returnToInventory(preDoc);
+            let totalGratis = 0;
+            let totalCOGS = 0;
+            doc.items.forEach(function (item) {
+                let inventoryObj = AverageInventories.findOne({
+                    itemId: item.itemId,
+                    branchId: doc.branchId,
+                    stockLocationId: doc.stockLocationId
+                }, {sort: {_id: -1}});
+                if (inventoryObj) {
+                    if (item.price == 0) {
+                        increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                        totalGratis += item.qty * inventoryObj.averagePrice;
+                    } else {
+                        totalCOGS += item.qty * inventoryObj.averagePrice;
+                    }
+                } else {
+                    throw new Meteor.Error('Not Found Inventory. @Invoices-after-update. refId:' + doc._id);
+                }
+            });
+            invoiceManageStock(doc);
+            let totalInventory = totalCOGS + totalGratis;
+            //more to do .....
 
         }
         else if (type.group) {

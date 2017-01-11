@@ -28,6 +28,7 @@ tabularOpts.columns = [
             return moment(val).format('YYYY-MM-DD');
         }
     },
+    {data: "voucherId", title: "Voucher"},
     {data: "_customer.name", title: "Customer"},
     {data: "total", title: "Total"},
     {data: "sumRemainQty", title: "Remain QTY"},
@@ -41,5 +42,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['items', 'customerId'];
+tabularOpts.extraFields = ['items', 'customerId','deposit'];
 export const OrderTabular = new Tabular.Table(tabularOpts);

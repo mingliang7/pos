@@ -47,6 +47,19 @@ Order.itemsSchema = new SimpleSchema({
 
 // Order schema
 Order.schema = new SimpleSchema({
+    deposit: {
+        type: Number,
+        decimal: true,
+        optional: true,
+        min: 0,
+        defaultValue: 0,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
     orderDate: {
         type: Date,
         defaultValue: moment().toDate(),
@@ -113,14 +126,14 @@ Order.schema = new SimpleSchema({
         type: String
     },
     status: {
-      type: String,
-      autoValue: function(){
-        if(this.isInsert){
-          return 'active';
+        type: String,
+        autoValue: function () {
+            if (this.isInsert) {
+                return 'active';
+            }
         }
-      }
     },
-    sumRemainQty:{
+    sumRemainQty: {
         type: Number,
         decimal: true,
         optional: true
@@ -130,7 +143,7 @@ Order.schema = new SimpleSchema({
         label: 'Voucher ID',
         optional: true
     },
-    isPurchased:{
+    isPurchased: {
         type: Boolean,
         optional: true
     },
