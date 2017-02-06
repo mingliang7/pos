@@ -1,5 +1,7 @@
 import 'meteor/matb33:collection-hooks';
 import {idGenerator} from 'meteor/theara:id-generator';
+import {round2} from 'meteor/theara:round2';
+
 
 
 // Collection
@@ -36,6 +38,22 @@ Journal.before.insert(function (userId, doc) {
     doc._id = doc.idGiven != undefined ? doc.idGiven : idGenerator.genWithPrefix(Journal, prefix, 6);
     doc.splitAccount = lenArray > 2 ? doc._id : 0;
 
+
+     // Check currency
+    let _round = {
+        type: 'general',
+        precision: -2 // KHR
+    };
+
+    switch (doc.currencyId) {
+        case 'USD':
+            _round.precision = 2;
+            break;
+        case 'THB':
+            _round.precision = 0;
+            break;
+    }
+
     var curMonth = moment(doc.journalDate).format("MM");
 
     if (doc.transactionAsset != undefined) {
@@ -60,16 +78,16 @@ Journal.before.insert(function (userId, doc) {
 
 
                 var transactionList = [];
-                let depPerYear = numeral(((obj.value - obj.estSalvage) / obj.life )).format('0,0.00');
+                let depPerYear = round2(((obj.value - obj.estSalvage) / obj.life ), _round.precision, _round.type);
 
                 if (curMonth != "12") {
                     for (let i = 1; i <= obj.life + 1; i++) {
                         if (i == 1 || i == obj.life + 1) {
-                            var maxMonth = i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
+                            let maxMonth = i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
                             transactionList.push({
                                 year: i,
-                                perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                                perYear: numeral().unformat(numeral((numeral().unformat(depPerYear) / 12) * maxMonth).format('0,0.00')),
+                                perMonth: round2(depPerYear / 12, _round.precision, _round.type),
+                                perYear: round2((depPerYear / 12) * maxMonth, _round.precision, _round.type),
                                 month: 0,
                                 maxMonth: maxMonth,
                                 status: false
@@ -77,8 +95,8 @@ Journal.before.insert(function (userId, doc) {
                         } else {
                             transactionList.push({
                                 year: i,
-                                perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                                perYear: numeral().unformat(depPerYear),
+                                perMonth: round2(depPerYear / 12, _round.precision, _round.type),
+                                perYear: depPerYear,
                                 month: 0,
                                 maxMonth: 12,
                                 status: false
@@ -90,8 +108,8 @@ Journal.before.insert(function (userId, doc) {
                     for (let i = 1; i <= obj.life; i++) {
                         transactionList.push({
                             year: i,
-                            perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                            perYear: numeral().unformat(depPerYear),
+                            perMonth: round2(depPerYear / 12, _round.precision, _round.type),
+                            perYear: depPerYear,
                             month: 0,
                             maxMonth: 12,
                             status: false
@@ -124,15 +142,15 @@ Journal.before.insert(function (userId, doc) {
                     numYear += i;
                 }
 
-                var depreAmount = obj.value - obj.estSalvage;
+                var depreAmount = round2(obj.value - obj.estSalvage, _round.precision, _round.type);
                 var y = 1;
                 var transactionList = [];
                 for (let i = obj.life; i > 0; i--) {
-                    let depPerYear = numeral((i / numYear) * depreAmount).format('0,0.00');
+                    let depPerYear = round2((i / numYear) * depreAmount, _round.precision, _round.type);
                     transactionList.push({
                         year: y,
-                        perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                        perYear: numeral().unformat(depPerYear),
+                        perMonth: round2(depPerYear / 12, _round.precision, _round.type),
+                        perYear: depPerYear,
                         month: 0,
                         maxMonth: 12,
                         status: false
@@ -161,16 +179,25 @@ Journal.before.insert(function (userId, doc) {
                 var value = obj.value;
                 var transactionList = [];
                 for (let i = 1; i <= obj.life; i++) {
-                    let depPerYear = numeral(((obj.value - obj.estSalvage) * (obj.percent / 100) )).format('0,0.00');
+                    let depPerYear = 0;
+                    let maxMonth = i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
+
+                    if (i == obj.life) {
+                        depPerYear = round2(obj.value - obj.estSalvage, _round.precision, _round.type);
+                    } else {
+                        depPerYear = round2(((obj.value - obj.estSalvage) * (obj.percent / 100) ), _round.precision, _round.type);
+
+                    }
+
                     transactionList.push({
                         year: i,
-                        perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                        perYear: numeral().unformat(depPerYear),
+                        perMonth: round2(depPerYear / maxMonth, _round.precision, _round.type),
+                        perYear: depPerYear,
                         month: 0,
                         maxMonth: 12,
                         status: false
                     })
-                    obj.value -= numeral().unformat(depPerYear);
+                    obj.value -= depPerYear;
 
                 }
 
@@ -216,6 +243,22 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
             transaction.push(obj);
         }
     });
+
+ // Check currency
+    let _round = {
+        type: 'general',
+        precision: -2 // KHR
+    };
+
+    switch (modifier.$set.currencyId) {
+        case 'USD':
+            _round.precision = 2;
+            break;
+        case 'THB':
+            _round.precision = 0;
+            break;
+    }
+
     modifier.$set.transaction = transaction;
     var curMonth = moment(modifier.$set.journalDate).format("MM");
     if (modifier.$set.transactionAsset != undefined) {
@@ -244,15 +287,15 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
                 selectorFixAssetExpList.account = obj.account;
 
                 var transactionList = [];
-                let depPerYear = numeral(((obj.value - obj.estSalvage) / obj.life )).format('0,0.00');
+                let depPerYear = round2((obj.value - obj.estSalvage) / obj.life, _round.precision, _round.type);
                 if (curMonth != "12") {
                     for (let i = 1; i <= obj.life + 1; i++) {
                         if (i == 1 || i == obj.life + 1) {
-                            var maxMonth = i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
+                            let maxMonth = i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
                             transactionList.push({
                                 year: i,
-                                perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                                perYear: numeral().unformat(numeral((numeral().unformat(depPerYear) / 12) * maxMonth).format('0,0.00')),
+                                perMonth: round2(depPerYear / 12, _round.precision, _round.type),
+                                perYear: round2((depPerYear / 12) * maxMonth, _round.precision, _round.type),
                                 month: 0,
                                 maxMonth: maxMonth,
                                 status: false
@@ -260,8 +303,8 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
                         } else {
                             transactionList.push({
                                 year: i,
-                                perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                                perYear: numeral().unformat(depPerYear),
+                                perMonth: round2(depPerYear / 12, _round.precision, _round.type),
+                                perYear: depPerYear,
                                 month: 0,
                                 maxMonth: 12,
                                 status: false
@@ -273,8 +316,8 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
                     for (let i = 1; i <= obj.life; i++) {
                         transactionList.push({
                             year: i,
-                            perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                            perYear: numeral().unformat(depPerYear),
+                            perMonth: round2(depPerYear / 12, _round.precision, _round.type),
+                            perYear: depPerYear,
                             month: 0,
                             maxMonth: 12,
                             status: false
@@ -310,11 +353,11 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
                 var transactionList = [];
                 var y = 1;
                 for (let i = obj.life; i > 0; i--) {
-                    let depPerYear = numeral((i / numYear) * depreAmount).format('0,0.00');
+                    let depPerYear = round2((i / numYear) * depreAmount, _round.precision, _round.type);
                     transactionList.push({
                         year: y,
-                        perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                        perYear: numeral().unformat(depPerYear),
+                        perMonth: round2(depPerYear / 12, _round.precision, _round.type),
+                        perYear: depPerYear,
                         month: 0,
                         maxMonth: 12,
                         status: false
@@ -345,16 +388,25 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
                 var transactionList = [];
                 var value = obj.value;
                 for (let i = 1; i <= obj.life; i++) {
-                    let depPerYear = numeral(((obj.value - obj.estSalvage) * (obj.percent / 100) )).format('0,0.00');
+                    let depPerYear = 0;
+                    let maxMonth = i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
+
+                    if (i == obj.life) {
+                        depPerYear = round2(obj.value - obj.estSalvage, _round.precision, _round.type);
+                    } else {
+                        depPerYear = round2(((obj.value - obj.estSalvage) * (obj.percent / 100) ), _round.precision, _round.type);
+
+                    }
+
                     transactionList.push({
                         year: i,
-                        perMonth: numeral().unformat(numeral(numeral().unformat(depPerYear) / 12).format('0,0.00')),
-                        perYear: numeral().unformat(depPerYear),
+                        perMonth: round2(depPerYear / maxMonth, _round.precision, _round.type),
+                        perYear: depPerYear,
                         month: 0,
                         maxMonth: 12,
                         status: false
                     })
-                    obj.value -= numeral().unformat(depPerYear);
+                    obj.value -= depPerYear;
 
                 }
                 obj.value = value;
