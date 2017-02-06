@@ -36,8 +36,8 @@ Meteor.methods({
 
             /****** Header *****/
 
-            let exchangeData=Exchange.findOne({_id: params.exchangeDate});
-            params.exchangeData=moment(exchangeData.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(exchangeData.rates)
+            let exchangeData = Exchange.findOne({_id: params.exchangeDate});
+            params.exchangeData = moment(exchangeData.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(exchangeData.rates)
 
 
             data.header = params;
@@ -76,6 +76,7 @@ Meteor.methods({
              $in: accountTypeList
              };
              }*/
+
             if (self.currencyId != "All") {
                 var baseCurrency = self.currencyId;
             } else {
@@ -186,6 +187,8 @@ Meteor.methods({
                     }
 
                     var resultLast1 = Journal.find(selectorAdvanced).fetch();
+
+
                     if (resultLast1.length != 0) {
                         resultLast1.forEach(function (oldData) {
                             if (oldData != undefined) {
@@ -217,64 +220,124 @@ Meteor.methods({
 
                     selector['transaction.accountDoc._id'] = obj._id;
                     var i = 0;
+                    var j = 0;
+                    var k = 0;
                     /*var resultData = ReactiveMethod.call("getJournalTran", selector);*/
-                    var resultData = Journal.find(selector);
+                    // var resultData = Journal.find(selector).fetch();
+
+
+                    var resultData = Journal.aggregate([{
+                        $unwind: "$transaction"
+                    },
+                        {$match: selector}
+                        ,
+                        {
+                            $group: {
+                                _id: {
+                                    account: "$transaction.accountDoc._id",
+                                    code: "$transaction.accountDoc.code",
+                                    name: "$transaction.accountDoc.name",
+                                    accountTypeId: "$transaction.accountDoc.accountTypeId",
+                                    level: "$transaction.accountDoc.level",
+                                    parent: "$transaction.accountDoc.parentId",
+                                    currencyId: "$currencyId",
+                                    month: {$month: "$journalDate"},
+                                    day: {$dayOfMonth: "$journalDate"},
+                                    year: {$year: "$journalDate"},
+                                    
+                                    voucherId: "$voucherId",
+                                    cusAndVenname: "$cusAndVenname",
+                                    memo: "$memo"
+                                },
+                                 journalDate: {$last: "$journalDate"},
+                                dr: {
+                                    $sum: "$transaction.dr"
+                                },
+                                cr: {
+                                    $sum: "$transaction.cr"
+                                },
+                                drcr: {
+                                    $sum: "$transaction.drcr"
+                                }
+                            }
+                        },
+                        {
+                            $sort: {
+                                "_id.code": 1,
+                                "_id.voucherId": 1
+                            }
+                        }
+                    ]);
+
+
+                    let contentExpense = [];
 
                     resultData.forEach(function (ob) {
                         var detailObj = {};
-                        detailObj._id = ob._id;
+                        // detailObj._id = ob._id;
                         detailObj.journalDate = ob.journalDate;
-                        detailObj.memo = ob.memo;
-                        detailObj.cusAndVenname = ob.cusAndVenname;
-                        detailObj.voucherId = ob.voucherId;
+                        detailObj.memo = ob._id.memo;
+                        detailObj.cusAndVenname = ob._id.cusAndVenname;
+                        detailObj.voucherId = (ob._id.voucherId).substr(8, 13);
 
                         //Loop for Detail Transaction
 
-                        ob.transaction.forEach(function (o) {
-                            if (o.accountDoc._id == obj._id) {
-                                i += 1;
-                                detailObj.order = i;
-                                var convertDrcr = Meteor.call('exchange', ob.currencyId,
-                                    baseCurrency, o.drcr, exchangeDate);
-                                var convertDr = Meteor.call('exchange', ob.currencyId,
-                                    baseCurrency, o.dr, exchangeDate);
-                                var convertCr = Meteor.call('exchange', ob.currencyId,
-                                    baseCurrency, o.cr, exchangeDate);
-                                detailObj.currencyid = baseCurrency;
-                                detailObj.drcr = convertDrcr;
-                                balance += convertDrcr;
 
-                                detailObj.dr = convertDr;
-                                detailObj.cr = convertCr;
+                        if (ob._id.account == obj._id) {
 
-                                totalDr += convertDr;
-                                totalCr += convertCr;
-                                totalDrCr += convertDrcr;
+                            var convertDrcr = Meteor.call('exchange', ob._id.currencyId,
+                                baseCurrency, ob.drcr, exchangeDate);
+                            var convertDr = Meteor.call('exchange', ob._id.currencyId,
+                                baseCurrency, ob.dr, exchangeDate);
+                            var convertCr = Meteor.call('exchange', ob._id.currencyId,
+                                baseCurrency, ob.cr, exchangeDate);
 
-                                endingAmount += convertDrcr;
-                                endingDr += convertDr;
-                                endingCr += convertCr;
+                            detailObj.currencyid = baseCurrency;
+                            detailObj.drcr = convertDrcr;
+                            balance += convertDrcr;
+
+                            detailObj.dr = convertDr;
+                            detailObj.cr = convertCr;
+
+                            totalDr += convertDr;
+                            totalCr += convertCr;
+                            totalDrCr += convertDrcr;
+
+                            endingAmount += convertDrcr;
+                            endingDr += convertDr;
+                            endingCr += convertCr;
 
 
-                            } else {
-                                if (ob.splitAccount == "0") {
-                                    detailObj.name = o.accountDoc.code + ":" + o.accountDoc
-                                            .name;
-                                } else {
-                                    detailObj.name = "-split-";
-                                }
-                            }
-                        });
+                        }
 
                         detailObj.totalDr = totalDr;
                         detailObj.totalCr = totalCr;
                         detailObj.balance = balance;
                         detailObj.isHeader = false;
                         detailObj.isFooter = false;
-                        content.push(detailObj);
+
+                        if (ob.dr > 0) {
+
+                            i += 1;
+                            detailObj.order = i;
+                            content.push(detailObj);
+                            k = detailObj.order;
+                        } else {
+                            j += 1;
+                            detailObj.order = j;
+                            contentExpense.push(detailObj);
+                        }
 
 
                     });
+
+                    contentExpense.forEach(function (obj) {
+                        obj.order = obj.order + k;
+                    });
+
+                    content = content.concat(contentExpense);
+
+
                     endingBalance += balance;
                     content.push({
                         isHeader: false,

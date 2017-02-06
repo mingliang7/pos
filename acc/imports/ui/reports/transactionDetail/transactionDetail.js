@@ -6,11 +6,9 @@ import {AutoForm} from 'meteor/aldeed:autoform';
 import {sAlert} from 'meteor/juliancwirko:s-alert';
 import 'meteor/theara:autoprint';
 import {DateTimePicker} from 'meteor/tsega:bootstrap3-datetimepicker';
-import {alertify} from 'meteor/ovcharik:alertifyjs';
 
 
 // Component
-
 import '../../../../../core/imports/ui/layouts/report/content.html';
 import '../../../../../core/imports/ui/layouts/report/sign-footer.html';
 import '../../../../../core/client/components/loading.js';
@@ -24,33 +22,30 @@ import {destroyAction} from '../../../../../core/client/libs/destroy-action.js';
 import {displaySuccess, displayError} from '../../../../../core/client/libs/display-alert.js';
 import {__} from '../../../../../core/common/libs/tapi18n-callback-helper.js';
 
+// Method
+import '../../libs/getBranch';
+import '../../libs/format';
 
 //Collection
 import {Currency} from '../../../api/collections/currency';
 import {ChartAccount} from '../../../api/collections/chartAccount';
-// Method
-// import '../../../../common/methods/reports/ledger';
-import '../../libs/getBranch';
-import '../../libs/format';
+
 // Schema
-import {LedgerReport} from '../../../../imports/api/collections/reports/ledger';
+import {TransactionDetailReport} from '../../../../imports/api/collections/reports/transactionDetail';
 
 // Page
-import './ledger.html';
+import './transactionDetail.html';
+import '../../pages/journal/journal.js';
+
 // Declare template
 
-var reportTpl = Template.acc_ledgerReport,
-    generateTpl = Template.acc_ledgerReportGen,
-    ledgerTpl = Template.acc_ledgerReportGen,
-    ledgerShow = Template.acc_LedgerShow,
-    tmplPrintData = Template.acc_ledgerReportPrintData;
+var reportTpl = Template.acc_transactionDetailReport,
+    generateTpl = Template.acc_transactionDetailReportGen,
+    updateTpl = Template.acc_journalUpdate,
+    tmplPrintData = Template.acc_transactionDetailReportPrintData;
 
 
-reportTpl.helpers({
-    schema() {
-        return LedgerReport;
-    }
-})
+
 
 //===================================Run
 
@@ -63,10 +58,32 @@ let rptInitState = new ReactiveVar(false);
 let rptDataState = new ReactiveVar(null);
 
 
-reportTpl.onCreated(function () {
-    createNewAlertify(['acc_ledgerReport',"showJournal"]);
-    this.autorun(() => {
 
+reportTpl.helpers({
+    schema() {
+        return TransactionDetailReport;
+    },
+    param(){
+        let param = FlowRouter.current().query;
+
+        Session.set('accountTypeIdSession', param.accountType);
+        if (!(param.accountType instanceof Array)) {
+
+            Session.set('accountTypeIdSession', param.accountType.split(','));
+            param.accountType =param.accountType.split(',');
+
+        } else {
+            Session.set('accountTypeIdSession', param.accountType);
+        }
+
+        formDataState.set(param);
+        return param;
+    }
+})
+
+reportTpl.onCreated(function () {
+    createNewAlertify(['acc_transactionDetail', 'journal']);
+    this.autorun(() => {
         // Check form data
         if (formDataState.get()) {
             rptInitState.set(true);
@@ -100,10 +117,55 @@ tmplPrintData.helpers({
     }
 });
 
+tmplPrintData.events({
+    'dblclick .journalRow': function (e, t) {
+
+        var self = this;
+
+        var selectorGetLastDate = {};
+        var branchId = Session.get("currentBranch");
+        selectorGetLastDate.branchId = branchId;
+
+        var selector = {};
+        selector._id = self._id;
+
+
+        Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
+            Meteor.call('getJournal', selector, function (err, data) {
+                if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId == "0" || data.closingId == undefined ) && data.refId == undefined)) {
+                    if (data.voucherId.length > 10) {
+                        data.voucherId = data.voucherId.substr(8, 6);
+                    }
+                    Session.set('dobSelect', data.journalDate);
+                    Session.set('currencyId', data.currencyId);
+
+                    if (data.transactionAsset != undefined) {
+                        if (data.transactionAsset.length > 0) {
+                            stateFixAsset.set('isFixAsset', true);
+                            $('.js-switch').trigger("click");
+                        }
+                    }
+
+                    if (lastDate != null) {
+                        if (lastDate.closeDate < data.journalDate) {
+                            alertify.journal(fa("plus", "Journal"), renderTemplate(updateTpl, data)).maximize();
+                        } else {
+                            alertify.error("Can not update, you already end of process!!!");
+                        }
+                    } else {
+                        alertify.journal(fa("plus", "Journal"), renderTemplate(updateTpl, data)).maximize();
+                    }
+                } else {
+                    alertify.warning("Can't Update!!!");
+                }
+            });
+        });
+    }
+});
+
 
 reportTpl.events({
     'click .run ': function (e, t) {
-
         let result = {};
         result.branchId = $('[name="branchId"]').val();
         result.date = $('[name="date"]').val();
@@ -117,19 +179,20 @@ reportTpl.events({
             return false;
         }
 
-
         formDataState.set(result);
     },
     'change [name="accountType"]': function (e) {
+        debugger;
         Session.set('accountTypeIdSession', $(e.currentTarget).val());
     },
     'click .fullScreen'(event, instance){
-
-        alertify.acc_ledgerReport(fa('', ''), renderTemplate(tmplPrintData)).maximize();
+        alertify.acc_transactionDetail(fa('', ''), renderTemplate(tmplPrintData)).maximize();
     },
     'click .btn-print'(event, instance){
 
         $('#print-data').printThis();
+
+
     }
 });
 
@@ -140,10 +203,11 @@ reportTpl.onDestroyed(function () {
     rptInitState.set(false);
 });
 
+
 // hook
 let hooksObject = {
     onSubmit: function (insertDoc, updateDoc, currentDoc) {
-        debugger;
+
         this.event.preventDefault();
         formDataState.set(null);
 
@@ -169,65 +233,62 @@ let hooksObject = {
         displayError(error.message);
     }
 };
-tmplPrintData.events({
-    'click .split-account-detail': function (e, t) {
-        var self = this;
-        /*var tr = $(e.currentTarget).closest("tr");
-         var voucher= tr.find('.voucher-id').text().trim();*/
-        // var data = Acc.Collection.Journal.findOne({voucherId: self.voucherId,_id: self._id});
 
-        Meteor.call('getJournalForLedger', self._id, function (err, data) {
-            alertify.showJournal(fa("eye", "Journal"), renderTemplate(ledgerShow, data));
-        })
-    }
-});
 
 // ===============================Generate
 
 
-reportTpl.events({
-    'change [name="accountType"]': function (e) {
-        Session.set('accountTypeIdSession', $(e.currentTarget).val());
-    }
-});
-
-ledgerTpl.onRendered(function () {
-    // Create new  alertify
-    createNewAlertify("showJournal");
-});
-//Event
-ledgerTpl.events({
-    'click .split-account-detail': function (e, t) {
-        var self = this;
-        /*var tr = $(e.currentTarget).closest("tr");
-         var voucher= tr.find('.voucher-id').text().trim();*/
-        // var data = Acc.Collection.Journal.findOne({voucherId: self.voucherId,_id: self._id});
-
-        Meteor.call('getJournalForLedger', self._id, function (err, data) {
-            alertify.showJournal(fa("eye", "Journal"), renderTemplate(ledgerShow, data));
-        })
-    }
-});
-
-
-//Helper
-ledgerShow.helpers({
-    formatMoney: function (val) {
-        return numeral(val).format('0,0.00');
-    },
-    getCurrency: function (id) {
-        let currency = Currency.findOne({_id: id});
-        if (currency) {
-            return currency.symbol;
-        }
-    },
-    getChartAccount: function (id) {
-        let account = ChartAccount.findOne({_id: id});
-        if (account) {
-            return account.name;
-        }
-    }
+generateTpl.onCreated(function () {
+    createNewAlertify(['journal']);
 })
+
+//Event
+generateTpl.events({
+    'dblclick .journalRow': function (e, t) {
+        var self = this;
+
+        var selectorGetLastDate = {};
+        var branchId = Session.get("currentBranch");
+        selectorGetLastDate.branchId = branchId;
+
+        var selector = {};
+        selector._id = self._id;
+
+
+        Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
+            Meteor.call('getJournal', selector, function (err, data) {
+                if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId == "0" || data.closingId == undefined ) && data.refId == undefined)) {
+
+
+                    if (data.voucherId.length > 10) {
+                        data.voucherId = data.voucherId.substr(8, 6);
+                    }
+                    Session.set('dobSelect', data.journalDate);
+                    Session.set('currencyId', data.currencyId);
+
+                    if (data.transactionAsset != undefined) {
+                        if (data.transactionAsset.length > 0) {
+                            stateFixAsset.set('isFixAsset', true);
+                            $('.js-switch').trigger("click");
+                        }
+                    }
+
+                    if (lastDate != null) {
+                        if (lastDate.closeDate < data.journalDate) {
+                            alertify.journal(fa("plus", "Journal"), renderTemplate(Template.acc_journalUpdate, data)).maximize();
+                        } else {
+                            alertify.error("Can not update, you already end of process!!!");
+                        }
+                    } else {
+                        alertify.journal(fa("plus", "Journal"), renderTemplate(Template.acc_journalUpdate, data)).maximize();
+                    }
+                } else {
+                    alertify.warning("Can't Update!!!");
+                }
+            });
+        });
+    }
+});
 
 
 generateTpl.helpers({
@@ -261,29 +322,3 @@ generateTpl.helpers({
          return call.result();*/
     }
 });
-
-
-/*AutoForm.hooks({
- // Customer
- acc_LedgerReport: {
- onSubmit: function (doc) {
- /!*
- doc.accountType=doc.accountType.join(",");
- return doc;*!/
- doc.date=doc.date.replace(' ','+');
- doc.date=doc.date.replace(' ','+');
- var path='/acc/ledgerReportGen?branchId='+doc.branchId+'&accountType='+
- doc.accountType+'&chartAccount='+doc.chartAccount
- +'&date='+doc.date+'&exchangeDate='+doc.exchangeDate
- +'&currencyId='+doc.currencyId;
- window.open(path,'_blank');
- return false;
- }
- }
- });*/
-
-
-
-
-
-

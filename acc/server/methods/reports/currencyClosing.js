@@ -388,6 +388,13 @@ Meteor.methods({
                     selectorEquivalBaseOld.currencyId = self.currencyId;
                     selectorEquivalBaseOld['transaction.accountDoc.code'] =
                         accountDocDetail.code;
+                    selectorEquivalBaseOld.branchId = self.branchId;
+
+                    if (!_.isEmpty(self.date)) {
+                        selectorEquivalBaseOld.journalDate = {
+                            $lt: fDate
+                        };
+                    }
 
                     var equivalBaseOld = Meteor.call("getBalanceSheet",
                         selectorEquivalBaseOld, baseCurrencyClosing, exchangeDate, null,
@@ -404,6 +411,14 @@ Meteor.methods({
                     selectorEquivalOld.currencyId = baseCurrencyClosing;
                     selectorEquivalOld['transaction.accountDoc.code'] =
                         accountDocDetail.code;
+                    selectorEquivalOld.branchId = self.branchId;
+
+                    if (!_.isEmpty(self.date)) {
+                        selectorEquivalOld.journalDate = {
+                            $lt: fDate
+                        };
+                    }
+
                     var equivalOld = Meteor.call("getBalanceSheet",
                         selectorEquivalOld, baseCurrencyClosing, exchangeDate, null,
                         null);

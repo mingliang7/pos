@@ -40,13 +40,206 @@ import '../../pages/journal/journal.html'
 // Declare template
 var reportTpl = Template.acc_journalReport,
     generateTpl = Template.acc_journalReportGen,
-    updateTpl = Template.acc_journalUpdate;
+    updateTpl = Template.acc_journalUpdate,
+    tmplPrintData = Template.acc_journalReportPrintData;
 
 reportTpl.helpers({
     schema() {
         return JournalReport;
     }
 })
+
+
+//===================================Run
+
+// Form state
+let formDataState = new ReactiveVar(null);
+
+
+// Index
+let rptInitState = new ReactiveVar(false);
+let rptDataState = new ReactiveVar(null);
+
+
+reportTpl.onCreated(function () {
+    createNewAlertify('acc_journalReport');
+    this.autorun(() => {
+
+        // Check form data
+        if (formDataState.get()) {
+            rptInitState.set(true);
+            rptDataState.set(null);
+
+            let params = formDataState.get();
+
+            Meteor.call('acc_journalReport', params, function (err, result) {
+                if (result) {
+                    let arrResult=[];
+                    let contentDocs=result.content;
+                    console.log(contentDocs);
+                    contentDocs.forEach(function (contentDoc) {
+                        contentDoc.firstTransaction=[];
+                        contentDoc.secondTransaction=[];
+                        let transactions=contentDoc.transaction;
+                        for(let i=0;i<transactions.length;i++ ){
+                            if(i==0){
+                                contentDoc.firstTransaction.push(transactions[i]);
+                            }else{
+                                contentDoc.secondTransaction.push(transactions[i]);
+                            }
+                        }
+                        arrResult.push(contentDoc);
+                    });
+                    result.content=arrResult;
+
+                    rptDataState.set(result);
+                } else {
+                    console.log(err.message);
+                }
+            })
+
+
+        }
+
+    });
+});
+
+
+tmplPrintData.helpers({
+    rptInit(){
+        if (rptInitState.get() == true) {
+            return rptInitState.get();
+        }
+    },
+    rptData: function () {
+        return rptDataState.get();
+    }
+});
+
+
+reportTpl.events({
+    'click .run ': function (e, t) {
+        let result = {};
+        result.branchId = $('[name="branchId"]').val();
+        result.date = $('[name="date"]').val();
+        result.currencyId = $('[name="currencyId"]').val();
+        result.accountType = $('[name="accountType"]').val();
+        result.chartAccount = $('[name="chartAccount"]').val();
+
+        if (result.accountType == "") {
+            alertify.warning("Required!!!");
+            return false;
+        }
+
+        formDataState.set(result);
+    },
+    'change [name="accountType"]': function (e) {
+        Session.set('accountTypeIdSession', $(e.currentTarget).val());
+    },
+    'click .fullScreen'(event, instance){
+
+
+        alertify.acc_journalReport(fa('', ''), renderTemplate(tmplPrintData)).maximize();
+    },
+    'click .btn-print'(event, instance){
+
+
+
+        $('#print-data').printThis();
+    }
+});
+
+
+
+reportTpl.onDestroyed(function () {
+    formDataState.set(null);
+    rptDataState.set(null);
+    rptInitState.set(false);
+});
+
+
+// hook
+let hooksObject = {
+    onSubmit: function (insertDoc, updateDoc, currentDoc) {
+        debugger;
+        this.event.preventDefault();
+        formDataState.set(null);
+
+        this.done(null, insertDoc);
+
+    },
+    onSuccess: function (formType, result) {
+        formDataState.set(result);
+
+        // $('[name="branchId"]').val(result.branchId);
+        // $('[name="creditOfficerId"]').val(result.creditOfficerId);
+        // $('[name="paymentMethod"]').val(result.paymentMethod);
+        // $('[name="currencyId"]').val(result.currencyId);
+        // $('[name="productId"]').val(result.productId);
+        // $('[name="locationId"]').val(result.locationId);
+        // $('[name="fundId"]').val(result.fundId);
+        // $('[name="classifyId"]').val(result.classifyId);
+        //
+        // $('[name="date"]').val(moment(result.date).format("DD/MM/YYYY"));
+        // $('[name="exchangeId"]').val(result.exchangeId);
+    },
+    onError: function (formType, error) {
+        displayError(error.message);
+    }
+};
+
+
+//Event
+tmplPrintData.events({
+    'dblclick .journalRow': function (e, t) {
+
+        var self = this;
+
+        var selectorGetLastDate = {};
+        var branchId = Session.get("currentBranch");
+        selectorGetLastDate.branchId = branchId;
+
+        var selector = {};
+        selector._id = self._id;
+
+        createNewAlertify('journal');
+
+
+        Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
+            Meteor.call('getJournal', selector, function (err, data) {
+                if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId == "0" || data.closingId == undefined ) && data.refId == undefined)) {
+
+                    if (data.voucherId.length > 10) {
+                        data.voucherId = data.voucherId.substr(8, 6);
+                    }
+                    Session.set('dobSelect', data.journalDate);
+                    Session.set('currencyId', data.currencyId);
+
+                    if (data.transactionAsset != undefined) {
+                        if (data.transactionAsset.length > 0) {
+                            stateFixAsset.set('isFixAsset', true);
+                            $('.js-switch').trigger("click");
+                        }
+                    }
+
+                    if (lastDate != null) {
+                        if (lastDate.closeDate < data.journalDate) {
+                            alertify.journal(fa("plus", "Journal"), renderTemplate(Template.acc_journalUpdate, data)).maximize();
+                        } else {
+                            alertify.error("Can not update, you already end of process!!!");
+                        }
+                    } else {
+                        alertify.journal(fa("plus", "Journal"), renderTemplate(Template.acc_journalUpdate, data)).maximize();
+                    }
+                } else {
+                    alertify.warning("Can't Update!!!");
+                }
+            });
+        });
+    }
+});
+
+// ===============================Generate
 
 reportTpl.events({
     'change [name="accountType"]': function (e) {
@@ -73,7 +266,7 @@ generateTpl.events({
 
         Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
             Meteor.call('getJournal', selector, function (err, data) {
-                if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId != "0" || data.closingId != undefined ))) {
+                if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId == "0" || data.closingId == undefined ) && data.refId == undefined)) {
 
                     if (data.voucherId.length > 10) {
                         data.voucherId = data.voucherId.substr(8, 6);
@@ -125,7 +318,29 @@ generateTpl.helpers({
         Fetcher.setDefault('data', false);
         Fetcher.retrieve('data', 'acc_journalReport', q);
 
-        return Fetcher.get('data');
+        let doc= Fetcher.get('data');
+
+        if(doc.content){
+            let contentDocs=doc.content;
+
+            let arrResult=[];
+            contentDocs.forEach(function (contentDoc) {
+                contentDoc.firstTransaction=[];
+                contentDoc.secondTransaction=[];
+                let transactions=contentDoc.transaction;
+                for(let i=0;i<transactions.length;i++ ){
+                    if(i==0){
+                        contentDoc.firstTransaction.push(transactions[i]);
+                    }else{
+                        contentDoc.secondTransaction.push(transactions[i]);
+                    }
+                }
+                arrResult.push(contentDoc);
+            });
+            doc.content=arrResult;
+        }
+        return doc;
+
         /*var callId = JSON.stringify(q);
          var call = Meteor.callAsync(callId, 'acc_journalReport', q);
 
@@ -148,6 +363,3 @@ var formatNumberToSeperate = function (val) {
     }
     return parseFloat(val);
 };
-
-
-

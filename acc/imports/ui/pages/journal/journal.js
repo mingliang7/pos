@@ -84,7 +84,7 @@ Tracker.autorun(function () {
         var currentCurrency = Session.get('currencyId');
         var dobSelect = Session.get('dobSelect');
         var startYear = moment(dobSelect).year();
-        var startDate = moment('01/01/' + startYear).toDate();
+        var startDate = moment('01/01/' + startYear,'DD/MM/YYYY').toDate();
         Meteor.call('acc_getVoucherId', currentCurrency, startDate, Session.get("currentBranch"), function (err, result) {
             if (result != undefined) {
                 Session.set('lastVoucherId', parseInt((result.voucherId).substr(8, 13)) + 1);
@@ -358,7 +358,7 @@ indexTpl.events({
         }
 
         Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
-            if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId != "0" || data.closingId != undefined ) && data.refId == undefined)) {
+            if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId == "0" || data.closingId == undefined ) && data.refId == undefined)) {
                 if (lastDate != null) {
                     if (new Date(lastDate.closeDate) < data.journalDate) {
                         alertify.journal(fa("plus", "Journal"), renderTemplate(Template.acc_journalUpdate, data)).maximize();
@@ -400,7 +400,7 @@ indexTpl.events({
         selectorGetLastDate.branchId = Session.get("currentBranch");
 
         Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
-            if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId != "0" || data.closingId != undefined ) && data.refId == undefined )) {
+            if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId == "0" || data.closingId == undefined ) && data.refId == undefined )) {
                 if (lastDate != undefined) {
                     if (new Date(lastDate.closeDate) < data.journalDate) {
                         alertify.journal(fa("plus", "Journal"), renderTemplate(Template.acc_journalUpdate, data)).maximize();
@@ -426,7 +426,7 @@ indexTpl.events({
         selector._id = this._id;
         Meteor.call('getDateEndOfProcess', selectorGetLastDate, function (err, lastDate) {
             Meteor.call('getJournal', selector, function (err, data) {
-                if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId != "0" || data.closingId != undefined ) && data.refId == undefined)) {
+                if ((data && (data.endId == "0" || data.endId == undefined) ) && ((data.fixAssetExpenseId == "0" || data.fixAssetExpenseId == undefined) && (data.closingId == "0" || data.closingId == undefined ) && data.refId == undefined)) {
                     if (lastDate != null) {
                         if (new Date(lastDate.closeDate) < data.journalDate) {
 
@@ -638,9 +638,18 @@ AutoForm.hooks({
         onSuccess: function (formType, result) {
             let curDate = Session.get('dobSelect');
             Session.set('dobSelect', undefined);
+            if (Session.get('saveNew')) {
+                Meteor.setTimeout(function () {
+                    $("#currencyId").val(Session.get('currencyId')).trigger("change");
+                    // $('#currencyId').select2('val', Session.get('currencyId'));
+                    Session.set('dobSelect', curDate);
+                    $("#journalDate").val(curDate).trigger("change");
 
-            alertify.journal().close();
-
+                }, 100);
+                Session.set('saveNew', false);
+            } else {
+                alertify.journal().close();
+            }
             stateFixAsset.set('isFixAsset', false);
             // displaySuccess();
             alertify.success("Success");
@@ -696,8 +705,18 @@ AutoForm.hooks({
         onSuccess: function (formType, result) {
             let curDate = Session.get('dobSelect');
             Session.set('dobSelect', undefined);
+            if (Session.get('saveNew')) {
+                Meteor.setTimeout(function () {
+                    $("#currencyId").val(Session.get('currencyId')).trigger("change");
+                    // $('#currencyId').select2('val', Session.get('currencyId'));
+                    Session.set('dobSelect', curDate);
+                    $("#journalDate").val(curDate).trigger("change");
 
-            alertify.journal().close();
+                }, 100);
+                Session.set('saveNew', false);
+            } else {
+                alertify.journal().close();
+            }
             stateFixAsset.set('isFixAsset', false);
             // displaySuccess();
             alertify.success("Success");
@@ -816,6 +835,7 @@ var disableDate = function () {
 
     },
     disableDateUpdate = function (id) {
+        debugger;
         var selectorGetLastDate = {};
         var selectorGetLastDateStart = {};
         var branchId = Session.get("currentBranch");
@@ -897,6 +917,13 @@ insertPaymentTpl.helpers({
     }
 });
 
+insertPaymentTpl.events({
+
+    'click .save-new': function (e, t) {
+        Session.set('saveNew', true);
+    }
+})
+
 insertReceiveTpl.helpers({
     total(){
         let amount = 0;
@@ -927,6 +954,13 @@ insertReceiveTpl.helpers({
         return journalDetailPaymentReceiveCollection;
     }
 });
+
+insertReceiveTpl.events({
+
+    'click .save-new': function (e, t) {
+        Session.set('saveNew', true);
+    }
+})
 
 
 insertPaymentTpl.onDestroyed(function () {
