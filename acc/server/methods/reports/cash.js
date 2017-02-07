@@ -244,12 +244,12 @@ Meteor.methods({
                                     month: {$month: "$journalDate"},
                                     day: {$dayOfMonth: "$journalDate"},
                                     year: {$year: "$journalDate"},
-                                    
+
                                     voucherId: "$voucherId",
                                     cusAndVenname: "$cusAndVenname",
                                     memo: "$memo"
                                 },
-                                 journalDate: {$last: "$journalDate"},
+                                journalDate: {$last: "$journalDate"},
                                 dr: {
                                     $sum: "$transaction.dr"
                                 },
@@ -294,14 +294,18 @@ Meteor.methods({
 
                             detailObj.currencyid = baseCurrency;
                             detailObj.drcr = convertDrcr;
-                            balance += convertDrcr;
+                            if (ob.dr > 0) {
+                                balance += convertDrcr;
+                            }
 
                             detailObj.dr = convertDr;
                             detailObj.cr = convertCr;
 
+
                             totalDr += convertDr;
                             totalCr += convertCr;
                             totalDrCr += convertDrcr;
+
 
                             endingAmount += convertDrcr;
                             endingDr += convertDr;
@@ -312,12 +316,17 @@ Meteor.methods({
 
                         detailObj.totalDr = totalDr;
                         detailObj.totalCr = totalCr;
-                        detailObj.balance = balance;
+
+                        if (ob.dr > 0) {
+                            detailObj.balance = balance;
+                        } else {
+                            detailObj.balance = 0;
+                        }
+
                         detailObj.isHeader = false;
                         detailObj.isFooter = false;
 
                         if (ob.dr > 0) {
-
                             i += 1;
                             detailObj.order = i;
                             content.push(detailObj);
@@ -333,6 +342,9 @@ Meteor.methods({
 
                     contentExpense.forEach(function (obj) {
                         obj.order = obj.order + k;
+
+                        balance += obj.drcr;
+                        obj.balance = balance;
                     });
 
                     content = content.concat(contentExpense);
