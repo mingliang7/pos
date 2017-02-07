@@ -67,6 +67,7 @@ let indexTmpl = Template.Pos_invoice,
     listSaleOrder = Template.listSaleOrder;
 // Local collection
 let itemsCollection = nullCollection;
+let dateState = new ReactiveVar();
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
@@ -192,6 +193,9 @@ newTmpl.onCreated(function () {
     });
 });
 // New
+newTmpl.onRendered(function () {
+    dpChange($('[name="invoiceDate"]'));
+});
 newTmpl.events({
     'change [name="stockLocationId"]'(event, instance){
         debugger;
@@ -356,7 +360,7 @@ newTmpl.helpers({
     },
     dueDate() {
         try {
-            let date = AutoForm.getFieldValue('invoiceDate');
+            let date = dateState.get() || AutoForm.getFieldValue('invoiceDate');
             let {customerInfo} = Session.get('customerInfo');
             if (customerInfo) {
                 if (customerInfo._term) {
@@ -393,6 +397,7 @@ newTmpl.onDestroyed(function () {
     Session.set('totalOrder', undefined);
     Session.set('creditLimitAmount', undefined);
     deletedItem.remove({});
+    dateState.set(null);
 });
 
 // Edit
@@ -401,6 +406,8 @@ editTmpl.onCreated(function () {
     Meteor.subscribe('pos.requirePassword', {branchId: {$in: [Session.get('currentBranch')]}});//subscribe require password validation
     this.repOptions = new ReactiveVar();
     this.isSaleOrder = new ReactiveVar(false);
+    this.invoiceDate = new ReactiveVar(this.data.invoiceDate);
+    dateState.set(this.data.invoiceDate);
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
     });
@@ -409,8 +416,9 @@ editTmpl.onCreated(function () {
         this.isSaleOrder.set(true);
     }
 });
-
-
+editTmpl.onRendered(function () {
+    dpChange($('[name="invoiceDate"]'));
+});
 editTmpl.events({
     'change [name="stockLocationId"]'(event, instance){
         debugger;
@@ -468,6 +476,10 @@ editTmpl.events({
     }
 });
 editTmpl.helpers({
+    invoiceDate(){
+        let instance = Template.instance();
+        return instance.invoiceDate.get();
+    },
     closeSwal() {
         setTimeout(function () {
             swal.close();
@@ -591,12 +603,11 @@ editTmpl.helpers({
     },
     dueDate() {
         try {
-            let date = AutoForm.getFieldValue('invoiceDate');
+            let date = dateState.get() || AutoForm.getFieldValue('invoiceDate');
             let {customerInfo} = Session.get('customerInfo');
             if (customerInfo) {
                 if (customerInfo._term) {
                     let term = customerInfo._term;
-
                     let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
                     return dueDate;
                 }
@@ -878,7 +889,11 @@ let hooksObject = {
         displayError(error.message);
     }
 };
-
+function dpChange(elem) {
+    elem.on('dp.change', function (e) {
+        dateState.set(e.date.toDate());
+    });
+}
 AutoForm.addHooks([
     'Pos_invoiceNew',
     'Pos_invoiceUpdate'
