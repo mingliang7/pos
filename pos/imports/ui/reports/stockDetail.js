@@ -58,7 +58,7 @@ indexTmpl.helpers({
 });
 indexTmpl.events({
     'click .print'(event, instance){
-        $('#to-print').printThis();
+      window.print();
     },
     'change #date-range-filter'(event, instance){
         let currentRangeDate = RangeDate[event.currentTarget.value]();
@@ -90,6 +90,9 @@ invoiceDataTmpl.helpers({
     company(){
         let doc = Session.get('currentUserStockAndAccountMappingDoc');
         return doc.company;
+    },
+    concat(num){
+        return num.substr(num.length - 10, num.length-1);
     },
     data(){
         if (invoiceData.get()) {

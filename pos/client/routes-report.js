@@ -418,7 +418,7 @@ PosRoutes.route('/report/unpaidInvoiceOverdue', {
     name: 'pos.unpaidInvoiceOverdue',
     title: 'Unpaid Invoice Overdue',
     action: function (params, queryParams) {
-        Layout.main('Pos_unpaidInvoiceOverdue');
+        Layout.customReportLayout('Pos_unpaidInvoiceOverdue');
     },
     breadcrumb: {
         title: 'Unpaid Invoice Overdue',
@@ -431,7 +431,7 @@ PosRoutes.route('/report/unpaidInvoiceOverdue', {
     name: 'pos.unpaidInvoiceOverdue',
     title: 'Unpaid Invoice Overdue',
     action: function (params, queryParams) {
-        Layout.main('Pos_unpaidInvoiceOverdue');
+        Layout.customReportLayout('Pos_unpaidInvoiceOverdue');
     },
     breadcrumb: {
         title: 'Unpaid Invoice Overdue',
@@ -445,7 +445,7 @@ PosRoutes.route('/report/unpaidGroupInvoiceOverdue', {
     name: 'pos.unpaidGroupInvoiceOverdue',
     title: 'Unpaid Group Invoice Overdue',
     action: function (params, queryParams) {
-        Layout.main('Pos_unpaidGroupInvoiceOverdue');
+        Layout.customReportLayout('Pos_unpaidGroupInvoiceOverdue');
     },
     breadcrumb: {
         title: 'Unpaid Group Invoice Overdue',
@@ -458,7 +458,7 @@ PosRoutes.route('/report/prepaid-order-detail', {
     name: 'pos.prepaidOrderDetail',
     title: 'Prepaid Order Detail',
     action: function (params, queryParams) {
-        Layout.main('Pos_prepaidOrderDetail');
+        Layout.customReportLayout('Pos_prepaidOrderDetail');
     },
     breadcrumb: {
         title: 'Prepaid Order Detail',
@@ -471,7 +471,7 @@ PosRoutes.route('/report/customer-debt-tracking', {
     name: 'pos.customerDebtTracking',
     title: 'Customer Debt Tracking Report',
     action: function (params, queryParams) {
-        Layout.main('Pos_customerDebtTracking');
+        Layout.customReportLayout('Pos_customerDebtTracking');
     },
     breadcrumb: {
         title: 'Customer Debt Tracking',
@@ -484,7 +484,7 @@ PosRoutes.route('/report/customer-total-credit', {
     name: 'pos.customerTotalCredit',
     title: 'Total Credit',
     action: function (params, queryParams) {
-        Layout.main('Pos_customerTotalCredit');
+        Layout.customReportLayout('Pos_customerTotalCredit');
     },
     breadcrumb: {
         title: 'Total Credit',
@@ -497,7 +497,7 @@ PosRoutes.route('/report/stockDetail', {
     name: 'pos.stockDetail',
     title: 'Stock Detail',
     action: function (params, queryParams) {
-        Layout.main('Pos_stockDetailReport');
+        Layout.customReportLayout('Pos_stockDetailReport');
     },
     breadcrumb: {
         title: 'Stock Detail',

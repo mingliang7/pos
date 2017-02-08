@@ -146,7 +146,8 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     number: {$ifNull: ['$invoiceDoc.voucherId', '$invoiceDoc._id']},
                                     name: '$invoiceDoc._customer.name',
                                     rep: '$invoiceDoc._rep.name',
-                                    item: '$itemDoc'
+                                    item: '$itemDoc',
+                                    opDate: '$invoiceDoc.invoiceDate'
                                 })
                             }
                         ],
@@ -204,7 +205,8 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     number: {$ifNull: ['$invoiceDoc.voucherId', '$invoiceDoc._id']},
                                     name: '$invoiceDoc._customer.name',
                                     rep: '$invoiceDoc._rep.name',
-                                    item: '$itemDoc'
+                                    item: '$itemDoc',
+                                    opDate: '$invoiceDoc.invoiceDate'
                                 })
                             }
                         ],
@@ -261,7 +263,8 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     number: {$ifNull: ['$billDoc.voucherId', '$billDoc._id']},
                                     name: '$billDoc._vendor.name',
                                     rep: {$ifNull: ["$billDoc._rep.name", ""]},
-                                    item: '$itemDoc'
+                                    item: '$itemDoc',
+                                    opDate: '$billDoc.enterBillDate'
                                 })
 
                             }
@@ -318,7 +321,8 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     description: {$ifNull: ["$lendingStockDescription", 'ខ្ចីស្តុក(Lending Stock)']},
                                     number: {$ifNull: ['$lendingStockDoc.voucherId', '$lendingStockDoc._id']},
                                     name: '$lendingStockDoc._vendor.name',
-                                    item: '$itemDoc'
+                                    item: '$itemDoc',
+                                    opDate: '$lendingStockDoc.lendingStockDate'
                                 })
 
                             }
@@ -376,7 +380,8 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     number: {$ifNull: ['$exchangeRingPullDoc.voucherId', '$exchangeRingPullDoc._id']},
                                     name: {$ifNull: ["$exchangeRingPullDoc.fkyou", "ក្រវិល"]},
                                     rep: {$ifNull: ["$exchangeRingPullDoc._rep.name", ""]},
-                                    item: '$itemDoc'
+                                    item: '$itemDoc',
+                                    opDate: '$exchangeRingPullDoc.exchangeRingPullDate'
                                 })
 
                             }
@@ -435,7 +440,8 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     number: {$ifNull: ['$receiveItemDoc.voucherId', '$receiveItemDoc._id']},
                                     name: '$receiveItemDoc._vendor.name',
                                     rep: {$ifNull: ['$receiveItemDoc._rep.name', '']},
-                                    item: '$itemDoc'
+                                    item: '$itemDoc',
+                                    opDate: '$receiveItemDoc.receiveItemDate'
                                 })
                             }
                         ],
@@ -492,7 +498,8 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     number: {$ifNull: ['$transferToDoc.voucherId', '$transferToDoc._id']},
                                     name: {$concat: ["ផ្ទេរចូលមកពី", "$transferToDoc._fromBranch.khName", "(Transfer From ", "$transferToDoc._fromBranch.enName", ")"]},
                                     rep: {$ifNull: ['$transferToDoc._rep.name', ""]},
-                                    item: '$itemDoc'
+                                    item: '$itemDoc',
+                                    opDate: '$transferToDoc.locationTransferDate'
                                 })
                             }
                         ],
@@ -549,7 +556,9 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     number: {$ifNull: ['$transferFromDoc.voucherId', '$transferFromDoc._id']},
                                     name: {$concat: ["ផ្ទេរចេញទៅ", "$transferFromDoc._toBranch.khName", "(Transfer To", "$transferFromDoc._toBranch.enName", ")"]},
                                     rep: {$ifNull: ["$transferFromDoc._rep.name", ""]},
-                                    item: '$itemDoc'
+                                    item: '$itemDoc',
+                                    opDate: '$transferFromDoc.locationTransferDate'
+
                                 })
                             }
                         ]
@@ -637,7 +646,7 @@ function correctDotObject(prop, forLabel) {
 }
 
 
-function projectionField({item, description, name, number, rep}) {
+function projectionField({item, description, name, number, rep, opDate}) {
     return {
         _id: 1,
         branchId: 1,
@@ -658,7 +667,8 @@ function projectionField({item, description, name, number, rep}) {
         rep: rep,
         description: description,
         name: name,
-        item: item
+        item: item,
+        opDate: opDate
     }
 }
 function groupLast() {
