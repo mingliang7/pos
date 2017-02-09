@@ -521,7 +521,7 @@ Meteor.methods({
                 data1.total = doc.transferAmount;
                 data1.transaction = [];
                 data1.branchId = doc.fromBranchId;
-                data1.journalDate = moment().toDate();
+                data1.journalDate = doc.transferMoneyDate;
                 data1.type = "MoneyTransferFrom";
                 data1.transaction.push({
                     account: ringPullChartAccount.account,
@@ -534,7 +534,7 @@ Meteor.methods({
                 data2.transaction = [];
                 data2.branchId = doc.toBranchId;
                 data2.type = "MoneyTransferTo";
-                data2.journalDate = moment().toDate();
+                data2.journalDate = doc.transferMoneyDate;
                 data2.total = doc.transferAmount;
                 data2.transaction.push({
                     account: ringPullChartAccount.account,

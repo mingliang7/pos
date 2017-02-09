@@ -23,10 +23,10 @@ Invoices.before.insert(function (userId, doc) {
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
     }
-    if (doc.total == 0) {
+    if (doc.total == 0 && doc.saleId) {
         doc.status = 'closed';
         doc.invoiceType = 'saleOrder'
-    } else if (doc.termId) {
+    } else if (doc.termId || (doc.total == 0 && doc.termId)) {
         doc.status = 'active';
         doc.invoiceType = 'term'
     } else {
