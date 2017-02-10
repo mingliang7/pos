@@ -548,15 +548,16 @@ Meteor.methods({
                 branchId: branch._id,
                 chartAccountId: id
             };
-            Meteor.call("acc_cashReport", params, function (err, result) {
-                if (result) {
+            Meteor.call("acc_cashReportMethod", params, function (err, result) {
+                if (!err) {
                     obj.dataByBranches.push({branchDoc: branch, balance: result.endingBalance});
+                }else{
+                    console.log(err.message)
                 }
             });
         });
-
-        Meteor.call("acc_cashReport", selector, function (err, result) {
-            if (result) {
+        Meteor.call("acc_cashReportMethod", selector, function (err, result) {
+            if (!err) {
                 obj.footer = result.endingBalance;
             }
         });

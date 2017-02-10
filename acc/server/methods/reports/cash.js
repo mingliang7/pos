@@ -37,7 +37,7 @@ Meteor.methods({
             /****** Header *****/
 
             let exchangeData = Exchange.findOne({_id: params.exchangeDate});
-            params.exchangeData = moment(exchangeData.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(exchangeData.rates)
+            params.exchangeData = exchangeData && moment(exchangeData.exDate).format("DD/MM/YYYY") + ' | ' + JSON.stringify(exchangeData.rates)
 
 
             data.header = params;
