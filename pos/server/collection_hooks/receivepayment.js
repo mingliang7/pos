@@ -11,51 +11,6 @@ ReceivePayment.before.insert(function (userId, doc) {
     console.log(doc._id);
     doc._id = idGenerator.genWithPrefix(ReceivePayment, `${doc.branchId}-`, 9);
 });
-ReceivePayment.after.insert(function (userId, doc) {
-    Meteor.defer(function () {
-        //Account Integration
-        let setting = AccountIntegrationSetting.findOne();
-        if (setting && setting.integrate) {
-            let transaction = [];
-            let data = doc;
-            data.type = "ReceivePayment";
-            let arChartAccount = AccountMapping.findOne({name: 'A/R'});
-            let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
-            let saleDiscountChartAccount = AccountMapping.findOne({name: 'Sale Discount'});
-            let discountAmount = doc.dueAmount * doc.discount / 100;
-            data.total = doc.paidAmount + discountAmount;
-            transaction.push({
-                account: cashChartAccount.account,
-                dr: doc.paidAmount,
-                cr: 0,
-                drcr: doc.paidAmount
-            });
-            if (discountAmount > 0) {
-                transaction.push({
-                    account: saleDiscountChartAccount.account,
-                    dr: discountAmount,
-                    cr: 0,
-                    drcr: discountAmount
-                });
-            }
-            transaction.push({
-                account: arChartAccount.account,
-                dr: 0,
-                cr: doc.paidAmount + discountAmount,
-                drcr: -doc.paidAmount + discountAmount
-            });
-            data.transaction = transaction;
-            let customerDoc = Customers.findOne({_id: doc.customerId});
-            if (customerDoc) {
-                data.name = customerDoc.name;
-                data.des = data.des == "" || data.des == null ? ('ទទួលការបង់ប្រាក់ពីអតិថិជនៈ ' + data.name) : data.des;
-            }
-            data.journalDate = data.paymentDate;
-            Meteor.call('insertAccountJournal', data);
-        }
-        //End Account Integration
-    });
-});
 
 ReceivePayment.after.update(function (userId, doc) {
     let preDoc = this.previous;

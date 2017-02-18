@@ -17,8 +17,6 @@ import {invoiceState} from '../../common/globalState/invoice'
 // import methods
 import {updateItemInSaleOrder} from '../../common/methods/sale-order'
 Invoices.before.insert(function (userId, doc) {
-
-    console.log(doc.items);
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
@@ -26,8 +24,12 @@ Invoices.before.insert(function (userId, doc) {
     if (doc.total == 0 && doc.saleId) {
         doc.status = 'closed';
         doc.invoiceType = 'saleOrder'
-    } else if (doc.termId || (doc.total == 0 && doc.termId)) {
-        doc.status = 'active';
+    } else if (doc.termId) {
+        if(doc.total == 0){
+            doc.status='closed';
+        }else{
+            doc.status = 'active';
+        }
         doc.invoiceType = 'term'
     } else {
         doc.status = 'active';
