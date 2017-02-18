@@ -16,6 +16,8 @@ import {DepExpList} from '../../imports/api/collections/depExpList';
 import {CloseChartAccount} from '../../imports/api/collections/closeChartAccount';
 import {CloseChartAccountPerMonth} from '../../imports/api/collections/closeChartAccountPerMonth';
 
+import {AccountMapping} from '../../../pos/imports/api/collections/accountMapping';
+
 
 ChartAccount.before.insert(function (userId, doc) {
     Meteor.call('checkParent', doc.parentId, function (err, checkParent) {
@@ -139,6 +141,18 @@ ChartAccount.after.update(function (userId, doc, fieldNames, modifier, options) 
             name: doc.name,
         }
     }, {multi: true});
+
+
+    //CloseChartAccountPerMonth
+
+
+    AccountMapping.direct.update({account: oldData.code + " : " + oldData.name}, {
+        $set: {
+            account: doc.code + " : " + doc.name,
+        }
+    }, {multi: true});
+
+
 })
 
 

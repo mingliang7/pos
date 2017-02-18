@@ -392,7 +392,7 @@ Meteor.methods({
 
                     if (!_.isEmpty(self.date)) {
                         selectorEquivalBaseOld.journalDate = {
-                            $lt: fDate
+                            $lt: tDate
                         };
                     }
 
@@ -415,7 +415,7 @@ Meteor.methods({
 
                     if (!_.isEmpty(self.date)) {
                         selectorEquivalOld.journalDate = {
-                            $lt: fDate
+                            $lt: tDate
                         };
                     }
 

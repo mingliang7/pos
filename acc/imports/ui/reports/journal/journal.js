@@ -76,7 +76,6 @@ reportTpl.onCreated(function () {
                 if (result) {
                     let arrResult=[];
                     let contentDocs=result.content;
-                    console.log(contentDocs);
                     contentDocs.forEach(function (contentDoc) {
                         contentDoc.firstTransaction=[];
                         contentDoc.secondTransaction=[];

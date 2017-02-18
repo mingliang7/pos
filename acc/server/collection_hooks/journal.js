@@ -12,6 +12,7 @@ import {DepExpList} from '../../imports/api/collections/depExpList';
 import {FixAssetDep} from '../../imports/api/collections/fixAssetDep';
 
 
+
 Journal.before.insert(function (userId, doc) {
     var depType = ConfigDep.findOne();
     var transaction = [];
@@ -38,11 +39,12 @@ Journal.before.insert(function (userId, doc) {
     doc._id = doc.idGiven != undefined ? doc.idGiven : idGenerator.genWithPrefix(Journal, prefix, 6);
     doc.splitAccount = lenArray > 2 ? doc._id : 0;
 
+    var curMonth = moment(doc.journalDate).format("MM");
 
-     // Check currency
+    // Check currency
     let _round = {
         type: 'general',
-        precision: -2 // KHR
+        precision: 0 // KHR
     };
 
     switch (doc.currencyId) {
@@ -54,7 +56,6 @@ Journal.before.insert(function (userId, doc) {
             break;
     }
 
-    var curMonth = moment(doc.journalDate).format("MM");
 
     if (doc.transactionAsset != undefined) {
         doc.transactionAsset.forEach(function (obj) {
@@ -78,6 +79,7 @@ Journal.before.insert(function (userId, doc) {
 
 
                 var transactionList = [];
+
                 let depPerYear = round2(((obj.value - obj.estSalvage) / obj.life ), _round.precision, _round.type);
 
                 if (curMonth != "12") {
@@ -178,9 +180,10 @@ Journal.before.insert(function (userId, doc) {
 
                 var value = obj.value;
                 var transactionList = [];
+
                 for (let i = 1; i <= obj.life; i++) {
                     let depPerYear = 0;
-                    let maxMonth = i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
+                    let maxMonth = (i == 1 || i == obj.life) && curMonth != 12 ? 12 - parseInt(curMonth) : 12;
 
                     if (i == obj.life) {
                         depPerYear = round2(obj.value - obj.estSalvage, _round.precision, _round.type);
@@ -194,12 +197,13 @@ Journal.before.insert(function (userId, doc) {
                         perMonth: round2(depPerYear / maxMonth, _round.precision, _round.type),
                         perYear: depPerYear,
                         month: 0,
-                        maxMonth: 12,
+                        maxMonth: maxMonth,
                         status: false
                     })
                     obj.value -= depPerYear;
 
                 }
+
 
                 obj.value = value;
                 selectorFixAssetExpList.transactionAsset = transactionList;
@@ -244,10 +248,11 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
         }
     });
 
- // Check currency
+
+    // Check currency
     let _round = {
         type: 'general',
-        precision: -2 // KHR
+        precision: 0 // KHR
     };
 
     switch (modifier.$set.currencyId) {
@@ -387,9 +392,11 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
 
                 var transactionList = [];
                 var value = obj.value;
+
+
                 for (let i = 1; i <= obj.life; i++) {
                     let depPerYear = 0;
-                    let maxMonth = i == 1 ? 12 - parseInt(curMonth) : parseInt(curMonth);
+                    let maxMonth = (i == 1 || i == obj.life) && curMonth != 12 ? 12 - parseInt(curMonth) : 12;
 
                     if (i == obj.life) {
                         depPerYear = round2(obj.value - obj.estSalvage, _round.precision, _round.type);
@@ -397,21 +404,22 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
                         depPerYear = round2(((obj.value - obj.estSalvage) * (obj.percent / 100) ), _round.precision, _round.type);
 
                     }
-
                     transactionList.push({
                         year: i,
                         perMonth: round2(depPerYear / maxMonth, _round.precision, _round.type),
                         perYear: depPerYear,
                         month: 0,
-                        maxMonth: 12,
+                        maxMonth: maxMonth,
                         status: false
                     })
                     obj.value -= depPerYear;
 
                 }
-                obj.value = value;
-                selectorFixAssetExpList.transactionAsset = transactionList;
 
+
+                obj.value = value;
+
+                selectorFixAssetExpList.transactionAsset = transactionList;
                 DepExpList.insert(selectorFixAssetExpList);
             }
 
@@ -434,4 +442,3 @@ Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
         modifier.$set.transactionAsset = [];
     }
 });
-
