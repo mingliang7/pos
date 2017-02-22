@@ -25,9 +25,9 @@ Invoices.before.insert(function (userId, doc) {
         doc.status = 'closed';
         doc.invoiceType = 'saleOrder'
     } else if (doc.termId) {
-        if(doc.total == 0){
-            doc.status='closed';
-        }else{
+        if (doc.total == 0) {
+            doc.status = 'closed';
+        } else {
             doc.status = 'active';
         }
         doc.invoiceType = 'term'
@@ -54,14 +54,14 @@ Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
 
 Invoices.after.insert(function (userId, doc) {
     Meteor.defer(function () {
-        let des="វិក្កយបត្រ អតិថិជនៈ ";
+        let des = "វិក្កយបត្រ អតិថិជនៈ ";
         Meteor._sleepForMs(200);
         let setting = AccountIntegrationSetting.findOne();
         let transaction = [];
         let totalRemain = 0;
         let accountRefType = 'Invoice';
         if (doc.saleId) {
-            des="វិក្កយបត្រ SO អតិថិជនៈ ";
+            des = "វិក្កយបត្រ SO អតិថិជនៈ ";
             accountRefType = 'Invoice-SaleOrder';
             let total = 0;
             let totalCost = 0;
@@ -305,8 +305,8 @@ Invoices.after.insert(function (userId, doc) {
 });
 
 Invoices.after.update(function (userId, doc) {
-    Meteor.defer(()=> {
-        let des="វិក្កយបត្រ អតិថិជនៈ ";
+    Meteor.defer(() => {
+        let des = "វិក្កយបត្រ អតិថិជនៈ ";
         let preDoc = this.previous;
         let setting = AccountIntegrationSetting.findOne();
         let type = {
@@ -318,7 +318,7 @@ Invoices.after.update(function (userId, doc) {
         let accountRefType = 'Invoice';
         let transaction = [];
         if (type.saleOrder) {
-            des="វិក្កយបត្រ SO អតិថិជនៈ ";
+            des = "វិក្កយបត្រ SO អតិថិជនៈ ";
             accountRefType = 'Invoice-SaleOrder';
             recalculateQty(preDoc);
             updateQtyInSaleOrder(doc);
@@ -363,7 +363,7 @@ Invoices.after.update(function (userId, doc) {
             pushInvoiceFromGroup(doc);
             recalculatePayment({preDoc, doc});
             // average inventory calculate
-            returnToInventory(preDoc);
+            returnToInventory(preDoc, doc.invoiceDate);
             // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total})
             let totalGratis = 0;
             let totalCOGS = 0;
@@ -442,7 +442,7 @@ Invoices.after.update(function (userId, doc) {
             });
             recalculatePayment({preDoc, doc});
             // average inventory calculate
-            returnToInventory(preDoc);
+            returnToInventory(preDoc, doc.invoiceDate);
             let totalGratis = 0;
             let totalCOGS = 0;
             doc.items.forEach(function (item) {
@@ -558,7 +558,7 @@ Invoices.after.remove(function (userId, doc) {
                 recalculatePaymentAfterRemoved({doc})
             }
             // average inventory calculation
-            returnToInventory(doc)
+            returnToInventory(doc, doc.invoiceDate)
         } else {
             accountRefType = 'Invoice';
             doc.items.forEach(function (item) {
@@ -568,7 +568,7 @@ Invoices.after.remove(function (userId, doc) {
                 }
             });
             // average inventory calculation
-            returnToInventory(doc)
+            returnToInventory(doc, doc.invoiceDate)
         }
         Meteor.call('insertRemovedInvoice', doc);
         // Account Integration
@@ -614,7 +614,7 @@ function pushInvoiceFromGroup(doc) {
     GroupInvoice.update({_id: doc.paymentGroupId}, {$addToSet: {invoices: doc}, $inc: {total: doc.total}})
 }
 // update inventory
-function returnToInventory(invoice) {
+function returnToInventory(invoice, invoiceDate) {
     // ---Open Inventory type block "Average Inventory"---
     // let invoice = Invoices.findOne(invoiceId)
     invoice.items.forEach(function (item) {
@@ -624,7 +624,8 @@ function returnToInventory(invoice) {
             item,
             invoice.stockLocationId,
             'invoice-return',
-            invoice._id
+            invoice._id,
+            invoiceDate
         )
     });
 // --- End Inventory type block "Average Inventory"---
@@ -636,9 +637,9 @@ function invoiceManageStock(invoice) {
     let prefix = invoice.stockLocationId + '-';
     let newItems = [];
     invoice.items.forEach(function (item) {
-        let refType='invoice';
-        if(item.price==0){
-            refType='invoice-free';
+        let refType = 'invoice';
+        if (item.price == 0) {
+            refType = 'invoice-free';
         }
         let inventory = AverageInventories.findOne({
             branchId: invoice.branchId,
@@ -672,7 +673,8 @@ function invoiceManageStock(invoice) {
                 averagePrice: averagePrice,
                 coefficient: -1,
                 type: refType,
-                refId: invoice._id
+                refId: invoice._id,
+                inventoryDate: invoice.invoiceDate
             };
             id = AverageInventories.insert(newInventory);
             let setModifier = {$set: {}};
