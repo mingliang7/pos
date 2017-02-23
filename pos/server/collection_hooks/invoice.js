@@ -558,7 +558,7 @@ Invoices.after.remove(function (userId, doc) {
                 recalculatePaymentAfterRemoved({doc})
             }
             // average inventory calculation
-            returnToInventory(doc, doc.invoiceDate)
+            returnToInventory(doc, moment().toDate())
         } else {
             accountRefType = 'Invoice';
             doc.items.forEach(function (item) {
@@ -568,7 +568,7 @@ Invoices.after.remove(function (userId, doc) {
                 }
             });
             // average inventory calculation
-            returnToInventory(doc, doc.invoiceDate)
+            returnToInventory(doc, moment().toDate())
         }
         Meteor.call('insertRemovedInvoice', doc);
         // Account Integration
