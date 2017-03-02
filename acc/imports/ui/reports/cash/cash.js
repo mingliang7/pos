@@ -62,7 +62,6 @@ reportTpl.onCreated(function () {
     createNewAlertify('acc_cashReport');
     this.autorun(() => {
 
-        debugger;
         // Check form data
         if (formDataState.get()) {
             rptInitState.set(true);
@@ -112,6 +111,7 @@ reportTpl.events({
         result.date= $('[name="date"]').val();
         result.currencyId= $('[name="currencyId"]').val();
         result.exchangeDate= $('[name="exchangeDate"]').val();
+        result.transactionType= $('[name="transactionType"]').val();
 
         if(result.exchangeDate==""){
             alertify.warning("Exchange is Required!!!");

@@ -91,7 +91,7 @@ reportTpl.onCreated(function () {
 
             let params = formDataState.get();
 
-            Meteor.call('acc_ledgerReport', params, function (err, result) {
+            Meteor.call('acc_transactionDetailReport', params, function (err, result) {
                 if (result) {
                     rptDataState.set(result);
                 } else {
@@ -309,7 +309,7 @@ generateTpl.helpers({
         var q = FlowRouter.current().queryParams;
 
         Fetcher.setDefault('data', false);
-        Fetcher.retrieve('data', 'acc_ledgerReport', q);
+        Fetcher.retrieve('data', 'acc_transactionDetailReport', q);
 
         return Fetcher.get('data');
         /* var callId = JSON.stringify(q);

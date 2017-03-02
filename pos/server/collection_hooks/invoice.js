@@ -25,9 +25,9 @@ Invoices.before.insert(function (userId, doc) {
         doc.status = 'closed';
         doc.invoiceType = 'saleOrder'
     } else if (doc.termId) {
-        if(doc.total == 0){
-            doc.status='closed';
-        }else{
+        if (doc.total == 0) {
+            doc.status = 'closed';
+        } else {
             doc.status = 'active';
         }
         doc.invoiceType = 'term'
@@ -54,14 +54,14 @@ Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
 
 Invoices.after.insert(function (userId, doc) {
     Meteor.defer(function () {
-        let des="វិក្កយបត្រ អតិថិជនៈ ";
+        let des = "វិក្កយបត្រ អតិថិជនៈ ";
         Meteor._sleepForMs(200);
         let setting = AccountIntegrationSetting.findOne();
         let transaction = [];
         let totalRemain = 0;
         let accountRefType = 'Invoice';
         if (doc.saleId) {
-            des="វិក្កយបត្រ SO អតិថិជនៈ ";
+            des = "វិក្កយបត្រ SO អតិថិជនៈ ";
             accountRefType = 'Invoice-SaleOrder';
             let total = 0;
             let totalCost = 0;
@@ -162,21 +162,23 @@ Invoices.after.insert(function (userId, doc) {
                     },
                     {
                         account: cogsChartAccount.account,
-                        dr: totalCOGS,
+                        //dr: totalCOGS,
+                        dr: totalInventory,
                         cr: 0,
-                        drcr: totalCOGS
+                        //drcr: totalCOGS
+                        drcr: totalInventory
                     }
                 );
 
-                if (totalGratis > 0) {
-                    accountRefType = 'Invoice-Gratis';
-                    transaction.push({
-                        account: gratisChartAccount.account,
-                        dr: totalGratis,
-                        cr: 0,
-                        drcr: totalGratis
-                    })
-                }
+                /*if (totalGratis > 0) {
+                 accountRefType = 'Invoice-Gratis';
+                 transaction.push({
+                 account: gratisChartAccount.account,
+                 dr: totalGratis,
+                 cr: 0,
+                 drcr: totalGratis
+                 })
+                 }*/
                 transaction.push({
                     account: inventoryChartAccount.account,
                     dr: 0,
@@ -243,21 +245,23 @@ Invoices.after.insert(function (userId, doc) {
                     },
                     {
                         account: cogsChartAccount.account,
-                        dr: totalCOGS,
+                        //dr: totalCOGS,
+                        dr: totalInventory,
                         cr: 0,
-                        drcr: totalCOGS
+                        //drcr: totalCOGS
+                        drcr: totalInventory
                     }
                 );
 
-                if (totalGratis > 0) {
-                    accountRefType = 'Invoice-Gratis';
-                    transaction.push({
-                        account: gratisChartAccount.account,
-                        dr: totalGratis,
-                        cr: 0,
-                        drcr: totalGratis
-                    })
-                }
+                /* if (totalGratis > 0) {
+                 accountRefType = 'Invoice-Gratis';
+                 transaction.push({
+                 account: gratisChartAccount.account,
+                 dr: totalGratis,
+                 cr: 0,
+                 drcr: totalGratis
+                 })
+                 }*/
                 transaction.push({
                     account: inventoryChartAccount.account,
                     dr: 0,
@@ -305,8 +309,8 @@ Invoices.after.insert(function (userId, doc) {
 });
 
 Invoices.after.update(function (userId, doc) {
-    Meteor.defer(()=> {
-        let des="វិក្កយបត្រ អតិថិជនៈ ";
+    Meteor.defer(() => {
+        let des = "វិក្កយបត្រ អតិថិជនៈ ";
         let preDoc = this.previous;
         let setting = AccountIntegrationSetting.findOne();
         let type = {
@@ -318,7 +322,7 @@ Invoices.after.update(function (userId, doc) {
         let accountRefType = 'Invoice';
         let transaction = [];
         if (type.saleOrder) {
-            des="វិក្កយបត្រ SO អតិថិជនៈ ";
+            des = "វិក្កយបត្រ SO អតិថិជនៈ ";
             accountRefType = 'Invoice-SaleOrder';
             recalculateQty(preDoc);
             updateQtyInSaleOrder(doc);
@@ -409,20 +413,22 @@ Invoices.after.update(function (userId, doc) {
                     },
                     {
                         account: cogsChartAccount.account,
-                        dr: totalCOGS,
+                        //dr: totalCOGS,
+                        dr: totalInventory,
                         cr: 0,
-                        drcr: totalCOGS
+                        //drcr: totalCOGS
+                        drcr: totalInventory
                     }
                 );
-                if (totalGratis > 0) {
-                    accountRefType = 'Invoice-Gratis';
-                    transaction.push({
-                        account: gratisChartAccount.account,
-                        dr: totalGratis,
-                        cr: 0,
-                        drcr: totalGratis
-                    })
-                }
+                /* if (totalGratis > 0) {
+                 accountRefType = 'Invoice-Gratis';
+                 transaction.push({
+                 account: gratisChartAccount.account,
+                 dr: totalGratis,
+                 cr: 0,
+                 drcr: totalGratis
+                 })
+                 }*/
                 transaction.push({
                     account: inventoryChartAccount.account,
                     dr: 0,
@@ -487,20 +493,22 @@ Invoices.after.update(function (userId, doc) {
                     },
                     {
                         account: cogsChartAccount.account,
-                        dr: totalCOGS,
+                        //dr: totalCOGS,
+                        dr: totalInventory,
                         cr: 0,
-                        drcr: totalCOGS
+                        //drcr: totalCOGS
+                        drcr: totalInventory
                     }
                 );
-                if (totalGratis > 0) {
-                    accountRefType = 'Invoice-Gratis';
-                    transaction.push({
-                        account: gratisChartAccount.account,
-                        dr: totalGratis,
-                        cr: 0,
-                        drcr: totalGratis
-                    })
-                }
+                /* if (totalGratis > 0) {
+                 accountRefType = 'Invoice-Gratis';
+                 transaction.push({
+                 account: gratisChartAccount.account,
+                 dr: totalGratis,
+                 cr: 0,
+                 drcr: totalGratis
+                 })
+                 }*/
                 transaction.push({
                     account: inventoryChartAccount.account,
                     dr: 0,
@@ -636,9 +644,9 @@ function invoiceManageStock(invoice) {
     let prefix = invoice.stockLocationId + '-';
     let newItems = [];
     invoice.items.forEach(function (item) {
-        let refType='invoice';
-        if(item.price==0){
-            refType='invoice-free';
+        let refType = 'invoice';
+        if (item.price == 0) {
+            refType = 'invoice-free';
         }
         let inventory = AverageInventories.findOne({
             branchId: invoice.branchId,

@@ -85,8 +85,11 @@ Tracker.autorun(function () {
         var dobSelect = Session.get('dobSelect');
         var startYear = moment(dobSelect).year();
         var startDate = moment('01/01/' + startYear,'DD/MM/YYYY').toDate();
-        Meteor.call('acc_getVoucherId', currentCurrency, startDate, Session.get("currentBranch"), function (err, result) {
+        console.log(Meteor.userId());
+        Meteor.call('acc_getVoucherId', currentCurrency, startDate, Session.get("currentBranch"), Meteor.userId(), function (err, result) {
             if (result != undefined) {
+                console.log(result);
+                console.log(result.voucherId);
                 Session.set('lastVoucherId', parseInt((result.voucherId).substr(8, 13)) + 1);
             } else {
                 Session.set('lastVoucherId', "000001");
