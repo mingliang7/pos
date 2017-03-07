@@ -1,10 +1,8 @@
-import {Invoices} from '../../../imports/api/collections/invoice'
-import {ReceivePayment} from '../../../imports/api/collections/receivePayment'
-import {AverageInventories} from '../../../imports/api/collections/inventory'
-
-import {AccountMapping} from '../../../imports/api/collections/accountMapping'
-
-import {ChartAccount} from '../../../../acc/imports/api/collections/chartAccount'
+import {Invoices} from '../../../imports/api/collections/invoice';
+import {ReceivePayment} from '../../../imports/api/collections/receivePayment';
+import {AverageInventories} from '../../../imports/api/collections/inventory';
+import {AccountMapping} from '../../../imports/api/collections/accountMapping';
+import {ChartAccount} from '../../../../acc/imports/api/collections/chartAccount';
 import {Branch} from '../../../../core/imports/api/collections/branch';
 
 

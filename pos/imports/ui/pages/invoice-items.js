@@ -245,7 +245,7 @@ itemsTmpl.events({
             return;
         }
         let qty = instance.$('[name="qty"]').val();
-        qty = qty == '' ? 1 : parseInt(qty);
+        qty = qty == '' ? 1 : parseFloat(qty);
         let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
         let amount = math.round(qty * price, 2);
         let stockLocationId = $('[name="stockLocationId"]').val();
@@ -340,7 +340,7 @@ itemsTmpl.events({
                                 itemId: itemId
                             });
                             if (exist) {
-                                qty += parseInt(exist.qty);
+                                qty += parseFloat(exist.qty);
                                 amount = math.round(qty * price, 2);
                                 itemsCollection.update({
                                     _id: exist._id
@@ -429,7 +429,7 @@ itemsTmpl.events({
                                 itemId: itemId
                             });
                             if (exist) {
-                                qty += parseInt(exist.qty);
+                                qty += parseFloat(exist.qty);
                                 amount = math.round(qty * price, 2);
 
                                 itemsCollection.update({
@@ -500,7 +500,7 @@ itemsTmpl.events({
         let thisObj = $(event.currentTarget);
         let price = numeral().unformat(thisObj.parents('tr').find('.price').text());
         let amount = numeral().unformat(thisObj.parents('tr').find('.amount').text());
-        let currentQty = parseInt(event.currentTarget.value);
+        let currentQty = parseFloat(event.currentTarget.value);
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
         let currentItem = itemsCollection.findOne({itemId: itemId, price: price, amount: amount});
         let checkQty = 0;
