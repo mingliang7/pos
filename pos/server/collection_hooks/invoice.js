@@ -17,6 +17,12 @@ import {invoiceState} from '../../common/globalState/invoice'
 // import methods
 import {updateItemInSaleOrder} from '../../common/methods/sale-order'
 Invoices.before.insert(function (userId, doc) {
+    let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    if (doc.invoiceDate <= inventoryDate) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
+
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
@@ -43,6 +49,21 @@ Invoices.before.insert(function (userId, doc) {
 });
 
 Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
+    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    if (modifier.$set.invoiceDate < inventoryDateOld) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDateOld).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
+
+    modifier = modifier == null ? {} : modifier;
+    modifier.$set.branchId=modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
+    modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
+    let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
+    if (modifier.$set.invoiceDate < inventoryDate) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
+
     let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
     let data = {stockLocationId: doc.stockLocationId, items: doc.items};
@@ -367,7 +388,7 @@ Invoices.after.update(function (userId, doc) {
             pushInvoiceFromGroup(doc);
             recalculatePayment({preDoc, doc});
             // average inventory calculate
-            returnToInventory(preDoc);
+            returnToInventory(preDoc, doc.invoiceDate);
             // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total})
             let totalGratis = 0;
             let totalCOGS = 0;
@@ -448,7 +469,7 @@ Invoices.after.update(function (userId, doc) {
             });
             recalculatePayment({preDoc, doc});
             // average inventory calculate
-            returnToInventory(preDoc);
+            returnToInventory(preDoc, doc.invoiceDate);
             let totalGratis = 0;
             let totalCOGS = 0;
             doc.items.forEach(function (item) {
@@ -566,7 +587,7 @@ Invoices.after.remove(function (userId, doc) {
                 recalculatePaymentAfterRemoved({doc})
             }
             // average inventory calculation
-            returnToInventory(doc)
+            returnToInventory(doc, moment().toDate())
         } else {
             accountRefType = 'Invoice';
             doc.items.forEach(function (item) {
@@ -576,7 +597,7 @@ Invoices.after.remove(function (userId, doc) {
                 }
             });
             // average inventory calculation
-            returnToInventory(doc)
+            returnToInventory(doc, moment().toDate())
         }
         Meteor.call('insertRemovedInvoice', doc);
         // Account Integration
@@ -622,7 +643,7 @@ function pushInvoiceFromGroup(doc) {
     GroupInvoice.update({_id: doc.paymentGroupId}, {$addToSet: {invoices: doc}, $inc: {total: doc.total}})
 }
 // update inventory
-function returnToInventory(invoice) {
+function returnToInventory(invoice, invoiceDate) {
     // ---Open Inventory type block "Average Inventory"---
     // let invoice = Invoices.findOne(invoiceId)
     invoice.items.forEach(function (item) {
@@ -632,7 +653,8 @@ function returnToInventory(invoice) {
             item,
             invoice.stockLocationId,
             'invoice-return',
-            invoice._id
+            invoice._id,
+            invoiceDate
         )
     });
 // --- End Inventory type block "Average Inventory"---
@@ -680,7 +702,8 @@ function invoiceManageStock(invoice) {
                 averagePrice: averagePrice,
                 coefficient: -1,
                 type: refType,
-                refId: invoice._id
+                refId: invoice._id,
+                inventoryDate: invoice.invoiceDate
             };
             id = AverageInventories.insert(newInventory);
             let setModifier = {$set: {}};

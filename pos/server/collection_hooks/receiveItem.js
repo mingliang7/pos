@@ -18,6 +18,11 @@ import {GroupBill} from '../../imports/api/collections/groupBill.js'
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
 
 ReceiveItems.before.insert(function (userId, doc) {
+    let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    if (doc.receiveItemDate <= inventoryDate) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
     let tmpBillId = doc._id;
@@ -26,6 +31,20 @@ ReceiveItems.before.insert(function (userId, doc) {
 
 
 ReceiveItems.before.update(function (userId, doc, fieldNames, modifier, options) {
+    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    if (modifier.$set.receiveItemDate < inventoryDateOld) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDateOld).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
+
+    modifier = modifier == null ? {} : modifier;
+    modifier.$set.branchId=modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
+    modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
+    let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
+    if (modifier.$set.receiveItemDate < inventoryDate) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
@@ -134,7 +153,14 @@ ReceiveItems.after.insert(function (userId, doc) {
             throw Meteor.Error('Require Receive Item type');
         }
         doc.items.forEach(function (item) {
-            StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'receiveItem', doc._id);
+            StockFunction.averageInventoryInsert(
+                doc.branchId,
+                item,
+                doc.stockLocationId,
+                'receiveItem',
+                doc._id,
+                doc.receiveItemDate
+            );
         });
 
 
@@ -201,7 +227,6 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
                 let InventoryOwingChartAccount = AccountMapping.findOne({name: 'Inventory Supplier Owing'});
 
 
-
                 transaction.push({
                     account: InventoryOwingChartAccount.account,
                     dr: 0,
@@ -256,9 +281,16 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
         } else {
             throw Meteor.Error('Require Receive Item type');
         }
-        reduceFromInventory(preDoc, 'receiveItem-return');
+        reduceFromInventory(preDoc, 'receiveItem-return',doc.receiveItemDate);
         doc.items.forEach(function (item) {
-            StockFunction.averageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'receiveItem', doc._id);
+            StockFunction.averageInventoryInsert(
+                doc.branchId,
+                item,
+                doc.stockLocationId,
+                'receiveItem',
+                doc._id,
+                doc.receiveItemDate
+            );
         });
         //Account Integration
         if (setting && setting.integrate) {
@@ -323,7 +355,7 @@ ReceiveItems.after.remove(function (userId, doc) {
         } else {
             throw Meteor.Error('Require Receive Item type');
         }
-        reduceFromInventory(doc, 'receiveItem-return');
+        reduceFromInventory(doc, 'receiveItem-return',moment().toDate());
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -494,88 +526,16 @@ function increaseExchangeGratis(preDoc) {
 }
 
 
-function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
-    let lastPurchasePrice = 0;
-    let remainQuantity = 0;
-    let prefix = stockLocationId + '-';
-    let inventory = AverageInventories.findOne({
-        branchId: branchId,
-        itemId: item.itemId,
-        stockLocationId: stockLocationId
-    }, {sort: {createdAt: -1}});
-    if (inventory == null) {
-        let inventoryObj = {};
-        inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
-        inventoryObj.branchId = branchId;
-        inventoryObj.stockLocationId = stockLocationId;
-        inventoryObj.itemId = item.itemId;
-        inventoryObj.qty = item.qty;
-        inventoryObj.price = item.price;
-        inventoryObj.remainQty = item.qty;
-        inventoryObj.type = type;
-        inventoryObj.coefficient = 1;
-        inventoryObj.refId = refId;
-        lastPurchasePrice = item.price;
-        remainQuantity = inventoryObj.remainQty;
-        AverageInventories.insert(inventoryObj);
-    }
-    else if (inventory.price == item.price) {
-        let inventoryObj = {};
-        inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
-        inventoryObj.branchId = branchId;
-        inventoryObj.stockLocationId = stockLocationId;
-        inventoryObj.itemId = item.itemId;
-        inventoryObj.qty = item.qty;
-        inventoryObj.price = item.price;
-        inventoryObj.remainQty = item.qty + inventory.remainQty;
-        inventoryObj.type = type;
-        inventoryObj.coefficient = 1;
-        inventoryObj.refId = refId;
-        lastPurchasePrice = item.price;
-        remainQuantity = inventoryObj.remainQty;
-        AverageInventories.insert(inventoryObj);
-        /*
-         let
-         inventorySet = {};
-         inventorySet.qty = item.qty + inventory.qty;
-         inventorySet.remainQty = inventory.remainQty + item.qty;
-         AverageInventories.update(inventory._id, {$set: inventorySet});
-         */
-    }
-    else {
-        let totalQty = inventory.remainQty + item.qty;
-        let price = 0;
-        //should check totalQty or inventory.remainQty
-        if (totalQty <= 0) {
-            price = inventory.price;
-        } else if (inventory.remainQty <= 0) {
-            price = item.price;
-        } else {
-            price = ((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty;
-        }
-        let nextInventory = {};
-        nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
-        nextInventory.branchId = branchId;
-        nextInventory.stockLocationId = stockLocationId;
-        nextInventory.itemId = item.itemId;
-        nextInventory.qty = item.qty;
-        nextInventory.price = math.round(price, 2);
-        nextInventory.remainQty = totalQty;
-        nextInventory.type = type;
-        nextInventory.coefficient = 1;
-        nextInventory.refId = refId;
-        lastPurchasePrice = price;
-        remainQuantity = nextInventory.remainQty;
-        AverageInventories.insert(nextInventory);
-    }
-
-    var setModifier = {$set: {purchasePrice: lastPurchasePrice}};
-    setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
-    Item.direct.update(item.itemId, setModifier);
-}
-function reduceFromInventory(receiveItem, type) {
+function reduceFromInventory(receiveItem, type,receiveItemDate) {
     receiveItem.items.forEach(function (item) {
-        StockFunction.minusAverageInventoryInsert(receiveItem.branchId, item, receiveItem.stockLocationId, type, receiveItem._id);
+        StockFunction.minusAverageInventoryInsert(
+            receiveItem.branchId,
+            item,
+            receiveItem.stockLocationId,
+            type,
+            receiveItem._id,
+            receiveItemDate
+        );
     });
 
 }

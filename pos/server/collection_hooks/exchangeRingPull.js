@@ -10,7 +10,11 @@ import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
 import {Customers} from '../../imports/api/collections/customer.js'
 import StockFunction from '../../imports/api/libs/stock';
 ExchangeRingPulls.before.insert(function (userId, doc) {
-
+    let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    if (doc.exchangeRingPullDate <= inventoryDate) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
     let result=StockFunction.checkStockByLocation(doc.stockLocationId,doc.items);
     if(!result.isEnoughStock){
         throw new Meteor.Error( result.message);
@@ -21,6 +25,20 @@ ExchangeRingPulls.before.insert(function (userId, doc) {
 });
 
 ExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, options) {
+    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    if (modifier.$set.exchangeRingPullDate < inventoryDateOld) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDateOld).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
+
+    modifier = modifier == null ? {} : modifier;
+    modifier.$set.branchId=modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
+    modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
+    let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
+    if (modifier.$set.exchangeRingPullDate < inventoryDate) {
+        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+    }
     let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
     let data = {stockLocationId: doc.stockLocationId, items: doc.items};
@@ -55,7 +73,13 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
         });
         let inventoryIdList = [];
         doc.items.forEach(function (item) {
-            let id = StockFunction.minusAverageInventoryInsert(doc.branchId, item, doc.stockLocationId, 'exchangeRingPull', doc._id);
+            let id = StockFunction.minusAverageInventoryInsert(
+                doc.branchId, item,
+                doc.stockLocationId,
+                'exchangeRingPull',
+                doc._id,
+                doc.exchangeRingPullDate
+            );
             inventoryIdList.push(id);
         });
         doc.total = total;
@@ -112,7 +136,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
     Meteor.defer(()=> {
         let preDoc = this.previous;
         Meteor._sleepForMs(200);
-        returnToInventory(preDoc, 'exchangeRingPull-return');
+        returnToInventory(preDoc, 'exchangeRingPull-return',doc.exchangeRingPullDate);
         //Account Integration
         let total = 0;
         doc.items.forEach(function (item) {
@@ -169,7 +193,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
 ExchangeRingPulls.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        returnToInventory(doc, 'exchangeRingPull-return');
+        returnToInventory(doc, 'exchangeRingPull-return',moment().toDate());
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -198,7 +222,14 @@ function ExchangeRingPullManageStock(exchangeRingPull) {
     let prefix = exchangeRingPull.stockLocationId + "-";
     let newItems = [];
     exchangeRingPull.items.forEach(function (item) {
-        StockFunction.minusAverageInventoryInsert(exchangeRingPull.branchId, item, exchangeRingPull.stockLocationId, 'exchangeRingPull', exchangeRingPull._id);
+        StockFunction.minusAverageInventoryInsert(
+            exchangeRingPull.branchId,
+            item,
+            exchangeRingPull.stockLocationId,
+            'exchangeRingPull',
+            exchangeRingPull._id,
+            exchangeRingPull.exchangeRingPullDate
+        );
         //---insert to Ring Pull Stock---
         let ringPullInventory = RingPullInventories.findOne({
             branchId: exchangeRingPull.branchId,
@@ -224,7 +255,7 @@ function ExchangeRingPullManageStock(exchangeRingPull) {
 
 }
 //update inventory
-function returnToInventory(exchangeRingPull, type) {
+function returnToInventory(exchangeRingPull, type,inventoryDate) {
     //---Open Inventory type block "Average Inventory"---
     // let exchangeRingPull = Invoices.findOne(exchangeRingPullId);
     exchangeRingPull.items.forEach(function (item) {
@@ -233,7 +264,8 @@ function returnToInventory(exchangeRingPull, type) {
             item,
             exchangeRingPull.stockLocationId,
             type,
-            exchangeRingPull._id
+            exchangeRingPull._id,
+            inventoryDate
         );
         //---Reduce from Ring Pull Stock---
         let ringPullInventory = RingPullInventories.findOne({
