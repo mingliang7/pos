@@ -136,10 +136,8 @@ Meteor.methods({
                     //Get Balance From Close to Date Query
                     if (lastDate != null) {
                         selectorGetLastBalance.closeDate = {
-
                             $gte: moment(lastDate.closeDate, "DD/MM/YYYY").startOf('days').toDate(),
                             $lte: moment(lastDate.closeDate, "DD/MM/YYYY").endOf('days').toDate()
-
                         };
                     }
                     if (self.currencyId != "All") {

@@ -20,9 +20,7 @@ Meteor.methods({
             });
 
             var date = moment(data.journalDate, "DD/MM/YYYY").format("YYMM");
-            var prefix = data.branchId + "-" + date;
-            data.idGiven = idGenerator.genWithPrefix(Journal,
-                prefix, 6);
+
             var year = moment(data.journalDate, "DD/MM/YYYY").format("YYYY");
             data.voucherId = data.branchId + "-" + year + s.pad(data.voucherId, 6, "0");
 
@@ -77,9 +75,8 @@ Meteor.methods({
 
 
             var date = moment(data.journalDate, "DD/MM/YYYY").format("YYMM");
-            var prefix = data.branchId + "-" + date;
-            data._id = idGenerator.genWithPrefix(Journal,
-                prefix, 6);
+
+
             var year = moment(data.journalDate).format("YYYY");
             data.voucherId = data.branchId + "-" + year + s.pad(data.voucherId, 6, "0");
 
