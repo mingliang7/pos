@@ -183,21 +183,23 @@ Invoices.after.insert(function (userId, doc) {
                     },
                     {
                         account: cogsChartAccount.account,
-                        dr: totalCOGS,
+                        //dr: totalCOGS,
+                        dr: totalInventory,
                         cr: 0,
-                        drcr: totalCOGS
+                        //drcr: totalCOGS
+                        drcr: totalInventory
                     }
                 );
 
-                if (totalGratis > 0) {
-                    accountRefType = 'Invoice-Gratis';
-                    transaction.push({
-                        account: gratisChartAccount.account,
-                        dr: totalGratis,
-                        cr: 0,
-                        drcr: totalGratis
-                    })
-                }
+                /*if (totalGratis > 0) {
+                 accountRefType = 'Invoice-Gratis';
+                 transaction.push({
+                 account: gratisChartAccount.account,
+                 dr: totalGratis,
+                 cr: 0,
+                 drcr: totalGratis
+                 })
+                 }*/
                 transaction.push({
                     account: inventoryChartAccount.account,
                     dr: 0,
@@ -264,21 +266,23 @@ Invoices.after.insert(function (userId, doc) {
                     },
                     {
                         account: cogsChartAccount.account,
-                        dr: totalCOGS,
+                        //dr: totalCOGS,
+                        dr: totalInventory,
                         cr: 0,
-                        drcr: totalCOGS
+                        //drcr: totalCOGS
+                        drcr: totalInventory
                     }
                 );
 
-                if (totalGratis > 0) {
-                    accountRefType = 'Invoice-Gratis';
-                    transaction.push({
-                        account: gratisChartAccount.account,
-                        dr: totalGratis,
-                        cr: 0,
-                        drcr: totalGratis
-                    })
-                }
+                /* if (totalGratis > 0) {
+                 accountRefType = 'Invoice-Gratis';
+                 transaction.push({
+                 account: gratisChartAccount.account,
+                 dr: totalGratis,
+                 cr: 0,
+                 drcr: totalGratis
+                 })
+                 }*/
                 transaction.push({
                     account: inventoryChartAccount.account,
                     dr: 0,
@@ -430,20 +434,22 @@ Invoices.after.update(function (userId, doc) {
                     },
                     {
                         account: cogsChartAccount.account,
-                        dr: totalCOGS,
+                        //dr: totalCOGS,
+                        dr: totalInventory,
                         cr: 0,
-                        drcr: totalCOGS
+                        //drcr: totalCOGS
+                        drcr: totalInventory
                     }
                 );
-                if (totalGratis > 0) {
-                    accountRefType = 'Invoice-Gratis';
-                    transaction.push({
-                        account: gratisChartAccount.account,
-                        dr: totalGratis,
-                        cr: 0,
-                        drcr: totalGratis
-                    })
-                }
+                /* if (totalGratis > 0) {
+                 accountRefType = 'Invoice-Gratis';
+                 transaction.push({
+                 account: gratisChartAccount.account,
+                 dr: totalGratis,
+                 cr: 0,
+                 drcr: totalGratis
+                 })
+                 }*/
                 transaction.push({
                     account: inventoryChartAccount.account,
                     dr: 0,
@@ -508,20 +514,22 @@ Invoices.after.update(function (userId, doc) {
                     },
                     {
                         account: cogsChartAccount.account,
-                        dr: totalCOGS,
+                        //dr: totalCOGS,
+                        dr: totalInventory,
                         cr: 0,
-                        drcr: totalCOGS
+                        //drcr: totalCOGS
+                        drcr: totalInventory
                     }
                 );
-                if (totalGratis > 0) {
-                    accountRefType = 'Invoice-Gratis';
-                    transaction.push({
-                        account: gratisChartAccount.account,
-                        dr: totalGratis,
-                        cr: 0,
-                        drcr: totalGratis
-                    })
-                }
+                /* if (totalGratis > 0) {
+                 accountRefType = 'Invoice-Gratis';
+                 transaction.push({
+                 account: gratisChartAccount.account,
+                 dr: totalGratis,
+                 cr: 0,
+                 drcr: totalGratis
+                 })
+                 }*/
                 transaction.push({
                     account: inventoryChartAccount.account,
                     dr: 0,
