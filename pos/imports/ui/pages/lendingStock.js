@@ -298,6 +298,9 @@ editTmpl.events({
     }
 });
 editTmpl.helpers({
+    lendingStockDate(){
+      return this.lendingStockDate;
+    },
     closeSwal(){
         setTimeout(function () {
             swal.close();

@@ -367,6 +367,10 @@ editTmpl.helpers({
 
         return data;
     },
+    enterBillDate () {
+        let data = this;
+        return date.enterBillDate;
+    },
     itemsCollection(){
         return itemsCollection;
     },
