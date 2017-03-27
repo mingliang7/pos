@@ -46,5 +46,5 @@ tabularOpts.columns = [
     },
     {title: '', tmpl: Meteor.isClient && Template.Pos_vendorButtonAction}
 ];
-tabularOpts.extraFields = ['termId', '_term', 'paymentType', 'repId', 'paymentGroupId'];
+tabularOpts.extraFields = ['termId', '_term', 'paymentType', 'repId', 'paymentGroupId', 'address'];
 export const VendorTabular = new Tabular.Table(tabularOpts);

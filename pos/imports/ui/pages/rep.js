@@ -101,18 +101,14 @@ newTmpl.helpers({
 });
 
 // Edit
-editTmpl.onCreated(function () {
-    this.autorun(()=> {
-        this.subscribe('pos.rep', {_id: this.data._id});
-    });
-});
+
 
 editTmpl.helpers({
     collection(){
         return Reps;
     },
     data () {
-        let data = Reps.findOne(this._id);
+        let data = this;
         return data;
     }
 });
