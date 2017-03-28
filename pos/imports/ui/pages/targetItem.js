@@ -67,7 +67,7 @@ actionTmpl.events({
     },
     'click .js-destroy'(event, instance) {
         destroyAction(
-            targetItem,
+            TargetItem,
             {_id: this._id},
             {title: 'Remove Unit', itemTitle: this._id}
         );
