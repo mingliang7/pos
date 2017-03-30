@@ -38,7 +38,7 @@
                 <div class="col-md-9">
                     <p class="pull-right ">
                     <h4 class="text-black">BALANCE DUE</h4>
-                    <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
+                    <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.0000'}}</h2>
                     {{#if totalOrder.vendorId}}
                         <a class="btn btn-default text-center go-to-pay-bill"
                            href="/pos/vendor/{{totalOrder.vendorId}}/payBill/{{totalOrder.billId}}">
@@ -124,7 +124,7 @@
                     <div class="col-md-9">
                         <p class="pull-right ">
                         <h4 class="text-black">BALANCE DUE</h4>
-                        <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.00'}}</h2>
+                        <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.0000'}}</h2>
                         {{#if totalOrder.vendorId}}
                             <a class="btn btn-default text-center go-to-pay-bill"
                                href="/pos/vendor/{{totalOrder.vendorId}}/payBill/{{totalOrder.billId}}">
@@ -255,14 +255,14 @@
                                             <td><a href="#">{{item.name}}</a></td>
                                             <td class="text-center">{{item.qty}}</td>
                                             <td class="text-right">${{item.price}}</td>
-                                            <td class="text-right">${{numFormat item.amount '0,0.00'}}</td>
+                                            <td class="text-right">${{numFormat item.amount '0,0.0000'}}</td>
                                         </tr>
                                     {{/each}}
                                     <tr>
                                         <td class="no-line"></td>
                                         <td class="no-line"></td>
                                         <td class="no-line text-right"><strong>Total</strong></td>
-                                        <td class="no-line text-right">${{numFormat total '0,0.00'}}</td>
+                                        <td class="no-line text-right">${{numFormat total '0,0.0000'}}</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -294,7 +294,7 @@
                     <!--<td><a href="">{{prepaidOrder._id}}</a></td>-->
                     <!--<td>{{moFormat prepaidOrder.orderDate 'YYYY-MM-DD HH:mm'}}</td>-->
                     <!--<td>{{prepaidOrder._vendor.name}}</td>-->
-                    <!--<td>{{numFormat prepaidOrder.total '0,0.00'}}</td>-->
+                    <!--<td>{{numFormat prepaidOrder.total '0,0.0000'}}</td>-->
                     <!--<td>{{prepaidOrder.sumRemainQty}}</td>-->
                     <!--<td>{{prepaidOrder.status}}</td>-->
                 <!--</tr>-->

@@ -51,7 +51,7 @@ export const ItemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.decimal();
+                return inputmaskOptions.decimal({digits: 4});
             }
         }
     },
@@ -64,7 +64,7 @@ export const ItemsSchema = new SimpleSchema({
             type: 'inputmask',
             optional: true,
             inputmaskOptions: function () {
-                return inputmaskOptions.currency();
+                return inputmaskOptions.currency({digits: 4});
             }
         }
     },
@@ -115,7 +115,7 @@ export const ItemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.currency();
+                return inputmaskOptions.currency({digits: 4});
             }
         }
 

@@ -24,7 +24,7 @@ Invoices.itemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.currency();
+                return inputmaskOptions.currency({digits: 4});
             }
         }
     },
@@ -34,7 +34,7 @@ Invoices.itemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.currency();
+                return inputmaskOptions.currency({digits: 4});
             }
         }
     }

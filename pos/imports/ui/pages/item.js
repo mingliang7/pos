@@ -294,7 +294,7 @@ Template.schemeItem.helpers({
                 key: 'price',
                 label: 'Price',
                 fn (value, object, key) {
-                    return numeral(value).format('0,0.00');
+                    return numeral(value).format('0,0.0000');
                 }
             },
             {

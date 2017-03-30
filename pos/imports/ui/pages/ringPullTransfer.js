@@ -196,7 +196,7 @@ newTmpl.helpers({
         return {
             fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
               <li>Opening Balance: <span class="label label-success">0</span></li>
-              <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
+              <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.0000') : 0}</span></li>
               <li>Sale Order to be ringPullTransfer: <span class="label label-primary">0</span>`
         };
     },
@@ -310,7 +310,7 @@ editTmpl.helpers({
         return {
             fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
               <li>Opening Balance: <span class="label label-success">0</span></li>
-              <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
+              <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.0000') : 0}</span></li>
               <li>Sale Order to be ringPullTransfer: <span class="label label-primary">0</span>`
         };
     },
