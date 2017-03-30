@@ -102,14 +102,14 @@ Meteor.methods({
         let userId = Meteor.userId();
         let locationTransfer = LocationTransfers.findOne(locationTransferId);
 
-        let fromInventoryDate = StockFunction.getLastInventoryDate(locationTransfer.fromBranchId, doc.fromStockLocationId);
-        if (doc.locationTransferDate <= fromInventoryDate) {
+        let fromInventoryDate = StockFunction.getLastInventoryDate(locationTransfer.fromBranchId, locationTransfer.fromStockLocationId);
+        if (locationTransfer.locationTransferDate <= fromInventoryDate) {
             throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
                 moment(fromInventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
         }
 
         let toInventoryDate = StockFunction.getLastInventoryDate(locationTransfer.toBranchId, doc.toStockLocationId);
-        if (doc.locationTransferDate <= toInventoryDate) {
+        if (locationTransfer.locationTransferDate <= toInventoryDate) {
             throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
                 moment(toInventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
         }
