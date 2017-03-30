@@ -116,10 +116,10 @@
                             <td>
                                 &nbsp;&nbsp;&nbsp;&nbsp;{{code}}:{{name}}
                             </td>
-                            <td align="right">
+                            <td style="text-align: right">
                                 {{#if isNegative result}} {{else}}{{getCurrency currency}}{{formatMoney result}}{{/if}}
                             </td>
-                            <td align="right">
+                            <td style="text-align: right">
                                 {{#if isNegative result}} {{getCurrency currency}}{{formatMoneyABS
                                         result}}{{else}}{{/if}}
                             </td>
@@ -127,9 +127,9 @@
                     {{/each}}
                     <tr>
 
-                        <td align="right" colspan="2"><b>Total </b></td>
-                        <td align="right"><b>{{getCurrency currencySelect}}{{formatMoney grandTotalDr}}  </b></td>
-                        <td align="right"><b>{{getCurrency currencySelect}}{{formatMoney grandTotalCr}}  </b></td>
+                        <td style="text-align: right" colspan="2"><b>Total </b></td>
+                        <td style="text-align: right"><b>{{getCurrency currencySelect}}{{formatMoney grandTotalDr}}  </b></td>
+                        <td style="text-align: right"><b>{{getCurrency currencySelect}}{{formatMoney grandTotalCr}}  </b></td>
                     </tr>
                     </tbody>
                 </table>
@@ -215,11 +215,11 @@
                                     <td>
                                         &nbsp;&nbsp;&nbsp;&nbsp;{{code}}:{{name}}
                                     </td>
-                                    <td align="right">
+                                    <td style="text-align: right">
                                         {{#if isNegative result}} {{else}}{{getCurrency currency}}{{formatMoney
                                                 result}}{{/if}}
                                     </td>
-                                    <td align="right">
+                                    <td style="text-align: right">
                                         {{#if isNegative result}} {{getCurrency currency}}{{formatMoneyABS
                                                 result}}{{else}}{{/if}}
                                     </td>
@@ -227,10 +227,10 @@
                             {{/each}}
                             <tr>
 
-                                <td align="right" colspan="2"><b>Total </b></td>
-                                <td align="right"><b>{{getCurrency currencySelect}}{{formatMoney grandTotalDr}}  </b>
+                                <td style="text-align: right" colspan="2"><b>Total </b></td>
+                                <td style="text-align: right"><b>{{getCurrency currencySelect}}{{formatMoney grandTotalDr}}  </b>
                                 </td>
-                                <td align="right"><b>{{getCurrency currencySelect}}{{formatMoney grandTotalCr}}  </b>
+                                <td style="text-align: right"><b>{{getCurrency currencySelect}}{{formatMoney grandTotalCr}}  </b>
                                 </td>
                             </tr>
                             </tbody>

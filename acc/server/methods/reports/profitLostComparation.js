@@ -454,7 +454,7 @@ Meteor.methods({
                     if (obj.level > 0) {
                         style = "align='left'";
                     } else {
-                        style = "align='right'";
+                        style = " style='text-align: right'";
                     }
 
 
@@ -462,7 +462,7 @@ Meteor.methods({
                     if (level > 0) {
                         styleBefore = "align='left'";
                     } else {
-                        styleBefore = "align='right'";
+                        styleBefore = " style='text-align: right'";
                     }
 
 
@@ -535,29 +535,29 @@ Meteor.methods({
                             incomeData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                             let totalSubAmount = 0;
                             subTotalColumnList.forEach(function (val) {
-                                incomeData += "<td align='right'>" + formatMoney(-val) + "</td>";
+                                incomeData += "<td  style='text-align: right'>" + formatMoney(-val) + "</td>";
                                 totalSubAmount += val;
                             })
-                            incomeData += "<td align='right'>" + formatMoney(-totalSubAmount) + "</td></tr>";
+                            incomeData += "<td  style='text-align: right'>" + formatMoney(-totalSubAmount) + "</td></tr>";
 
                         } else if (accountType == "50" || accountType == "51") {
                             expenseData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                             let totalSubAmount = 0;
                             subTotalColumnList.forEach(function (val) {
-                                expenseData += "<td align='right'>" + formatMoney(val) + "</td>";
+                                expenseData += "<td  style='text-align: right'>" + formatMoney(val) + "</td>";
                                 totalSubAmount += val;
                             })
 
-                            expenseData += "<td align='right'>" + formatMoney(totalSubAmount) + "</td></tr>";
+                            expenseData += "<td  style='text-align: right'>" + formatMoney(totalSubAmount) + "</td></tr>";
                         }else {
                             cogsData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                             let totalSubAmount = 0;
                             subTotalColumnList.forEach(function (val) {
-                                cogsData += "<td align='right'>" + formatMoney(val) + "</td>";
+                                cogsData += "<td  style='text-align: right'>" + formatMoney(val) + "</td>";
                                 totalSubAmount += val;
                             })
 
-                            cogsData += "<td align='right'>" + formatMoney(totalSubAmount) + "</td></tr>";
+                            cogsData += "<td  style='text-align: right'>" + formatMoney(totalSubAmount) + "</td></tr>";
                         }
 
                         isPush = false;
@@ -650,7 +650,7 @@ Meteor.methods({
                 if (level > 0) {
                     styleBefore = "align='left'";
                 } else {
-                    styleBefore = "align='right'";
+                    styleBefore = " style='text-align: right'";
                 }
 
                 for (let i = j; i <= endMonth; i++) {
@@ -715,7 +715,7 @@ Meteor.methods({
                     incomeData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                     let totalSubAmount = 0;
                     subTotalColumnList.forEach(function (val) {
-                        incomeData += "<td align='right'>" + formatMoney(-val) + "</td>";
+                        incomeData += "<td  style='text-align: right'>" + formatMoney(-val) + "</td>";
                         totalSubAmount += val;
                     })
                     incomeData += "<td>" + formatMoney(-totalSubAmount) + "</td></tr>";
@@ -724,20 +724,20 @@ Meteor.methods({
                     expenseData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                     let totalSubAmount = 0;
                     subTotalColumnList.forEach(function (val) {
-                        expenseData += "<td align='right'>" + formatMoney(val)+ "</td>";
+                        expenseData += "<td  style='text-align: right'>" + formatMoney(val)+ "</td>";
                         totalSubAmount += val;
                     })
 
-                    expenseData += "<td align='right'>" + formatMoney(totalSubAmount) + "</td></tr>";
+                    expenseData += "<td  style='text-align: right'>" + formatMoney(totalSubAmount) + "</td></tr>";
                 }else {
                     cogsData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                     let totalSubAmount = 0;
                     subTotalColumnList.forEach(function (val) {
-                        cogsData += "<td align='right'>" + formatMoney(val)+ "</td>";
+                        cogsData += "<td  style='text-align: right'>" + formatMoney(val)+ "</td>";
                         totalSubAmount += val;
                     })
 
-                    cogsData += "<td align='right'>" + formatMoney(totalSubAmount) + "</td></tr>";
+                    cogsData += "<td  style='text-align: right'>" + formatMoney(totalSubAmount) + "</td></tr>";
                 }
 
                 isPush = false;
@@ -778,25 +778,25 @@ Meteor.methods({
             arrCOGS.forEach(function (val) {
                 for (let i = n; i <= endMonth; i++) {
                     if (i == val.month) {
-                        cogsData += "<td align='right'>" + formatMoney(val.value) + "</td>";
+                        cogsData += "<td  style='text-align: right'>" + formatMoney(val.value) + "</td>";
                         totalCogs += val.value;
                         arrCOGSList.push(val.value);
                         break;
                     } else {
-                        cogsData += "<td align='right'>" + formatMoney(0) + "</td>";
+                        cogsData += "<td  style='text-align: right'>" + formatMoney(0) + "</td>";
                         arrCOGSList.push(0);
                     }
                 }
                 n = val.month + 1;
             })
             for (let i = n; i <= endMonth; i++) {
-                cogsData += "<td align='right'>" + formatMoney(0) + "</td>";
+                cogsData += "<td  style='text-align: right'>" + formatMoney(0) + "</td>";
                 arrCOGSList.push(0);
             }
             arrCOGSMain.push(arrCOGSList);
             arrCOGSList=[];
 
-            cogsData += "<td align='right'>" + formatMoney(totalCogs) + "</td></tr>";
+            cogsData += "<td  style='text-align: right'>" + formatMoney(totalCogs) + "</td></tr>";
             cogsDataMain += cogsData;
             cogsDataMain += "<tr  style='font-weight: bold'><td>Total Cost Of Goods Sold</td>" + cogsData;*/
 
@@ -811,7 +811,7 @@ Meteor.methods({
             let grossProfitSum = sumColumn(grossProfitList);
             if (grossProfitSum) {
                 grossProfitSum.forEach(function (val) {
-                    grossProfitData += "<td align='right'>" + formatMoney(-val) + "</td>";
+                    grossProfitData += "<td  style='text-align: right'>" + formatMoney(-val) + "</td>";
                     totalGrossProfit += val;
                 })
             }
@@ -824,7 +824,7 @@ Meteor.methods({
                     }
                 }
             }
-            grossProfitData += "<td align='right'>"+formatMoney(-totalGrossProfit)+"</td></tr>";
+            grossProfitData += "<td  style='text-align: right'>"+formatMoney(-totalGrossProfit)+"</td></tr>";
 
 
 
@@ -836,11 +836,11 @@ Meteor.methods({
             let totalIncomeDataList = sumColumn(arrIncome);
             let subTotalIncome = 0;
             totalIncomeDataList.forEach(function (val) {
-                totalIncomeData += "<td align='right'>" + formatMoney(-val) + "</td>";
+                totalIncomeData += "<td  style='text-align: right'>" + formatMoney(-val) + "</td>";
                 subTotalIncome += val;
             })
 
-            totalIncomeData += "<td align='right'>" + formatMoney(-subTotalIncome) + "</td>";
+            totalIncomeData += "<td  style='text-align: right'>" + formatMoney(-subTotalIncome) + "</td>";
 
             if(totalIncomeDataList.length==0){
                 totalIncomeData+="<td></td>";
@@ -855,11 +855,11 @@ Meteor.methods({
             let totalCOGSDataList = sumColumn(arrCOGS);
             let subTotalCOGS = 0;
             totalCOGSDataList.forEach(function (val) {
-                totalCOGSData += "<td align='right'>" + formatMoney(-val) + "</td>";
+                totalCOGSData += "<td  style='text-align: right'>" + formatMoney(-val) + "</td>";
                 subTotalCOGS += val;
             })
 
-            totalCOGSData += "<td align='right'>" + formatMoney(subTotalCOGS) + "</td>";
+            totalCOGSData += "<td  style='text-align: right'>" + formatMoney(subTotalCOGS) + "</td>";
 
             if(totalCOGSDataList.length==0){
                 totalCOGSData+="<td></td>";
@@ -874,10 +874,10 @@ Meteor.methods({
             let subTotalExpense = 0;
             let totalExpenseDataList = sumColumn(arrExpense);
             totalExpenseDataList.forEach(function (val) {
-                totalExpenseData += "<td align='right'>" + formatMoney(val)+ "</td>";
+                totalExpenseData += "<td  style='text-align: right'>" + formatMoney(val)+ "</td>";
                 subTotalExpense += val;
             })
-            totalExpenseData += "<td align='right'>" + formatMoney(subTotalExpense) + "</td>";
+            totalExpenseData += "<td  style='text-align: right'>" + formatMoney(subTotalExpense) + "</td>";
 
 
             if(totalExpenseDataList.length==0){
@@ -896,11 +896,11 @@ Meteor.methods({
             let totalNetIncomeList = sumColumn(arrNetIncome);
             let totalNetIncome = 0;
             totalNetIncomeList.forEach(function (val) {
-                netProfitData += "<td align='right'>" + formatMoney(-val)+ "</td>";
+                netProfitData += "<td  style='text-align: right'>" + formatMoney(-val)+ "</td>";
                 totalNetIncome += val;
             })
 
-            netProfitData += "<td align='right'>" + formatMoney(-totalNetIncome) + "</td>";
+            netProfitData += "<td  style='text-align: right'>" + formatMoney(-totalNetIncome) + "</td>";
 
 
             if(totalNetIncomeList.length==0){
@@ -1076,7 +1076,7 @@ Meteor.methods({
                     if (obj.level > 0) {
                         style = "align='left'";
                     } else {
-                        style = "align='right'";
+                        style = " style='text-align: right'";
                     }
 
 
@@ -1084,7 +1084,7 @@ Meteor.methods({
                     if (level > 0) {
                         styleBefore = "align='left'";
                     } else {
-                        styleBefore = "align='right'";
+                        styleBefore = " style='text-align: right'";
                     }
 
 
@@ -1158,29 +1158,29 @@ Meteor.methods({
                             incomeData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                             let totalSubAmount = 0;
                             subTotalColumnList.forEach(function (val) {
-                                incomeData += "<td align='right'>" + formatMoney(-val) + "</td>";
+                                incomeData += "<td  style='text-align: right'>" + formatMoney(-val) + "</td>";
                                 totalSubAmount += val;
                             })
-                            incomeData += "<td align='right'>" + formatMoney(-totalSubAmount) + "</td></tr>";
+                            incomeData += "<td  style='text-align: right'>" + formatMoney(-totalSubAmount) + "</td></tr>";
 
                         } else if (accountType == "50" || accountType == "51") {
                             expenseData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                             let totalSubAmount = 0;
                             subTotalColumnList.forEach(function (val) {
-                                expenseData += "<td align='right'>" + formatMoney(val) + "</td>";
+                                expenseData += "<td  style='text-align: right'>" + formatMoney(val) + "</td>";
                                 totalSubAmount += val;
                             })
 
-                            expenseData += "<td align='right'>" + formatMoney(totalSubAmount) + "</td></tr>";
+                            expenseData += "<td  style='text-align: right'>" + formatMoney(totalSubAmount) + "</td></tr>";
                         }else {
                             cogsData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                             let totalSubAmount = 0;
                             subTotalColumnList.forEach(function (val) {
-                                cogsData += "<td align='right'>" + formatMoney(val) + "</td>";
+                                cogsData += "<td  style='text-align: right'>" + formatMoney(val) + "</td>";
                                 totalSubAmount += val;
                             })
 
-                            cogsData += "<td align='right'>" + formatMoney(totalSubAmount) + "</td></tr>";
+                            cogsData += "<td  style='text-align: right'>" + formatMoney(totalSubAmount) + "</td></tr>";
                         }
 
                         isPush = false;
@@ -1272,7 +1272,7 @@ Meteor.methods({
                 if (level > 0) {
                     styleBefore = "align='left'";
                 } else {
-                    styleBefore = "align='right'";
+                    styleBefore = " style='text-align: right'";
                 }
 
                 for (let i = j; i <= endMonth; i++) {
@@ -1336,7 +1336,7 @@ Meteor.methods({
                     incomeData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                     let totalSubAmount = 0;
                     subTotalColumnList.forEach(function (val) {
-                        incomeData += "<td align='right'>" + formatMoney(-val) + "</td>";
+                        incomeData += "<td  style='text-align: right'>" + formatMoney(-val) + "</td>";
                         totalSubAmount += val;
                     })
                     incomeData += "<td>" + formatMoney(-totalSubAmount) + "</td></tr>";
@@ -1345,20 +1345,20 @@ Meteor.methods({
                     expenseData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                     let totalSubAmount = 0;
                     subTotalColumnList.forEach(function (val) {
-                        expenseData += "<td align='right'>" + formatMoney(val)+ "</td>";
+                        expenseData += "<td  style='text-align: right'>" + formatMoney(val)+ "</td>";
                         totalSubAmount += val;
                     })
 
-                    expenseData += "<td align='right'>" + formatMoney(totalSubAmount) + "</td></tr>";
+                    expenseData += "<td  style='text-align: right'>" + formatMoney(totalSubAmount) + "</td></tr>";
                 }else {
                     cogsData += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Total : ' + SpaceChar.space(6 * dataOld.level) + dataOld.code + " | " + dataOld.name + '</td>';
                     let totalSubAmount = 0;
                     subTotalColumnList.forEach(function (val) {
-                        cogsData += "<td align='right'>" + formatMoney(val)+ "</td>";
+                        cogsData += "<td  style='text-align: right'>" + formatMoney(val)+ "</td>";
                         totalSubAmount += val;
                     })
 
-                    cogsData += "<td align='right'>" + formatMoney(totalSubAmount) + "</td></tr>";
+                    cogsData += "<td  style='text-align: right'>" + formatMoney(totalSubAmount) + "</td></tr>";
                 }
 
                 isPush = false;
@@ -1400,25 +1400,25 @@ Meteor.methods({
             arrCOGS.forEach(function (val) {
                 for (let i = n; i <= endMonth; i++) {
                     if (i == val.month) {
-                        cogsData += "<td align='right'>" + formatMoney(val.value) + "</td>";
+                        cogsData += "<td  style='text-align: right'>" + formatMoney(val.value) + "</td>";
                         totalCogs += val.value;
                         arrCOGSList.push(val.value);
                         break;
                     } else {
-                        cogsData += "<td align='right'>" + formatMoney(0) + "</td>";
+                        cogsData += "<td  style='text-align: right'>" + formatMoney(0) + "</td>";
                         arrCOGSList.push(0);
                     }
                 }
                 n = val.month + 1;
             })
             for (let i = n; i <= endMonth; i++) {
-                cogsData += "<td align='right'>" + formatMoney(0) + "</td>";
+                cogsData += "<td  style='text-align: right'>" + formatMoney(0) + "</td>";
                 arrCOGSList.push(0);
             }
             arrCOGSMain.push(arrCOGSList);
             arrCOGSList=[];
 
-            cogsData += "<td align='right'>" + formatMoney(totalCogs) + "</td></tr>";
+            cogsData += "<td  style='text-align: right'>" + formatMoney(totalCogs) + "</td></tr>";
             cogsDataMain += cogsData;
             cogsDataMain += "<tr  style='font-weight: bold'><td>Total Cost Of Goods Sold</td>" + cogsData;*/
 
@@ -1434,7 +1434,7 @@ Meteor.methods({
             let grossProfitSum = sumColumn(grossProfitList);
             if (grossProfitSum) {
                 grossProfitSum.forEach(function (val) {
-                    grossProfitData += "<td align='right'>" + formatMoney(-val) + "</td>";
+                    grossProfitData += "<td  style='text-align: right'>" + formatMoney(-val) + "</td>";
                     totalGrossProfit += val;
                 })
             }
@@ -1448,18 +1448,18 @@ Meteor.methods({
                 }
             }
 
-            grossProfitData += "<td align='right'>"+formatMoney(-totalGrossProfit)+"</td></tr>";
+            grossProfitData += "<td  style='text-align: right'>"+formatMoney(-totalGrossProfit)+"</td></tr>";
 
 
             // Total Income
             let totalIncomeDataList = sumColumn(arrIncome);
             let subTotalIncome = 0;
             totalIncomeDataList.forEach(function (val) {
-                totalIncomeData += "<td align='right'>" + formatMoney(-val) + "</td>";
+                totalIncomeData += "<td  style='text-align: right'>" + formatMoney(-val) + "</td>";
                 subTotalIncome += val;
             })
 
-            totalIncomeData += "<td align='right'>" + formatMoney(-subTotalIncome) + "</td>";
+            totalIncomeData += "<td  style='text-align: right'>" + formatMoney(-subTotalIncome) + "</td>";
 
             if(totalIncomeDataList.length==0){
                 totalIncomeData+="<td></td>";
@@ -1474,10 +1474,10 @@ Meteor.methods({
             let totalCOGSDataList = sumColumn(arrCOGS);
 
             totalCOGSDataList.forEach(function (val) {
-                totalCOGSData += "<td align='right'>" + formatMoney(val)+ "</td>";
+                totalCOGSData += "<td  style='text-align: right'>" + formatMoney(val)+ "</td>";
                 subTotalCOGS += val;
             })
-            totalCOGSData += "<td align='right'>" + formatMoney(subTotalCOGS) + "</td>";
+            totalCOGSData += "<td  style='text-align: right'>" + formatMoney(subTotalCOGS) + "</td>";
 
 
             if(totalCOGSDataList.length==0){
@@ -1492,10 +1492,10 @@ Meteor.methods({
             let subTotalExpense = 0;
             let totalExpenseDataList = sumColumn(arrExpense);
             totalExpenseDataList.forEach(function (val) {
-                totalExpenseData += "<td align='right'>" + formatMoney(val)+ "</td>";
+                totalExpenseData += "<td  style='text-align: right'>" + formatMoney(val)+ "</td>";
                 subTotalExpense += val;
             })
-            totalExpenseData += "<td align='right'>" + formatMoney(subTotalExpense) + "</td>";
+            totalExpenseData += "<td  style='text-align: right'>" + formatMoney(subTotalExpense) + "</td>";
 
 
             if(totalExpenseDataList.length==0){
@@ -1514,11 +1514,11 @@ Meteor.methods({
             let totalNetIncomeList = sumColumn(arrNetIncome);
             let totalNetIncome = 0;
             totalNetIncomeList.forEach(function (val) {
-                netProfitData += "<td align='right'>" + formatMoney(-val)+ "</td>";
+                netProfitData += "<td  style='text-align: right'>" + formatMoney(-val)+ "</td>";
                 totalNetIncome += val;
             })
 
-            netProfitData += "<td align='right'>" + formatMoney(-totalNetIncome) + "</td>";
+            netProfitData += "<td  style='text-align: right'>" + formatMoney(-totalNetIncome) + "</td>";
 
 
             if(totalNetIncomeList.length==0){

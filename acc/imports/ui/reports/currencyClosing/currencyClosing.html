@@ -112,10 +112,10 @@
                             <td>
                                 &nbsp;&nbsp;&nbsp;&nbsp;{{code}}:{{name}}
                             </td>
-                            <td align="right">
+                            <td style="text-align: right">
                                 {{#if isNegative result}} {{getCurrency currency}}{{formatMoneyABS result}}{{else}}{{/if}}
                             </td>
-                            <td align="right">
+                            <td style="text-align: right">
                                 {{#if isNegative result}} {{else}}{{getCurrency currency}}{{formatMoneyABS result}}{{/if}}
 
                             </td>
@@ -128,17 +128,17 @@
                         <td>
                             &nbsp;&nbsp;&nbsp;&nbsp;29660:Equivalence -Exchange Account
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             {{#if isNegative grandTotal}} {{else}}{{getCurrency currencySelect}}{{formatMoneyABS grandTotal}}{{/if}}
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             {{#if isNegative grandTotal}} {{getCurrency currency}}{{getCurrency currencySelect}}{{formatMoneyABS grandTotal}}{{else}}{{/if}}
                         </td>
                     </tr>
                     <tr>
-                        <td align="right" colspan="2"><b>Total </b></td>
-                        <td align="right"><b>{{getCurrency currencySelect}}{{formatMoneyABS grandTotalCr}}  </b></td>
-                        <td align="right"><b>{{getCurrency currencySelect}}{{formatMoneyABS grandTotalDr}}  </b></td>
+                        <td style="text-align: right" colspan="2"><b>Total </b></td>
+                        <td style="text-align: right"><b>{{getCurrency currencySelect}}{{formatMoneyABS grandTotalCr}}  </b></td>
+                        <td style="text-align: right"><b>{{getCurrency currencySelect}}{{formatMoneyABS grandTotalDr}}  </b></td>
                     </tr>
                     </tbody>
                 </table>
@@ -166,10 +166,10 @@
                             <td>
                                 &nbsp;&nbsp;&nbsp;&nbsp;{{code}}:{{name}}
                             </td>
-                            <td align="right">
+                            <td style="text-align: right">
                                 {{#if isNegative result}} {{else}}{{getCurrency currency}}{{formatMoneyABS result}}{{/if}}
                             </td>
-                            <td align="right">
+                            <td style="text-align: right">
 
                                 {{#if isNegative result}} {{getCurrency currency}}{{formatMoneyABS result}}{{else}}{{/if}}
                             </td>
@@ -182,18 +182,18 @@
                         <td>
                             &nbsp;&nbsp;&nbsp;&nbsp;29660:Equivalence -Exchange Account
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             {{#if isNegative grandTotal}} {{getCurrency currency}}{{getCurrency currencySelectBase}}{{formatMoneyABS grandTotalBase}}{{else}}{{/if}}
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             {{#if isNegative grandTotal}} {{else}}{{getCurrency currencySelectBase}}{{formatMoneyABS grandTotalBase}}{{/if}}
                         </td>
                     </tr>
                     <tr>
-                        <td align="right" colspan="2"><b>Total </b></td>
-                        <td align="right">
+                        <td style="text-align: right" colspan="2"><b>Total </b></td>
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelectBase}}{{formatMoneyABS grandTotalDrBase}}  </b></td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelectBase}}{{formatMoneyABS grandTotalCrBase}}  </b></td>
 
                     </tr>

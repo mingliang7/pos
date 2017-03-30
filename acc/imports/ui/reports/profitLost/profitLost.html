@@ -129,34 +129,34 @@
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{code}}}:{{name}}
                             </td>
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal amountRiel}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal amountRiel}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal amountUsd}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal amountUsd}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal amountThb}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal amountThb}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
 
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
                         </tr>
 
 
                     {{/each}}
                     <tr>
                         <td align="left"><b>Total Income</b></td>
-                        <td>R{{formatMoneyNormal grandTotalIncomeR}}</td>
-                        <td>${{formatMoneyNormal grandTotalIncomeUSD}}</td>
-                        <td>B{{formatMoneyNormal grandTotalIncomeB}}</td>
-                        <td align="right">
+                        <td style="text-align: right">R{{formatMoneyNormal grandTotalIncomeR}}</td>
+                        <td style="text-align: right">${{formatMoneyNormal grandTotalIncomeUSD}}</td>
+                        <td style="text-align: right">B{{formatMoneyNormal grandTotalIncomeB}}</td>
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncome}}</b>
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncomeYearToDate}}</b>
                         </td>
                     </tr>
@@ -174,20 +174,20 @@
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{{code}}}:{{name}}
                             </td>
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal amountRiel}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal amountRiel}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal amountUsd}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal amountUsd}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal amountThb}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal amountThb}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
                         </tr>
 
 
@@ -197,25 +197,25 @@
 
                     <tr>
                         <td align="left"><b>Total Cost Of Good Sold</b></td>
-                        <td>R{{formatMoneyNormal grandTotalRielCOGS}}</td>
-                        <td>${{formatMoneyNormal grandTotalUsdCOGS}}</td>
-                        <td>B{{formatMoneyNormal grandTotalThbCOGS}}</td>
-                        <td align="right">
+                        <td style="text-align: right">R{{formatMoneyNormal grandTotalRielCOGS}}</td>
+                        <td style="text-align: right">${{formatMoneyNormal grandTotalUsdCOGS}}</td>
+                        <td style="text-align: right">B{{formatMoneyNormal grandTotalThbCOGS}}</td>
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}</b>
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}</b>
                         </td>
                     </tr>
                     <tr>
                         <td align="left"><b>Gross Profit</b></td>
-                        <td>R{{formatMoneyNormal grandTotalGrossProfitR}}</td>
-                        <td>${{formatMoneyNormal grandTotalGrossProfitUSD}}</td>
-                        <td>B{{formatMoneyNormal grandTotalGrossProfitB}}</td>
-                        <td align="right">
+                        <td style="text-align: right">R{{formatMoneyNormal grandTotalGrossProfitR}}</td>
+                        <td style="text-align: right">${{formatMoneyNormal grandTotalGrossProfitUSD}}</td>
+                        <td style="text-align: right">B{{formatMoneyNormal grandTotalGrossProfitB}}</td>
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfit}}</b>
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfitYearToDate}}</b>
                         </td>
                     </tr>
@@ -233,46 +233,46 @@
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{{code}}}:{{name}}
                             </td>
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal amountRiel}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal amountRiel}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal amountUsd}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal amountUsd}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal amountThb}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal amountThb}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
                         </tr>
 
 
                     {{/each}}
                     <tr>
                         <td align="left"><b>Total Expense</b></td>
-                        <td>R{{formatMoneyNormal grandTotalExpenseR}}</td>
-                        <td>${{formatMoneyNormal grandTotalExpenseUSD}}</td>
-                        <td>B{{formatMoneyNormal grandTotalExpenseB}}</td>
-                        <td align="right">
+                        <td style="text-align: right">R{{formatMoneyNormal grandTotalExpenseR}}</td>
+                        <td style="text-align: right">${{formatMoneyNormal grandTotalExpenseUSD}}</td>
+                        <td style="text-align: right">B{{formatMoneyNormal grandTotalExpenseB}}</td>
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpense}}</b>
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpenseYearToDate}}</b>
                         </td>
                     </tr>
 
                     <tr>
                         <td align="left"><b>Profit and Lose</b></td>
-                        <td>R{{formatMoneyNormal profitR}}</td>
-                        <td>${{formatMoneyNormal profitUSD}}</td>
-                        <td>B{{formatMoneyNormal profitB}}</td>
-                        <td align="right" style="text-decoration: overline">
+                        <td style="text-align: right">R{{formatMoneyNormal profitR}}</td>
+                        <td style="text-align: right">${{formatMoneyNormal profitUSD}}</td>
+                        <td style="text-align: right">B{{formatMoneyNormal profitB}}</td>
+                        <td style="text-align: right;text-decoration: overline">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal profit}}</b>
                         </td>
-                        <td align="right" style="text-decoration: overline">
+                        <td style="text-align: right;text-decoration: overline">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal profitYearToDate}}</b>
                         </td>
                     </tr>
@@ -365,12 +365,12 @@
                             </td>
 
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
 
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
 
 
                         </tr>
@@ -379,10 +379,10 @@
                     {{/each}}
                     <tr>
                         <td align="left"><b>Total Income</b></td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncome}}</b>
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncomeYearToDate}}</b>
                         </td>
                     </tr>
@@ -399,12 +399,12 @@
                             </td>
 
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
 
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
 
 
                         </tr>
@@ -413,19 +413,19 @@
                     {{/each}}
                     <tr>
                         <td align="left"><b>Total Cost Of Good Sold</b></td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}</b>
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}</b>
                         </td>
                     </tr>
                     <tr>
                         <td align="left"><b>Gross Profit</b></td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfit}}</b>
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfitYearToDate}}</b>
                         </td>
                     </tr>
@@ -440,11 +440,11 @@
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{{code}}}:{{name}}
                             </td>
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
                             {{#if currency}}
-                                <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
 
                         </tr>
 
@@ -452,20 +452,20 @@
                     {{/each}}
                     <tr>
                         <td align="left"><b>Total Expense</b></td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpense}}</b>
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpenseYearToDate}}</b>
                         </td>
                     </tr>
 
                     <tr>
                         <td align="left"><b>Profit and Lose</b></td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal profit}}</b>
                         </td>
-                        <td align="right">
+                        <td style="text-align: right">
                             <b>{{getCurrency currencySelect}}{{formatMoneyNormal profitYearToDate}}</b>
                         </td>
                     </tr>
@@ -558,12 +558,12 @@
                                     </td>
 
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
 
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
 
 
                                 </tr>
@@ -572,10 +572,10 @@
                             {{/each}}
                             <tr>
                                 <td align="left"><b>Total Income</b></td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncome}}</b>
                                 </td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal
                                             grandTotalIncomeYearToDate}}</b>
                                 </td>
@@ -592,12 +592,12 @@
                                     </td>
 
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
 
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
 
 
                                 </tr>
@@ -606,19 +606,19 @@
                             {{/each}}
                             <tr>
                                 <td align="left"><b>Total Cost Of Good Sold</b></td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}</b>
                                 </td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}</b>
                                 </td>
                             </tr>
                             <tr>
                                 <td align="left"><b>Gross Profit</b></td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfit}}</b>
                                 </td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal
                                             grandTotalGrossProfitYearToDate}}</b>
                                 </td>
@@ -634,11 +634,11 @@
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{{code}}}:{{name}}
                                     </td>
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
 
                                 </tr>
 
@@ -646,10 +646,10 @@
                             {{/each}}
                             <tr>
                                 <td align="left"><b>Total Expense</b></td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpense}}</b>
                                 </td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}}{{formatMoneyNormal
                                             grandTotalExpenseYearToDate}}</b>
                                 </td>
@@ -657,10 +657,10 @@
 
                             <tr>
                                 <td align="left"><b>Profit and Lose</b></td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}}{{formatMoneyNormal profit}}</b>
                                 </td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}}{{formatMoneyNormal profitYearToDate}}</b>
                                 </td>
                             </tr>
@@ -760,34 +760,34 @@
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{code}}}:{{name}}
                                     </td>
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal amountRiel}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal amountRiel}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal amountUsd}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal amountUsd}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal amountThb}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal amountThb}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
 
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
                                 </tr>
 
 
                             {{/each}}
                             <tr>
                                 <td align="left"><b>Total Income</b></td>
-                                <td>R{{formatMoneyNormal grandTotalIncomeR}}</td>
-                                <td>${{formatMoneyNormal grandTotalIncomeUSD}}</td>
-                                <td>B{{formatMoneyNormal grandTotalIncomeB}}</td>
-                                <td align="right">
+                                <td style="text-align: right">R{{formatMoneyNormal grandTotalIncomeR}}</td>
+                                <td style="text-align: right">${{formatMoneyNormal grandTotalIncomeUSD}}</td>
+                                <td style="text-align: right">B{{formatMoneyNormal grandTotalIncomeB}}</td>
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncome}}</b>
                                 </td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalIncomeYearToDate}}</b>
                                 </td>
                             </tr>
@@ -806,46 +806,46 @@
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{{code}}}:{{name}}
                                     </td>
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal amountRiel}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal amountRiel}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal amountUsd}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal amountUsd}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal amountThb}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal amountThb}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
 
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
                                 </tr>
 
 
                             {{/each}}
                             <tr>
                                 <td align="left"><b>Total Cost Of Good Sold</b></td>
-                                <td>R{{formatMoneyNormal grandTotalRielCOGS}}</td>
-                                <td>${{formatMoneyNormal grandTotalUsdCOGS}}</td>
-                                <td>B{{formatMoneyNormal grandTotalThbCOGS}}</td>
-                                <td align="right">
+                                <td style="text-align: right">R{{formatMoneyNormal grandTotalRielCOGS}}</td>
+                                <td style="text-align: right">${{formatMoneyNormal grandTotalUsdCOGS}}</td>
+                                <td style="text-align: right">B{{formatMoneyNormal grandTotalThbCOGS}}</td>
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGS}}</b>
                                 </td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalCOGSYearToDate}}</b>
                                 </td>
                             </tr>
                             <tr>
                                 <td align="left"><b>Gross Profit</b></td>
-                                <td>R{{formatMoneyNormal grandTotalGrossProfitR}}</td>
-                                <td>${{formatMoneyNormal grandTotalGrossProfitUSD}}</td>
-                                <td>B{{formatMoneyNormal grandTotalGrossProfitB}}</td>
-                                <td align="right">
+                                <td style="text-align: right">R{{formatMoneyNormal grandTotalGrossProfitR}}</td>
+                                <td style="text-align: right">${{formatMoneyNormal grandTotalGrossProfitUSD}}</td>
+                                <td style="text-align: right">B{{formatMoneyNormal grandTotalGrossProfitB}}</td>
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfit}}</b>
                                 </td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}} {{formatMoneyNormal grandTotalGrossProfitYearToDate}}</b>
                                 </td>
                             </tr>
@@ -863,46 +863,46 @@
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{{code}}}:{{name}}
                                     </td>
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal amountRiel}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal amountRiel}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal amountRiel}}</u></td>{{/if}}
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal amountUsd}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal amountUsd}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal amountUsd}}</u></td>{{/if}}
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal amountThb}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal amountThb}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal amountThb}}</u></td>{{/if}}
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal result}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal result}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal result}}</u></td>{{/if}}
                                     {{#if currency}}
-                                        <td align="right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
-                                        <td align="right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
+                                        <td style="text-align: right">{{formatMoneyNormal resultYearToDate}}</td>{{else}}
+                                        <td style="text-align: right"><u>{{formatMoneyNormal resultYearToDate}}</u></td>{{/if}}
                                 </tr>
 
 
                             {{/each}}
                             <tr>
                                 <td align="left"><b>Total Expense</b></td>
-                                <td>R{{formatMoneyNormal grandTotalExpenseR}}</td>
-                                <td>${{formatMoneyNormal grandTotalExpenseUSD}}</td>
-                                <td>B{{formatMoneyNormal grandTotalExpenseB}}</td>
-                                <td align="right">
+                                <td style="text-align: right">R{{formatMoneyNormal grandTotalExpenseR}}</td>
+                                <td style="text-align: right">${{formatMoneyNormal grandTotalExpenseUSD}}</td>
+                                <td style="text-align: right">B{{formatMoneyNormal grandTotalExpenseB}}</td>
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpense}}</b>
                                 </td>
-                                <td align="right">
+                                <td style="text-align: right">
                                     <b>{{getCurrency currencySelect}}{{formatMoneyNormal grandTotalExpenseYearToDate}}</b>
                                 </td>
                             </tr>
 
                             <tr>
                                 <td align="left"><b>Profit and Lose</b></td>
-                                <td>R{{formatMoneyNormal profitR}}</td>
-                                <td>${{formatMoneyNormal profitUSD}}</td>
-                                <td>B{{formatMoneyNormal profitB}}</td>
-                                <td align="right" style="text-decoration: overline">
+                                <td style="text-align: right">R{{formatMoneyNormal profitR}}</td>
+                                <td style="text-align: right">${{formatMoneyNormal profitUSD}}</td>
+                                <td style="text-align: right">B{{formatMoneyNormal profitB}}</td>
+                                <td style="text-align: right;text-decoration: overline">
                                     <b>{{getCurrency currencySelect}}{{formatMoneyNormal profit}}</b>
                                 </td>
-                                <td align="right" style="text-decoration: overline">
+                                <td style="text-align: right;text-decoration: overline">
                                     <b>{{getCurrency currencySelect}}{{formatMoneyNormal profitYearToDate}}</b>
                                 </td>
                             </tr>

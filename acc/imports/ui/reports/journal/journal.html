@@ -113,19 +113,19 @@
                                 <td>
                                     {{accountDoc.code}}:{{accountDoc.name}}
                                 </td>
-                                <td>
+                                <td style="text-align: right">
                                     {{formatMoneyNormal dr}}
                                 </td>
-                                <td>
+                                <td style="text-align: right">
                                     {{formatMoneyNormal cr}}
                                 </td>
                             {{/each}}
 
-                            <!-- <td align="right"><b>Total</b></td>
-                            <td align="right" style=" border-top: medium">
+                            <!-- <td style="text-align: right"><b>Total</b></td>
+                            <td style="text-align: right; border-top: medium">
                                 <b>{{getCurrency  currencyId}}{{formatMoneyNormal total}}</b>
                             </td>
-                            <td align="right" style=" border-top: medium">
+                            <td style="text-align: right; border-top: medium">
                                 <b>{{getCurrency currencyId}}{{formatMoneyNormal total}}</b>
                             </td>-->
                             <!--<td>{{#each transaction}}
@@ -151,10 +151,10 @@
                                 <td>
                                     {{accountDoc.code}}:{{accountDoc.name}}
                                 </td>
-                                <td>
+                                <td style="text-align: right">
                                     {{formatMoneyNormal dr}}
                                 </td>
-                                <td>
+                                <td style="text-align: right">
                                     {{formatMoneyNormal cr}}
                                 </td>
 
@@ -166,10 +166,10 @@
                             <td style="border-top: 0px; border-bottom: 0px;"></td>
                             <td style="border-top: 0px; border-bottom: 0px;"></td>
                             <td style="border-top: 0px; border-bottom: 0px;"></td>
-                            <td align="right" style=" border-top: medium">
+                            <td style="text-align: right; border-top: medium">
                                 <b>{{getCurrency  currencyId}}{{formatMoneyNormal total}}</b>
                             </td>
-                            <td align="right" style=" border-top: medium">
+                            <td style="text-align: right; border-top: medium">
                                 <b>{{getCurrency currencyId}}{{formatMoneyNormal total}}</b>
                             </td>
                         </tr>
@@ -177,19 +177,19 @@
 
                     {{/each}}
                     <tr>
-                        <td colspan="5" align="right"><b>Total USD </b></td>
-                        <td style="border-top: medium" align="right"><b>{{formatMoneyNormal grandTotalDollar}}</b></td>
-                        <td style="border-top: medium" align="right"><b>{{formatMoneyNormal grandTotalDollar}}</b></td>
+                        <td colspan="5" style="text-align: right"><b>Total USD </b></td>
+                        <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal grandTotalDollar}}</b></td>
+                        <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal grandTotalDollar}}</b></td>
                     </tr>
                     <tr>
-                        <td colspan="5" align="right"><b>Rield </b></td>
-                        <td style="border-top: medium" align="right"><b>{{formatMoneyNormal grandTotalRiel}}</b></td>
-                        <td style="border-top: medium" align="right"><b>{{formatMoneyNormal grandTotalRiel}}</b></td>
+                        <td colspan="5" style="text-align: right"><b>Rield </b></td>
+                        <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal grandTotalRiel}}</b></td>
+                        <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal grandTotalRiel}}</b></td>
                     </tr>
                     <tr>
-                        <td colspan="5" align="right"><b>Bath </b></td>
-                        <td style="border-top: medium" align="right"><b>{{formatMoneyNormal grandTotalBath}}</b></td>
-                        <td style="border-top: medium" align="right"><b>{{formatMoneyNormal grandTotalBath}}</b></td>
+                        <td colspan="5" style="text-align: right"><b>Bath </b></td>
+                        <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal grandTotalBath}}</b></td>
+                        <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal grandTotalBath}}</b></td>
                     </tr>
                     </tbody>
                 </table>
@@ -275,10 +275,10 @@
                                         <td>
                                             {{accountDoc.code}}:{{accountDoc.name}}
                                         </td>
-                                        <td>
+                                        <td style="text-align: right">
                                             {{formatMoneyNormal dr}}
                                         </td>
-                                        <td>
+                                        <td style="text-align: right">
                                             {{formatMoneyNormal cr}}
                                         </td>
                                     {{/each}}
@@ -306,10 +306,10 @@
                                         <td>
                                             {{accountDoc.code}}:{{accountDoc.name}}
                                         </td>
-                                        <td>
+                                        <td style="text-align: right">
                                             {{formatMoneyNormal dr}}
                                         </td>
-                                        <td>
+                                        <td style="text-align: right">
                                             {{formatMoneyNormal cr}}
                                         </td>
 
@@ -321,10 +321,10 @@
                                     <td style="border-top: hidden !important;"></td>
                                     <td style="border-top: hidden !important;"></td>
                                     <td></td>
-                                    <td align="right" style=" border-top: medium">
+                                    <td style="text-align: right; border-top: medium">
                                         <b>{{getCurrency  currencyId}}{{formatMoneyNormal total}}</b>
                                     </td>
-                                    <td align="right" style=" border-top: medium">
+                                    <td style="text-align: right; border-top: medium">
                                         <b>{{getCurrency currencyId}}{{formatMoneyNormal total}}</b>
                                     </td>
                                 </tr>
@@ -332,23 +332,23 @@
                             {{/each}}
                             <tr>
                                 <td colspan="5" style="text-align: right"><b>Total USD </b></td>
-                                <td style="border-top: medium" align="right"><b>{{formatMoneyNormal
+                                <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal
                                         grandTotalDollar}}</b></td>
-                                <td style="border-top: medium" align="right"><b>{{formatMoneyNormal
+                                <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal
                                         grandTotalDollar}}</b></td>
                             </tr>
                             <tr>
                                 <td colspan="5"  style="text-align: right"><b>Rield </b></td>
-                                <td style="border-top: medium" align="right"><b>{{formatMoneyNormal grandTotalRiel}}</b>
+                                <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal grandTotalRiel}}</b>
                                 </td>
-                                <td style="border-top: medium" align="right"><b>{{formatMoneyNormal grandTotalRiel}}</b>
+                                <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal grandTotalRiel}}</b>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="5"  style="text-align: right"><b>Bath </b></td>
-                                <td style="border-top: medium" align="right"><b>{{formatMoneyNormal grandTotalBath}}</b>
+                                <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal grandTotalBath}}</b>
                                 </td>
-                                <td style="border-top: medium" align="right"><b>{{formatMoneyNormal grandTotalBath}}</b>
+                                <td style="border-top: medium;text-align: right"><b>{{formatMoneyNormal grandTotalBath}}</b>
                                 </td>
                             </tr>
                             </tbody>
