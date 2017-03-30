@@ -94,13 +94,13 @@
                                         <tr>
                                             <td><a href="#">{{invoice._id}}</a></td>
                                             <td class="text-center">{{moFormat invoice.invoiceDate 'YYYY-MM-DD HH:mm:ss'}}</td>
-                                            <td class="text-right">${{numFormat invoice.total '0,0.00'}}</td>
+                                            <td class="text-right">${{numFormat invoice.total '0,0.0000'}}</td>
                                         </tr>
                                     {{/each}}
                                     <tr>
                                         <td class="no-line"></td>
                                         <td class="no-line text-center"><strong>Total</strong></td>
-                                        <td class="no-line text-right">${{numFormat total '0,0.00'}}</td>
+                                        <td class="no-line text-right">${{numFormat total '0,0.0000'}}</td>
                                     </tr>
                                     </tbody>
                                 </table>

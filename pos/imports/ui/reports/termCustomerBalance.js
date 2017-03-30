@@ -84,12 +84,12 @@ invoiceDataTmpl.helpers({
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
             } else if (obj.field == 'dueAmount' || obj.field == 'paidAmount' || obj.field == 'balance') {
-                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.00')}</td>`
+                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.0000')}</td>`
             }
             else if(obj.field == 'items'){
                 let itemString = '';
                 col[obj.field].forEach(function (item) {
-                    itemString += `${item.itemName} ${numeral(item.qty).format('0,0')} x${numeral(item.price).format('0,0.00')}$ = ${numeral(item.amount).format('0,0.00')}$, `;
+                    itemString += `${item.itemName} ${numeral(item.qty).format('0,0')} x${numeral(item.price).format('0,0.0000')}$ = ${numeral(item.amount).format('0,0.0000')}$, `;
                 });
                 data+=`<td>${itemString}</td>`;
             }
@@ -106,7 +106,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td class="text-right"><u>${numeral(dueAmount).format('0,0.00')}</u></td><td class="text-right"><u>${numeral(paidAmount).format('0,0.00')}</u></td><td class="text-right"><u>${numeral(total).format('0,0.00')}</u></td>`;
+        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td class="text-right"><u>${numeral(dueAmount).format('0,0.0000')}</u></td><td class="text-right"><u>${numeral(paidAmount).format('0,0.0000')}</u></td><td class="text-right"><u>${numeral(total).format('0,0.0000')}</u></td>`;
         return string;
     },
     getTotalFooter(total, totalKhr, totalThb){
@@ -115,7 +115,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalKhr).format('0,0')}<small>៛</small></b></td><td><b>${numeral(totalThb).format('0,0')}B</b></td><td><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(totalKhr).format('0,0')}<small>៛</small></b></td><td><b>${numeral(totalThb).format('0,0')}B</b></td><td><b>${numeral(total).format('0,0.0000')}$</b></td>`;
         return string;
     },
     capitalize(customerName){

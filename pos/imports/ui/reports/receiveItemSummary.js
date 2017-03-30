@@ -71,7 +71,7 @@ invoiceDataTmpl.helpers({
             } else if (obj.field == 'vendorId') {
                 data += `<td>${col._vendor.name}</td>`
             } else if (obj.field == 'total') {
-                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
+                data += `<td>${numeral(col[obj.field]).format('0,0.0000')}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
@@ -86,7 +86,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td><u>${numeral(total).format('0,0.00')}</u></td>`;
+        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td><u>${numeral(total).format('0,0.0000')}</u></td>`;
         return string;
     },
     getTotalFooter(total, totalKhr, totalThb){
@@ -95,7 +95,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalKhr).format('0,0')}<small>៛</small></b></td><td><b>${numeral(totalThb).format('0,0')}B</b></td><td><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(totalKhr).format('0,0')}<small>៛</small></b></td><td><b>${numeral(totalThb).format('0,0')}B</b></td><td><b>${numeral(total).format('0,0.0000')}$</b></td>`;
         return string;
     },
     capitalize(customerName){

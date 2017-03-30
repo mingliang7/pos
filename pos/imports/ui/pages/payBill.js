@@ -113,7 +113,7 @@ indexTmpl.helpers({
         let total = this.total || 0;
         let lastPayment = getLastPayment(this._id);
         console.log(lastPayment);
-        return lastPayment == 0 ? `${numeral(total).format('0,0.00')}` : `${numeral(lastPayment).format('0,0.00')}`;
+        return lastPayment == 0 ? `${numeral(total).format('0,0.0000')}` : `${numeral(lastPayment).format('0,0.0000')}`;
     },
     schema() {
         return payBillSchema;
@@ -254,7 +254,7 @@ indexTmpl.helpers({
                 }
             });
         }
-        Session.set('balance', numeral(totalAmountDue).format('0,0.00'));
+        Session.set('balance', numeral(totalAmountDue).format('0,0.0000'));
         return totalAmountDue;
     },
     totalActualPay(){
@@ -273,7 +273,7 @@ indexTmpl.helpers({
                 }
             });
         }
-        Session.set('balance', numeral(totalAmountDue).format('0,0.00'));
+        Session.set('balance', numeral(totalAmountDue).format('0,0.0000'));
         return totalAmountDue;
     },
     totalOriginAmount(){
@@ -292,10 +292,10 @@ indexTmpl.helpers({
         let discount = this.status == 'active' ? checkTerm(this) : 0;
         let valueAfterDiscount = this.total * (1 - (discount / 100));
         let lastPayment = getLastPayment(this._id);
-        return lastPayment == 0 ? numeral(valueAfterDiscount).format('0,0.00') : numeral(lastPayment).format('0,0.00');
+        return lastPayment == 0 ? numeral(valueAfterDiscount).format('0,0.0000') : numeral(lastPayment).format('0,0.0000');
     },
     originAmount(){
-        return numeral(this.total).format('0,0.00');
+        return numeral(this.total).format('0,0.0000');
     },
     isInvoiceDate(){
         if (this.invoiceDate) {
@@ -401,14 +401,14 @@ indexTmpl.events({
         if (event.currentTarget.value == '') {
             //trigger change on total
             $(event.currentTarget).parents('.invoice-parents').find('.total').val(total).change();
-            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(total).format('0,0.00')).change();
+            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(total).format('0,0.0000')).change();
             $(event.currentTarget).val('0');
 
         } else {
             //trigger change on total
             let valueAfterDiscount = total * (1 - (parseFloat(event.currentTarget.value) / 100));
             $(event.currentTarget).parents('.invoice-parents').find('.total').val(valueAfterDiscount).change();
-            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(valueAfterDiscount).format('0,0.00')).change();
+            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(valueAfterDiscount).format('0,0.0000')).change();
         }
     },
     "keypress .discount" (evt) {
@@ -446,7 +446,7 @@ indexTmpl.events({
                 $(event.currentTarget).parents('.invoice-parents').find('.total').val(selectedInvoices[this._id].dueAmount);
             }
             Session.set('enterBillsObj', selectedInvoices);
-            $(event.currentTarget).val(numeral(event.currentTarget.value).format('0,0.00'));
+            $(event.currentTarget).val(numeral(event.currentTarget.value).format('0,0.0000'));
         }
     },
     "keypress .total" (evt) {
