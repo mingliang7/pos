@@ -249,9 +249,17 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
-                        {{#if isInRole 'customer-history-report' 'Pos'}}
+                        {{#if isInRole 'customer-debt-history-report' 'Pos'}}
                             <li>
                                 <a href="{{customerDebtTracking}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Customer Debt History</span>
+                                </a>
+                            </li>
+                        {{/if}}
+                        {{#if isInRole 'customer-history-report' 'Pos'}}
+                            <li>
+                                <a href="{{customerHistory}}">
                                     <i class="fa fa-file-o"></i>
                                     <span>Customer History</span>
                                 </a>

@@ -31,9 +31,6 @@
 }
 
 @media print {
-    .no-print{
-        display: none;
-    }
     .visible-on-print {
         display: block;
     }
@@ -42,8 +39,7 @@
         box-shadow: none;
         border: none;
     }
-
-    .table > tr, .table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tbody > tr {
+    table, .table > tr, .table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tbody > tr {
         font-size: 9px !important;
         padding: 2px;
     }
@@ -60,7 +56,4 @@
 
 .end {
     margin-top: 800px;
-}
-.box{
-    border-top: none !important;
 }

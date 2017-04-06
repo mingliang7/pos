@@ -505,3 +505,17 @@ PosRoutes.route('/report/stockDetail', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/reports/customerHistory';
+PosRoutes.route('/report/customerHistory', {
+    name: 'pos.customerHistory',
+    title: 'Customer History',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_customerHistory');
+    },
+    breadcrumb: {
+        title: 'Customer History',
+        icon: '',
+        parent: 'pos.home'
+    }
+});

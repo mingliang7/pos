@@ -24,6 +24,9 @@ Template.Pos_sidebarMenu.helpers({
     termBalance() {
         return `/pos/report/termCustomerBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}`;
     },
+    customerHistory() {
+        return `/pos/report/customerHistory?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branchId=${Session.get('currentBranch')}`;
+    },
     customerDebtTracking() {
         return `/pos/report/customer-debt-tracking?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branchId=${Session.get('currentBranch')}`;
     },
