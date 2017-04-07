@@ -108,7 +108,7 @@ Meteor.methods({
                 moment(fromInventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
         }
 
-        let toInventoryDate = StockFunction.getLastInventoryDate(locationTransfer.toBranchId, doc.toStockLocationId);
+        let toInventoryDate = StockFunction.getLastInventoryDate(locationTransfer.toBranchId, locationTransfer.toStockLocationId);
         if (locationTransfer.locationTransferDate <= toInventoryDate) {
             throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
                 moment(toInventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
