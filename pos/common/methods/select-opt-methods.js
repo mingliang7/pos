@@ -141,7 +141,7 @@ SelectOptMethods.customer = new ValidatedMethod({
             } else if (values.length) {
                 selector._id = {$in: values};
             }
-            let data = Customers.find(selector, {limit: 10});
+            let data = Customers.find(selector, {limit: 50});
             data.forEach(function (value) {
                 let termOrGroup = value._term ? ` (Term ${value._term.name})` : ` (Group ${value._paymentGroup.name})`;
                 let label = value.name;

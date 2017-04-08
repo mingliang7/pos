@@ -44,7 +44,7 @@ export const customerTermBalanceSchema = new SimpleSchema({
             type: 'universe-select',
             afFieldInput: {
                 uniPlaceholder: 'All',
-                optionsMethod: 'cement.selectOptMethods.customer',
+                optionsMethod: 'pos.selectOptMethods.customer',
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
                         let currentBranch = Session.get('currentBranch');
