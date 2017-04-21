@@ -32,7 +32,7 @@ tabularOpts.columns = [
         data: "total",
         title: "Total",
         render: function (val) {
-            return numeral(val).format('0,0.0000');
+            return numeral(val).format('0,0.00');
         }
     },
     {data: "des", title: "Description"},

@@ -103,7 +103,7 @@ indexTmpl.helpers({
         try {
             let invoice = countLateInvoice.get();
             let penalty = invoice.calculatePenalty[_id] || 0;
-            return (_.isEmpty(invoice.calculatePenalty) || !isPenalty.get()) ? 0 : numeral(penalty).format('0,0.0000');
+            return (_.isEmpty(invoice.calculatePenalty) || !isPenalty.get()) ? 0 : numeral(penalty).format('0,0.00');
         } catch (e) {
         }
     },
@@ -148,7 +148,7 @@ indexTmpl.helpers({
     dueAmount(){
         let total = this.total || 0;
         let lastPayment = getLastPayment(this._id);
-        return lastPayment == 0 ? `${numeral(total).format('0,0.0000')}` : `${numeral(lastPayment).format('0,0.0000')}`;
+        return lastPayment == 0 ? `${numeral(total).format('0,0.00')}` : `${numeral(lastPayment).format('0,0.00')}`;
     },
     schema() {
         return receivePaymentSchema;
@@ -261,7 +261,7 @@ indexTmpl.helpers({
                 }
             });
         }
-        Session.set('balance', numeral(totalAmountDue).format('0,0.0000'));
+        Session.set('balance', numeral(totalAmountDue).format('0,0.00'));
         return totalAmountDue;
     },
     totalActualPay(){
@@ -280,7 +280,7 @@ indexTmpl.helpers({
                 }
             });
         }
-        Session.set('balance', numeral(totalAmountDue).format('0,0.0000'));
+        Session.set('balance', numeral(totalAmountDue).format('0,0.00'));
         console.log(totalAmountDue);
         return totalAmountDue;
     },
@@ -302,7 +302,7 @@ indexTmpl.helpers({
             let penalty = isPenalty.get() ? countLateInvoice.get().calculatePenalty[this._id] || 0 : 0;
             let valueAfterDiscount = this.total - discount;
             let lastPayment = getLastPayment(this._id);
-            return lastPayment == 0 ? numeral(valueAfterDiscount + penalty).format('0,0.0000') : numeral(lastPayment + penalty).format('0,0.0000');
+            return lastPayment == 0 ? numeral(valueAfterDiscount + penalty).format('0,0.00') : numeral(lastPayment + penalty).format('0,0.00');
         } catch (e) {
         }
     },
@@ -345,7 +345,7 @@ indexTmpl.helpers({
         return false;
     },
     originAmount(){
-        return numeral(this.total).format('0,0.0000');
+        return numeral(this.total).format('0,0.00');
     },
     isInvoiceDate(){
         if (this.invoiceDate) {
@@ -452,14 +452,14 @@ indexTmpl.events({
         if (event.currentTarget.value == '') {
             //trigger change on total
             $(event.currentTarget).parents('.invoice-parents').find('.total').val(total + penalty).change();
-            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(total + penalty).format('0,0.0000')).change();
+            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(total + penalty).format('0,0.00')).change();
             $(event.currentTarget).val('0');
 
         } else {
             //trigger change on total
             let valueAfterDiscount = (total - (parseFloat(event.currentTarget.value))) + penalty;
             $(event.currentTarget).parents('.invoice-parents').find('.total').val(valueAfterDiscount).change();
-            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(valueAfterDiscount).format('0,0.0000')).change();
+            $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(valueAfterDiscount).format('0,0.00')).change();
         }
     },
     "keypress .discount" (evt) {
@@ -499,7 +499,7 @@ indexTmpl.events({
                 $(event.currentTarget).parents('.invoice-parents').find('.total').val(selectedInvoices[this._id].dueAmount + penalty);
             }
             Session.set('invoicesObj', selectedInvoices);
-            $(event.currentTarget).val(numeral(event.currentTarget.value).format('0,0.0000'));
+            $(event.currentTarget).val(numeral(event.currentTarget.value).format('0,0.00'));
         }
     },
     "keypress .total" (evt) {

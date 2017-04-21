@@ -64,7 +64,7 @@ invoiceDataTmpl.helpers({
             if (obj.field == 'ringPullTransferDate') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'total') {
-                data += `<td>${numeral(col[obj.field]).format('0,0.0000')}</td>`
+                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             } else if (obj.field == 'toStockLocation') {
                 data += `<td>${col[obj.field] ? col[obj.field] : 'None'}</td>`
             } else if (obj.field == 'toUser') {
@@ -91,7 +91,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td style="background: teal; color: #fff;"><b>TOTAL:</td></b><td  style="background: teal; color: #fff;"><b>${numeral(total).format('0,0.0000')}</b></td>`;
+        string += `<td style="background: teal; color: #fff;"><b>TOTAL:</td></b><td  style="background: teal; color: #fff;"><b>${numeral(total).format('0,0.00')}</b></td>`;
         return string;
     }
 });

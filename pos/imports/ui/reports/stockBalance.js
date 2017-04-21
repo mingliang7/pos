@@ -68,7 +68,7 @@ invoiceDataTmpl.helpers({
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
             } else if (obj.field == 'remainQty' || obj.field == 'averagePrice' || obj.field == 'lastAmount') {
-                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.0000')}</td>`
+                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
@@ -82,7 +82,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td style="border-top: 1px solid black;" class="text-right"><b>${numeral(totalRemainQty).format('0,0')}</b></td><td style="border-top: 1px solid black" class="text-right"><b>${numeral(total).format('0,0.0000')}</b></td>`;
+        string += `<td><b>Total:</td></b><td style="border-top: 1px solid black;" class="text-right"><b>${numeral(totalRemainQty).format('0,0')}</b></td><td style="border-top: 1px solid black" class="text-right"><b>${numeral(total).format('0,0.00')}</b></td>`;
         return string;
     }
 });

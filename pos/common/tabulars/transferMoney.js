@@ -33,7 +33,7 @@ tabularOpts.columns = [
         data: "transferAmount",
         title: "Transfer Amount",
         render: function(val) {
-            return numeral(val).format('0,0.0000');
+            return numeral(val).format('0,0.00');
         }
     },
     {

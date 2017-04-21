@@ -101,9 +101,9 @@ invoiceDataTmpl.helpers({
     },
     displayStockOutQty(){
         if(this.coefficient < 0) {
-            return `<td></td><td>${numeral(Math.abs(this.qty)).format('0,0.0000')}</td>`;
+            return `<td></td><td>${numeral(Math.abs(this.qty)).format('0,0.00')}</td>`;
         }
-        return `<td>${numeral(this.qty).format('0,0.0000')}</td><td></td>`;
+        return `<td>${numeral(this.qty).format('0,0.00')}</td><td></td>`;
     }
 });
 invoiceDataTmpl.onDestroyed(function () {

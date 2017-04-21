@@ -39,7 +39,7 @@ tabularOpts.columns = [
         title: "Actual Due Amount",
         render: function (val, type, doc) {
             let recalDueAmountWithDiscount = val / (1 - (doc.discount / 100));
-            return numeral(recalDueAmountWithDiscount).format('0,0.0000');
+            return numeral(recalDueAmountWithDiscount).format('0,0.00');
         }
     },
     {data: "discount", title: "Discount(%)"},
@@ -47,21 +47,21 @@ tabularOpts.columns = [
         data: "dueAmount",
         title: 'Due Amount',
         render: function (val) {
-            return numeral(val).format('0,0.0000');
+            return numeral(val).format('0,0.00');
         }
     },
     {
         data: 'penalty',
         title: 'Penalty',
         render: function(val) {
-            return `<span class="label label-info">${numeral(val).format('0,0.0000')}</span>`;
+            return `<span class="label label-info">${numeral(val).format('0,0.00')}</span>`;
         }
     },
     {
         data: "paidAmount",
         title: "Paid Amount",
         render: function (val) {
-            return numeral(val).format('0,0.0000');
+            return numeral(val).format('0,0.00');
         }
     },
     {
@@ -69,9 +69,9 @@ tabularOpts.columns = [
         title: "Balance Amount",
         render: function (val) {
             if (val > 0) {
-                return `<span class="text-red">${numeral(val).format('0,0.0000')}</span>`
+                return `<span class="text-red">${numeral(val).format('0,0.00')}</span>`
             }
-            return numeral(val).format('0,0.0000');
+            return numeral(val).format('0,0.00');
         }
     },
     // {
