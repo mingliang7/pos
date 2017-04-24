@@ -22,6 +22,7 @@ export const invoiceByItemReport = new ValidatedMethod({
             Meteor._sleepForMs(200);
             let selector = {};
             let project = {};
+            let itemSelector = {$exists: true};
             let data = {
                 title: {},
                 fields: [],
@@ -30,7 +31,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                 footer: {}
             };
             let branchId = [];
-            if(params.branchId) {
+            if (params.branchId) {
                 branchId = params.branchId.split(',');
                 selector.branchId = {
                     $in: branchId
@@ -54,6 +55,9 @@ export const invoiceByItemReport = new ValidatedMethod({
             }
             if (params.customer && params.customer != '') {
                 selector.customerId = params.customer;
+            }
+            if (params.itemId) {
+                itemSelector = {$in: [params.itemId]}
             }
             data.fields = [{field: '<th>Date</th>'}, {field: '<th>INVN</th>'}, {field: '<th>Name</th>'}, {field: '<th>Addr</th>'}, {field: '<th>Tel</th>'}, {field: '<th>Item</th>'}, {field: '<th class="text-right">Qty</th>'}, {field: '<th class="text-right">Amount</th>'}];
             data.displayFields = [{field: 'date'}, {field: 'invoiceId'}, {field: 'customer'}, {field: 'address'}, {field: 'tel'}, {field: 'itemName'}, {field: 'qty'}, {field: 'amount'}];
@@ -86,6 +90,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                         staffId: 1,
                         stockLocationId: 1,
                         totalCost: 1,
+                        voucherId: 1,
                         status: 1
                     }
                 },
@@ -93,6 +98,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                     $group: {
                         _id: '$customerId',
                         invoiceId: {$last: '$_id'},
+                        voucherId: {$last: '$voucherId'},
                         date: {$last: '$invoiceDate'},
                         data: {
                             $addToSet: '$$ROOT'
@@ -105,6 +111,7 @@ export const invoiceByItemReport = new ValidatedMethod({
 
                 {$unwind: {path: '$data', preserveNullAndEmptyArrays: true}},
                 {$unwind: {path: '$data.items', preserveNullAndEmptyArrays: true}},
+                {$match: {'data.items.itemId': itemSelector}},
                 {
                     $lookup: {
                         from: "pos_item",
@@ -121,6 +128,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                             itemId: '$data.items.itemId'
                         },
                         invoiceId: {$last: '$invoiceId'},
+                        voucherId: {$last: '$voucherId'},
                         date: {$last: '$date'},
                         customerId: {$last: '$data.customerId'},
                         itemId: {$addToSet: '$data.items.itemId'},
@@ -128,7 +136,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                         qty: {$sum: '$data.items.qty'},
                         price: {$avg: '$data.items.price'},
                         amount: {$sum: '$data.items.amount'},
-                        total: {$addToSet: '$total'},
+                        total: {$sum: '$data.items.amount'},
                         totalThb: {$addToSet: '$totalThb'},
                         totalKhr: {$addToSet: '$totalKhr'}
                     }
@@ -153,8 +161,8 @@ export const invoiceByItemReport = new ValidatedMethod({
                     $group: {
                         _id: '$customerId',
                         items: {
-                            $addToSet: {
-                                invoiceId: '$invoiceId',
+                            $push: {
+                                invoiceId: {$ifNull: ['$voucherId', '$invoiceId']},
                                 date: '$date',
                                 customer: '$customerDoc.name',
                                 tel: '$customerDoc.telephone',
@@ -169,12 +177,13 @@ export const invoiceByItemReport = new ValidatedMethod({
                         total: {$addToSet: {totalUsd: '$total', totalThb: '$totalThb', totalKhr: '$totalKhr'}}
                     }
                 },
+                {$sort: {'items.date': 1}},
                 {$unwind: {path: '$total', preserveNullAndEmptyArrays: true}},
                 {
                     $group: {
                         _id: null,
                         data: {
-                            $addToSet: '$$ROOT'
+                            $push: '$$ROOT'
                         },
                         totalQty: {$sum: '$totalQty'},
                         total: {$sum: '$total.totalUsd'},
@@ -191,6 +200,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                 {
                     $unwind: {path: '$items', preserveNullAndEmptyArrays: true}
                 },
+                {$match: {'items.itemId': itemSelector}},
                 {
                     $lookup: {
                         from: "pos_item",
