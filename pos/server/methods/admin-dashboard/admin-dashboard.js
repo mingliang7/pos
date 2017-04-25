@@ -4,6 +4,7 @@ import {AverageInventories} from '../../../imports/api/collections/inventory';
 import {AccountMapping} from '../../../imports/api/collections/accountMapping';
 import {ChartAccount} from '../../../../acc/imports/api/collections/chartAccount';
 import {Branch} from '../../../../core/imports/api/collections/branch';
+import {Exchange} from '../../../../core/imports/api/collections/exchange';
 
 
 Meteor.methods({
@@ -540,11 +541,13 @@ Meteor.methods({
             chartAccountId: id
         };
         branches.forEach(function (branch) {
+            let exchange = Exchange.findOne({}, {sort: {_id: -1}});
             let params = {
                 date: `${moment().startOf('months').format('DD/MM/YYYY')} - ${moment().endOf('months').format('DD/MM/YYYY')}`,
                 currencyId: 'All',
                 branchId: branch._id,
-                chartAccountId: id
+                chartAccountId: id,
+                exchangeDate: exchange && exchange._id
             };
             Meteor.call("acc_cashReportMethod", params, function (err, result) {
                 if (!err) {

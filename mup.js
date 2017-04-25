@@ -1,17 +1,17 @@
 module.exports = {
   servers: {
     one: {
-      host: '35.165.2.156',
-      username: 'ubuntu',
-      pem: "/home/rabbit/Downloads/phal-pos.pem"
-      // password:
+      host: '128.199.195.126',
+      username: 'root',
+      // pem: "/home/rabbit/Downloads/phal-pos.pem"
+      password: 'babyface10'
       // or leave blank for authenticate from ssh-agent
     }
   },
 
   meteor: {
     name: 'Pos',
-    path: '../posPhall',
+    path: '../pos-ls',
     servers: {
       one: {}
     },
@@ -19,7 +19,7 @@ module.exports = {
       serverOnly: true,
     },
     env: {
-      ROOT_URL: 'http://35.165.2.156',
+      ROOT_URL: 'http://128.199.195.126/',
       MONGO_URL: 'mongodb://localhost/pos'
     },
     dockerImage: 'abernix/meteord:base',

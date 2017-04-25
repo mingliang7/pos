@@ -56,10 +56,11 @@ indexTmpl.onCreated(function () {
 indexTmpl.helpers({
     tabularTable(){
         return RepTabular;
-    },
-    selector() {
-        return {branchId: Session.get('currentBranch')};
     }
+    // ,
+    // selector() {
+    //     return {branchId: Session.get('currentBranch')};
+    // }
 });
 
 indexTmpl.events({
