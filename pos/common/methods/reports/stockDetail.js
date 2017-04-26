@@ -30,7 +30,7 @@ export const stockDetailReportMethod = new ValidatedMethod({
             if (params.date) {
                 let date = params.date.split(',');
                 data.title.date = moment(date[0]).format('DD-MM-YYYY') + ' - ' + moment(date[1]).format('DD-MM-YYYY');
-                selector.createdAt = {
+                selector.inventoryDate = {
                     $gte: moment(date[0]).startOf('days').toDate(),
                     $lte: moment(data[1]).endOf('days').toDate()
                 };
@@ -38,7 +38,7 @@ export const stockDetailReportMethod = new ValidatedMethod({
             if (params.branch) {
                 let branch = '';
                 let branchArr = params.branch.split(',');
-                for(let i = 0; i < branchArr.length; i++){
+                for (let i = 0; i < branchArr.length; i++) {
                     branch += Branch.findOne(branchArr[i]).khName + ', ' || '';
                 }
                 branchId = params.branch.split(',');
@@ -67,28 +67,28 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $match: selector
                             },
-                            {$sort: {createdAt: 1}},
+                            {$sort: {inventoryDate: 1, _id: 1}},
                             {
                                 $project: {
-                                    createdAt: 1
+                                    inventoryDate: 1
                                 }
                             },
                             {
                                 $group: {
                                     _id: {
-                                        day: {$dayOfMonth: "$createdAt"},
-                                        month: {$month: "$createdAt"},
-                                        year: {$month: "$createdAt"}
+                                        day: {$dayOfMonth: "$inventoryDate"},
+                                        month: {$month: "$inventoryDate"},
+                                        year: {$month: "$inventoryDate"}
                                     },
                                     items: {$last: {$ifNull: ["$Fkyou", []]}},
-                                    createdAt: {$last: '$createdAt'}
+                                    inventoryDate: {$last: '$inventoryDate'}
                                 }
                             },
                             {
                                 $project: {
                                     _id: 0,
                                     items: 1,
-                                    createdAt: 1
+                                    inventoryDate: 1
                                 }
                             }
                         ],
@@ -96,7 +96,10 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $match: {
                                     type: "invoice",
-                                    createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
                                     branchId: handleUndefined(selector.branchId),
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
@@ -155,7 +158,10 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $match: {
                                     type: "invoice-free",
-                                    createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
                                     branchId: handleUndefined(selector.branchId),
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
@@ -214,7 +220,10 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $match: {
                                     type: "insert-bill",
-                                    createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
                                     branchId: handleUndefined(selector.branchId),
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
@@ -273,7 +282,10 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $match: {
                                     type: "lendingStock",
-                                    createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
                                     branchId: handleUndefined(selector.branchId),
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
@@ -331,7 +343,10 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $match: {
                                     $or: [{type: "exchangeRingPull"}, {type: "exchangeRillPull"}],
-                                    createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
                                     branchId: handleUndefined(selector.branchId),
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
@@ -391,14 +406,17 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $match: {
                                     type: "receiveItem",
-                                    createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
                                     branchId: handleUndefined(selector.branchId),
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
                                 }
                             },
                             {
-                              $group: groupLast()
+                                $group: groupLast()
                             },
                             {
                                 $lookup: {
@@ -449,7 +467,10 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $match: {
                                     type: "transfer-to",
-                                    createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
                                     branchId: handleUndefined(selector.branchId),
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
@@ -507,7 +528,10 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $match: {
                                     type: "transfer-from",
-                                    createdAt: {$gte: selector.createdAt.$gte, $lte: selector.createdAt.$lte},
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
                                     branchId: handleUndefined(selector.branchId),
                                     stockLocationId: handleUndefined(selector.stockLocationId),
                                     itemId: handleUndefined(selector.itemId)
@@ -568,44 +592,44 @@ export const stockDetailReportMethod = new ValidatedMethod({
             ]);
             if (inventoryDocs[0].stockDate.length > 0) {
                 inventoryDocs[0].stockDate.forEach(function (obj) {
-                    var currentStockDate = moment(obj.createdAt).format('YYYY-MM-DD');
+                    var currentStockDate = moment(obj.inventoryDate).format('YYYY-MM-DD');
                     inventoryDocs[0].bills.forEach(function (bill) {
-                        if (moment(currentStockDate).isSame(moment(bill.createdAt).format('YYYY-MM-DD'))) {
+                        if (moment(currentStockDate).isSame(moment(bill.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(bill);
                         }
                     });
                     inventoryDocs[0].receiveBeers.forEach(function (receiveBeer) {
-                        if (moment(currentStockDate).isSame(moment(receiveBeer.createdAt).format('YYYY-MM-DD'))) {
+                        if (moment(currentStockDate).isSame(moment(receiveBeer.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(receiveBeer);
                         }
                     });
                     inventoryDocs[0].invoices.forEach(function (invoice) {
-                        if (moment(currentStockDate).isSame(moment(invoice.createdAt).format('YYYY-MM-DD'))) {
+                        if (moment(currentStockDate).isSame(moment(invoice.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(invoice);
                         }
                     });
                     inventoryDocs[0].invoicesFree.forEach(function (invoice) {
-                        if (moment(currentStockDate).isSame(moment(invoice.createdAt).format('YYYY-MM-DD'))) {
+                        if (moment(currentStockDate).isSame(moment(invoice.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(invoice);
                         }
                     });
                     inventoryDocs[0].lendingStocks.forEach(function (lendingStock) {
-                        if (moment(currentStockDate).isSame(moment(lendingStock.createdAt).format('YYYY-MM-DD'))) {
+                        if (moment(currentStockDate).isSame(moment(lendingStock.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(lendingStock);
                         }
                     });
                     inventoryDocs[0].exchangeRingPulls.forEach(function (exchangeRingPull) {
-                        if (moment(currentStockDate).isSame(moment(exchangeRingPull.createdAt).format('YYYY-MM-DD'))) {
+                        if (moment(currentStockDate).isSame(moment(exchangeRingPull.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(exchangeRingPull);
                         }
                     });
                     inventoryDocs[0].transferTo.forEach(function (transfer) {
-                        if (moment(currentStockDate).isSame(moment(transfer.createdAt).format('YYYY-MM-DD'))) {
+                        if (moment(currentStockDate).isSame(moment(transfer.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(transfer);
                         }
                     });
                     inventoryDocs[0].transferFrom.forEach(function (transfer) {
-                        if (moment(currentStockDate).isSame(moment(transfer.createdAt).format('YYYY-MM-DD'))) {
+                        if (moment(currentStockDate).isSame(moment(transfer.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(transfer);
                         }
                     });
@@ -662,7 +686,7 @@ function projectionField({item, description, name, number, rep, opDate}) {
         type: 1,
         coefficient: 1,
         refId: 1,
-        createdAt: 1,
+        inventoryDate: 1,
         number: number,
         rep: rep,
         description: description,
@@ -686,7 +710,7 @@ function groupLast() {
         type: {$last: '$type'},
         coefficient: {$last: '$coefficient'},
         refId: {$last: '$refId'},
-        createdAt: {$last: '$createdAt'},
+        inventoryDate: {$last: '$inventoryDate'},
     }
 }
 function handleUndefined(value) {
@@ -696,9 +720,9 @@ function handleUndefined(value) {
     return value
 }
 function compare(a, b) {
-    if (a.createdAt < b.createdAt)
+    if (a.inventoryDate < b.inventoryDate)
         return -1;
-    if (a.createdAt > b.createdAt)
+    if (a.inventoryDate > b.inventoryDate)
         return 1;
     return 0;
 }

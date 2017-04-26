@@ -13,7 +13,7 @@ ExchangeRingPulls.before.insert(function (userId, doc) {
     let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (doc.exchangeRingPullDate <= inventoryDate) {
         throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+            moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     let result=StockFunction.checkStockByLocation(doc.stockLocationId,doc.items);
     if(!result.isEnoughStock){
@@ -28,7 +28,7 @@ ExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, opt
     let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.exchangeRingPullDate < inventoryDateOld) {
         throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDateOld).format('YYYY-MM-DD HH:mm:ss') + '"');
+            moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
     modifier = modifier == null ? {} : modifier;
@@ -37,7 +37,7 @@ ExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, opt
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.exchangeRingPullDate < inventoryDate) {
         throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+            moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;

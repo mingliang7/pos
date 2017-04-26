@@ -18,7 +18,7 @@ LendingStocks.before.insert(function (userId, doc) {
     let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (doc.lendingStockDate <= inventoryDate) {
         throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+            moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
@@ -33,7 +33,7 @@ LendingStocks.before.update(function (userId, doc, fieldNames, modifier, options
     let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.lendingStockDate < inventoryDateOld) {
         throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDateOld).format('YYYY-MM-DD HH:mm:ss') + '"');
+            moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
     modifier = modifier == null ? {} : modifier;
@@ -42,7 +42,7 @@ LendingStocks.before.update(function (userId, doc, fieldNames, modifier, options
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.lendingStockDate < inventoryDate) {
         throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+            moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
 
     let postDoc = {itemList: modifier.$set.items};

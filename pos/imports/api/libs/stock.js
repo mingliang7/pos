@@ -5,6 +5,7 @@ import {GratisInventories} from '../collections/gratisInventory'
 
 export  default class StockFunction {
     static averageInventoryInsert(branchId, item, stockLocationId, type, refId, inventoryDate) {
+        inventoryDate=moment(inventoryDate).startOf('days').toDate();
         let lastPurchasePrice = 0;
         let remainQuantity = 0;
         let prefix = stockLocationId + '-';
@@ -67,6 +68,7 @@ export  default class StockFunction {
     }
 
     static averageInventoryInsertForBill(branchId, item, stockLocationId, type, refId, inventoryDate) {
+        inventoryDate=moment(inventoryDate).startOf('days').toDate();
         let id = '';
         //let lastPurchasePrice = 0;
         let remainQuantity = 0;
@@ -131,6 +133,7 @@ export  default class StockFunction {
     }
 
     static minusAverageInventoryInsertForBill(branchId, item, stockLocationId, type, refId, inventoryDate) {
+        inventoryDate=moment(inventoryDate).startOf('days').toDate();
         let id = '';
         let prefix = stockLocationId + '-';
         let inventory = AverageInventories.findOne({
@@ -171,6 +174,7 @@ export  default class StockFunction {
     }
 
     static minusAverageInventoryInsert(branchId, item, stockLocationId, type, refId, inventoryDate) {
+        inventoryDate=moment(inventoryDate).startOf('days').toDate();
         let id = '';
         let prefix = stockLocationId + '-';
         let inventory = AverageInventories.findOne({

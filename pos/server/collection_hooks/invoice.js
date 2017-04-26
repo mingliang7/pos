@@ -20,7 +20,7 @@ Invoices.before.insert(function (userId, doc) {
     let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (doc.invoiceDate <= inventoryDate) {
         throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+            moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
 
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
@@ -52,7 +52,7 @@ Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
     let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.invoiceDate < inventoryDateOld) {
         throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDateOld).format('YYYY-MM-DD HH:mm:ss') + '"');
+            moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
     modifier = modifier == null ? {} : modifier;
@@ -61,7 +61,7 @@ Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.invoiceDate < inventoryDate) {
         throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDate).format('YYYY-MM-DD HH:mm:ss') + '"');
+            moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
 
     let postDoc = {itemList: modifier.$set.items};
@@ -703,7 +703,7 @@ function invoiceManageStock(invoice) {
                 coefficient: -1,
                 type: refType,
                 refId: invoice._id,
-                inventoryDate: invoice.invoiceDate
+                inventoryDate:moment(invoice.invoiceDate).startOf('days').toDate()
             };
             id = AverageInventories.insert(newInventory);
             let setModifier = {$set: {}};
