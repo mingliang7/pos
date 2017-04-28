@@ -95,7 +95,8 @@ Meteor.methods({
         });
 
     },
-    locationTransferManageStock: function (locationTransferId) {
+    locationTransferManageStock: function (lDoc) {
+        let locationTransferId=lDoc.id;
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
@@ -103,13 +104,13 @@ Meteor.methods({
         let locationTransfer = LocationTransfers.findOne(locationTransferId);
 
         let fromInventoryDate = StockFunction.getLastInventoryDate(locationTransfer.fromBranchId, locationTransfer.fromStockLocationId);
-        if (locationTransfer.locationTransferDate <= fromInventoryDate) {
+        if (lDoc.date < fromInventoryDate) {
             throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
                 moment(fromInventoryDate).format('YYYY-MM-DD') + '"');
         }
 
         let toInventoryDate = StockFunction.getLastInventoryDate(locationTransfer.toBranchId, locationTransfer.toStockLocationId);
-        if (locationTransfer.locationTransferDate <= toInventoryDate) {
+        if (lDoc.date < toInventoryDate) {
             throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
                 moment(toInventoryDate).format('YYYY-MM-DD') + '"');
         }
@@ -146,7 +147,8 @@ Meteor.methods({
                         locationTransfer.fromStockLocationId,
                         'transfer-from',
                         locationTransferId,
-                        locationTransfer.locationTransferDate
+                        //locationTransfer.locationTransferDate
+                        lDoc.date
                     );
                     StockFunction.averageInventoryInsert(
                         locationTransfer.toBranchId,
@@ -154,7 +156,8 @@ Meteor.methods({
                         locationTransfer.toStockLocationId,
                         'transfer-to',
                         locationTransferId,
-                        locationTransfer.locationTransferDate
+                        lDoc.date
+                        //locationTransfer.locationTransferDate
                     );
                 } else {
                     throw new Meteor.Error('Not Found Inventory. @locationTransfer-manage-stock. refId:' + locationTransferId);
@@ -207,7 +210,7 @@ Meteor.methods({
                     data1.transaction = [];
                     data1.branchId = doc.fromBranchId;
                     data1.type = "LocationTransferFrom";
-                    data1.journalDate = moment().toDate();
+                    data1.journalDate = lDoc.date;
                     data1.transaction.push({
                         account: inventoryChartAccount.account,
                         dr: 0,
@@ -219,7 +222,7 @@ Meteor.methods({
                     let data2 = doc;
                     data2.transaction = [];
                     data2.branchId = doc.toBranchId;
-                    data2.journalDate = moment().toDate();
+                    data2.journalDate = lDoc.date;
                     data2.type = "LocationTransferTo";
                     data2.transaction.push({
                         account: inventoryChartAccount.account,

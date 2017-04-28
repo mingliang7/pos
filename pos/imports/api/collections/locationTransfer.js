@@ -25,11 +25,9 @@ export const LocationTransfersItemSchema = new SimpleSchema({
                 optionsMethod: 'pos.selectOptMethods.item',
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
-                        if (!_.isEmpty(itemFilterSelector.get())) {
-                            return itemFilterSelector.get();
-                        } else {
-                            return { scheme: {} };
-                        }
+
+                            return { scheme: {$exists:false} };
+
                     }
                 }
             }
