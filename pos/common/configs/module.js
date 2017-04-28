@@ -23,6 +23,7 @@ Module.Pos = {
         'unpaid-invoice-overdue-report',
         'unpaid-group-invoice-overdue-report',
         'receive-payment-report',
+        'ring-pull-detail-report',
         'ring-pull-exchange-report',
         'ring-pull-to-khb-report',
         'exchange-ring-pull-ending-report',

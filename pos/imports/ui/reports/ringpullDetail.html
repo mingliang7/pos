@@ -1,0 +1,117 @@
+<template name="Pos_ringpullDetailReport">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="panel-heading no-print">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="no-print panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='ringpullDetailReport'}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="fromDate" label= 'From Date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="toDate" label='To Date'}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="itemId" label="Item"}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="branchId" label="Branch"}}
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                                <button class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i>
+                                    Print
+                                </button>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>ringpullDetailReportData}}
+        </div>
+    </div>
+</template>
+
+<template name="ringpullDetailReportData">
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h4 class="text-center">{{khName}}</h4>
+                <h5 class="text-aqua text-center"><u>Ring PULL DETAIL</u></h5>
+            </div>
+        {{/with}}
+        <br>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <small>
+                            <address class="">
+                                <strong>Date:</strong>
+                                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{data.title.date}}</span><br>
+                                <strong>Item:</strong>
+                                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{data.title.item.name}}</span>
+                                <br>
+                                <strong>Branch:</strong>
+                                <span>{{data.title.branch.khName}}</span>
+                            </address>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>INV</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th class="text-center">Exchange R/P</th>
+                <th class="text-center">C.Exchange R/P</th>
+                <th class="text-center">Transfer Out R/P</th>
+                <th class="text-center">Transfer In R/P</th>
+                <th class="text-center">Ending R/P</th>
+            </tr>
+            </thead>
+            {{#with data}}
+                <tbody>
+                {{#each content}}
+                    <tr>
+                        <td>{{moFormat date 'DD/MM/YYYY'}}</td>
+                        <td>{{inv}}</td>
+                        <td>{{name}}</td>
+                        <td>{{{des}}}</td>
+                        <td class="text-right">{{isZero exchangeRP}}</td>
+                        <td class="text-right">{{isZero cExchangeRP}}</td>
+                        <td class="text-right">{{isZero transferRP}}</td>
+                        <td class="text-right">{{isZero receiveTransfer}}</td>
+                        <td class="text-right">{{isZero endingBalance}}</td>
+                    </tr>
+                {{/each}}
+                <tr>
+                    <td colspan="3"></td>
+                    <td class="text-right"><b>Total:</b></td>
+                    <td class="text-right"><b>{{footer.totalExchangeRP}}</b></td>
+                    <td class="text-right"><b>{{footer.totalCompanyExchangeRP}}</b></td>
+                    <td class="text-right"><b>{{footer.totalTransferOutRP}}</b></td>
+                    <td class="text-right"><b>{{footer.totalTransferInRP}}</b></td>
+                    <td class="text-right"><b>{{footer.endingBalance}}</b></td>
+                </tr>
+                </tbody>
+            {{/with}}
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

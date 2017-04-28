@@ -519,3 +519,17 @@ PosRoutes.route('/report/customerHistory', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/reports/ringpullDetail';
+PosRoutes.route('/report/ringpullDetail', {
+    name: 'pos.ringpullDetailReport',
+    title: 'RingPull Detail Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_ringpullDetailReport');
+    },
+    breadcrumb: {
+        title: 'RingPull Detail Report',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
