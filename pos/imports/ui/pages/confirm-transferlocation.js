@@ -5,6 +5,7 @@ import {createNewAlertify} from '../../../../core/client/libs/create-new-alertif
 import {renderTemplate} from '../../../../core/client/libs/render-template';
 //collection
 import {LocationTransfers} from '../../api/collections/locationTransfer';
+import {AcceptTransfer_schema} from '../../api/collections/acceptTransfer.js'
 //methods
 let indexTmpl = Template.Pos_confirmTransferLocation,
     transferInfo = Template.transferInfo;
@@ -12,9 +13,10 @@ let transferState = new ReactiveVar(true);
 let statusState = new ReactiveVar('active');
 let loadMore = new ReactiveVar(0);
 let sumLoadMore = new ReactiveVar(10);
-
+let accentFrom = Template.acceptForm;
 indexTmpl.onCreated(function () {
     createNewAlertify('locationTransfer', {size: 'lg'});
+    createNewAlertify('acceptLocationTransfer');
     this.autorun(function () {
         if (Session.get('currentBranch') || transferState.get() || statusState.get()) {
             let subscription = Meteor.subscribe('pos.activeLocationTransfers',
@@ -117,29 +119,31 @@ indexTmpl.events({
         });
     },
     'click .accept'(){
-        let id = this._id;
-        swal({
-            title: "Are you sure?",
-            text: "",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Yes, accept it!",
-            closeOnConfirm: false
-        }).then(function () {
-            Meteor.call('locationTransferManageStock', id, function (er, re) {
-                if (er) {
-                    alertify.error(er.message);
-                } else {
-                    swal({
-                        title: "Accepted!",
-                        text: "Successfully",
-                        type: "success",
-                        showConfirmButton: false,
-                        timer: 2000
-                    });
-                }
-            })
-        });
+        let doc = {id: this._id};
+
+        alertify.acceptLocationTransfer(fa('eye', 'Accept Transfer'), renderTemplate(accentFrom, doc));
+        /*swal({
+         title: "Are you sure?",
+         text: "",
+         type: "warning",
+         showCancelButton: true,
+         confirmButtonText: "Yes, accept it!",
+         closeOnConfirm: false
+         }).then(function () {
+         Meteor.call('locationTransferManageStock', id, function (er, re) {
+         if (er) {
+         alertify.error(er.message);
+         } else {
+         swal({
+         title: "Accepted!",
+         text: "Successfully",
+         type: "success",
+         showConfirmButton: false,
+         timer: 2000
+         });
+         }
+         })
+         });*/
     },
     'click .decline'(){
         let id = this._id;
@@ -202,3 +206,23 @@ transferInfo.events({
         $('#to-print').printThis();
     }
 });
+accentFrom.helpers({
+    schemaName(){
+        return AcceptTransfer_schema;
+    }
+})
+
+
+let hooksObject = {
+    onSuccess (formType, result) {
+        alertify.acceptLocationTransfer().close();
+        displaySuccess();
+    },
+    onError (formType, error) {
+        alertify.error(error.message);
+    }
+};
+
+AutoForm.addHooks([
+    'accept_form',
+], hooksObject);
