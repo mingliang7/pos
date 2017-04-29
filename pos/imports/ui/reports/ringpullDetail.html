@@ -93,21 +93,21 @@
                         <td>{{inv}}</td>
                         <td>{{name}}</td>
                         <td>{{{des}}}</td>
-                        <td class="text-right">{{isZero exchangeRP}}</td>
-                        <td class="text-right">{{isZero cExchangeRP}}</td>
-                        <td class="text-right">{{isZero transferRP}}</td>
-                        <td class="text-right">{{isZero receiveTransfer}}</td>
-                        <td class="text-right">{{isZero endingBalance}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{isZero exchangeRP}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{isZero cExchangeRP}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{isZero transferRP}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{isZero receiveTransfer}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{endingBalance}}</td>
                     </tr>
                 {{/each}}
                 <tr>
                     <td colspan="3"></td>
                     <td class="text-right"><b>Total:</b></td>
-                    <td class="text-right"><b>{{footer.totalExchangeRP}}</b></td>
-                    <td class="text-right"><b>{{footer.totalCompanyExchangeRP}}</b></td>
-                    <td class="text-right"><b>{{footer.totalTransferOutRP}}</b></td>
-                    <td class="text-right"><b>{{footer.totalTransferInRP}}</b></td>
-                    <td class="text-right"><b>{{footer.endingBalance}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.totalExchangeRP}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.totalCompanyExchangeRP}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.totalTransferOutRP}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.totalTransferInRP}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.endingBalance}}</b></td>
                 </tr>
                 </tbody>
             {{/with}}

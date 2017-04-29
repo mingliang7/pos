@@ -93,6 +93,7 @@ export const ringpullDetailReport = new ValidatedMethod({
                 },
                 {
                     $project: {
+                        _id: 0,
                         date: '$companyExchangeRingPullDate',
                         inv: '$_id',
                         des: 1,
@@ -183,6 +184,7 @@ export const ringpullDetailReport = new ValidatedMethod({
                 },
                 {
                     $project: {
+                        _id: 0,
                         date: '$ringPullTransferDate',
                         inv: '$_id',
                         des: 1,
@@ -229,13 +231,14 @@ export const ringpullDetailReport = new ValidatedMethod({
                 },
                 {
                     $project: {
+                        _id: 0,
                         date: '$ringPullTransferDate',
                         inv: '$_id',
                         des: 1,
                         name: '$branchDoc.khName',
                         itemDoc: 1,
                         items: 1,
-                        type: {$ifNull: ["$fake", 'out']},
+                        type: {$ifNull: ["$fake", 'in']},
                         exchangeRP: {$ifNull: ["$fake", 0]},
                         cExchangeRP: {$ifNull: ["$fake", 0]},
                         transferRP: {$ifNull: ["$fake", 0]},

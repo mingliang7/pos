@@ -193,7 +193,7 @@ export const  termCustomerBalanceReport = new ValidatedMethod({
                     {$sort: {invoiceDate: 1}},
                     {
                         $redact: {
-                            $cond: {if: {$eq: ['$balance', 0]}, then: '$$PRUNE', else: '$$KEEP'}
+                            $cond: {if: {$gt: ['$balance', 0]}, then: '$$KEEP', else: '$$PRUNE'}
                         }
                     },
                     {
@@ -364,6 +364,11 @@ export const  termCustomerBalanceReport = new ValidatedMethod({
                     },
                     {
                         $unwind: {path: '$customerDoc', preserveNullAndEmptyArrays: true}
+                    },
+                    {
+                        $redact: {
+                            $cond: {if: {$gt: ['$balance', 0]}, then: '$$KEEP', else: '$$PRUNE'}
+                        }
                     },
                     {$sort: {'customerDoc.name': 1}},
                     {
