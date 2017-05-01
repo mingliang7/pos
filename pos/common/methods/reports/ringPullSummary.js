@@ -435,6 +435,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
             let totalTransferInRP = 0;
             let totalEndingBalance = 0;
             let totalBegginingBalance = 0;
+            let totalAmount = 0;
             for (let k in itemObj) {
                 totalExchangeRP += itemObj[k].exchangeRP;
                 totalCompanyExchangeRP += itemObj[k].cExchangeRP;
@@ -448,9 +449,11 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 itemObj[k].begginingBalance = beggingBalance;
                 itemObj[k].endingBalance = endingBalance;
                 itemObj[k].balance = endingBalance + beggingBalance
+                itemObj[k].amount = itemObj[k].balance * itemObj[k].itemDoc.price;
                 ringPullDetailsArr.push(itemObj[k]);
                 totalBegginingBalance += beggingBalance;
                 totalEndingBalance += itemObj[k].balance;
+                totalAmount += itemObj[k].amount;
             }
 
             data.content = ringPullDetailsArr.sort(compareName);
@@ -460,6 +463,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
             data.footer.totalTransferInRP = numeral(totalTransferInRP).format('0,0.00');
             data.footer.endingBalance = numeral(totalEndingBalance).format('0,0.00');
             data.footer.begginingBalance = numeral(totalBegginingBalance).format('0,0.00');
+            data.footer.totalAmount = numeral(totalAmount).format('0,0.00');
             return data
         }
     }
