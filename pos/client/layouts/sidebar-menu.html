@@ -329,6 +329,14 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
+                        {{#if isInRole 'ring-pull-summary-report' 'Pos'}}
+                            <li>
+                                <a href="{{ringPullSummary}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Ring Pull Summary</span>
+                                </a>
+                            </li>
+                        {{/if}}
                         {{#if isInRole 'ring-pull-detail-report' 'Pos'}}
                             <li>
                                 <a href="{{pathFor 'pos.ringpullDetailReport'}}">

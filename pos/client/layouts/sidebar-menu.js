@@ -112,5 +112,8 @@ Template.Pos_sidebarMenu.helpers({
     },
     stockDetail(){
         return `/pos/report/stockDetail?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
+    },
+    ringPullSummary(){
+        return `/pos/report/ringpullSummary?asDate=${moment().endOf('days').format('YYYY-MM-DD')}&branchId=${Session.get('currentBranch')}`;
     }
 });
