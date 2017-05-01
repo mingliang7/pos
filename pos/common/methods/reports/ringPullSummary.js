@@ -48,15 +48,19 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 itemSelector['items.itemId'] = {$in: params.itemId.split(',')};
                 let items = Item.find({_id: {$in: params.itemId.split(',')}});
                 items.forEach(function (item) {
-                    concatItem += `${item.name}, ` ;
+                    concatItem += `${item.name}, `;
                 });
                 data.title.item = concatItem;
             } else {
                 itemSelector['items.itemId'] = {$exists: true}
             }
+            let startOfMonth;
+            let endOfMonth;
             if (params.asDate) {
                 let toDate = moment(params.asDate).endOf('days').toDate();
-                subOneMonth = moment(params.asDate).subtract(1, 'month').toDate();
+                startOfMonth = moment(params.asDate).startOf('months').toDate();
+                endOfMonth = moment(params.asDate).endOf('months').toDate();
+                subOneMonth = moment(params.asDate).subtract(1, 'months').endOf('months').toDate();
                 data.title.branch = Branch.findOne({_id: params.branchId});
                 data.title.date = moment(toDate).format('DD/MM/YYYY');
                 companySelector.companyExchangeRingPullDate = {$lte: toDate};
@@ -118,11 +122,12 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         type: {$last: '$type'},
                         date: {$last: '$date'},
                         name: {$last: '$name'},
+                        price: {$avg: '$item.price'},
                         itemData: {$push: '$$ROOT'},
-                        exchangeRP: {$sum: '$exchangeRP'},
-                        cExchangeRP: {$sum: '$cExchangeRP'},
-                        transferRP: {$sum: '$transferRP'},
-                        receiveTransfer: {$sum: '$receiveTransfer'},
+                        exchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$exchangeRP')},
+                        cExchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$cExchangeRP')},
+                        transferRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$transferRP')},
+                        receiveTransfer: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$receiveTransfer')},
                         itemDoc: {$last: '$itemDoc'},
                     }
                 },
@@ -134,6 +139,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         name: 1,
                         exchangeRP: 1,
                         cExchangeRP: 1,
+                        price: 1,
                         transferRP: 1,
                         itemDoc: 1,
                         receiveTransfer: 1,
@@ -141,7 +147,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                             $filter: {
                                 input: '$itemData',
                                 as: 'item',
-                                cond: [{$lte: ['$$item.date', subOneMonth]}]
+                                cond: {$lte: ['$$item.date', subOneMonth]}
                             }
                         }
                     }
@@ -196,13 +202,14 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         items: {$last: '$items'},
                         type: {$last: '$type'},
                         name: {$last: '$name'},
+                        price: {$avg: '$item.price'},
                         itemDoc: {$last: '$itemDoc'},
                         date: {$last: '$date'},
                         itemData: {$push: '$$ROOT'},
-                        exchangeRP: {$sum: '$exchangeRP'},
-                        cExchangeRP: {$sum: '$cExchangeRP'},
-                        transferRP: {$sum: '$transferRP'},
-                        receiveTransfer: {$sum: '$receiveTransfer'},
+                        exchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$exchangeRP')},
+                        cExchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$cExchangeRP')},
+                        transferRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$transferRP')},
+                        receiveTransfer: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$receiveTransfer')},
                     }
                 },
                 {
@@ -210,6 +217,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         _id: 1,
                         items: 1,
                         type: 1,
+                        price: 1,
                         name: 1,
                         itemDoc: 1,
                         exchangeRP: 1,
@@ -220,7 +228,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                             $filter: {
                                 input: '$itemData',
                                 as: 'item',
-                                cond: [{$lte: ['$$item.date', subOneMonth]}]
+                                cond: {$lte: ['$$item.date', subOneMonth]}
                             }
                         }
                     }
@@ -279,11 +287,12 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         date: {$last: '$date'},
                         type: {$last: '$type'},
                         name: {$last: '$name'},
+                        price: {$avg: '$item.price'},
                         itemData: {$push: '$$ROOT'},
-                        exchangeRP: {$sum: '$exchangeRP'},
-                        cExchangeRP: {$sum: '$cExchangeRP'},
-                        transferRP: {$sum: '$transferRP'},
-                        receiveTransfer: {$sum: '$receiveTransfer'},
+                        exchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$exchangeRP')},
+                        cExchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$cExchangeRP')},
+                        transferRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$transferRP')},
+                        receiveTransfer: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$receiveTransfer')},
                         itemDoc: {$last: '$itemDoc'},
                     }
                 },
@@ -297,12 +306,13 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         exchangeRP: 1,
                         cExchangeRP: 1,
                         transferRP: 1,
+                        price: 1,
                         receiveTransfer: 1,
                         itemData: {
                             $filter: {
                                 input: '$itemData',
                                 as: 'item',
-                                cond: [{$lte: ['$$item.date', subOneMonth]}]
+                                cond: {$lte: ['$$item.date', subOneMonth]}
                             }
                         }
                     }
@@ -362,11 +372,12 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         date: {$last: '$date'},
                         type: {$last: '$type'},
                         name: {$last: '$name'},
+                        price: {$avg: '$item.price'},
                         itemData: {$push: '$$ROOT'},
-                        exchangeRP: {$sum: '$exchangeRP'},
-                        cExchangeRP: {$sum: '$cExchangeRP'},
-                        transferRP: {$sum: '$transferRP'},
-                        receiveTransfer: {$sum: '$receiveTransfer'},
+                        exchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$exchangeRP')},
+                        cExchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$cExchangeRP')},
+                        transferRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$transferRP')},
+                        receiveTransfer: {$sum: aggMatchingDate(startOfMonth, endOfMonth,'$date', '$receiveTransfer')},
                     }
                 },
                 {
@@ -378,13 +389,14 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         itemDoc: 1,
                         exchangeRP: 1,
                         cExchangeRP: 1,
+                        price: 1,
                         transferRP: 1,
                         receiveTransfer: 1,
                         itemData: {
                             $filter: {
                                 input: '$itemData',
                                 as: 'item',
-                                cond: [{$lte: ['$$item.date', subOneMonth]}]
+                                cond: {$lte: ['$$item.date', subOneMonth]}
                             }
                         }
                     }
@@ -430,16 +442,20 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 totalTransferInRP += itemObj[k].receiveTransfer;
                 let endingBalance = (itemObj[k].exchangeRP + itemObj[k].receiveTransfer) - (itemObj[k].transferRP + itemObj[k].cExchangeRP);
                 let beggingBalance = 0;
-                itemObj[k].itemData.forEach(function (item) {
+                let sortItem = _.sortBy(itemObj[k].itemData, function (o) {
+                    return moment(o.date);
+                });
+                sortItem.forEach(function (item) {
                     beggingBalance = calcBalance(item);
                 });
                 itemObj[k].begginingBalance = beggingBalance;
                 itemObj[k].endingBalance = endingBalance;
-                itemObj[k].balance = endingBalance + beggingBalance;
+                itemObj[k].balance = endingBalance + beggingBalance
                 ringPullDetailsArr.push(itemObj[k]);
                 totalBegginingBalance += beggingBalance;
                 totalEndingBalance += itemObj[k].balance;
             }
+
             data.content = ringPullDetailsArr.sort(compareName);
             data.footer.totalExchangeRP = numeral(totalExchangeRP).format('0,0.00');
             data.footer.totalCompanyExchangeRP = numeral(totalCompanyExchangeRP).format('0,0.00');
@@ -451,11 +467,22 @@ export const ringPullSummaryReport = new ValidatedMethod({
         }
     }
 });
-function compare(a, b) {
-    if (a.date < b.date)
+function compareId(a,b) {
+    if (a._id < b._id)
         return -1;
-    if (a.date > b.date)
+    if (a._id > b._id)
         return 1;
+    return 0;
+}
+function compare(a, b) {
+    let aDate = moment(a.date).format('YYYY-MM-DD HH:mm:ss');
+    let bDate = moment(b.date).format('YYYYY-MM-DD HH:mm:ss');
+    if (moment(aDate).isAfter(bDate)) {
+        return -1;
+    }
+    if (moment(aDate).isBefore(bDate)){
+        return 1;
+    }
     return 0;
 }
 function compareName(a, b) {
@@ -474,4 +501,17 @@ function calcBalance(item) {
         balance -= item.items.qty
     }
     return balance;
+}
+function aggMatchingDate(startofMonth, endOfMonth, condField, tokenField) {
+    return {
+        $cond: [
+            {$and: [
+                {$gte: [condField, startofMonth]},
+                {$lte: [condField, endOfMonth]}
+                ]
+            },
+            tokenField,
+            0
+        ]
+    }
 }
