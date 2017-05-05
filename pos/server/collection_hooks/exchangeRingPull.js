@@ -288,3 +288,63 @@ function returnToInventory(exchangeRingPull, type,inventoryDate) {
     });
     //--- End Inventory type block "Average Inventory"---
 }
+
+Meteor.methods({
+    correctAccountExchangeRingPull(){
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let i=1;
+
+        let exchangeRingPulls=ExchangeRingPulls.find({});
+        exchangeRingPulls.forEach(function (doc) {
+            console.log(i);
+            i++;
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let transaction = [];
+                let data = doc;
+                data.type = "ExchangeRingPull";
+
+                let customerDoc = Customers.findOne({_id: doc.customerId});
+                if (customerDoc) {
+                    data.name = customerDoc.name;
+                    data.des = data.des == "" || data.des == null ? ("ប្តូរក្រវិលពីអតិថិជនៈ " + data.name) : data.des;
+                }
+
+                let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
+                let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+                transaction.push({
+                    account: ringPullChartAccount.account,
+                    dr: data.total,
+                    cr: 0,
+                    drcr: data.total
+                }, {
+                    account: inventoryChartAccount.account,
+                    dr: 0,
+                    cr: data.total,
+                    drcr: -data.total
+                });
+                data.transaction = transaction;
+                data.journalDate = data.exchangeRingPullDate;
+                Meteor.call('insertAccountJournal', data);
+                /*Meteor.call('insertAccountJournal', data, function (er, re) {
+                 if (er) {
+                 AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                 StockFunction.reduceRingPullInventory(doc);
+                 Meteor.call('insertRemovedCompanyExchangeRingPull', doc);
+                 ExchangeRingPulls.direct.remove({_id: doc._id});
+                 throw new Meteor.Error(er.message);
+                 } else if (re == null) {
+                 AverageInventories.direct.remove({_id: {$in: inventoryIdList}});
+                 StockFunction.reduceRingPullInventory(doc);
+                 Meteor.call('insertRemovedCompanyExchangeRingPull', doc);
+                 ExchangeRingPulls.direct.remove({_id: doc._id});
+                 throw new Meteor.Error("Can't Entry to Account System.");
+                 }
+                 });*/
+            }
+            //End Account Integration
+        });
+    }
+})

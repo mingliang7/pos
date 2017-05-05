@@ -389,3 +389,53 @@ function recalculatePaymentAfterRemoved({doc}) {
         }
     }
 }
+
+Meteor.methods({
+    correctAccountBill(){
+        let bills=EnterBills.find({});
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let i=1;
+        bills.forEach(function (doc) {
+            console.log(i);
+            i++;
+            //Account Integration
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+                let apChartAccount = AccountMapping.findOne({name: 'A/P'});
+                let transaction = [];
+                let data = doc;
+                data.type = "EnterBill";
+                let vendorDoc = Vendors.findOne({_id: doc.vendorId});
+                if (vendorDoc) {
+                    data.name = vendorDoc.name;
+                    data.des = data.des == "" || data.des == null ? ("បញ្ជាទិញទំនិញពីៈ " + data.name) : data.des;
+                }
+                /* data.items.forEach(function (item) {
+                 let itemDoc = Item.findOne(item.itemId);
+                 if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
+                 */
+                transaction.push({
+                    account: inventoryChartAccount.account,
+                    dr: doc.total,
+                    cr: 0,
+                    drcr: doc.total,
+
+                }, {
+                    account: apChartAccount.account,
+                    dr: 0,
+                    cr: doc.total,
+                    drcr: -doc.total,
+                });
+                /* }
+                 });*/
+                data.transaction = transaction;
+                data.journalDate = data.enterBillDate;
+                Meteor.call('insertAccountJournal', data);
+            }
+            //End Account Integration
+        });
+    }
+})
