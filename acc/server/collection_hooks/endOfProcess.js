@@ -156,7 +156,7 @@ DateEndOfProcess.after.insert(function (userId, doc) {
 
             Meteor.call('getEndOfProcess', selector, branchId,
                 selectorGetLastBalance, lastDate, doc.closeDate, doc._id, function (err, result) {
-                    if(err){
+                    if (err) {
                         console.log(err.message);
                     }
                 });
@@ -193,7 +193,7 @@ DateEndOfProcess.after.insert(function (userId, doc) {
 
         // month is december must convert Net Income to Retain Earning
         if (moment(doc.closeDate).format("MM") == 12) {
-            var netIncomeThisYear = NetInCome.find({year: year}).fetch();
+            var netIncomeThisYear = NetInCome.find({year: year, branchId: doc.branchId}).fetch();
             var riel = 0;
             var dollar = 0;
             var baht = 0;
