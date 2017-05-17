@@ -26,7 +26,7 @@ export const LocationTransfersItemSchema = new SimpleSchema({
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
 
-                            return { scheme: {$exists:false} };
+                            return {  scheme: {$exists: false}, itemType: 'stock' };
 
                     }
                 }

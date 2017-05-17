@@ -1,31 +1,31 @@
 //component
 import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
 //page
-import './stockBalance.html';
+import './prepaidOrderBalance.html';
 //import DI
 import  'printthis';
 //import collection
-import {stockBalanceSchema} from '../../api/collections/reports/stockBalance';
+import {prepaidOrderBalanceReportSchema} from '../../api/collections/reports/prepaidOrderBalanceReport';
 
 //methods
-import {stockBalanceReport} from '../../../common/methods/reports/stockBalanceReport';
+import {prepaidOrderBalanceReport} from '../../../common/methods/reports/prepaidOrderBalanceReport';
 //state
 let paramsState = new ReactiveVar();
 let invoiceData = new ReactiveVar();
 //declare template
-let indexTmpl = Template.Pos_stockBalanceReport,
-    invoiceDataTmpl = Template.stockBalanceReportData;
+let indexTmpl = Template.Pos_prepaidOrderBalance,
+    invoiceDataTmpl = Template.prepaidOrderBalanceData;
 Tracker.autorun(function () {
     if (paramsState.get()) {
         swal({
             title: "Pleas Wait",
             text: "Fetching Data....", showConfirmButton: false
         });
-        stockBalanceReport.callPromise(paramsState.get())
+        prepaidOrderBalanceReport.callPromise(paramsState.get())
             .then(function (result) {
                 invoiceData.set(result);
                 setTimeout(function () {
-                    swal.close();
+                    swal.close()
                 }, 200);
             }).catch(function (err) {
             swal.close();
@@ -40,12 +40,17 @@ indexTmpl.onCreated(function () {
 });
 indexTmpl.helpers({
     schema(){
-        return stockBalanceSchema;
+        return prepaidOrderBalanceReportSchema;
     }
 });
 indexTmpl.events({
     'click .print'(event, instance){
         $('#to-print').printThis();
+    },
+    'change #go-to-prepaid-order-detail'(event, instance){
+        if (event.currentTarget.value == 'prepaidOrderDetail') {
+            FlowRouter.go(`/pos/report/prepaid-order-detail?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD 23:59:59')}&branchId=${Session.get('currentBranch')}`);
+        }
     }
 });
 invoiceDataTmpl.helpers({
@@ -55,61 +60,63 @@ invoiceDataTmpl.helpers({
     },
     data(){
         if (invoiceData.get()) {
-            debugger
             return invoiceData.get();
         }
+    },
+    reduceField(){
+        let td = ''
+        let fieldLength = this.displayFields.length - 6;
+        for (let i = 0; i < fieldLength; i++) {
+            td += '<td></td>';
+        }
+        return td;
     },
     display(col){
         let data = '';
         this.displayFields.forEach(function (obj) {
-            if (obj.field == 'invoiceDate') {
+            if (obj.field == 'prepaidOrderDate') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
-            } else if (obj.field == 'averagePrice' || obj.field == 'lastAmount') {
-                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.00')}</td>`
-            }else if(obj.field == 'remainQty') {
-                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0')}</td>`;
+            } else if (obj.field == 'total') {
+                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
             }
         });
+
         return data;
     },
-    getTotal(total, totalRemainQty){
+    getTotal(totalRemainQty, total){
         let string = '';
-        let fieldLength = this.displayFields.length - 4;
+        let fieldLength = this.displayFields.length - 3;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td style="border-top: 1px solid black;" class="text-right"><b>${numeral(totalRemainQty).format('0,0')}</b></td><td style="border-top: 1px solid black" class="text-right"><b>${numeral(total).format('0,0.00')}</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(totalRemainQty).format('0,0')}</b></td></td><td><b>${numeral(total).format('0,0.00')}</b></td>`;
         return string;
     }
 });
 
 
 AutoForm.hooks({
-    balanceReport: {
+    prepaidOrderBalance: {
         onSubmit(doc){
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
-            if (doc.asOfDate) {
-                let asOfDate = moment(doc.asOfDate).format('YYYY-MM-DD 23:59:59');
-                params.date = `${asOfDate}`;
+            params.branchId = Session.get('currentBranch')
+            if (doc.fromDate && doc.toDate) {
+                let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
+                let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
+                params.date = `${fromDate},${toDate}`;
             }
-            if (doc.filter) {
-                params.filter = doc.filter.join(',');
+            if (doc.vendorId) {
+                params.vendor = doc.vendor
             }
-            if (doc.items) {
-                params.items = doc.items.join(',')
-            }
-            if (doc.branch) {
-                params.branch = doc.branch.join(',');
-            }
-            if (doc.location) {
-                params.location = doc.location.join(',');
+            if (doc.branchId) {
+                params.branchId = doc.branchId.join(',');
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());

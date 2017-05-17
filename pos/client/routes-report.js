@@ -547,3 +547,17 @@ PosRoutes.route('/report/ringpullSummary', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/reports/prepaidOrderBalance';
+PosRoutes.route('/report/prepaid-order-balance', {
+    name: 'pos.prepaidOrderBalanceReport',
+    title: 'Prepaid Order Balance Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_prepaidOrderBalance');
+    },
+    breadcrumb: {
+        title: 'Prepaid Order Balance Report',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
