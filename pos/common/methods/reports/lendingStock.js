@@ -31,12 +31,18 @@ export const lendingStockReport = new ValidatedMethod({
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.status = {$in: ['active', 'closed']};
+            if(params.status) {
+                selector.status = {$in: params.status.split(',')}
+            }
             if (params.date) {
-                let dateAsArray = params.date.split(',')
+                let dateAsArray = params.date.split(',');
                 let fromDate = moment(dateAsArray[0]).toDate();
                 let toDate = moment(dateAsArray[1]).toDate();
                 data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
                 selector.lendingStockDate = {$gte: fromDate, $lte: toDate};
+            }
+            if(params.branchId) {
+                selector.branchId = params.branchId;
             }
             if (params.vendor && params.vendor != '') {
                 selector.vendorId = params.vendor;

@@ -253,6 +253,7 @@ export const ringpullDetailReport = new ValidatedMethod({
             let totalTransferOutRP = 0;
             let totalTransferInRP = 0;
             let endingBalance = 0;
+            let endingBalanceAmount = 0;
             if (sortRingPulls.length > 0) {
                 sortRingPulls.forEach(function (doc) {
                     totalExchangeRP += doc.exchangeRP;
@@ -261,11 +262,18 @@ export const ringpullDetailReport = new ValidatedMethod({
                     totalTransferInRP += doc.receiveTransfer;
                     if (doc.type == 'in') {
                         doc.endingBalance = endingBalance + doc.items.qty;
+                        doc.endingBalanceAmount = endingBalanceAmount + doc.items.amount;
+                        doc.price = doc.items.price;
+                        endingBalanceAmount += doc.items.amount;
                         endingBalance += doc.items.qty
 
                     } else {
                         doc.endingBalance = endingBalance - doc.items.qty;
-                        endingBalance -= doc.items.qty
+                        doc.endingBalanceAmount = endingBalanceAmount - doc.items.amount;
+                        doc.price = doc.items.price;
+                        endingBalance -= doc.items.qty;
+                        endingBalanceAmount -= doc.items.amount;
+
                     }
                 });
                 data.content = sortRingPulls;
@@ -275,6 +283,7 @@ export const ringpullDetailReport = new ValidatedMethod({
             data.footer.totalTransferOutRP = numeral(totalTransferOutRP).format('0,0.00');
             data.footer.totalTransferInRP = numeral(totalTransferInRP).format('0,0.00');
             data.footer.endingBalance = numeral(endingBalance).format('0,0.00');
+            data.footer.endingBalanceAmount = numeral(endingBalanceAmount).format('0,0.00');
             return data
         }
     }

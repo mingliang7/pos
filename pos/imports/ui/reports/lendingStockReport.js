@@ -74,7 +74,8 @@ invoiceDataTmpl.helpers({
             } else if (obj.field == 'vendor') {
                 data += `<td>${col.vendor.name}</td>`;
             } else if(obj.field == 'vendorTelephone'){
-                data += `<td>${col.vendor.telephone}</td>`;
+                let tel =col.vendor.telephone;
+                data += `<td>${ tel ? tel : ''}</td>`;
             } else if (obj.field == 'total') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
             }
@@ -103,10 +104,14 @@ AutoForm.hooks({
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
+            params.branchId = Session.get('currentBranch');
             if (doc.fromDate && doc.toDate) {
                 let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
                 let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
                 params.date = `${fromDate},${toDate}`;
+            }
+            if(doc.status) {
+                params.status = doc.status.join(',');
             }
             if (doc.vendor) {
                 params.vendor = doc.vendor

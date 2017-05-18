@@ -82,8 +82,9 @@ export const exchangeRingPullStockBalanceReport = new ValidatedMethod({
                 },
                 {
                     $group: {
-                        _id: '$branchId',
+                        _id: {branchId: '$branchId', itemId: '$itemDoc._id'},
                         branchDoc: {$last: '$branchDoc'},
+                        branchId: {$last: '$branchDoc._id'},
                         items: {
                             $addToSet: {
                                 itemId: '$itemId',
@@ -92,6 +93,19 @@ export const exchangeRingPullStockBalanceReport = new ValidatedMethod({
                             }
                         }
                     }
+                },
+                {
+                  $project: {
+                      _id: 0,
+                      branchDoc: 1,
+                      branchId: 1,
+                      items: 1
+                  }
+                },
+                {
+                  $match: {
+                      branchId: selector.branchId
+                  }
                 },
                 {
                     $sort: {

@@ -122,7 +122,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         type: {$last: '$type'},
                         date: {$last: '$date'},
                         name: {$last: '$name'},
-                        price: {$avg: '$item.price'},
+                        price: {$avg: '$items.price'},
                         itemData: {$push: '$$ROOT'},
                         exchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$exchangeRP')},
                         cExchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$cExchangeRP')},
@@ -202,7 +202,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         items: {$last: '$items'},
                         type: {$last: '$type'},
                         name: {$last: '$name'},
-                        price: {$avg: '$item.price'},
+                        price: {$avg: '$items.price'},
                         itemDoc: {$last: '$itemDoc'},
                         date: {$last: '$date'},
                         itemData: {$push: '$$ROOT'},
@@ -287,7 +287,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         date: {$last: '$date'},
                         type: {$last: '$type'},
                         name: {$last: '$name'},
-                        price: {$avg: '$item.price'},
+                        price: {$avg: '$items.price'},
                         itemData: {$push: '$$ROOT'},
                         exchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$exchangeRP')},
                         cExchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$cExchangeRP')},
@@ -372,7 +372,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         date: {$last: '$date'},
                         type: {$last: '$type'},
                         name: {$last: '$name'},
-                        price: {$avg: '$item.price'},
+                        price: {$avg: '$items.price'},
                         itemData: {$push: '$$ROOT'},
                         exchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$exchangeRP')},
                         cExchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$cExchangeRP')},
@@ -448,7 +448,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 let beggingBalance = calcBalance(sortItem);
                 itemObj[k].begginingBalance = beggingBalance;
                 itemObj[k].endingBalance = endingBalance;
-                itemObj[k].balance = endingBalance + beggingBalance
+                itemObj[k].balance = endingBalance + beggingBalance;
                 itemObj[k].amount = itemObj[k].balance * itemObj[k].itemDoc.price;
                 ringPullDetailsArr.push(itemObj[k]);
                 totalBegginingBalance += beggingBalance;

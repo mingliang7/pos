@@ -47,6 +47,19 @@ export const exchangeGratisReportSchema = new SimpleSchema({
             }
         }
     },
+    status: {
+        type: [String],
+        autoform: {
+            type: 'universe-select',
+            multiple: true,
+            options(){
+                return [
+                    {label: 'Active', value: 'active'},
+                    {label: 'Closed', value: 'closed'}
+                ]
+            }
+        }
+    },
     filter: {
         type: [String],
         optional: true,
