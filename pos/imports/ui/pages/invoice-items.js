@@ -496,7 +496,6 @@ itemsTmpl.events({
 
     },
     'change .item-qty'(event, instance) {
-        debugger;
         let thisObj = $(event.currentTarget);
         let price = numeral().unformat(thisObj.parents('tr').find('.price').text());
         let amount = numeral().unformat(thisObj.parents('tr').find('.amount').text());
@@ -596,6 +595,10 @@ itemsTmpl.events({
 
     },
     "keypress .item-qty"(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        return !(charCode > 31 && (charCode < 48 || charCode > 57));
+    },
+    'keypress [name="qty"]'(evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
         return !(charCode > 31 && (charCode < 48 || charCode > 57));
     }

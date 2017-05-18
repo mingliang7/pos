@@ -51,7 +51,7 @@ export const ItemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.decimal({digits: 2});
+                return inputmaskOptions.integer();
             }
         }
     },
