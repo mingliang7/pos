@@ -31,7 +31,7 @@ tabularOpts.columns = [
         title: "Amount Due",
         render: function (val) {
             try {
-                Meteor.call('getVendorBalance', {vendorId: val}, function (err, result) {
+                Meteor.call('getVendorBalance', {vendorId: val, branchId: Session.get('currentBranch')}, function (err, result) {
                     let vendorBalance = balanceTmpCollection.findOne(val);
                     if (!vendorBalance) {
                         balanceTmpCollection.insert({_id: val, balanceAmount: result});
