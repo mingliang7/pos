@@ -71,7 +71,7 @@ Template.Pos_sidebarMenu.helpers({
         return `/pos/report/groupBillReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
     },
     payEnterBill() {
-        return '#'
+        return `/pos/report/payBill?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branchId=${Session.get('currentBranch')}`;
     },
     prepaidOrder() {
         return `/pos/report/prepaidOrderReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD 23:59:59')}&branch=${Session.get('currentBranch')}`;
@@ -96,7 +96,7 @@ Template.Pos_sidebarMenu.helpers({
         return `/pos/report/exchangeRingPullStockBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
     },
     lendingStock() {
-        return `/pos/report/lendingStockReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD hh:mm:ss')}&branch=${Session.get('currentBranch')}`;
+        return `/pos/report/lendingStockReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD hh:mm:ss')}&branchId=${Session.get('currentBranch')}`;
     },
     locationTransfer() {
         return `/pos/report/locationTransfer?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&fromBranch=${Session.get('currentBranch')}`;

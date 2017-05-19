@@ -561,3 +561,18 @@ PosRoutes.route('/report/prepaid-order-balance', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/reports/payBill';
+PosRoutes.route('/report/payBill', {
+    name: 'pos.payBillReport',
+    title: 'Paybill Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_payBillReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Paybill Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});

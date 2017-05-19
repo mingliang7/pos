@@ -43,6 +43,8 @@ export const lendingStockReport = new ValidatedMethod({
             }
             if (params.branchId) {
                 selector.branchId = params.branchId;
+            }else{
+                return data;
             }
             if (params.vendor && params.vendor != '') {
                 selector.vendorId = params.vendor;
