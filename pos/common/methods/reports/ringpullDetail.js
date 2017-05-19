@@ -38,6 +38,8 @@ export const ringpullDetailReport = new ValidatedMethod({
                 companySelector.branchId = params.branchId;
                 ringpullTransferSelector.fromBranchId = params.branchId;
                 ringpullTransferInSelector.toBranchId = params.branchId;
+                ringpullTransferInSelector.status = 'closed';
+                ringpullTransferInSelector.pending = false;
                 exchangeSelector.branchId = params.branchId;
             } else {
                 return data;
@@ -57,6 +59,8 @@ export const ringpullDetailReport = new ValidatedMethod({
                 companySelector.companyExchangeRingPullDate = {$gte: fromDate, $lte: toDate};
                 exchangeSelector.exchangeRingPullDate = {$gte: fromDate, $lte: toDate};
                 ringpullTransferSelector.ringPullTransferDate = {$gte: fromDate, $lte: toDate};
+                ringpullTransferSelector.status = 'closed';
+                ringpullTransferSelector.pending = false;
             }
             if (params.status) {
                 selector.status = {$in: params.status.split(',')}

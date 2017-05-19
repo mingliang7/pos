@@ -39,6 +39,8 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 companySelector.branchId = params.branchId;
                 ringpullTransferSelector.fromBranchId = params.branchId;
                 ringpullTransferInSelector.toBranchId = params.branchId;
+                ringpullTransferInSelector.status = 'closed';
+                ringpullTransferInSelector.pending = false;
                 exchangeSelector.branchId = params.branchId;
             } else {
                 return data;
@@ -66,6 +68,8 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 companySelector.companyExchangeRingPullDate = {$lte: toDate};
                 exchangeSelector.exchangeRingPullDate = {$lte: toDate};
                 ringpullTransferSelector.ringPullTransferDate = {$lte: toDate};
+                ringpullTransferSelector.status = 'closed';
+                ringpullTransferSelector.pending = false;
             } else {
                 return data;
             }
@@ -410,6 +414,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                     itemObj[doc._id] = {
                         itemId: doc.items.itemId,
                         itemDoc: doc.itemDoc,
+                        items: doc.items,
                         type: doc.type,
                         name: doc.name,
                         exchangeRP: doc.exchangeRP,
@@ -449,7 +454,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 itemObj[k].begginingBalance = beggingBalance;
                 itemObj[k].endingBalance = endingBalance;
                 itemObj[k].balance = endingBalance + beggingBalance;
-                itemObj[k].amount = itemObj[k].balance * itemObj[k].itemDoc.price;
+                itemObj[k].amount = itemObj[k].balance * itemObj[k].items.price;
                 ringPullDetailsArr.push(itemObj[k]);
                 totalBegginingBalance += beggingBalance;
                 totalEndingBalance += itemObj[k].balance;
