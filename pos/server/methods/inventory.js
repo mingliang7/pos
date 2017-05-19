@@ -171,6 +171,7 @@ Meteor.methods({
             setObj.pending = false;
             setObj.status = "closed";
             setObj.toUserId = userId;
+            setObj.journalDate=lDoc.date;
             LocationTransfers.update(
                 locationTransferId,
                 {$set: setObj}
@@ -318,13 +319,15 @@ Meteor.methods({
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
+        let ringPullTransfer = RingPullTransfers.findOne(ringPullTransferId);
+        let result = StockFunction.checkRingPullByBranch(ringPullTransfer.branchId, ringPullTransfer.items);
+        if (!result.isEnoughStock) {
+            throw new Meteor.Error(result.message);
+        }
         let userId = Meteor.userId();
         Meteor.defer(function () {
-            Meteor._sleepForMs(200);
-
             //---Open Inventory type block "FIFO Inventory"---
             let ringPullTransferTotalCost = 0;
-            let ringPullTransfer = RingPullTransfers.findOne(ringPullTransferId);
             let prefix = ringPullTransfer.stockLocationId + "-";
             let newItems = [];
             let total = 0;
@@ -578,11 +581,13 @@ Meteor.methods({
                 data1.transaction = [];
                 data1.branchId = locationTransfer.fromBranchId;
                 data1.refFrom = "LocationTransferFrom";
+                data1.journalDate=locationTransfer.journalDate;
+                data1.currencyId="USD";
                 data1.transaction.push({
                     account: inventoryChartAccount.account,
                     dr: 0,
-                    cr: data1.total,
-                    drcr: -data1.total
+                    cr: locationTransfer.total,
+                    drcr: -locationTransfer.total
                 });
                 Meteor.call('api_journalUpdate', data1);
 
@@ -591,11 +596,13 @@ Meteor.methods({
                 data2.transaction = [];
                 data2.branchId = locationTransfer.toBranchId;
                 data2.refFrom = "LocationTransferTo";
+                data2.journalDate=locationTransfer.journalDate;
+                data2.currencyId="USD";
                 data2.transaction.push({
                     account: inventoryChartAccount.account,
-                    dr: data2.total,
+                    dr: locationTransfer.total,
                     cr: 0,
-                    drcr: data2.total
+                    drcr: locationTransfer.total
                 });
                 Meteor.call('api_journalUpdate', data2);
             }
