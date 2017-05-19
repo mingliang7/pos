@@ -96,7 +96,7 @@ Meteor.methods({
 
     },
     locationTransferManageStock: function (lDoc) {
-        let locationTransferId=lDoc.id;
+        let locationTransferId = lDoc.id;
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
@@ -171,6 +171,7 @@ Meteor.methods({
             setObj.pending = false;
             setObj.status = "closed";
             setObj.toUserId = userId;
+            setObj.journalDate=lDoc.date;
             LocationTransfers.update(
                 locationTransferId,
                 {$set: setObj}
@@ -179,30 +180,12 @@ Meteor.methods({
 
             if (locationTransfer.fromStockLocationId != locationTransfer.toStockLocationId) {
                 //Account Integration
-                let totalAmount = 0;
                 let doc = locationTransfer;
                 let fromBranchName = Branch.findOne(doc.fromBranchId).khName;
                 let toBranchName = Branch.findOne(doc.toBranchId).khName;
                 let des = "ផ្ទេរស្តុកពីសាខាៈ " + fromBranchName + " ទៅ " + toBranchName;
                 doc.des = doc.des == "" || doc.des == null ? des : doc.des;
-                doc.items.forEach(function (item) {
-                    let inventoryObj = AverageInventories.findOne({
-                        itemId: item.itemId,
-                        branchId: doc.branchId,
-                        stockLocationId: doc.fromStockLocationId
-                    }, {sort: {_id: -1}});
-                    let thisItemPrice = 0;
-                    if (inventoryObj) {
-                        thisItemPrice = inventoryObj.price;
-                    } else {
-                        let thisItem = Item.findOne(item.itemId);
-                        thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
-                    }
-                    item.price = thisItemPrice;
-                    item.amount = item.qty * thisItemPrice;
-                    totalAmount += item.amount;
-                });
-                doc.total = totalAmount;
+                doc.total = total;
                 let setting = AccountIntegrationSetting.findOne();
                 if (setting && setting.integrate) {
                     let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
@@ -336,13 +319,15 @@ Meteor.methods({
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
+        let ringPullTransfer = RingPullTransfers.findOne(ringPullTransferId);
+        let result = StockFunction.checkRingPullByBranch(ringPullTransfer.branchId, ringPullTransfer.items);
+        if (!result.isEnoughStock) {
+            throw new Meteor.Error(result.message);
+        }
         let userId = Meteor.userId();
         Meteor.defer(function () {
-            Meteor._sleepForMs(200);
-
             //---Open Inventory type block "FIFO Inventory"---
             let ringPullTransferTotalCost = 0;
-            let ringPullTransfer = RingPullTransfers.findOne(ringPullTransferId);
             let prefix = ringPullTransfer.stockLocationId + "-";
             let newItems = [];
             let total = 0;
@@ -576,6 +561,151 @@ Meteor.methods({
             {$set: setObj}
         );
     },
+
+    /*-----------------update account function----------------*/
+    correctAccountLocationTransfer: function () {
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let locationTransfers = LocationTransfers.find({status: "closed", pending: false});
+        let i=1;
+        locationTransfers.forEach(function (locationTransfer) {
+            console.log('LT: '+i);
+            i++;
+            //Account Integration
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+                let data1 = {};
+                data1.refId=locationTransfer._id;
+                data1.transaction = [];
+                data1.branchId = locationTransfer.fromBranchId;
+                data1.refFrom = "LocationTransferFrom";
+                data1.journalDate=locationTransfer.journalDate;
+                data1.currencyId="USD";
+                data1.transaction.push({
+                    account: inventoryChartAccount.account,
+                    dr: 0,
+                    cr: locationTransfer.total,
+                    drcr: -locationTransfer.total
+                });
+                Meteor.call('api_journalUpdate', data1);
+
+                let data2 = {};
+                data1.refId=locationTransfer._id;
+                data2.transaction = [];
+                data2.branchId = locationTransfer.toBranchId;
+                data2.refFrom = "LocationTransferTo";
+                data2.journalDate=locationTransfer.journalDate;
+                data2.currencyId="USD";
+                data2.transaction.push({
+                    account: inventoryChartAccount.account,
+                    dr: locationTransfer.total,
+                    cr: 0,
+                    drcr: locationTransfer.total
+                });
+                Meteor.call('api_journalUpdate', data2);
+            }
+            //End Account Integration
+
+        });
+
+    },
+    correctAccountRingPullTransfer(){
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let ringPullTransfers=RingPullInventories.find({status: "closed",pending: false});
+        let i=1;
+        ringPullTransfers.forEach(function (doc) {
+                console.log('RPT: '+i);
+                i++;
+                let fromBranchName = Branch.findOne(doc.fromBranchId).khName;
+                let toBranchName = Branch.findOne(doc.toBranchId).khName;
+                let des = "ផ្ទេរក្រវិលពីសាខាៈ " + fromBranchName + " ទៅ " + toBranchName;
+                doc.des = doc.des == "" || doc.des == null ? des : doc.des;
+                let setting = AccountIntegrationSetting.findOne();
+                if (setting && setting.integrate) {
+
+                    let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
+                    let data1 = doc;
+                    data1.transaction = [];
+                    data1.branchId = doc.fromBranchId;
+                    data1.type = "RingPullTransferFrom";
+                    data1.journalDate = moment().toDate();
+                    data1.transaction.push({
+                        account: ringPullChartAccount.account,
+                        dr: 0,
+                        cr: data1.total,
+                        drcr: -data1.total
+                    });
+                    Meteor.call('insertAccountJournal', data1);
+
+                    let data2 = doc;
+                    data2.transaction = [];
+                    data2.branchId = doc.toBranchId;
+                    data2.type = "RingPullTransferTo";
+                    data2.journalDate = moment().toDate();
+                    data2.transaction.push({
+                        account: ringPullChartAccount.account,
+                        dr: data2.total,
+                        cr: 0,
+                        drcr: data2.total
+                    });
+                    Meteor.call('insertAccountJournal', data2);
+                }
+                //End Account Integration
+            });
+    },
+    correctAccountTransferMoney(){
+        if (!Meteor.userId()) {
+            throw new Meteor.Error("not-authorized");
+        }
+        let moneyTransfers=TransferMoney.find({status: "closed",pending: false});
+        let i=1;
+        moneyTransfers.forEach(function (doc) {
+            console.log('MT: '+i);
+            i++;
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let fromBranchName = Branch.findOne(doc.fromBranchId).khName;
+                let toBranchName = Branch.findOne(doc.toBranchId).khName;
+                let des = "ផ្ទេរប្រាក់ពីសាខាៈ " + fromBranchName + " ទៅ " + toBranchName;
+                doc.des = doc.des == "" || doc.des == null ? des : doc.des;
+
+                let ringPullChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
+                let data1 = doc;
+                data1.total = doc.transferAmount;
+                data1.transaction = [];
+                data1.branchId = doc.fromBranchId;
+                data1.journalDate = doc.transferMoneyDate;
+                data1.type = "MoneyTransferFrom";
+                data1.transaction.push({
+                    account: ringPullChartAccount.account,
+                    dr: 0,
+                    cr: data1.transferAmount,
+                    drcr: -data1.transferAmount
+                });
+                Meteor.call('insertAccountJournal', data1);
+                let data2 = doc;
+                data2.transaction = [];
+                data2.branchId = doc.toBranchId;
+                data2.type = "MoneyTransferTo";
+                data2.journalDate = doc.transferMoneyDate;
+                data2.total = doc.transferAmount;
+                data2.transaction.push({
+                    account: ringPullChartAccount.account,
+                    dr: data2.transferAmount,
+                    cr: 0,
+                    drcr: data2.transferAmount
+                });
+                Meteor.call('insertAccountJournal', data2);
+            }
+            //End Account Integration
+        });
+
+
+    }
 });
 
 

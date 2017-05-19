@@ -442,7 +442,7 @@ export  default class StockFunction {
                 }
             } else {
                 result.isEnoughStock = false;
-                result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + ringPullStock.qty;
+                result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + 0;
                 return false;
             }
         });
@@ -466,7 +466,7 @@ export  default class StockFunction {
                 }
             } else {
                 result.isEnoughStock = false;
-                result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + ringPullStock.qty;
+                result.message = thisItem.name + " is not enough Ring Pull. Qty on hand: " + 0;
                 return false;
             }
         });
