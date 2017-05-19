@@ -7,11 +7,12 @@ import {moment} from  'meteor/momentjs:moment';
 
 // Collection
 import {Company} from '../../../../core/imports/api/collections/company.js';
-import {LendingStocks} from '../../../imports/api/collections/lendingStock';
+import {PrepaidOrders} from '../../../imports/api/collections/prepaidOrder';
 // lib func
 import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
-export const lendingStockReport = new ValidatedMethod({
-    name: 'pos.lendingStockReport',
+import ReportFn from '../../../imports/api/libs/report';
+export const prepaidOrderBalanceReport = new ValidatedMethod({
+    name: 'pos.prepaidOrderBalanceReport',
     mixins: [CallPromiseMixin],
     validate: null,
     run(params) {
@@ -26,23 +27,23 @@ export const lendingStockReport = new ValidatedMethod({
                 content: [{index: 'No Result'}],
                 footer: {}
             };
-            let branch = [];
-            let user = Meteor.users.findOne(Meteor.userId());
+            let branchId = [];
+            if(params.branchId) {
+                branchId = params.branchId.split(',');
+                selector.branchId = {
+                    $in: branchId
+                };
+                selector = ReportFn.checkIfUserHasRights({currentUser: Meteor.userId(), selector});
+            }
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.status = {$in: ['active', 'closed']};
-            if(params.status) {
-                selector.status = {$in: params.status.split(',')}
-            }
             if (params.date) {
                 let dateAsArray = params.date.split(',');
                 let fromDate = moment(dateAsArray[0]).toDate();
                 let toDate = moment(dateAsArray[1]).toDate();
                 data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
-                selector.lendingStockDate = {$gte: fromDate, $lte: toDate};
-            }
-            if(params.branchId) {
-                selector.branchId = params.branchId;
+                selector.prepaidOrderBalanceDate = {$gte: fromDate, $lte: toDate};
             }
             if (params.vendor && params.vendor != '') {
                 selector.vendorId = params.vendor;
@@ -63,34 +64,24 @@ export const lendingStockReport = new ValidatedMethod({
             } else {
                 project = {
                     '_id': '$_id',
-                    'lendingStockDate': '$lendingStockDate',
-                    'vendor': '$vendorDoc',
+                    'prepaidOrderBalanceDate': '$prepaidOrderBalanceDate',
+                    'vendor': '$_vendor.name',
                     'status': '$status',
                     'sumRemainQty': '$sumRemainQty',
                     'total': '$total'
                 };
-                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Vendor'}, {field: 'Telephone'},{field: 'Status'}, {field: 'Remain Qty'}, {field: 'Total'}];
-                data.displayFields = [{field: '_id'}, {field: 'lendingStockDate'}, {field: 'vendor'}, {field: 'vendorTelephone'},{field: 'status'}, {field: 'sumRemainQty'}, {field: 'total'}];
+                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Vendor'}, {field: 'Status'}, {field: 'Remain Qty'}, {field: 'Total'}];
+                data.displayFields = [{field: '_id'}, {field: 'prepaidOrderBalanceDate'}, {field: 'vendor'}, {field: 'status'}, {field: 'sumRemainQty'}, {field: 'total'}];
             }
 
             /****** Title *****/
             data.title.company = Company.findOne();
 
             /****** Content *****/
-            let lendingStocks = LendingStocks.aggregate([
+            let prepaidOrderBalances = PrepaidOrders.aggregate([
                 {
                     $match: selector
-                },
-                {
-                    $lookup: {
-                        from: 'pos_vendors',
-                        localField: 'vendorId',
-                        foreignField: '_id',
-                        as: 'vendorDoc'
-                    }
-                },
-                {$unwind: {path: '$vendorDoc', preserveNullAndEmptyArrays: true}},
-                {
+                }, {
                     $unwind: {path: '$items', preserveNullAndEmptyArrays: true},
 
                 }, {
@@ -120,7 +111,7 @@ export const lendingStockReport = new ValidatedMethod({
                         }
                     }
                 }]);
-            let total = LendingStocks.aggregate(
+            let total = PrepaidOrders.aggregate(
                 [
                     {
                         $match: selector
@@ -132,10 +123,10 @@ export const lendingStockReport = new ValidatedMethod({
                         }
                     }
                 ]);
-            if (lendingStocks.length > 0) {
-                let sortData = _.sortBy(lendingStocks[0].data, '_id');
-                lendingStocks[0].data = sortData;
-                data.content = lendingStocks;
+            if (prepaidOrderBalances.length > 0) {
+                let sortData = _.sortBy(prepaidOrderBalances[0].data, '_id');
+                prepaidOrderBalances[0].data = sortData;
+                data.content = prepaidOrderBalances;
                 data.footer.total = total[0].total;
                 data.footer.totalRemainQty = total[0].totalRemainQty
             }

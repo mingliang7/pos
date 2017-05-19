@@ -39,6 +39,8 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 companySelector.branchId = params.branchId;
                 ringpullTransferSelector.fromBranchId = params.branchId;
                 ringpullTransferInSelector.toBranchId = params.branchId;
+                ringpullTransferInSelector.status = 'closed';
+                ringpullTransferInSelector.pending = false;
                 exchangeSelector.branchId = params.branchId;
             } else {
                 return data;
@@ -66,6 +68,8 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 companySelector.companyExchangeRingPullDate = {$lte: toDate};
                 exchangeSelector.exchangeRingPullDate = {$lte: toDate};
                 ringpullTransferSelector.ringPullTransferDate = {$lte: toDate};
+                ringpullTransferSelector.status = 'closed';
+                ringpullTransferSelector.pending = false;
             } else {
                 return data;
             }
@@ -122,7 +126,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         type: {$last: '$type'},
                         date: {$last: '$date'},
                         name: {$last: '$name'},
-                        price: {$avg: '$item.price'},
+                        price: {$avg: '$items.price'},
                         itemData: {$push: '$$ROOT'},
                         exchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$exchangeRP')},
                         cExchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$cExchangeRP')},
@@ -202,7 +206,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         items: {$last: '$items'},
                         type: {$last: '$type'},
                         name: {$last: '$name'},
-                        price: {$avg: '$item.price'},
+                        price: {$avg: '$items.price'},
                         itemDoc: {$last: '$itemDoc'},
                         date: {$last: '$date'},
                         itemData: {$push: '$$ROOT'},
@@ -287,7 +291,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         date: {$last: '$date'},
                         type: {$last: '$type'},
                         name: {$last: '$name'},
-                        price: {$avg: '$item.price'},
+                        price: {$avg: '$items.price'},
                         itemData: {$push: '$$ROOT'},
                         exchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$exchangeRP')},
                         cExchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$cExchangeRP')},
@@ -372,7 +376,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         date: {$last: '$date'},
                         type: {$last: '$type'},
                         name: {$last: '$name'},
-                        price: {$avg: '$item.price'},
+                        price: {$avg: '$items.price'},
                         itemData: {$push: '$$ROOT'},
                         exchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$exchangeRP')},
                         cExchangeRP: {$sum: aggMatchingDate(startOfMonth, endOfMonth, '$date', '$cExchangeRP')},
@@ -410,6 +414,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                     itemObj[doc._id] = {
                         itemId: doc.items.itemId,
                         itemDoc: doc.itemDoc,
+                        items: doc.items,
                         type: doc.type,
                         name: doc.name,
                         exchangeRP: doc.exchangeRP,
@@ -448,8 +453,8 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 let beggingBalance = calcBalance(sortItem);
                 itemObj[k].begginingBalance = beggingBalance;
                 itemObj[k].endingBalance = endingBalance;
-                itemObj[k].balance = endingBalance + beggingBalance
-                itemObj[k].amount = itemObj[k].balance * itemObj[k].itemDoc.price;
+                itemObj[k].balance = endingBalance + beggingBalance;
+                itemObj[k].amount = itemObj[k].balance * itemObj[k].items.price;
                 ringPullDetailsArr.push(itemObj[k]);
                 totalBegginingBalance += beggingBalance;
                 totalEndingBalance += itemObj[k].balance;

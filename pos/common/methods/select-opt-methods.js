@@ -201,11 +201,14 @@ SelectOptMethods.item = new ValidatedMethod({
             let searchText = options.searchText;
             let values = options.values;
             let params = options.params || {};
-            if (_.isEmpty(params.scheme)) {
+            if (params.scheme == null) {
                 selector = {}
             } else {
                 selector.scheme = params.scheme;
 
+            }
+            if(params.itemType) {
+                selector.itemType = params.itemType;
             }
             if (searchText) {
                 selector.$or =
