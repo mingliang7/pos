@@ -320,7 +320,7 @@ Meteor.methods({
             throw new Meteor.Error("not-authorized");
         }
         let ringPullTransfer = RingPullTransfers.findOne(ringPullTransferId);
-        let result = StockFunction.checkRingPullByBranch(ringPullTransfer.branchId, ringPullTransfer.items);
+        let result = StockFunction.checkRingPullByBranch(ringPullTransfer.fromBranchId, ringPullTransfer.items);
         if (!result.isEnoughStock) {
             throw new Meteor.Error(result.message);
         }
