@@ -121,8 +121,8 @@ export const lendingStockReport = new ValidatedMethod({
                                 remainAmount: {$sum: {$multiply: ["$items.remainQty", "$items.price"]}},
                             }
                         },
-                        total: {$sum: '$total'},
-                        totalRemainQty: {$sum: '$sumRemainQty'},
+                        total: {$last: '$total'},
+                        totalRemainQty: {$last: '$sumRemainQty'},
                         remainAmount: {$sum: {$multiply: ["$items.remainQty", "$items.price"]}}
                     }
                 },

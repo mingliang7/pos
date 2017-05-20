@@ -272,7 +272,7 @@ LocationTransfers.schema = new SimpleSchema({
         autoValue() {
             if (this.isInsert) {
                 var branchId = this.field('fromStockLocationId').value;
-                return branchId.split('-')[0];
+                return branchId && branchId.split('-')[0];
             }
         }
     },
