@@ -87,26 +87,26 @@
                 {{#each content}}
                     <tr>
                         <td>{{itemDoc.name}}</td>
-                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat begginingBalance '0,0.00'}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat begginingBalance '0,0'}}</td>
                         <td class="text-right" style="border: 1px solid #E0E0E0;">{{isZero exchangeRP}}</td>
                         <td class="text-right" style="border: 1px solid #E0E0E0;">{{isZero cExchangeRP}}</td>
                         <td class="text-right" style="border: 1px solid #E0E0E0;">{{isZero transferRP}}</td>
                         <td class="text-right" style="border: 1px solid #E0E0E0;">{{isZero receiveTransfer}}</td>
-                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat balance '0,0.00'}}</td>
-                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat items.price '0,0.00'}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat balance '0,0'}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat items.price '0,0'}}</td>
                         <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat amount '0,0.00'}}</td>
                     </tr>
                 {{/each}}
                 <tr>
                     <td class="text-right"><b>Total:</b></td>
-                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.begginingBalance}}</b></td>
-                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.totalExchangeRP}}</b></td>
-                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.totalCompanyExchangeRP}}</b></td>
-                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.totalTransferOutRP}}</b></td>
-                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.totalTransferInRP}}</b></td>
-                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.endingBalance}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat footer.begginingBalance '0,0'}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat footer.totalExchangeRP '0,0'}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat footer.totalCompanyExchangeRP '0,0'}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat footer.totalTransferOutRP '0,0'}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat footer.totalTransferInRP '0,0'}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat footer.endingBalance '0,0'}}</b></td>
                     <td class="text-right" style="border: 1px solid #E0E0E0;"></td>
-                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{footer.totalAmount}}</b></td>
+                    <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat footer.totalAmount '0,0.00'}}</b></td>
                 </tr>
                 </tbody>
             {{/with}}

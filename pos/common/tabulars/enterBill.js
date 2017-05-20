@@ -52,6 +52,7 @@ tabularOpts.columns = [
     },
     // {data: "_staff.username", title: "Staff"},
     {data: "stockLocationId", title: "Stock Location"},
+    {data: "status", title: "Status"},
     //{
     //    data: "_vendor",
     //    title: "Vendor Info",
