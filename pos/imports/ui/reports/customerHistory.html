@@ -92,7 +92,6 @@
                     <th>Name</th>
                     <th>Qty</th>
                     <th>Price</th>
-                    <th>TSPrice</th>
                     <th>Amount</th>
                     <th>សរុប</th>
                     <th>ទូរទាត់</th>
@@ -140,7 +139,6 @@
                                         <td>{{item.itemName}}</td>
                                         <td class="text-right">{{numFormat item.qty '0,0.00'}}</td>
                                         <td class="text-right">{{numFormat item.price '0,0.00'}}</td>
-                                        <td class="text-right">{{numFormat item.tsFee '0,0.00'}}</td>
                                         <td class="text-right">{{numFormat item.amount '0,0.00'}}</td>
                                     {{/each}}
                                     <td class="text-right">{{numFormat col.total '0,0.00'}}</td>
@@ -150,7 +148,6 @@
                                 {{else}}
                                     {{#if firstIndex @index col.date field.data}}
                                         <td>{{item.itemName}}</td>
-                                        <td class="text-right"></td>
                                         <td class="text-right"></td>
                                         <td class="text-right"></td>
                                         <td class="text-right"></td>
@@ -175,7 +172,6 @@
                                         <td>{{item.itemName}}</td>
                                         <td class="text-right">{{item.qty}}</td>
                                         <td class="text-right">{{numFormat item.price '0,0.00'}}</td>
-                                        <td class="text-right">{{numFormat item.tsFee '0,0.00'}}</td>
                                         <td class="text-right">{{numFormat item.amount '0,0.00'}}</td>
                                         <td></td>
                                         <td></td>
@@ -187,7 +183,7 @@
                     {{/if}}
                 {{/each}}
                 <tr class="sub-body">
-                    <td colspan="4"></td>
+                    <td colspan="3"></td>
                     <td><b><u>Grand Total:</u></b></td>
                     <td colspan="3"></td>
                     <td style="border-top: 1px solid black;" class="text-right"><b>{{numFormat footer.totalAmount

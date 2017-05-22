@@ -166,6 +166,9 @@ export  default class StockFunction {
                 inventoryDate: inventoryDate
             };
             id = AverageInventories.insert(newInventory);
+            let setModifier = {$set: {}};
+            setModifier.$set['qtyOnHand.' + stockLocationId] = remainQty;
+            Item.direct.update(item.itemId, setModifier);
         }
         else {
             throw new Meteor.Error('Not Found Inventory. @' + type + " refId:" + refId);
