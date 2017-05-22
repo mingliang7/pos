@@ -425,6 +425,14 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
+                        <!--{{#if isInRole 'vendor-balance-summary-report' 'Pos'}}-->
+                            <li>
+                                <a href="{{vendorBalanceSummary}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Vendor Balance Summary</span>
+                                </a>
+                            </li>
+                        <!--{{/if}}-->
                         {{#if isInRole 'enter-bill-summary-report' 'Pos'}}
                             <li>
                                 <a href="{{bill}}">

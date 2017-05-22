@@ -92,7 +92,7 @@ invoiceDataTmpl.helpers({
     },
     company(){
         let doc = Session.get('currentUserStockAndAccountMappingDoc');
-        return doc.company;
+        return doc && doc.company;
     },
     data(){
         if (invoiceData.get()) {

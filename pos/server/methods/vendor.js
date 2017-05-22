@@ -12,7 +12,8 @@ Meteor.methods({
         let selector = {branchId: branchId,vendorId: vendorId, status: {$in: ['active', 'partial']}};
         let bills = (vendor && vendor.termId) ? EnterBills.find(selector) : GroupBill.find({
             vendorOrCustomerId: vendorId,
-            status: {$in: ['active', 'partial']}
+            status: {$in: ['active', 'partial']},
+            branchId: branchId
         });
         if (bills.count() > 0) {
             bills.forEach(function (bill) {

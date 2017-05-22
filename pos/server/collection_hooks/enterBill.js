@@ -21,10 +21,10 @@ EnterBills.before.insert(function (userId, doc) {
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     if (doc.termId) {
-        doc.status = 'partial';
+        doc.status = 'active';
         doc.billType = 'term';
     } else {
-        doc.status = 'partial';
+        doc.status = 'active';
         doc.billType = 'group';
     }
     let todayDate = moment().format('YYYYMMDD');

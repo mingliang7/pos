@@ -576,3 +576,18 @@ PosRoutes.route('/report/payBill', {
         parent: 'pos.mainReport'
     }
 });
+
+import '../imports/ui/reports/vendorBalance';
+PosRoutes.route('/report/vendor-balance-summary', {
+    name: 'pos.vendorBalanceSummary',
+    title: 'Vendor Balance Summary Report',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('pos_vendorBalanceSummaryReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Vendor Balance Summary Report',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});

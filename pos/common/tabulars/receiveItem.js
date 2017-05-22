@@ -49,6 +49,7 @@ tabularOpts.columns = [
     // {data: "staffId", title: "Staff ID"},
     {data: "stockLocationId", title: "Stock Location"},
     {data: "type", title: "Receive Type"},
+    {data: "status", title: "Status"},
     //{
     //    data: "_vendor",
     //    title: "Vendor Info",
