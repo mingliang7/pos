@@ -5,7 +5,20 @@ import {SelectOpts} from '../../../../../core/imports/ui/libs/select-opts.js';
 
 
 export const prepaidOrderBalanceReportSchema = new SimpleSchema({
-    asDate: {
+    toDate: {
+        type: Date,
+        defaultValue: moment().toDate(),
+        autoform: {
+            afFieldInput: {
+                type: "bootstrap-datetimepicker",
+                dateTimePickerOptions: {
+                    format: 'DD/MM/YYYY',
+
+                }
+            }
+        }
+    },
+    fromDate: {
         type: Date,
         defaultValue: moment().toDate(),
         autoform: {

@@ -43,7 +43,7 @@ export const prepaidOrderBalanceReport = new ValidatedMethod({
                 let fromDate = moment(dateAsArray[0]).toDate();
                 let toDate = moment(dateAsArray[1]).toDate();
                 data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
-                selector.prepaidOrderBalanceDate = {$gte: fromDate, $lte: toDate};
+                selector.prepaidOrderDate = {$gte: fromDate, $lte: toDate};
             }
             if (params.vendor && params.vendor != '') {
                 selector.vendorId = params.vendor;
@@ -64,11 +64,12 @@ export const prepaidOrderBalanceReport = new ValidatedMethod({
             } else {
                 project = {
                     '_id': '$_id',
-                    'prepaidOrderBalanceDate': '$prepaidOrderBalanceDate',
+                    'prepaidOrderDate': '$prepaidOrderDate',
                     'vendor': '$_vendor.name',
                     'status': '$status',
                     'sumRemainQty': '$sumRemainQty',
-                    'total': '$total'
+                    'total': '$total',
+                    'items': '$items'
                 };
                 data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Vendor'}, {field: 'Status'}, {field: 'Remain Qty'}, {field: 'Total'}];
                 data.displayFields = [{field: '_id'}, {field: 'prepaidOrderBalanceDate'}, {field: 'vendor'}, {field: 'status'}, {field: 'sumRemainQty'}, {field: 'total'}];
@@ -123,6 +124,7 @@ export const prepaidOrderBalanceReport = new ValidatedMethod({
                         }
                     }
                 ]);
+            console.log(prepaidOrderBalances);
             if (prepaidOrderBalances.length > 0) {
                 let sortData = _.sortBy(prepaidOrderBalances[0].data, '_id');
                 prepaidOrderBalances[0].data = sortData;
