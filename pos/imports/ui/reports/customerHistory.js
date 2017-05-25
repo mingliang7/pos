@@ -160,7 +160,8 @@ invoiceDataTmpl.helpers({
     firstIndex(index,date ,data){
         let paymentDate = data[index - 1 ] && data[index - 1 ].date;
         let moPaymentDate = moment(paymentDate).format('YYYY-MM-DD');
-        if(!moment(moPaymentDate).isSame(moment(date).format('YYYY-MM-DD')) || data[index - 1].inv ){
+        console.log(data);
+        if(!moment(moPaymentDate).isSame(moment(date).format('YYYY-MM-DD')) || data[index - 1] && data[index - 1].inv ){
             return true;
         }
         return false;

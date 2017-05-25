@@ -63,7 +63,7 @@ export const customerHistoryReport = new ValidatedMethod({
                 currentArrDate = params.date;
                 data.title.date = moment(currentArrDate).format('YYYY-MMM-DD');
                 data.title.exchange = `USD = ${coefficient.usd.$multiply[1]} $, KHR = ${coefficient.khr.$multiply[1]}<small> ៛</small>, THB = ${coefficient.thb.$multiply[1]} B`;
-                data.title.customer = params.customer && Customers.findOne(params.customer);                
+                data.title.customer = params.customer && Customers.findOne(params.customer);
                 selector.invoiceDate = {
                     $lte: moment(currentArrDate).endOf('days').toDate()
                 }
@@ -162,12 +162,13 @@ export const customerHistoryReport = new ValidatedMethod({
                             type: 'invoice',
                             inv: true,
                             date: moment(doc.invoiceDate).toDate(),
+                            stringDate: moment(doc.invoiceDate).format('DD/MM/YY HH:mm'),
                             paidAmount: 0,
                             balance: 0,
                             items: doc.items,
                             total: doc.total
                         }]
-                    }
+                    };
                 } else {
                     groupDateObj[groupDate].data.push({
                         _id: doc._id,
@@ -182,7 +183,7 @@ export const customerHistoryReport = new ValidatedMethod({
                     })
                 }
                 doc.paymentDoc.forEach(function (payment) {
-                    let formatPaymentDate = moment(payment.paymentDate).format('YYYY-MM-DD 00:00:00');
+                    let formatPaymentDate = moment(payment.paymentDate).format('YYYY-MM-DD 11:59:59');
                     let queryDate = moment(currentArrDate).endOf('days').format('YYYY-MM-DD');
                     let paymentDate = moment(payment.paymentDate);
                     if (paymentDate.isSameOrBefore(queryDate)) {
@@ -198,6 +199,7 @@ export const customerHistoryReport = new ValidatedMethod({
                                     type: 'receive-payment',
                                     rp: true,
                                     date: moment(formatPaymentDate).toDate(),
+                                    stringDate: moment(formatPaymentDate).format('DD/MM/YY HH:mm'),
                                     paidAmount: payment.paidAmount,
                                     balance: payment.balanceAmount
                                 }]
@@ -221,7 +223,7 @@ export const customerHistoryReport = new ValidatedMethod({
 
             for (let k in groupDateObj) {
                 let sortData = _.sortBy(groupDateObj[k].data, function (value) {
-                    return new Date(value.date);
+                    return value.stringDate;
                 });
                 groupDateObj[k].data = sortData;
                 arr.push(groupDateObj[k]);
@@ -257,7 +259,6 @@ export const customerHistoryReport = new ValidatedMethod({
                     }
                 });
             });
-
             if (afterSortArr.length > 0) {
                 data.content = arr;
                 data.payments = groupPaymentByDay;
