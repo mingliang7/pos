@@ -167,7 +167,7 @@ export  default class StockFunction {
             };
             id = AverageInventories.insert(newInventory);
             let setModifier = {$set: {}};
-            setModifier.$set['qtyOnHand.' + stockLocationId] = remainQty;
+            setModifier.$set['qtyOnHand.' + stockLocationId] = totalQty;
             Item.direct.update(item.itemId, setModifier);
         }
         else {
