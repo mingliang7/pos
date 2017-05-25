@@ -315,7 +315,7 @@ editTmpl.onCreated(function () {
     });
     let type = FlowRouter.query.get('type');
     let data = this.data;
-    let typeId = _.lowerFirst(data.type)+'Id';
+    let typeId = _.lowerFirst(data.type) + 'Id';
     // Add items to local collection
     _.forEach(data.items, (value) => {
         Meteor.call('getItem', value.itemId, function (err, result) {
@@ -506,6 +506,13 @@ showTmpl.helpers({
             return `<label class="label label-danger">P</label>`
         }
         return `<label class="label label-success">C</label>`
+    },
+    calcTotal(items){
+        let total = 0;
+        items.forEach(function (item) {
+            total += item.amount;
+        });
+        return numeral(total).format('0,0.00');
     }
 });
 showTmpl.events({
