@@ -29,6 +29,12 @@ tabularOpts.columns = [
         render: function (val, type, doc) {
             return numeral(val).format('$ 0,0.00');
         }
+    },{
+        data: "purchasePrice",
+        title: "Purchase Price",
+        render: function (val, type, doc) {
+            return numeral(val).format('$ 0,0.00');
+        }
     },
     {
         data: "photo",
