@@ -192,7 +192,7 @@ DateEndOfProcess.after.insert(function (userId, doc) {
         NetInCome.insert(selector);
 
         // month is december must convert Net Income to Retain Earning
-        if (moment(doc.closeDate).format("MM") == 12) {
+        if (doc && moment(doc.closeDate).format("MM") == 12) {
             var netIncomeThisYear = NetInCome.find({year: year, branchId: doc.branchId}).fetch();
             var riel = 0;
             var dollar = 0;
