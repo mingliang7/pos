@@ -11,6 +11,7 @@ Meteor.startup(function () {
     GroupInvoice._ensureIndex({startDate: 1, endDate: 1, vendorOrCustomerId: 1});
     Order._ensureIndex({'item.itemId': 1});
     Invoices._ensureIndex({invoiceDate: 1, status: 1});
+    Invoices._ensureIndex({voucherId: 1,invoiceDate: 1, customerId: 1, branchId: 1, staffId: 1},{unique: true, sparse: true});
     QuantityRangeMapping._ensureIndex({startQty: 1, endQty: 1});
     StockAndAccountMapping._ensureIndex({userId: 1, branchId: 1}, {unique: 1, sparse: 1});
     CompanyExchangeRingPulls._ensureIndex({companyExchangeRingPullDate: 1});

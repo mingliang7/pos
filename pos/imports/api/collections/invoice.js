@@ -44,7 +44,7 @@ Invoices.itemsSchema = new SimpleSchema({
 Invoices.schema = new SimpleSchema({
     voucherId: {
         type: String,
-        optional: true
+        unique: true,
     },
     invoiceDate: {
         type: Date,
