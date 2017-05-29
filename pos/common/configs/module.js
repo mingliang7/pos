@@ -10,6 +10,8 @@ Module.Pos = {
         'data-update',
         'data-remove',
         'reporter',
+        'journal',
+        'paid-to-order',
         'sale-by-customer-report',
         'sale-by-item-report',
         'total-sale-report',
