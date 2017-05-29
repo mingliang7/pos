@@ -248,7 +248,6 @@ editTmpl.onCreated(function () {
 
 editTmpl.events({
     'change [name="stockLocationId"]'(event, instance){
-        debugger;
         let invoice = instance.data;
         let stockLocationId = $(event.currentTarget).val();
         let items = itemsCollection.find().fetch();
@@ -299,6 +298,9 @@ editTmpl.helpers({
             })
         });
         return data;
+    },
+    exchangeRingPullDate(){
+        return this.exchangeRingPullDate;
     },
     itemsCollection(){
         return itemsCollection;

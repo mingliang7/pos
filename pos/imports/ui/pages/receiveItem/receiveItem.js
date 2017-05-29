@@ -367,6 +367,9 @@ editTmpl.helpers({
     collection(){
         return ReceiveItems;
     },
+    receiveItemDate(){
+        return this.receiveItemDate;
+    },
     data () {
         let data = this;
         return data;
