@@ -15,6 +15,8 @@ export  default class StockFunction {
             stockLocationId: stockLocationId
         }, {sort: {createdAt: -1}});
         if (inventory) {
+            let lastInventoryDate=moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate=inventoryDate>=lastInventoryDate?inventoryDate:lastInventoryDate;
             let totalQty = inventory.remainQty + item.qty;
             let lastAmount = inventory.lastAmount + (item.qty * item.price);
             let averagePrice = lastAmount / totalQty;
@@ -80,6 +82,8 @@ export  default class StockFunction {
         }, {sort: {createdAt: -1}});
 
         if (inventory) {
+            let lastInventoryDate=moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate=inventoryDate>=lastInventoryDate?inventoryDate:lastInventoryDate;
             let totalQty = inventory.remainQty + item.qty;
             let lastAmount = inventory.lastAmount + (item.qty * item.price);
             let averagePrice = lastAmount / totalQty;
@@ -142,6 +146,8 @@ export  default class StockFunction {
             stockLocationId: stockLocationId
         }, {sort: {_id: -1}});
         if (inventory) {
+            let lastInventoryDate=moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate=inventoryDate>=lastInventoryDate?inventoryDate:lastInventoryDate;
             let totalQty = inventory.remainQty - item.qty;
             let lastAmount = 0;
             let averagePrice = 0;
@@ -186,6 +192,8 @@ export  default class StockFunction {
             stockLocationId: stockLocationId
         }, {sort: {_id: -1}});
         if (inventory) {
+            let lastInventoryDate=moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate=inventoryDate>=lastInventoryDate?inventoryDate:lastInventoryDate;
             let remainQty = inventory.remainQty - item.qty;
             let lastAmount = 0;
             let averagePrice = 0;
