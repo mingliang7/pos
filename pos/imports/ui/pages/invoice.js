@@ -185,6 +185,7 @@ indexTmpl.events({
 });
 //on rendered
 newTmpl.onCreated(function () {
+    this.stockLocationId = new ReactiveVar();
     this.isEnoughStock = new ReactiveVar();
     Meteor.subscribe('pos.requirePassword', {branchId: {$in: [Session.get('currentBranch')]}});//subscribe require password validation
     this.repOptions = new ReactiveVar();
@@ -224,7 +225,6 @@ newTmpl.events({
             if (FlowRouter.query.get('customerId')) {
                 FlowRouter.query.set('customerId', event.currentTarget.value);
             }
-
         }
         Session.set('totalOrder', undefined);
 
@@ -261,19 +261,6 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
-    stockLocation() {
-        try {
-            let stockLocationAndAccountMapping = Session.get('currentUserStockAndAccountMappingDoc');
-            if (stockLocationAndAccountMapping) {
-                if (stockLocationAndAccountMapping.stockLocations.length > 0) {
-                    return stockLocationAndAccountMapping.stockLocations[0];
-                }
-            }
-            return false;
-        } catch (e) {
-        }
-
-    },
     repId() {
         try {
             let {customerInfo} = Session.get('customerInfo');
