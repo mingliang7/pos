@@ -59,7 +59,7 @@ export const invoiceByItemReport = new ValidatedMethod({
             if (params.itemId) {
                 itemSelector = {$in: [params.itemId]}
             }
-            data.fields = [{field: '<th>Date</th>'}, {field: '<th>INVN</th>'}, {field: '<th>Name</th>'}, {field: '<th>Addr</th>'}, {field: '<th>Tel</th>'}, {field: '<th>Item</th>'}, {field: '<th class="text-right">Qty</th>'}, {field: '<th class="text-right">Amount</th>'}];
+            data.fields = [{field: '<th>Date</th>'}, {field: '<th>INVN</th>'}, {field: '<th>Name</th>'}, {field: '<th>Addr</th>'}, {field: '<th>Tel</th>'}, {field: '<th>Item</th>'}, {field: '<th class="text-right">Qty</th>'},{field: '<th class="text-right">Price</th>'}, {field: '<th class="text-right">Amount</th>'}];
             data.displayFields = [{field: 'date'}, {field: 'invoiceId'}, {field: 'customer'}, {field: 'address'}, {field: 'tel'}, {field: 'itemName'}, {field: 'qty'}, {field: 'amount'}];
 
             // project['$invoice'] = 'Invoice';

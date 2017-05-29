@@ -104,6 +104,7 @@
                             <td>{{col.customerDoc.telephone}}</td>
                             <td>{{col.itemDoc.name}}</td>
                             <td class="text-right">{{numFormat col.items.qty '0,0.00'}}</td>
+                            <td class="text-right">{{numFormat col.items.price '0,0.00'}}</td>
                             <td class="text-right">{{numFormat col.items.amount '0,0.00'}}</td>
                         </tr>
                     {{/each}}
@@ -131,7 +132,7 @@
                         <tr>
                             <td>{{itemName}}</td>
                             <td class="text-right">{{numFormat qty '0,0.00'}}</td>
-                            <!--<td class="text-right">{{numFormat price '0,0.00'}}</td>-->
+                            <td class="text-right">{{numFormat price '0,0.00'}}</td>
                             <td class="text-right"><u>{{numFormat amount '0,0.00'}}</u></td>
                         </tr>
                     {{/each}}
