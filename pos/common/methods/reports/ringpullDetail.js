@@ -50,15 +50,13 @@ export const ringpullDetailReport = new ValidatedMethod({
                 return data;
             }
             if (params.date) {
-                let dateAsArray = params.date.split(',');
-                let fromDate = moment(dateAsArray[0]).startOf('days').toDate();
-                let toDate = moment(dateAsArray[1]).endOf('days').toDate();
+                let toDate = moment(params.date).endOf('days').toDate();
                 data.title.branch = Branch.findOne({_id: params.branchId});
                 data.title.item = Item.findOne({_id: params.itemId});
-                data.title.date = moment(fromDate).format('DD/MM/YYYY') + ' - ' + moment(toDate).format('DD/MM/YYYY');
-                companySelector.companyExchangeRingPullDate = {$gte: fromDate, $lte: toDate};
-                exchangeSelector.exchangeRingPullDate = {$gte: fromDate, $lte: toDate};
-                ringpullTransferSelector.ringPullTransferDate = {$gte: fromDate, $lte: toDate};
+                data.title.date = moment(toDate).format('DD/MM/YYYY');
+                companySelector.companyExchangeRingPullDate = {$lte: toDate};
+                exchangeSelector.exchangeRingPullDate = {$lte: toDate};
+                ringpullTransferSelector.ringPullTransferDate = {$lte: toDate};
                 ringpullTransferSelector.status = 'closed';
                 ringpullTransferSelector.pending = false;
             }

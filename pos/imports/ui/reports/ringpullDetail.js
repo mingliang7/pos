@@ -78,8 +78,21 @@ indexTmpl.events({
 
 });
 invoiceDataTmpl.helpers({
+    hasFilterDate(date){
+        let paramsFilterDate = FlowRouter.query.get('filterDate');
+        let filterDate = paramsFilterDate ? moment(paramsFilterDate).startOf('days').format('YYYY-MM-DD') : null;
+        let currentViewDate = moment(date).startOf('months');
+        if (paramsFilterDate) {
+            if (currentViewDate.isSameOrAfter(filterDate)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    },
     isZero(val){
-        if(val == 0) {
+        if (val == 0) {
             return ''
         }
         return numeral(val).format('0,0.00');
@@ -148,15 +161,16 @@ AutoForm.hooks({
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
-            if (doc.fromDate && doc.toDate) {
-                let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
-                let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
-                params.date = `${fromDate},${toDate}`;
+            if (doc.asDate) {
+                params.date = `${moment(doc.asDate).endOf('days').format('YYYY-MM-DD')}`;
             }
-            if(doc.branchId) {
+            if (doc.viewDate) {
+                params.filterDate = `${moment(doc.viewDate).endOf('days').format('YYYY-MM-DD HH:ss')}`
+            }
+            if (doc.branchId) {
                 params.branchId = doc.branchId;
             }
-            if(doc.itemId) {
+            if (doc.itemId) {
                 params.itemId = doc.itemId;
             }
             FlowRouter.query.set(params);

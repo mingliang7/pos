@@ -4,9 +4,9 @@ import {moment} from 'meteor/momentjs:moment';
 import {SelectOpts} from "../../../../../core/imports/ui/libs/select-opts";
 
 export const ringpullDetail = new SimpleSchema({
-    fromDate: {
+    viewDate: {
         type: Date,
-        defaultValue: moment().toDate(),
+        optional: true,
         autoform: {
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
@@ -17,7 +17,7 @@ export const ringpullDetail = new SimpleSchema({
             }
         }
     },
-    toDate: {
+    asDate: {
         type: Date,
         defaultValue: moment().toDate(),
         autoform: {
