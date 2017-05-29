@@ -2,10 +2,11 @@ import  {AverageInventories} from '../collections/inventory'
 import  {Item} from '../collections/item'
 import {RingPullInventories} from '../collections/ringPullInventory.js'
 import {GratisInventories} from '../collections/gratisInventory'
+import {InventoryDates} from '../collections/inventoryDate.js'
 
 export  default class StockFunction {
     static averageInventoryInsert(branchId, item, stockLocationId, type, refId, inventoryDate) {
-        inventoryDate=moment(inventoryDate).startOf('days').toDate();
+        inventoryDate = moment(inventoryDate).startOf('days').toDate();
         let lastPurchasePrice = 0;
         let remainQuantity = 0;
         let prefix = stockLocationId + '-';
@@ -15,8 +16,8 @@ export  default class StockFunction {
             stockLocationId: stockLocationId
         }, {sort: {createdAt: -1}});
         if (inventory) {
-            let lastInventoryDate=moment(inventory.inventoryDate).startOf('days').toDate();
-            inventoryDate=inventoryDate>=lastInventoryDate?inventoryDate:lastInventoryDate;
+            let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
             let totalQty = inventory.remainQty + item.qty;
             let lastAmount = inventory.lastAmount + (item.qty * item.price);
             let averagePrice = lastAmount / totalQty;
@@ -38,6 +39,10 @@ export  default class StockFunction {
             //lastPurchasePrice = price;
             remainQuantity = totalQty;
             console.log(nextInventory);
+            InventoryDates.direct.update(
+                {branchId: branchId, stockLocationId: stockLocationId},
+                {$set: {inventoryDate: inventoryDate}},
+                {upsert: true});
             AverageInventories.insert(nextInventory);
         }
         else {
@@ -62,6 +67,10 @@ export  default class StockFunction {
             //lastPurchasePrice = item.price;
             remainQuantity = totalQty;
             AverageInventories.insert(inventoryObj);
+            InventoryDates.direct.update(
+                {branchId: branchId, stockLocationId: stockLocationId},
+                {$set: {inventoryDate: inventoryDate}},
+                {upsert: true});
         }
         //var setModifier = {$set: {purchasePrice: lastPurchasePrice}};
         let setModifier = {$set: {}};
@@ -70,7 +79,7 @@ export  default class StockFunction {
     }
 
     static averageInventoryInsertForBill(branchId, item, stockLocationId, type, refId, inventoryDate) {
-        inventoryDate=moment(inventoryDate).startOf('days').toDate();
+        inventoryDate = moment(inventoryDate).startOf('days').toDate();
         let id = '';
         //let lastPurchasePrice = 0;
         let remainQuantity = 0;
@@ -82,8 +91,8 @@ export  default class StockFunction {
         }, {sort: {createdAt: -1}});
 
         if (inventory) {
-            let lastInventoryDate=moment(inventory.inventoryDate).startOf('days').toDate();
-            inventoryDate=inventoryDate>=lastInventoryDate?inventoryDate:lastInventoryDate;
+            let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
             let totalQty = inventory.remainQty + item.qty;
             let lastAmount = inventory.lastAmount + (item.qty * item.price);
             let averagePrice = lastAmount / totalQty;
@@ -105,6 +114,10 @@ export  default class StockFunction {
             //lastPurchasePrice = price;
             remainQuantity = totalQty;
             id = AverageInventories.insert(nextInventory);
+            InventoryDates.direct.update(
+                {branchId: branchId, stockLocationId: stockLocationId},
+                {$set: {inventoryDate: inventoryDate}},
+                {upsert: true});
         }
         else {
             //let thisItem = Item.findOne(item.itemId);
@@ -129,6 +142,10 @@ export  default class StockFunction {
             //lastPurchasePrice = item.price;
             remainQuantity = totalQty;
             id = AverageInventories.insert(inventoryObj);
+            InventoryDates.direct.update(
+                {branchId: branchId, stockLocationId: stockLocationId},
+                {$set: {inventoryDate: inventoryDate}},
+                {upsert: true});
         }
         let setModifier = {$set: {purchasePrice: item.price}};
         setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
@@ -137,7 +154,7 @@ export  default class StockFunction {
     }
 
     static minusAverageInventoryInsertForBill(branchId, item, stockLocationId, type, refId, inventoryDate) {
-        inventoryDate=moment(inventoryDate).startOf('days').toDate();
+        inventoryDate = moment(inventoryDate).startOf('days').toDate();
         let id = '';
         let prefix = stockLocationId + '-';
         let inventory = AverageInventories.findOne({
@@ -146,8 +163,8 @@ export  default class StockFunction {
             stockLocationId: stockLocationId
         }, {sort: {_id: -1}});
         if (inventory) {
-            let lastInventoryDate=moment(inventory.inventoryDate).startOf('days').toDate();
-            inventoryDate=inventoryDate>=lastInventoryDate?inventoryDate:lastInventoryDate;
+            let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
             let totalQty = inventory.remainQty - item.qty;
             let lastAmount = 0;
             let averagePrice = 0;
@@ -175,6 +192,10 @@ export  default class StockFunction {
             let setModifier = {$set: {}};
             setModifier.$set['qtyOnHand.' + stockLocationId] = totalQty;
             Item.direct.update(item.itemId, setModifier);
+            InventoryDates.direct.update(
+                {branchId: branchId, stockLocationId: stockLocationId},
+                {$set: {inventoryDate: inventoryDate}},
+                {upsert: true});
         }
         else {
             throw new Meteor.Error('Not Found Inventory. @' + type + " refId:" + refId);
@@ -183,7 +204,7 @@ export  default class StockFunction {
     }
 
     static minusAverageInventoryInsert(branchId, item, stockLocationId, type, refId, inventoryDate) {
-        inventoryDate=moment(inventoryDate).startOf('days').toDate();
+        inventoryDate = moment(inventoryDate).startOf('days').toDate();
         let id = '';
         let prefix = stockLocationId + '-';
         let inventory = AverageInventories.findOne({
@@ -192,8 +213,8 @@ export  default class StockFunction {
             stockLocationId: stockLocationId
         }, {sort: {_id: -1}});
         if (inventory) {
-            let lastInventoryDate=moment(inventory.inventoryDate).startOf('days').toDate();
-            inventoryDate=inventoryDate>=lastInventoryDate?inventoryDate:lastInventoryDate;
+            let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
             let remainQty = inventory.remainQty - item.qty;
             let lastAmount = 0;
             let averagePrice = 0;
@@ -221,6 +242,10 @@ export  default class StockFunction {
             let setModifier = {$set: {}};
             setModifier.$set['qtyOnHand.' + stockLocationId] = remainQty;
             Item.direct.update(item.itemId, setModifier);
+            InventoryDates.direct.update(
+                {branchId: branchId, stockLocationId: stockLocationId},
+                {$set: {inventoryDate: inventoryDate}},
+                {upsert: true});
         }
         else {
             throw new Meteor.Error('Not Found Inventory. @' + type + " refId:" + refId);
@@ -485,15 +510,24 @@ export  default class StockFunction {
     }
 
     static getLastInventoryDate(branchId, stockLocationId) {
-        let inventory = AverageInventories.findOne({
+        let inventoryDate = InventoryDates.findOne({
             branchId: branchId,
-            stockLocationId: stockLocationId,
-        }, {sort: {_id: -1}});
-        if (inventory && inventory.inventoryDate) {
-            return inventory.inventoryDate;
+            stockLocationId: stockLocationId
+        });
+        if (inventoryDate) {
+            return inventoryDate.inventoryDate;
         } else {
-            return moment('0001-01-01').toDate();
+            let inventory = AverageInventories.findOne({
+                branchId: branchId,
+                stockLocationId: stockLocationId,
+            }, {sort: {_id: -1}});
+            if (inventory && inventory.inventoryDate) {
+                return inventory.inventoryDate;
+            } else {
+                return moment('0001-01-01').toDate();
+            }
         }
+
     }
 
 }

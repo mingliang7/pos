@@ -105,13 +105,13 @@ Meteor.methods({
 
         let fromInventoryDate = StockFunction.getLastInventoryDate(locationTransfer.fromBranchId, locationTransfer.fromStockLocationId);
         if (lDoc.date < fromInventoryDate) {
-            throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
                 moment(fromInventoryDate).format('YYYY-MM-DD') + '"');
         }
 
         let toInventoryDate = StockFunction.getLastInventoryDate(locationTransfer.toBranchId, locationTransfer.toStockLocationId);
         if (lDoc.date < toInventoryDate) {
-            throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+            throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
                 moment(toInventoryDate).format('YYYY-MM-DD') + '"');
         }
         let result = StockFunction.checkStockByLocation(locationTransfer.fromStockLocationId, locationTransfer.items);

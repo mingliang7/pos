@@ -16,8 +16,8 @@ import StockFunction from '../../imports/api/libs/stock';
 
 LendingStocks.before.insert(function (userId, doc) {
     let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
-    if (doc.lendingStockDate <= inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+    if (doc.lendingStockDate < inventoryDate) {
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
@@ -30,20 +30,20 @@ LendingStocks.before.insert(function (userId, doc) {
     doc._id = idGenerator.genWithPrefix(LendingStocks, prefix, 4);
 });
 LendingStocks.before.update(function (userId, doc, fieldNames, modifier, options) {
-    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
-    if (modifier.$set.lendingStockDate < inventoryDateOld) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
-    }
+    /*    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+     if (modifier.$set.lendingStockDate < inventoryDateOld) {
+     throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
+     moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
+     }
 
-    modifier = modifier == null ? {} : modifier;
-    modifier.$set.branchId=modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
-    modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
-    let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
-    if (modifier.$set.lendingStockDate < inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
-            moment(inventoryDate).format('YYYY-MM-DD') + '"');
-    }
+     modifier = modifier == null ? {} : modifier;
+     modifier.$set.branchId=modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
+     modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
+     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
+     if (modifier.$set.lendingStockDate < inventoryDate) {
+     throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
+     moment(inventoryDate).format('YYYY-MM-DD') + '"');
+     }*/
 
     let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
@@ -63,7 +63,6 @@ LendingStocks.after.insert(function (userId, doc) {
             let transaction = [];
             let data = doc;
             data.type = "LendingStock";
-
 
 
             let vendorDoc = Vendors.findOne({_id: doc.vendorId});
@@ -95,9 +94,9 @@ LendingStocks.after.insert(function (userId, doc) {
 
 LendingStocks.after.update(function (userId, doc, fieldNames, modifier, options) {
     let preDoc = this.previous;
-    Meteor.defer(()=> {
+    Meteor.defer(() => {
         Meteor._sleepForMs(200);
-        returnToInventoryAndLendingStock(preDoc,doc.lendingStockDate);
+        returnToInventoryAndLendingStock(preDoc, doc.lendingStockDate);
         lendingStockManageStock(doc);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
@@ -139,7 +138,7 @@ LendingStocks.after.update(function (userId, doc, fieldNames, modifier, options)
 LendingStocks.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        returnToInventoryAndLendingStock(doc,moment().toDate());
+        returnToInventoryAndLendingStock(doc, doc.lendingStockDate);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -264,7 +263,7 @@ function lendingStockManageStock(lendingStock) {
          */
     });
 }
-function returnToInventoryAndLendingStock(lendingStock,lendingStockDate) {
+function returnToInventoryAndLendingStock(lendingStock, lendingStockDate) {
     let lendingPrefix = lendingStock.branchId + '-';
     // let lendingStock = Invoices.findOne(lendingStockId);
     lendingStock.items.forEach(function (item) {
@@ -315,9 +314,9 @@ Meteor.methods({
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
-        let i=1;
+        let i = 1;
 
-        let lendingStocks=LendingStocks.find({});
+        let lendingStocks = LendingStocks.find({});
         lendingStocks.forEach(function (doc) {
             console.log(i);
             i++;
@@ -326,7 +325,6 @@ Meteor.methods({
                 let transaction = [];
                 let data = doc;
                 data.type = "LendingStock";
-
 
 
                 let vendorDoc = Vendors.findOne({_id: doc.vendorId});
