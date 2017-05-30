@@ -24,6 +24,7 @@ import '../../../../../core/client/components/column-action.js';
 import '../../../../../core/client/components/form-footer.js';
 
 // Collection
+import {InventoryDates} from '../../../api/collections/inventoryDate.js';
 import {ReceiveItems} from '../../../api/collections/receiveItem.js';
 import {PrepaidOrders} from '../../../api/collections/prepaidOrder.js';
 import {ExchangeGratis} from '../../../api/collections/exchangeGratis.js';
@@ -155,6 +156,37 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
+    'click .save-receive-item'(){
+        let branchId = Session.get('currentBranch');
+        let stockLocationId = $('[name="stockLocationId"]').val();
+        let inventoryDate = InventoryDates.findOne({branchId: branchId, stockLocationId: stockLocationId});
+        let receiveItemDate = AutoForm.getFieldValue('receiveItemDate', 'Pos_receiveItemNew');
+        receiveItemDate = moment(receiveItemDate).startOf('days').toDate();
+        if (inventoryDate && (receiveItemDate > inventoryDate.inventoryDate)) {
+            swal({
+                title: "Date is greater then current Date!",
+                text: "Do You want to continue to process to " + moment(receiveItemDate).format('DD-MM-YYYY') +
+                "?\n"+ "Current Transaction Date is: '"+moment(inventoryDate.inventoryDate).format("DD-MM-YYYY")+"'" ,
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Do it!",
+                closeOnConfirm: false
+            }).then(function () {
+                $('#Pos_receiveItemNew').submit();
+                swal.close();
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    return false;
+                }
+            });
+        } else if (inventoryDate && (receiveItemDate < inventoryDate.inventoryDate)) {
+            displayError("Date cannot be less than current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"));
+            return false;
+        } else {
+            $('#Pos_receiveItemNew').submit();
+        }
+        return false;
+    },
     'click .toggle-list'(event, instance){
         let receiveType = $('#receive-type').val();
         let vendor = $('[name="vendorId"]').val();

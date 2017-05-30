@@ -16,8 +16,8 @@ import {PayBills} from '../../imports/api/collections/payBill.js';
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js';
 EnterBills.before.insert(function (userId, doc) {
     let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
-    if (doc.enterBillDate <= inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+    if (doc.enterBillDate < inventoryDate) {
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     if (doc.termId) {
@@ -97,9 +97,9 @@ EnterBills.after.insert(function (userId, doc) {
 
 
 EnterBills.before.update(function (userId, doc, fieldNames, modifier, options) {
-    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+  /*  let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.enterBillDate < inventoryDateOld) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
@@ -108,9 +108,9 @@ EnterBills.before.update(function (userId, doc, fieldNames, modifier, options) {
     modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.enterBillDate < inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
-    }
+    }*/
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
@@ -239,7 +239,7 @@ EnterBills.after.remove(function (userId, doc) {
                     doc.stockLocationId,
                     'reduce-from-bill',
                     doc._id,
-                    moment().toDate()//doc.enterBillDate
+                    doc.enterBillDate//doc.enterBillDate
                 );
                 inventoryIdList.push(id);
             });
@@ -258,7 +258,7 @@ EnterBills.after.remove(function (userId, doc) {
                     doc.stockLocationId,
                     'reduce-from-bill',
                     doc._id,
-                    moment().toDate()
+                    doc.enterBillDate
                 );
                 inventoryIdList.push(id);
             });

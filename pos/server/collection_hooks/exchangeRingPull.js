@@ -11,8 +11,8 @@ import {Customers} from '../../imports/api/collections/customer.js'
 import StockFunction from '../../imports/api/libs/stock';
 ExchangeRingPulls.before.insert(function (userId, doc) {
     let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
-    if (doc.exchangeRingPullDate <= inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+    if (doc.exchangeRingPullDate < inventoryDate) {
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     let result=StockFunction.checkStockByLocation(doc.stockLocationId,doc.items);
@@ -25,9 +25,9 @@ ExchangeRingPulls.before.insert(function (userId, doc) {
 });
 
 ExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, options) {
-    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+  /*  let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.exchangeRingPullDate < inventoryDateOld) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
@@ -36,9 +36,9 @@ ExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, opt
     modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.exchangeRingPullDate < inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
-    }
+    }*/
     let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
     let data = {stockLocationId: doc.stockLocationId, items: doc.items};
@@ -193,7 +193,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
 ExchangeRingPulls.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        returnToInventory(doc, 'exchangeRingPull-return',moment().toDate());
+        returnToInventory(doc, 'exchangeRingPull-return',doc.exchangeRingPullDate);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
