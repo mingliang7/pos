@@ -121,5 +121,8 @@ Template.Pos_sidebarMenu.helpers({
     },
     ringPullSummary(){
         return `/pos/report/ringpullSummary?asDate=${moment().endOf('days').format('YYYY-MM-DD')}&branchId=${Session.get('currentBranch')}`;
+    },
+    receiveItemBalance(){
+        return `/pos/report/receiveItemBalance?asDate=${moment().endOf('days').format('YYYY-MM-DD')}&branchId=${Session.get('currentBranch')}`;
     }
 });

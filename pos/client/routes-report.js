@@ -591,3 +591,18 @@ PosRoutes.route('/report/vendor-balance-summary', {
         parent: 'pos.mainReport'
     }
 });
+
+import '../imports/ui/reports/receiveItemBalance';
+PosRoutes.route('/report/receiveItemBalance', {
+    name: 'pos.receiveItemBalance',
+    title: 'Receive Item Balance',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_receiveItemBalanceReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Receive Item Balance',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
