@@ -24,6 +24,7 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
+import {InventoryDates} from '../../api/collections/inventoryDate.js';
 import {EnterBills} from '../../api/collections/enterBill.js';
 import {Item} from '../../api/collections/item';
 import {vendorBillCollection} from '../../api/collections/tmpCollection';
@@ -168,6 +169,37 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
+    'click .save-bill'(){
+        let branchId = Session.get('currentBranch');
+        let stockLocationId = $('[name="stockLocationId"]').val();
+        let inventoryDate = InventoryDates.findOne({branchId: branchId, stockLocationId: stockLocationId});
+        let enterBillDate = AutoForm.getFieldValue('enterBillDate', 'Pos_enterBillNew');
+        enterBillDate = moment(enterBillDate).startOf('days').toDate();
+        if (inventoryDate && (enterBillDate > inventoryDate.inventoryDate)) {
+            swal({
+                title: "Date is greater then current Date!",
+                text: "Do You want to continue to process to " + moment(enterBillDate).format('DD-MM-YYYY') +
+                "?\n"+ "Current Transaction Date is: '"+moment(inventoryDate.inventoryDate).format("DD-MM-YYYY")+"'" ,
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Do it!",
+                closeOnConfirm: false
+            }).then(function () {
+                $('#Pos_enterBillNew').submit();
+                swal.close();
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    return false;
+                }
+            });
+        } else if (inventoryDate && (enterBillDate < inventoryDate.inventoryDate)) {
+            displayError("Date cannot be less than current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"));
+            return false;
+        } else {
+            $('#Pos_enterBillNew').submit();
+        }
+        return false;
+    },
     'change [name=vendorId]'(event, instance){
         if (event.currentTarget.value != '') {
             Session.set('getVendorId', event.currentTarget.value);
