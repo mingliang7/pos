@@ -3,6 +3,7 @@ import {idGenerator} from 'meteor/theara:id-generator'
 import StockFunction from '../../imports/api/libs/stock';
 // Collection
 import {Invoices} from '../../imports/api/collections/invoice.js'
+import {InventoryDates} from '../../imports/api/collections/inventoryDate.js'
 import {ReceivePayment} from '../../imports/api/collections/receivePayment.js'
 import {Order} from '../../imports/api/collections/order'
 import {GroupInvoice} from '../../imports/api/collections/groupInvoice'
@@ -18,8 +19,8 @@ import {invoiceState} from '../../common/globalState/invoice'
 import {updateItemInSaleOrder} from '../../common/methods/sale-order'
 Invoices.before.insert(function (userId, doc) {
     let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
-    if (doc.invoiceDate <= inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+    if (doc.invoiceDate < inventoryDate) {
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
 
@@ -49,9 +50,9 @@ Invoices.before.insert(function (userId, doc) {
 });
 
 Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
-    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+ /*   let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.invoiceDate < inventoryDateOld) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
@@ -60,10 +61,10 @@ Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
     modifier.$set.stockLocationId = modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.invoiceDate < inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
-
+*/
     let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
     let data = {stockLocationId: doc.stockLocationId, items: doc.items};
@@ -587,7 +588,7 @@ Invoices.after.remove(function (userId, doc) {
                 recalculatePaymentAfterRemoved({doc})
             }
             // average inventory calculation
-            returnToInventory(doc, moment().toDate())
+            returnToInventory(doc, doc.invoiceDate())
         } else {
             accountRefType = 'Invoice';
             doc.items.forEach(function (item) {
@@ -597,7 +598,7 @@ Invoices.after.remove(function (userId, doc) {
                 }
             });
             // average inventory calculation
-            returnToInventory(doc, moment().toDate())
+            returnToInventory(doc, doc.invoiceDate())
         }
         Meteor.call('insertRemovedInvoice', doc);
         // Account Integration
@@ -676,6 +677,9 @@ function invoiceManageStock(invoice) {
             stockLocationId: invoice.stockLocationId
         }, {sort: {_id: -1}});
         if (inventory) {
+            let inventoryDate=moment(invoice.invoiceDate).startOf('days').toDate();
+            let lastInventoryDate=moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate=inventoryDate>=lastInventoryDate?inventoryDate:lastInventoryDate;
             item.cost = inventory.averagePrice;
             item.amountCost = inventory.averagePrice * item.qty;
             item.profit = item.amount - item.amountCost;
@@ -690,6 +694,7 @@ function invoiceManageStock(invoice) {
                 averagePrice = lastAmount / remainQty;
             }
             let newInventory = {
+
                 _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
                 branchId: invoice.branchId,
                 stockLocationId: invoice.stockLocationId,
@@ -703,12 +708,16 @@ function invoiceManageStock(invoice) {
                 coefficient: -1,
                 type: refType,
                 refId: invoice._id,
-                inventoryDate: moment(invoice.invoiceDate).startOf('days').toDate()
+                inventoryDate: inventoryDate
             };
-            id = AverageInventories.insert(newInventory);
+            AverageInventories.insert(newInventory);
             let setModifier = {$set: {}};
             setModifier.$set['qtyOnHand.' + invoice.stockLocationId] = remainQty;
             Item.direct.update(item.itemId, setModifier);
+            InventoryDates.direct.update(
+                {branchId: invoice.branchId, stockLocationId: invoice.stockLocationId},
+                {$set: {inventoryDate: inventoryDate}},
+                {upsert: true});
 
         } else {
             throw new Meteor.Error('Not Found Inventory. @invoiceManageStock. refId:' + invoice._id);

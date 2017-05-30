@@ -19,8 +19,8 @@ import {AccountMapping} from '../../imports/api/collections/accountMapping.js'
 
 ReceiveItems.before.insert(function (userId, doc) {
     let inventoryDate = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
-    if (doc.receiveItemDate <= inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+    if (doc.receiveItemDate < inventoryDate) {
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     let todayDate = moment().format('YYYYMMDD');
@@ -31,9 +31,9 @@ ReceiveItems.before.insert(function (userId, doc) {
 
 
 ReceiveItems.before.update(function (userId, doc, fieldNames, modifier, options) {
-    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+ /*   let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.receiveItemDate < inventoryDateOld) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
@@ -42,9 +42,9 @@ ReceiveItems.before.update(function (userId, doc, fieldNames, modifier, options)
     modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.receiveItemDate < inventoryDate) {
-        throw new Meteor.Error('Date must be gather than last Transaction Date: "' +
+        throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
-    }
+    }*/
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
@@ -355,7 +355,7 @@ ReceiveItems.after.remove(function (userId, doc) {
         } else {
             throw Meteor.Error('Require Receive Item type');
         }
-        reduceFromInventory(doc, 'receiveItem-return',moment().toDate());
+        reduceFromInventory(doc, 'receiveItem-return',doc.receiveItemDate);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
