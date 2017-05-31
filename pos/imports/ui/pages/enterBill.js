@@ -114,30 +114,77 @@ indexTmpl.events({
     },
     'click .js-destroy' (event, instance) {
         let data = this;
-        Meteor.call('isBillHasRelation', data._id, function (error, result) {
-            if (error) {
-                alertify.error(error.message);
-            } else {
-                if (result) {
-                    let msg = '';
-                    if (data.billType == 'group') {
-                        msg = `Please Check Group #${data.paymentGroupId}`;
-                    }
-                    swal(
-                        'Cancelled',
-                        `Data has been used. Can't remove. ${msg}`,
-                        'error'
-                    );
+        debugger;
+        let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
+        let enterBillDate = moment(data.enterBillDate).startOf('days').toDate();
+        if (inventoryDate && (enterBillDate < inventoryDate.inventoryDate)) {
+            swal({
+                title: "Date is less then current Transaction Date!",
+                text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Do it!",
+                closeOnConfirm: false
+            }).then(function () {
 
-                } else {
-                    destroyAction(
-                        EnterBills,
-                        {_id: data._id},
-                        {title: TAPi18n.__('pos.enterBill.title'), itemTitle: data._id}
-                    );
+                Meteor.call('isBillHasRelation', data._id, function (error, result) {
+                    if (error) {
+                        alertify.error(error.message);
+                    } else {
+                        if (result) {
+                            let msg = '';
+                            if (data.billType == 'group') {
+                                msg = `Please Check Group #${data.paymentGroupId}`;
+                            }
+                            swal(
+                                'Cancelled',
+                                `Data has been used. Can't remove. ${msg}`,
+                                'error'
+                            );
+
+                        } else {
+                            destroyAction(
+                                EnterBills,
+                                {_id: data._id},
+                                {title: TAPi18n.__('pos.enterBill.title'), itemTitle: data._id}
+                            );
+                        }
+                    }
+                });
+                swal.close();
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    return false;
                 }
-            }
-        });
+            });
+        }else{
+            Meteor.call('isBillHasRelation', data._id, function (error, result) {
+                if (error) {
+                    alertify.error(error.message);
+                } else {
+                    if (result) {
+                        let msg = '';
+                        if (data.billType == 'group') {
+                            msg = `Please Check Group #${data.paymentGroupId}`;
+                        }
+                        swal(
+                            'Cancelled',
+                            `Data has been used. Can't remove. ${msg}`,
+                            'error'
+                        );
+
+                    } else {
+                        destroyAction(
+                            EnterBills,
+                            {_id: data._id},
+                            {title: TAPi18n.__('pos.enterBill.title'), itemTitle: data._id}
+                        );
+                    }
+                }
+            });
+        }
+
+
     },
     'click .js-display' (event, instance) {
         swal({
@@ -179,7 +226,7 @@ newTmpl.events({
             swal({
                 title: "Date is greater then current Date!",
                 text: "Do You want to continue to process to " + moment(enterBillDate).format('DD-MM-YYYY') +
-                "?\n"+ "Current Transaction Date is: '"+moment(inventoryDate.inventoryDate).format("DD-MM-YYYY")+"'" ,
+                "?\n" + "Current Transaction Date is: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
                 type: "warning", showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, Do it!",
@@ -390,7 +437,7 @@ editTmpl.helpers({
     data () {
         let data = this;
         // Add items to local collection
-        _.forEach(data.items, (value)=> {
+        _.forEach(data.items, (value) => {
             Meteor.call('getItem', value.itemId, function (err, result) {
                 value.name = result.name;
                 itemsCollection.insert(value);
@@ -539,7 +586,7 @@ let hooksObject = {
     before: {
         insert: function (doc) {
             let items = [];
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
             });
@@ -549,7 +596,7 @@ let hooksObject = {
         },
         update: function (doc) {
             let items = [];
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
             });

@@ -389,7 +389,7 @@ Invoices.after.update(function (userId, doc) {
             pushInvoiceFromGroup(doc);
             recalculatePayment({preDoc, doc});
             // average inventory calculate
-            returnToInventory(preDoc, doc.invoiceDate);
+            returnToInventory(preDoc, preDoc.invoiceDate);
             // invoiceState.set(doc._id, {customerId: doc.customerId, invoiceId: doc._id, total: doc.total})
             let totalGratis = 0;
             let totalCOGS = 0;
@@ -470,7 +470,7 @@ Invoices.after.update(function (userId, doc) {
             });
             recalculatePayment({preDoc, doc});
             // average inventory calculate
-            returnToInventory(preDoc, doc.invoiceDate);
+            returnToInventory(preDoc, preDoc.invoiceDate);
             let totalGratis = 0;
             let totalCOGS = 0;
             doc.items.forEach(function (item) {
@@ -588,7 +588,7 @@ Invoices.after.remove(function (userId, doc) {
                 recalculatePaymentAfterRemoved({doc})
             }
             // average inventory calculation
-            returnToInventory(doc, doc.invoiceDate())
+            returnToInventory(doc, doc.invoiceDate)
         } else {
             accountRefType = 'Invoice';
             doc.items.forEach(function (item) {
@@ -598,11 +598,10 @@ Invoices.after.remove(function (userId, doc) {
                 }
             });
             // average inventory calculation
-            returnToInventory(doc, doc.invoiceDate())
+            returnToInventory(doc, doc.invoiceDate)
         }
         Meteor.call('insertRemovedInvoice', doc);
         // Account Integration
-        console.log(accountRefType);
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
             let data = {_id: doc._id, type: accountRefType};

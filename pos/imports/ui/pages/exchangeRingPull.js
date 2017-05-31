@@ -105,11 +105,37 @@ indexTmpl.events({
     },
     'click .js-destroy' (event, instance) {
         let data = this;
-        destroyAction(
-            ExchangeRingPulls,
-            {_id: data._id},
-            {title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: data._id}
-        );
+        let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
+        let exchangeRingPullDate = moment(data.exchangeRingPullDate).startOf('days').toDate();
+        if (inventoryDate && (exchangeRingPullDate < inventoryDate.inventoryDate)) {
+            swal({
+                title: "Date is less then current Transaction Date!",
+                text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Do it!",
+                closeOnConfirm: false
+            }).then(function () {
+                swal.close();
+                destroyAction(
+                    ExchangeRingPulls,
+                    {_id: data._id},
+                    {title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: data._id}
+                );
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    return false;
+                }
+            });
+        }
+        else {
+            destroyAction(
+                ExchangeRingPulls,
+                {_id: data._id},
+                {title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: data._id}
+            );
+        }
+
     },
     'click .js-display' (event, instance) {
         swal({
@@ -149,7 +175,7 @@ newTmpl.events({
             swal({
                 title: "Date is greater then current Date!",
                 text: "Do You want to continue to process to " + moment(exchangeRingPullDate).format('DD-MM-YYYY')
-                + "?\n"+ "Current Transaction Date is: '"+moment(inventoryDate.inventoryDate).format("DD-MM-YYYY")+"'" ,
+                + "?\n" + "Current Transaction Date is: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
                 type: "warning", showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, Do it!",

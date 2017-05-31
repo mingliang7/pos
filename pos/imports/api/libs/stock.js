@@ -38,7 +38,6 @@ export  default class StockFunction {
             nextInventory.inventoryDate = inventoryDate;
             //lastPurchasePrice = price;
             remainQuantity = totalQty;
-            console.log(nextInventory);
             InventoryDates.direct.update(
                 {branchId: branchId, stockLocationId: stockLocationId},
                 {$set: {inventoryDate: inventoryDate}},
@@ -402,21 +401,23 @@ export  default class StockFunction {
 
     static checkStockByLocationWhenUpdate(stockLocationId, ArgItems, doc) {
         let items = [];
-        ArgItems.reduce(function (res, value) {
-            if (!res[value.itemId]) {
-                res[value.itemId] = {
-                    price: value.price,
-                    amount: value.amount,
-                    qty: 0,
-                    itemId: value.itemId
-                };
-                items.push(res[value.itemId])
-            } else {
-                res[value.itemId].amount += value.amount;
-            }
-            res[value.itemId].qty += value.qty;
-            return res;
-        }, {});
+        if (ArgItems && ArgItems.length>0) {
+            ArgItems.reduce(function (res, value) {
+                if (!res[value.itemId]) {
+                    res[value.itemId] = {
+                        price: value.price,
+                        amount: value.amount,
+                        qty: 0,
+                        itemId: value.itemId
+                    };
+                    items.push(res[value.itemId])
+                } else {
+                    res[value.itemId].amount += value.amount;
+                }
+                res[value.itemId].qty += value.qty;
+                return res;
+            }, {});
+        }
 
         let docItems = [];
         doc.items.reduce(function (res, value) {
@@ -465,7 +466,7 @@ export  default class StockFunction {
     }
 
     static checkRingPullByBranch(branchId, items) {
-        console.log(items);
+
         let result = {isEnoughStock: true, message: ''};
         items.forEach(function (item) {
             let thisItem = Item.findOne(item.itemId);

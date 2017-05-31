@@ -58,5 +58,5 @@ tabularOpts.columns = [
     //    }
     //}
 ];
-tabularOpts.extraFields = ['staffId','items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'type', 'prepaidOrderId', 'companyExchangeRingPullId','lendingStockId','exchangeGratisId', '_vendor'];
+tabularOpts.extraFields = ['staffId','items', 'dueDate', 'stockLocationId', 'repId', 'voucherId', 'type', 'prepaidOrderId', 'companyExchangeRingPullId','lendingStockId','exchangeGratisId', '_vendor','branchId'];
 export const ReceiveItemTabular = new Tabular.Table(tabularOpts);
