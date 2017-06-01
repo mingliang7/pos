@@ -58,7 +58,7 @@ indexTmpl.helpers({
 });
 indexTmpl.events({
     'click .print'(event, instance){
-      window.print();
+        window.print();
     },
     'change #date-range-filter'(event, instance){
         let currentRangeDate = RangeDate[event.currentTarget.value]();
@@ -83,7 +83,11 @@ indexTmpl.events({
                 }
             }
         ];
-        JSPanel({footer: arrFooterTool,title: 'Stock Detail', content: renderTemplate(invoiceDataTmpl).html}).maximize();
+        JSPanel({
+            footer: arrFooterTool,
+            title: 'Stock Detail',
+            content: renderTemplate(invoiceDataTmpl).html
+        }).maximize();
     }
 });
 invoiceDataTmpl.helpers({
@@ -92,7 +96,10 @@ invoiceDataTmpl.helpers({
         return doc.company;
     },
     concat(num){
-        return num.substr(num.length - 10, num.length-1);
+        if (num && num.includes('-')) {
+            return num.substr(num.length - 10, num.length - 1);
+        }
+        return num;
     },
     data(){
         if (invoiceData.get()) {
@@ -100,7 +107,7 @@ invoiceDataTmpl.helpers({
         }
     },
     displayStockOutQty(){
-        if(this.coefficient < 0) {
+        if (this.coefficient < 0) {
             return `<td></td><td>${numeral(Math.abs(this.qty)).format('0,0.00')}</td>`;
         }
         return `<td>${numeral(this.qty).format('0,0.00')}</td><td></td>`;
