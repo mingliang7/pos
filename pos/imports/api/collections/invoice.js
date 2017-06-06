@@ -42,6 +42,18 @@ Invoices.itemsSchema = new SimpleSchema({
 
 // Invoices schema
 Invoices.schema = new SimpleSchema({
+    deliveryDate: {
+        type: Date,
+        autoform: {
+            afFieldInput: {
+                type: "bootstrap-datetimepicker",
+                dateTimePickerOptions: {
+                    format: 'DD/MM/YYYY',
+
+                }
+            }
+        }
+    },
     voucherId: {
         type: String,
         unique: true,
