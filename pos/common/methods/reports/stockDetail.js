@@ -154,6 +154,130 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 })
                             }
                         ],
+                        receiveItemsReturn: [
+                            {
+                                $match: {
+                                    type: "receiveItem-return",
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_receiveItems",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "receiveItemDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$receiveItemDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$invoiceDescription", 'Receive Item Out']},
+                                    number: {$ifNull: ['$receiveItemDoc.voucherId', '$receiveItemDoc._id']},
+                                    name: '$receiveItemDoc._vendor.name',
+                                    rep: '$receiveItemDoc._rep.name',
+                                    item: '$itemDoc',
+                                    opDate: '$receiveItemDoc.receiveItemDate'
+                                })
+                            }
+                        ],
+                        reduceFromBills: [
+                            {
+                                $match: {
+                                    type: "reduce-from-bill",
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_enterBills",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "enterBillDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$enterBillDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$enterBillDoc.description", {$concat: ["Reduce From Bill #", "$enterBillDoc._id"]}]},
+                                    number: {$ifNull: ['$enterBillDoc.voucherId', '$enterBillDoc._id']},
+                                    name: '$enterBillDoc._vendor.name',
+                                    rep: '$enterBillDoc._rep.name',
+                                    item: '$itemDoc',
+                                    opDate: '$enterBillDoc.enterBillDate'
+                                })
+                            }
+                        ],
                         invoicesReturn: [
                             {
                                 $match: {
@@ -213,6 +337,130 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                     rep: '$invoiceDoc._rep.name',
                                     item: '$itemDoc',
                                     opDate: '$invoiceDoc.invoiceDate'
+                                })
+                            }
+                        ],
+                        exchangeRingPullsReturn: [
+                            {
+                                $match: {
+                                    type: "exchangeRingPull-return",
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_exchangeRingPulls",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "exchangeRingPullDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$exchangeRingPullDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$fk", 'Exchange Ringpull Return']},
+                                    number: {$ifNull: ['$exchangeRingPullDoc.voucherId', '$exchangeRingPullDoc._id']},
+                                    name: '$exchangeRingPullDoc._customer.name',
+                                    rep: '$exchangeRingPullDoc._rep.name',
+                                    item: '$itemDoc',
+                                    opDate: '$exchangeRingPullDoc.exchangeRingPullDate'
+                                })
+                            }
+                        ],
+                        lendingStocksReturn: [
+                            {
+                                $match: {
+                                    type: "lendingStock-return",
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_lendingStocks",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "lendingStockDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$lendingStockDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$fk", 'Lending Stock Return']},
+                                    number: {$ifNull: ['$lendingStock.voucherId', '$lendingStock._id']},
+                                    name: '$lendingStockDoc._customer.name',
+                                    rep: '$lendingStockDoc._rep.name',
+                                    item: '$itemDoc',
+                                    opDate: '$lendingStock.lendingStockDate'
                                 })
                             }
                         ],
@@ -281,7 +529,7 @@ export const stockDetailReportMethod = new ValidatedMethod({
                         bills: [
                             {
                                 $match: {
-                                    type: "insert-bill",
+                                    $or: [{type: "insert-bill"}],
                                     inventoryDate: {
                                         $gte: selector.inventoryDate.$gte,
                                         $lte: selector.inventoryDate.$lte
@@ -331,6 +579,68 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $project: projectionField({
                                     description: {$ifNull: ["$billDescription", 'ទិញចូល(Purchase)']},
+                                    number: {$ifNull: ['$billDoc.voucherId', '$billDoc._id']},
+                                    name: '$billDoc._vendor.name',
+                                    rep: {$ifNull: ["$billDoc._rep.name", ""]},
+                                    item: '$itemDoc',
+                                    opDate: '$billDoc.enterBillDate'
+                                })
+
+                            }
+                        ],
+                        enterBills: [
+                            {
+                                $match: {
+                                    $or: [{type: "enterBill"}],
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_enterBills",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "billDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$billDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$billDescription", {$concat: ["Update EnterBill #", "$billDoc._id"]}]},
                                     number: {$ifNull: ['$billDoc.voucherId', '$billDoc._id']},
                                     name: '$billDoc._vendor.name',
                                     rep: {$ifNull: ["$billDoc._rep.name", ""]},
@@ -660,6 +970,11 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             obj.items.push(bill);
                         }
                     });
+                    inventoryDocs[0].enterBills.forEach(function (bill) {
+                        if (moment(currentStockDate).isSame(moment(bill.inventoryDate).format('YYYY-MM-DD'))) {
+                            obj.items.push(bill);
+                        }
+                    });
                     inventoryDocs[0].receiveBeers.forEach(function (receiveBeer) {
                         if (moment(currentStockDate).isSame(moment(receiveBeer.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(receiveBeer);
@@ -676,6 +991,26 @@ export const stockDetailReportMethod = new ValidatedMethod({
                         }
                     });
                     inventoryDocs[0].invoicesReturn.forEach(function (invoice) {
+                        if (moment(currentStockDate).isSame(moment(invoice.inventoryDate).format('YYYY-MM-DD'))) {
+                            obj.items.push(invoice);
+                        }
+                    });
+                    inventoryDocs[0].exchangeRingPullsReturn.forEach(function (invoice) {
+                        if (moment(currentStockDate).isSame(moment(invoice.inventoryDate).format('YYYY-MM-DD'))) {
+                            obj.items.push(invoice);
+                        }
+                    });
+                    inventoryDocs[0].lendingStocksReturn.forEach(function (invoice) {
+                        if (moment(currentStockDate).isSame(moment(invoice.inventoryDate).format('YYYY-MM-DD'))) {
+                            obj.items.push(invoice);
+                        }
+                    });
+                    inventoryDocs[0].receiveItemsReturn.forEach(function (invoice) {
+                        if (moment(currentStockDate).isSame(moment(invoice.inventoryDate).format('YYYY-MM-DD'))) {
+                            obj.items.push(invoice);
+                        }
+                    });
+                    inventoryDocs[0].reduceFromBills.forEach(function (invoice) {
                         if (moment(currentStockDate).isSame(moment(invoice.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(invoice);
                         }
@@ -703,7 +1038,7 @@ export const stockDetailReportMethod = new ValidatedMethod({
                 });
                 inventoryDocs[0].stockDate.sort(compare);
                 for (let i = 0; i < inventoryDocs[0].stockDate.length; i++) {
-                    inventoryDocs[0].stockDate[i].items.sort(compare);
+                    inventoryDocs[0].stockDate[i].items.sort(compareCreated);
                 }
                 data.content = inventoryDocs[0].stockDate;
             }
@@ -754,6 +1089,7 @@ function projectionField({item, description, name, number, rep, opDate}) {
         coefficient: 1,
         refId: 1,
         inventoryDate: 1,
+        createdAt: 1,
         number: number,
         rep: rep,
         description: description,
@@ -778,6 +1114,7 @@ function groupLast() {
         coefficient: {$last: '$coefficient'},
         refId: {$last: '$refId'},
         inventoryDate: {$last: '$inventoryDate'},
+        createdAt: {$last: '$createdAt'}
     }
 }
 function handleUndefined(value) {
@@ -790,6 +1127,13 @@ function compare(a, b) {
     if (a.inventoryDate < b.inventoryDate)
         return -1;
     if (a.inventoryDate > b.inventoryDate)
+        return 1;
+    return 0;
+}
+function compareCreated(a, b) {
+    if (a.createdAt < b.createdAt)
+        return -1;
+    if (a.createdAt > b.createdAt)
         return 1;
     return 0;
 }
