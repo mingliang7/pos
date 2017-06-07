@@ -154,6 +154,68 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 })
                             }
                         ],
+                        invoicesReturn: [
+                            {
+                                $match: {
+                                    type: "invoice-return",
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_invoices",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "invoiceDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$invoiceDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$fk", 'INVOICE RETURN']},
+                                    number: {$ifNull: ['$invoiceDoc.voucherId', '$invoiceDoc._id']},
+                                    name: '$invoiceDoc._customer.name',
+                                    rep: '$invoiceDoc._rep.name',
+                                    item: '$itemDoc',
+                                    opDate: '$invoiceDoc.invoiceDate'
+                                })
+                            }
+                        ],
                         invoicesFree: [
                             {
                                 $match: {
@@ -609,6 +671,11 @@ export const stockDetailReportMethod = new ValidatedMethod({
                         }
                     });
                     inventoryDocs[0].invoicesFree.forEach(function (invoice) {
+                        if (moment(currentStockDate).isSame(moment(invoice.inventoryDate).format('YYYY-MM-DD'))) {
+                            obj.items.push(invoice);
+                        }
+                    });
+                    inventoryDocs[0].invoicesReturn.forEach(function (invoice) {
                         if (moment(currentStockDate).isSame(moment(invoice.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(invoice);
                         }

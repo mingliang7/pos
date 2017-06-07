@@ -45,14 +45,15 @@
                                 </div>
                                 <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
                                 </button>
-                                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+                                <a class="btn btn-default print"><i class="fa fa-print" aria-hidden="true"></i>
+                                    Print</a>
                             {{/autoForm}}
                         </div>
                     </div>
                 </div>
             </div>
-               {{>stockDetailReportData}} 
-        </div>    
+            {{>stockDetailReportData}}
+        </div>
     </div>
 </template>
 
@@ -107,19 +108,35 @@
             {{#with data}}
                 {{#each content}}
                     {{#each items}}
-                        <tr>
-                            <td>{{moFormat opDate 'DD/MM/YYYY'}}</td>
-                            <td>{{concat number}}</td>
-                            <td>{{name}}</td>
-                            <td>{{rep}}</td>
-                            <td>{{description}}</td>
-                            <td>{{branchDoc.khName}}</td>
-                            <td>{{item.name}}</td>
-                            {{{displayStockOutQty}}}
-                            <td>{{numFormat remainQty '0,0'}}</td>
-                            <td>{{numFormat averagePrice '0,0.00'}}</td>
-                            <td>{{numFormat lastAmount '0,0.00'}}</td>
-                        </tr>
+                        {{#unless number}}
+                            <tr>
+                                <td>{{moFormat opDate 'DD/MM/YYYY'}}</td>
+                                <td>{{concat number}}</td>
+                                <td>{{name}}</td>
+                                <td>{{rep}}</td>
+                                <td><del>{{description}}</del></td>
+                                <td><del>{{branchDoc.khName}}</del></td>
+                                <td><del>{{item.name}}</del></td>
+                                {{{displayStockOutQty}}}
+                                <td>{{numFormat remainQty '0,0'}}</td>
+                                <td>{{numFormat averagePrice '0,0.00'}}</td>
+                                <td>{{numFormat lastAmount '0,0.00'}}</td>
+                            </tr>
+                        {{else}}
+                            <tr>
+                                <td>{{moFormat opDate 'DD/MM/YYYY'}}</td>
+                                <td>{{concat number}}</td>
+                                <td>{{name}}</td>
+                                <td>{{rep}}</td>
+                                <td>{{description}}</td>
+                                <td>{{branchDoc.khName}}</td>
+                                <td>{{item.name}}</td>
+                                {{{displayStockOutQty}}}
+                                <td>{{numFormat remainQty '0,0'}}</td>
+                                <td>{{numFormat averagePrice '0,0.00'}}</td>
+                                <td>{{numFormat lastAmount '0,0.00'}}</td>
+                            </tr>
+                        {{/unless}}
                     {{/each}}
                 {{/each}}
             {{/with}}
