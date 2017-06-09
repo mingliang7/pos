@@ -238,3 +238,4 @@ meteorhacks:kadira
 theara:jspanel
 simple:rest
 simple:json-routes
+percolate:synced-cron
