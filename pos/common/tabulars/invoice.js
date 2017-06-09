@@ -30,6 +30,13 @@ tabularOpts.columns = [
         }
     },
     {
+        data: "deliveryDate",
+        title: "Delivery Date",
+        render: function (val) {
+            return moment(val).format('YYYY-MM-DD');
+        }
+    },
+    {
         data: "total",
         title: "Total",
         render: function (val) {
