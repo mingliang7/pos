@@ -219,7 +219,7 @@ SelectOptMethods.item = new ValidatedMethod({
             } else if (values.length) {
                 selector._id = {$in: values}
             }
-            let data = Item.find(selector, {limit: 10});
+            let data = Item.find(selector, {limit: 75});
             data.forEach(function (value) {
                 let label = value.name;
                 list.push({label: label, value: value._id});
