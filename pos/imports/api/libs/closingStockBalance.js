@@ -13,25 +13,35 @@ export default class ClosingStock {
             let branchId = branch._id;
             let closingStockBalance = ClosingStockBalance.findOne({branchId: branch._id}, {sort: {closingDate: -1}});
             let inventory = InventoryDates.findOne({branchId: branch._id});
-            let closingStockDate = closingStockBalance ? closingStockBalance.closingDate : null;
+            let closingStockDate = closingStockBalance ? moment(closingStockBalance.closingDate).startOf('days').toDate() : null;
             if (inventory) {
-                let inventoryDate = moment(inventory.inventoryDate).subtract(1, 'days').toDate();
+                let inventoryDate = moment(inventory.inventoryDate).subtract(1, 'days').endOf('days').toDate();
                 //--------------Stock In--------------------
-                let enterBills = ClosingStock.lookupEnterBills({inventoryDate, closingStockDate});
+                let enterBills = ClosingStock.lookupEnterBills({inventoryDate, closingStockDate, branchId});
                 let receiveItemLendingStocks = ClosingStock.lookupReceiveItemLendingStocks({
                     inventoryDate,
-                    closingStockDate
+                    closingStockDate,
+                    branchId
                 });
                 let receiveItemPrepaidOrders = ClosingStock.lookupReceiveItemPrepaidOrders({
                     inventoryDate,
-                    closingStockDate
+                    closingStockDate,
+                    branchId
                 });
-                let receiveItemRingPulls = ClosingStock.lookupReceiveItemRingPulls({inventoryDate, closingStockDate});
+                let receiveItemRingPulls = ClosingStock.lookupReceiveItemRingPulls({
+                    inventoryDate,
+                    closingStockDate,
+                    branchId
+                });
                 let transferIns = ClosingStock.lookupLocationTransferIns({inventoryDate, closingStockDate, branchId});
                 //--------------Stock Out-------------------
-                let lendingStocks = ClosingStock.lookupLendingStocks({inventoryDate, closingStockDate});
-                let invoices = ClosingStock.lookupInvoices({inventoryDate, closingStockDate});
-                let exchangeRingPulls = ClosingStock.lookupExchangeRingPulls({inventoryDate, closingStockDate});
+                let lendingStocks = ClosingStock.lookupLendingStocks({inventoryDate, closingStockDate, branchId});
+                let invoices = ClosingStock.lookupInvoices({inventoryDate, closingStockDate, branchId});
+                let exchangeRingPulls = ClosingStock.lookupExchangeRingPulls({
+                    inventoryDate,
+                    closingStockDate,
+                    branchId
+                });
                 let transferOuts = ClosingStock.lookupLocationTransferOut({inventoryDate, closingStockDate, branchId});
                 let transactions = _.union(enterBills, receiveItemLendingStocks, receiveItemPrepaidOrders, receiveItemRingPulls, transferIns, lendingStocks, invoices, exchangeRingPulls, transferOuts)
                 transactions.forEach(function (transaction) {
@@ -42,8 +52,8 @@ export default class ClosingStock {
     }
 
     //enter bill (type in)
-    static lookupEnterBills({inventoryDate, closingStockDate}) {
-        let selector = {enterBillDate: {$lte: inventoryDate}};
+    static lookupEnterBills({inventoryDate, closingStockDate, branchId}) {
+        let selector = {branchId, enterBillDate: {$lte: inventoryDate}};
         if (closingStockDate) {
             selector.enterBillDate.$gte = closingStockDate;
         }
@@ -57,8 +67,8 @@ export default class ClosingStock {
     }
 
     //receive item type lending stock (type in )
-    static lookupReceiveItemLendingStocks({inventoryDate, closingStockDate}) {
-        let selector = {receiveItemDate: {$lte: inventoryDate}, type: 'LendingStock'};
+    static lookupReceiveItemLendingStocks({inventoryDate, closingStockDate, branchId}) {
+        let selector = {branchId, receiveItemDate: {$lte: inventoryDate}, type: 'LendingStock'};
         if (closingStockDate) {
             selector.receiveItemDate.$gte = closingStockDate;
         }
@@ -72,8 +82,8 @@ export default class ClosingStock {
     }
 
     //receive item prepaid order (type in )
-    static lookupReceiveItemPrepaidOrders({inventoryDate, closingStockDate}) {
-        let selector = {receiveItemDate: {$lte: inventoryDate}, type: 'PrepaidOrder'};
+    static lookupReceiveItemPrepaidOrders({branchId, inventoryDate, closingStockDate}) {
+        let selector = {branchId, receiveItemDate: {$lte: inventoryDate}, type: 'PrepaidOrder'};
         if (closingStockDate) {
             selector.receiveItemDate.$gte = closingStockDate;
         }
@@ -87,8 +97,8 @@ export default class ClosingStock {
     }
 
     //receive item company exchange ring pull (type in )
-    static lookupReceiveItemRingPulls({inventoryDate, closingStockDate}) {
-        let selector = {receiveItemDate: {$lte: inventoryDate}, type: 'CompanyExchangeRingPull'};
+    static lookupReceiveItemRingPulls({branchId, inventoryDate, closingStockDate}) {
+        let selector = {branchId, receiveItemDate: {$lte: inventoryDate}, type: 'CompanyExchangeRingPull'};
         if (closingStockDate) {
             selector.receiveItemDate.$gte = closingStockDate;
         }
@@ -102,7 +112,7 @@ export default class ClosingStock {
     }
 
     //Location Transfer In (type in )
-    static lookupLocationTransferIns({inventoryDate, closingStockDate, branchId}) {
+    static lookupLocationTransferIns({branchId, inventoryDate, closingStockDate}) {
         let selector = {locationTransferDate: {$lte: inventoryDate}, toBranchId: branchId, status: 'closed'};
         if (closingStockDate) {
             selector.locationTransferDate.$gte = closingStockDate;
@@ -117,8 +127,8 @@ export default class ClosingStock {
     }
 
     //lending stock (type out)
-    static lookupLendingStocks({inventoryDate, closingStockDate}) {
-        let selector = {lendingStockDate: {$lte: inventoryDate}};
+    static lookupLendingStocks({branchId, inventoryDate, closingStockDate}) {
+        let selector = {branchId, lendingStockDate: {$lte: inventoryDate}};
         if (closingStockDate) {
             selector.lendingStockDate.$gte = closingStockDate;
         }
@@ -132,11 +142,12 @@ export default class ClosingStock {
     }
 
     //invoices (type out)
-    static lookupInvoices({inventoryDate, closingStockDate}) {
-        let selector = {invoiceDate: {$lte: inventoryDate}};
+    static lookupInvoices({branchId, inventoryDate, closingStockDate}) {
+        let selector = {branchId, invoiceDate: {$lte: inventoryDate}};
         if (closingStockDate) {
             selector.invoiceDate.$gte = closingStockDate;
         }
+        console.log(selector);
         return Invoices.aggregate(this.closingStockQuery({
             selector: selector,
             date: '$invoiceDate',
@@ -147,8 +158,8 @@ export default class ClosingStock {
     }
 
     //exchange Ring pull (type out)
-    static lookupExchangeRingPulls({inventoryDate, closingStockDate}) {
-        let selector = {exchangeRingPullDate: {$lte: inventoryDate}};
+    static lookupExchangeRingPulls({branchId, inventoryDate, closingStockDate}) {
+        let selector = {branchId, exchangeRingPullDate: {$lte: inventoryDate}};
         if (closingStockDate) {
             selector.exchangeRingPullDate.$gte = closingStockDate;
         }
@@ -162,8 +173,12 @@ export default class ClosingStock {
     }
 
     //Location Transfer Out (type out )
-    static lookupLocationTransferOut({inventoryDate, closingStockDate, branchId}) {
-        let selector = {locationTransferDate: {$lte: inventoryDate}, fromBranchId: branchId, status: 'closed'};
+    static lookupLocationTransferOut({branchId, inventoryDate, closingStockDate}) {
+        let selector = {
+            locationTransferDate: {$lte: inventoryDate},
+            fromBranchId: branchId,
+            status: 'closed'
+        };
         if (closingStockDate) {
             selector.locationTransferDate.$gte = closingStockDate;
         }
@@ -245,45 +260,82 @@ export default class ClosingStock {
     }
 
     static insertClosingStock(transaction, branchId) {
-        let closingStock = ClosingStockBalance.findOne({closingDateString: transaction.date});
-        let stockIn = [];
-        let stockOut = [];
+        let items = [];
 
-        if (closingStock) {
-            
-        } else {
-            let balance = 0;
-            transaction.items.forEach(function (item) {
-                if (transaction.type == 'in') {
-                    let stockInObj = stockIn.find(x => x.itemId == item.itemId);
-                    if (stockInObj) {
-                        stockInObj.transactions.push(item);
-                    } else {
-                        stockIn.push({itemId: item.itemId, transactions: [item]})
-                    }
-                    balance += item.qty;
-                } else {
-                    let stockOutObj = stockOut.find(x => x.itemId == item.itemId);
-                    if (stockOutObj) {
-                        stockOutObj.transactions.push(item);
-                    } else {
-                        stockOut.push({itemId: item.itemId, transactions: [item]})
-
-                    }
-                    balance -= item.qty
+        transaction.items.forEach(function (item) {
+            let closingStock = ClosingStockBalance.findOne({branchId, closingDateString: transaction.date});
+            let lastClosingStock = ClosingStockBalance.findOne({
+                branchId,
+                _id: {$nin: [closingStock && closingStock._id]}
+            }, {
+                sort: {
+                    closingDateString: -1
                 }
             });
-            ClosingStockBalance.insert(
-                {
-                    closingDateString: transaction.date,
-                    closingDate: moment(transaction.date).toDate(),
-                    stockIn: stockIn,
-                    stockOut: stockOut,
-                    branchId: branchId,
-                    balance: balance
+            let balance = 0;
+            if (lastClosingStock) {
+                let currentMapItem = lastClosingStock.items.find(x => x.itemId == item.itemId);
+                currentMapItem ? balance = currentMapItem.balance : balance = 0
+                console.log(balance)
+            }
+            if (!closingStock) {
+                if (transaction.type == 'in') {
+                    items.push({itemDoc: item.itemDoc, itemId: item.itemId, balance: item.qty + balance});
+                } else {
+                    items.push({itemDoc: item.itemDoc, itemId: item.itemId, balance: balance - item.qty});
                 }
-            )
+                ClosingStock.insertNonExistClosingStockTransaction(transaction.date, branchId, items);
+            } else {
+                let match = {branchId: branchId, closingDateString: transaction.date}
+                let selector = {};
+                let existItem = closingStock.items.find(x => x.itemId == item.itemId);
+                if (transaction.type == 'in') {
+                    if (existItem) {
+                        match['items.itemId'] = item.itemId;
+                        selector.$inc = {};
+                        selector.$inc['items.$.balance'] = item.qty
+                    } else {
+                        selector.$push = {};
+                        selector.$push['items'] = {
+                            itemId: item.itemId,
+                            itemDoc: item.itemDoc,
+                            balance: item.qty + balance
+                        }
+                    }
+
+                } else {
+                    if (existItem) {
+                        match['items.itemId'] = item.itemId;
+                        selector.$inc = {};
+                        selector.$inc['items.$.balance'] = -item.qty
+                    } else {
+                        selector.$push = {};
+                        selector.$push['items'] = {
+                            itemId: item.itemId,
+                            itemDoc: item.itemDoc,
+                            balance: balance - item.qty
+                        }
+                    }
+
+                }
+                ClosingStock.updateExistClosingStockTransaction({match, selector});
+            }
+        });
+
+    }
+
+    static insertNonExistClosingStockTransaction(stringDate, branchId, items) {
+        let selector = {
+            closingDateString: stringDate,
+            closingDate: moment(stringDate).toDate(),
+            branchId: branchId,
+            items: items
         }
+        ClosingStockBalance.insert(selector)
+    }
+
+    static updateExistClosingStockTransaction({match, selector}) {
+        ClosingStockBalance.update(match, selector);
     }
 
 };

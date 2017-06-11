@@ -10,24 +10,15 @@ ClosingStockBalance.schema = new SimpleSchema({
         type: Date,
         index: true,
     },
-    stockIn:{
+    items: {
         type: [Object],
     },
-    'stockIn.$': {
-        type: Object,
-        blackbox: true
-    },
-    stockOut: {
-        type: [Object],
-        blackbox: true
-    },
-    'stockOut.$': {
+    'items.$': {
         type: Object,
         blackbox: true
     },
     branchId: {
-        type: String,
-        index: true
+        type: String
     }
 });
 
