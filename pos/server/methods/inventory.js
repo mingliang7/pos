@@ -1,5 +1,8 @@
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
+import {ExchangeRingPulls} from '../../imports/api/collections/exchangeRingPull.js'
 import {EnterBills} from '../../imports/api/collections/enterBill.js'
+import {ReceiveItems} from '../../imports/api/collections/receiveItem.js'
+import {LendingStocks} from '../../imports/api/collections/lendingStock.js'
 import {Invoices} from '../../imports/api/collections/invoice.js'
 import {LocationTransfers} from '../../imports/api/collections/locationTransfer.js'
 import {Item} from '../../imports/api/collections/item.js'
@@ -9,6 +12,8 @@ import {AccountIntegrationSetting} from '../../imports/api/collections/accountIn
 import {AccountMapping} from '../../imports/api/collections/accountMapping'
 import {Branch} from '../../../core/imports/api/collections/branch.js'
 import {TransferMoney} from '../../imports/api/collections/transferMoney.js'
+import {StockLocations} from '../../imports/api/collections/stockLocation.js'
+import {InventoryDates} from '../../imports/api/collections/inventoryDate.js'
 import {idGenerator} from 'meteor/theara:id-generator';
 import 'meteor/matb33:collection-hooks';
 import StockFunction from '../../imports/api/libs/stock';
@@ -171,7 +176,7 @@ Meteor.methods({
             setObj.pending = false;
             setObj.status = "closed";
             setObj.toUserId = userId;
-            setObj.journalDate=lDoc.date;
+            setObj.journalDate = lDoc.date;
             LocationTransfers.update(
                 locationTransferId,
                 {$set: setObj}
@@ -568,21 +573,21 @@ Meteor.methods({
             throw new Meteor.Error("not-authorized");
         }
         let locationTransfers = LocationTransfers.find({status: "closed", pending: false});
-        let i=1;
+        let i = 1;
         locationTransfers.forEach(function (locationTransfer) {
-            console.log('LT: '+i);
+            console.log('LT: ' + i);
             i++;
             //Account Integration
             let setting = AccountIntegrationSetting.findOne();
             if (setting && setting.integrate) {
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
                 let data1 = {};
-                data1.refId=locationTransfer._id;
+                data1.refId = locationTransfer._id;
                 data1.transaction = [];
                 data1.branchId = locationTransfer.fromBranchId;
                 data1.refFrom = "LocationTransferFrom";
-                data1.journalDate=locationTransfer.journalDate;
-                data1.currencyId="USD";
+                data1.journalDate = locationTransfer.journalDate;
+                data1.currencyId = "USD";
                 data1.transaction.push({
                     account: inventoryChartAccount.account,
                     dr: 0,
@@ -592,12 +597,12 @@ Meteor.methods({
                 Meteor.call('api_journalUpdate', data1);
 
                 let data2 = {};
-                data1.refId=locationTransfer._id;
+                data1.refId = locationTransfer._id;
                 data2.transaction = [];
                 data2.branchId = locationTransfer.toBranchId;
                 data2.refFrom = "LocationTransferTo";
-                data2.journalDate=locationTransfer.journalDate;
-                data2.currencyId="USD";
+                data2.journalDate = locationTransfer.journalDate;
+                data2.currencyId = "USD";
                 data2.transaction.push({
                     account: inventoryChartAccount.account,
                     dr: locationTransfer.total,
@@ -615,56 +620,56 @@ Meteor.methods({
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
-        let ringPullTransfers=RingPullInventories.find({status: "closed",pending: false});
-        let i=1;
+        let ringPullTransfers = RingPullInventories.find({status: "closed", pending: false});
+        let i = 1;
         ringPullTransfers.forEach(function (doc) {
-                console.log('RPT: '+i);
-                i++;
-                let fromBranchName = Branch.findOne(doc.fromBranchId).khName;
-                let toBranchName = Branch.findOne(doc.toBranchId).khName;
-                let des = "ផ្ទេរក្រវិលពីសាខាៈ " + fromBranchName + " ទៅ " + toBranchName;
-                doc.des = doc.des == "" || doc.des == null ? des : doc.des;
-                let setting = AccountIntegrationSetting.findOne();
-                if (setting && setting.integrate) {
+            console.log('RPT: ' + i);
+            i++;
+            let fromBranchName = Branch.findOne(doc.fromBranchId).khName;
+            let toBranchName = Branch.findOne(doc.toBranchId).khName;
+            let des = "ផ្ទេរក្រវិលពីសាខាៈ " + fromBranchName + " ទៅ " + toBranchName;
+            doc.des = doc.des == "" || doc.des == null ? des : doc.des;
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
 
-                    let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
-                    let data1 = doc;
-                    data1.transaction = [];
-                    data1.branchId = doc.fromBranchId;
-                    data1.type = "RingPullTransferFrom";
-                    data1.journalDate = moment().toDate();
-                    data1.transaction.push({
-                        account: ringPullChartAccount.account,
-                        dr: 0,
-                        cr: data1.total,
-                        drcr: -data1.total
-                    });
-                    Meteor.call('insertAccountJournal', data1);
+                let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
+                let data1 = doc;
+                data1.transaction = [];
+                data1.branchId = doc.fromBranchId;
+                data1.type = "RingPullTransferFrom";
+                data1.journalDate = moment().toDate();
+                data1.transaction.push({
+                    account: ringPullChartAccount.account,
+                    dr: 0,
+                    cr: data1.total,
+                    drcr: -data1.total
+                });
+                Meteor.call('insertAccountJournal', data1);
 
-                    let data2 = doc;
-                    data2.transaction = [];
-                    data2.branchId = doc.toBranchId;
-                    data2.type = "RingPullTransferTo";
-                    data2.journalDate = moment().toDate();
-                    data2.transaction.push({
-                        account: ringPullChartAccount.account,
-                        dr: data2.total,
-                        cr: 0,
-                        drcr: data2.total
-                    });
-                    Meteor.call('insertAccountJournal', data2);
-                }
-                //End Account Integration
-            });
+                let data2 = doc;
+                data2.transaction = [];
+                data2.branchId = doc.toBranchId;
+                data2.type = "RingPullTransferTo";
+                data2.journalDate = moment().toDate();
+                data2.transaction.push({
+                    account: ringPullChartAccount.account,
+                    dr: data2.total,
+                    cr: 0,
+                    drcr: data2.total
+                });
+                Meteor.call('insertAccountJournal', data2);
+            }
+            //End Account Integration
+        });
     },
     correctAccountTransferMoney(){
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
-        let moneyTransfers=TransferMoney.find({status: "closed",pending: false});
-        let i=1;
+        let moneyTransfers = TransferMoney.find({status: "closed", pending: false});
+        let i = 1;
         moneyTransfers.forEach(function (doc) {
-            console.log('MT: '+i);
+            console.log('MT: ' + i);
             i++;
             let setting = AccountIntegrationSetting.findOne();
             if (setting && setting.integrate) {
@@ -705,9 +710,233 @@ Meteor.methods({
         });
 
 
+    },
+    getTransactions(branchId, doc){
+
+        let transaction = {};
+        let branchIds = [branchId];
+        let date = moment(doc.date).startOf('days').toDate();
+        let locationTransfers = LocationTransfers.find({
+            $or: [{journalDate: {$gte: date}, fromBranchId: branchId}, {
+                journalDate: {$gte: date},
+                toBranchId: branchId
+            }]
+        });
+
+        if (locationTransfers.count() > 0) {
+            locationTransfers.forEach(function (locationTransfer) {
+                if (branchIds.indexOf(locationTransfer.fromBranchId) == -1) {
+                    branchIds.push(locationTransfer.fromBranchId);
+                }
+                if (branchIds.indexOf(locationTransfer.toBranchId) == -1) {
+                    branchIds.push(locationTransfer.toBranchId);
+                }
+            });
+            transaction.locationTransfers = locationTransfers.fetch();
+        }
+
+
+        let invoices = Invoices.find({invoiceDate: {$gte: date}, branchId: {$in: branchIds}});
+        if (invoices.count() > 0) {
+            transaction.invoices = invoices.fetch();
+        }
+        let enterBills = EnterBills.find({enterBillDate: {$gte: date}, branchId: {$in: branchIds}});
+        if (enterBills.count() > 0) {
+            transaction.enterBills = enterBills.fetch();
+        }
+        let lendingStocks = LendingStocks.find({lendingStockDate: {$gte: date}, branchId: {$in: branchIds}});
+        if (lendingStocks.count() > 0) {
+            transaction.lendingStocks = lendingStocks.fetch();
+        }
+        let receiveItems = ReceiveItems.find({receiveItemDate: {$gte: date}, branchId: {$in: branchIds}});
+        if (receiveItems.count() > 0) {
+            transaction.receiveItems = receiveItems.fetch();
+        }
+        let exchangeRingPulls = ExchangeRingPulls.find({
+            exchangeRingPullDate: {$gte: date},
+            branchId: {$in: branchIds}
+        });
+        if (exchangeRingPulls.count() > 0) {
+            transaction.exchangeRingPulls = exchangeRingPulls.fetch();
+        }
+        return transaction;
+
+
+    },
+    removeTransactions(branchId, doc){
+        //  Meteor.defer(function () {
+        let transaction = {};
+        let branchIds = [branchId];
+        let date = moment(doc.date).startOf('days').toDate();
+        let locationTransfers = LocationTransfers.find({
+            $or: [{journalDate: {$gte: date}, fromBranchId: branchId},
+                {journalDate: {$gte: date}, toBranchId: branchId}]
+        });
+        let locationTransactionIds = [];
+        if (locationTransfers.count() > 0) {
+            locationTransfers.forEach(function (locationTransfer) {
+                locationTransactionIds.push(locationTransfer._id);
+                if (branchIds.indexOf(locationTransfer.fromBranchId) == -1) {
+                    branchIds.push(locationTransfer.fromBranchId);
+                }
+                if (branchIds.indexOf(locationTransfer.toBranchId) == -1) {
+                    branchIds.push(locationTransfer.toBranchId);
+                }
+            });
+            transaction.locationTransfers = locationTransfers.fetch();
+        }
+        let invoices = Invoices.find({invoiceDate: {$gte: date}, branchId: {$in: branchIds}});
+        let enterBills = EnterBills.find({enterBillDate: {$gte: date}, branchId: {$in: branchIds}});
+        let lendingStocks = LendingStocks.find({lendingStockDate: {$gte: date}, branchId: {$in: branchIds}});
+        let receiveItems = ReceiveItems.find({receiveItemDate: {$gte: date}, branchId: {$in: branchIds}});
+        let exchangeRingPulls = ExchangeRingPulls.find({
+            exchangeRingPullDate: {$gte: date},
+            branchId: {$in: branchIds}
+        });
+
+        let setting = AccountIntegrationSetting.findOne();
+        if (setting && setting.integrate) {
+            if (locationTransfers.count() > 0) {
+                locationTransfers.forEach(function (obj) {
+                    let data = {_id: obj._id, type: 'LocationTransfer'};
+                    Meteor.call('removeAccountJournal', data);
+                });
+            }
+            if (invoices.count() > 0) {
+                invoices.forEach(function (obj) {
+                    let data = {_id: obj._id, type: 'Invoice'};
+                    Meteor.call('removeAccountJournal', data);
+                });
+            }
+            if (enterBills.count() > 0) {
+                enterBills.forEach(function (obj) {
+                    let data = {_id: obj._id, type: 'EnterBill'};
+                    Meteor.call('removeAccountJournal', data);
+                });
+            }
+            if (lendingStocks.count() > 0) {
+                lendingStocks.forEach(function (obj) {
+                    let data = {_id: obj._id, type: 'LendingStock'};
+                    Meteor.call('removeAccountJournal', data);
+                });
+            }
+            if (receiveItems.count() > 0) {
+                receiveItems.forEach(function (obj) {
+                    let type = obj.type == 'CompanyExchangeRingPull' ? "RingPull-RI" : obj.type + "-RI";
+                    let data = {_id: obj._id, type: type};
+                    Meteor.call('removeAccountJournal', data);
+                });
+            }
+            if (exchangeRingPulls.count() > 0) {
+                exchangeRingPulls.forEach(function (obj) {
+                    let data = {_id: obj._id, type: 'ExchangeRingPull'};
+                    Meteor.call('removeAccountJournal', data);
+                });
+            }
+        }
+
+        LocationTransfers.direct.remove({
+            $or: [{journalDate: {$gte: date}, fromBranchId: branchId},
+                {journalDate: {$gte: date}, toBranchId: branchId}]
+        });
+        Invoices.direct.remove({invoiceDate: {$gte: date}, branchId: {$in: branchIds}});
+        EnterBills.direct.remove({enterBillDate: {$gte: date}, branchId: {$in: branchIds}});
+        LendingStocks.direct.remove({lendingStockDate: {$gte: date}, branchId: {$in: branchIds}});
+        ReceiveItems.direct.remove({receiveItemDate: {$gte: date}, branchId: {$in: branchIds}});
+        ExchangeRingPulls.direct.remove({
+            exchangeRingPullDate: {$gte: date},
+            branchId: {$in: branchIds}
+        });
+        AverageInventories.direct.remove({inventoryDate: {$gte: date}, branchId: {$in: branchIds}});
+        let branches = Branch.find({}).fetch();
+        let stockLocations = StockLocations.find({}).fetch();
+        let items = Item.find({}).fetch();
+
+        branches.forEach(function (branch) {
+            stockLocations.forEach(function (stockLocation) {
+
+                let inventoryForDate = AverageInventories.findOne({
+                    branchId: branch._id,
+                    stockLocationId: stockLocation._id
+                }, {sort: {_id: -1}});
+                console.log(inventoryForDate);
+                if (inventoryForDate) {
+                    InventoryDates.direct.update(
+                        {branchId: branch._id, stockLocationId: stockLocation._id},
+                        {$set: {inventoryDate: inventoryForDate.inventoryDate}},
+                        {upsert: true}
+                    );
+                }
+
+                items.forEach(function (item) {
+                    let inventory = AverageInventories.findOne({
+                        branchId: branch._id,
+                        stockLocationId: stockLocation._id,
+                        itemId: item._id
+                    }, {sort: {_id: -1}});
+                    if (inventory) {
+                        let setModifier = {$set: {}};
+                        setModifier.$set['qtyOnHand.' + stockLocation._id] = inventory.remainQty;
+                        Item.direct.update(item._id, setModifier);
+                    }
+                })
+            })
+        });
+        return getTransactionsAfterRemove(branchId, doc);
+        //});
     }
+
 });
 
+function getTransactionsAfterRemove(branchId, doc) {
+
+    let transaction = {};
+    let branchIds = [branchId];
+    let date = moment(doc.date).startOf('days').toDate();
+    let locationTransfers = LocationTransfers.find({
+        $or: [{journalDate: {$gte: date}, fromBranchId: branchId}, {journalDate: {$gte: date}, toBranchId: branchId}]
+    });
+
+    if (locationTransfers.count() > 0) {
+        locationTransfers.forEach(function (locationTransfer) {
+            if (branchIds.indexOf(locationTransfer.fromBranchId) == -1) {
+                branchIds.push(locationTransfer.fromBranchId);
+            }
+            if (branchIds.indexOf(locationTransfer.toBranchId) == -1) {
+                branchIds.push(locationTransfer.toBranchId);
+            }
+        });
+        transaction.locationTransfers = locationTransfers.fetch();
+    }
+
+
+    let invoices = Invoices.find({invoiceDate: {$gte: date}, branchId: {$in: branchIds}});
+    if (invoices.count() > 0) {
+        transaction.invoices = invoices.fetch();
+    }
+    let enterBills = EnterBills.find({enterBillDate: {$gte: date}, branchId: {$in: branchIds}});
+    if (enterBills.count() > 0) {
+        transaction.enterBills = enterBills.fetch();
+    }
+    let lendingStocks = LendingStocks.find({lendingStockDate: {$gte: date}, branchId: {$in: branchIds}});
+    if (lendingStocks.count() > 0) {
+        transaction.lendingStocks = lendingStocks.fetch();
+    }
+    let receiveItems = ReceiveItems.find({receiveItemDate: {$gte: date}, branchId: {$in: branchIds}});
+    if (receiveItems.count() > 0) {
+        transaction.receiveItems = receiveItems.fetch();
+    }
+    let exchangeRingPulls = ExchangeRingPulls.find({
+        exchangeRingPullDate: {$gte: date},
+        branchId: {$in: branchIds}
+    });
+    if (exchangeRingPulls.count() > 0) {
+        transaction.exchangeRingPulls = exchangeRingPulls.fetch();
+    }
+    return transaction;
+
+
+}
 
 function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
     let lastPurchasePrice = 0;

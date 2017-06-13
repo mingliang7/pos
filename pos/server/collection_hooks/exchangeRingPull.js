@@ -15,9 +15,9 @@ ExchangeRingPulls.before.insert(function (userId, doc) {
         throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
-    let result=StockFunction.checkStockByLocation(doc.stockLocationId,doc.items);
-    if(!result.isEnoughStock){
-        throw new Meteor.Error( result.message);
+    let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
+    if (!result.isEnoughStock) {
+        throw new Meteor.Error(result.message);
     }
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
@@ -25,20 +25,20 @@ ExchangeRingPulls.before.insert(function (userId, doc) {
 });
 
 ExchangeRingPulls.before.update(function (userId, doc, fieldNames, modifier, options) {
-  /*  let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.exchangeRingPullDate < inventoryDateOld) {
         throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
     modifier = modifier == null ? {} : modifier;
-    modifier.$set.branchId=modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
-    modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
+    modifier.$set.branchId = modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
+    modifier.$set.stockLocationId = modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.exchangeRingPullDate < inventoryDate) {
         throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
-    }*/
+    }
     let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
     let data = {stockLocationId: doc.stockLocationId, items: doc.items};
@@ -133,10 +133,10 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
     });
 });
 ExchangeRingPulls.after.update(function (userId, doc) {
-    Meteor.defer(()=> {
+    Meteor.defer(() => {
         let preDoc = this.previous;
         Meteor._sleepForMs(200);
-        returnToInventory(preDoc, 'exchangeRingPull-return',doc.exchangeRingPullDate);
+        returnToInventory(preDoc, 'exchangeRingPull-return', doc.exchangeRingPullDate);
         //Account Integration
         let total = 0;
         doc.items.forEach(function (item) {
@@ -193,7 +193,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
 ExchangeRingPulls.after.remove(function (userId, doc) {
     Meteor.defer(function () {
         Meteor._sleepForMs(200);
-        returnToInventory(doc, 'exchangeRingPull-return',doc.exchangeRingPullDate);
+        returnToInventory(doc, 'exchangeRingPull-return', doc.exchangeRingPullDate);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -255,7 +255,7 @@ function ExchangeRingPullManageStock(exchangeRingPull) {
 
 }
 //update inventory
-function returnToInventory(exchangeRingPull, type,inventoryDate) {
+function returnToInventory(exchangeRingPull, type, inventoryDate) {
     //---Open Inventory type block "Average Inventory"---
     // let exchangeRingPull = Invoices.findOne(exchangeRingPullId);
     exchangeRingPull.items.forEach(function (item) {
@@ -294,9 +294,9 @@ Meteor.methods({
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
-        let i=1;
+        let i = 1;
 
-        let exchangeRingPulls=ExchangeRingPulls.find({});
+        let exchangeRingPulls = ExchangeRingPulls.find({});
         exchangeRingPulls.forEach(function (doc) {
             console.log(i);
             i++;

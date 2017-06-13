@@ -697,3 +697,17 @@ PosRoutes.route('/target-item', {
     }
 
 });
+
+import '../imports/ui/pages/removeTransaction';
+PosRoutes.route('/removeTransaction', {
+    name: 'pos.removeTransaction',
+    title: 'Remove Transaction',
+    action: function (params, queryParams) {
+        Layout.main('Pos_removeTransaction');
+    },
+    breadcrumb: {
+        title: 'Remove Transaction',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
