@@ -32,9 +32,10 @@ export const stockDetailReportMethod = new ValidatedMethod({
                 data.title.date = moment(date[0]).format('DD-MM-YYYY') + ' - ' + moment(date[1]).format('DD-MM-YYYY');
                 selector.inventoryDate = {
                     $gte: moment(date[0]).startOf('days').toDate(),
-                    $lte: moment(data[1]).endOf('days').toDate()
+                    $lte: moment(date[1]).endOf('days').toDate()
                 };
             }
+            console.log(selector.inventoryDate);
             if (params.branch) {
                 let branch = '';
                 let branchArr = params.branch.split(',');

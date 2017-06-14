@@ -13,7 +13,7 @@ export default class ClosingStock {
             let branchId = branch._id;
             let closingStockBalance = ClosingStockBalance.findOne({branchId: branch._id}, {sort: {closingDate: -1}});
             let inventory = InventoryDates.findOne({branchId: branch._id});
-            let closingStockDate = closingStockBalance ? moment(closingStockBalance.closingDate).startOf('days').toDate() : null;
+            let closingStockDate = closingStockBalance ? moment(closingStockBalance.closingDate).add(1, 'days').startOf('days').toDate() : null;
             if (inventory) {
                 let inventoryDate = moment(inventory.inventoryDate).subtract(1, 'days').endOf('days').toDate();
                 //--------------Stock In--------------------
@@ -44,9 +44,33 @@ export default class ClosingStock {
                 });
                 let transferOuts = ClosingStock.lookupLocationTransferOut({inventoryDate, closingStockDate, branchId});
                 let transactions = _.union(enterBills, receiveItemLendingStocks, receiveItemPrepaidOrders, receiveItemRingPulls, transferIns, lendingStocks, invoices, exchangeRingPulls, transferOuts)
+                let transactionObj = {};
+                let transactionArr = [];
+                let transactionArrSort = [];
                 transactions.forEach(function (transaction) {
+                    transaction.items.forEach(function (item) {
+                        if (_.isUndefined(transactionObj[transaction.date])) {
+                            transactionObj[transaction.date] = {};
+                            transactionObj[transaction.date] = {
+                                date: transaction.date,
+                                items: [item]
+                            };
+                        } else {
+                            transactionObj[transaction.date].items.push(item)
+                        }
+                    });
+
+                });
+                for (let k in transactionObj) {
+                    transactionArr.push(transactionObj[k]);
+                }
+                transactionArrSort = _.sortBy(transactionArr, function (obj) {
+                    return obj.date
+                });
+                transactionArrSort.forEach(function (transaction) {
                     ClosingStock.insertClosingStock(transaction, branchId);
                 });
+                //caculate item balance
             }
         });
     }
@@ -147,7 +171,6 @@ export default class ClosingStock {
         if (closingStockDate) {
             selector.invoiceDate.$gte = closingStockDate;
         }
-        console.log(selector);
         return Invoices.aggregate(this.closingStockQuery({
             selector: selector,
             date: '$invoiceDate',
@@ -227,8 +250,8 @@ export default class ClosingStock {
                 $project: {
                     _id: 1,
                     date: {$dateToString: {format: "%Y-%m-%d", date: "$date"}},
-                    type: {$ifNull: ["$fake", type]},
                     item: {
+                        type: {$ifNull: ["$fake", type]},
                         itemId: '$itemId',
                         itemDoc: '$itemDoc',
                         qty: '$qty',
@@ -242,7 +265,6 @@ export default class ClosingStock {
                 $group: {
                     _id: {day: '$_id.day', month: '$_id.month', year: '$_id.year'},
                     date: {$last: '$date'},
-                    type: {$last: '$type'},
                     items: {
                         $push: '$item'
                     }
@@ -260,82 +282,105 @@ export default class ClosingStock {
     }
 
     static insertClosingStock(transaction, branchId) {
-        let items = [];
-
-        transaction.items.forEach(function (item) {
-            let closingStock = ClosingStockBalance.findOne({branchId, closingDateString: transaction.date});
-            let lastClosingStock = ClosingStockBalance.findOne({
+        let lastClosingStock = ClosingStockBalance.findOne({
+            branchId,
+        }, {sort: {closingDate: -1}});
+        if (lastClosingStock) {
+            console.log(lastClosingStock);
+            console.log('inside last closing stock');
+            ClosingStockBalance.insert({
                 branchId,
-                _id: {$nin: [closingStock && closingStock._id]}
-            }, {
-                sort: {
-                    closingDateString: -1
+                closingDate: moment(transaction.date).toDate(),
+                closingDateString: transaction.date,
+                items: lastClosingStock.items
+            }, function (er, id) {
+                transaction.items.forEach(function (item) {
+                    let closingStock = ClosingStockBalance.findOne({_id: id});
+                    let existItem = closingStock.items.find(o => o.itemId == item.itemId);
+                    if (existItem) {
+                        let balance = 0;
+                        if (item.type == 'in') {
+                            ClosingStockBalance.update({
+                                _id: id,
+                                'items.itemId': item.itemId
+                            }, {$set: {'items.$.balance': existItem.balance + item.qty}});
+                        } else {
+                            ClosingStockBalance.update({
+                                _id: id,
+                                'items.itemId': item.itemId
+                            }, {$set: {'items.$.balance': existItem.balance - item.qty}});
+                        }
+
+                    } else {
+                        let balance = 0;
+                        if (item.type == 'in') {
+                            balance = item.qty
+                        } else {
+                            balance = -item.qty
+                        }
+                        ClosingStockBalance.update({
+                            _id: id
+                        }, {$push: {items: {itemId: item.itemId, qty: item.qty, balance: balance}}})
+                    }
+
+                });
+            })
+        } else {
+            transaction.items.forEach(function (item) {
+                let closingStock = ClosingStockBalance.findOne({branchId, closingDateString: transaction.date});
+                if (closingStock) {
+                    let existItem = closingStock.items.find(o => o.itemId == item.itemId);
+                    if (existItem) {
+                        let balance = 0;
+                        if (item.type == 'in') {
+                            ClosingStockBalance.update({
+                                _id: closingStock._id,
+                                'items.itemId': item.itemId
+                            }, {$set: {'items.$.balance': existItem.balance + item.qty}});
+                        } else {
+                            ClosingStockBalance.update({
+                                _id: closingStock._id,
+                                'items.itemId': item.itemId
+                            }, {$set: {'items.$.balance': existItem.balance - item.qty}});
+                        }
+
+                    } else {
+                        let balance = 0;
+                        if (item.type == 'in') {
+                            balance = item.qty
+                        } else {
+                            balance = -item.qty
+                        }
+                        ClosingStockBalance.update({
+                            _id: closingStock._id
+                        }, {$push: {items: {itemId: item.itemId, qty: item.qty, balance: balance}}})
+                    }
+                } else {
+                    if (item.type == 'in') {
+                        item.balance = item.qty;
+                    } else {
+                        item.balance = -item.qty;
+                    }
+                    ClosingStock.insertNonExistClosingStockTransaction(transaction.date, branchId, item);
                 }
             });
-            let balance = 0;
-            if (lastClosingStock) {
-                let currentMapItem = lastClosingStock.items.find(x => x.itemId == item.itemId);
-                currentMapItem ? balance = currentMapItem.balance : balance = 0
-                console.log(balance)
-            }
-            if (!closingStock) {
-                if (transaction.type == 'in') {
-                    items.push({itemDoc: item.itemDoc, itemId: item.itemId, balance: item.qty + balance});
-                } else {
-                    items.push({itemDoc: item.itemDoc, itemId: item.itemId, balance: balance - item.qty});
-                }
-                ClosingStock.insertNonExistClosingStockTransaction(transaction.date, branchId, items);
-            } else {
-                let match = {branchId: branchId, closingDateString: transaction.date}
-                let selector = {};
-                let existItem = closingStock.items.find(x => x.itemId == item.itemId);
-                if (transaction.type == 'in') {
-                    if (existItem) {
-                        match['items.itemId'] = item.itemId;
-                        selector.$inc = {};
-                        selector.$inc['items.$.balance'] = item.qty
-                    } else {
-                        selector.$push = {};
-                        selector.$push['items'] = {
-                            itemId: item.itemId,
-                            itemDoc: item.itemDoc,
-                            balance: item.qty + balance
-                        }
-                    }
 
-                } else {
-                    if (existItem) {
-                        match['items.itemId'] = item.itemId;
-                        selector.$inc = {};
-                        selector.$inc['items.$.balance'] = -item.qty
-                    } else {
-                        selector.$push = {};
-                        selector.$push['items'] = {
-                            itemId: item.itemId,
-                            itemDoc: item.itemDoc,
-                            balance: balance - item.qty
-                        }
-                    }
-
-                }
-                ClosingStock.updateExistClosingStockTransaction({match, selector});
-            }
-        });
+        }
 
     }
 
-    static insertNonExistClosingStockTransaction(stringDate, branchId, items) {
+
+    static insertNonExistClosingStockTransaction(stringDate, branchId, item) {
         let selector = {
             closingDateString: stringDate,
             closingDate: moment(stringDate).toDate(),
             branchId: branchId,
-            items: items
-        }
+            items: [{itemId: item.itemId, qty: item.qty, balance: item.balance}]
+        };
         ClosingStockBalance.insert(selector)
     }
 
     static updateExistClosingStockTransaction({match, selector}) {
         ClosingStockBalance.update(match, selector);
     }
-
 };
