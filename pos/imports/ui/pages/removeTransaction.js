@@ -31,7 +31,7 @@ indexTmpl.helpers({
 });
 indexTmpl.events({
     'click .btn-get-transaction'(){
-        $.blockUI();
+
         let branchId = Session.get('currentBranch');
         let doc = {};
         doc.date = AutoForm.getFieldValue('date', 'remove-transaction-form');
@@ -40,6 +40,7 @@ indexTmpl.events({
             alertify.warning('Please input date');
             return;
         }
+        $.blockUI();
         Meteor.call('getTransactions', branchId, doc, function (err, res) {
             if (res) {
                 TransactionCollection.remove({});
