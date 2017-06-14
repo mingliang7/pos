@@ -852,14 +852,14 @@ Meteor.methods({
         let stockLocations = StockLocations.find({}).fetch();
         let items = Item.find({}).fetch();
 
+        InventoryDates.direct.remove({});
+        Item.direct.update({}, {$unset: {qtyOnHand: ''}});
         branches.forEach(function (branch) {
             stockLocations.forEach(function (stockLocation) {
-
                 let inventoryForDate = AverageInventories.findOne({
                     branchId: branch._id,
                     stockLocationId: stockLocation._id
                 }, {sort: {_id: -1}});
-                console.log(inventoryForDate);
                 if (inventoryForDate) {
                     InventoryDates.direct.update(
                         {branchId: branch._id, stockLocationId: stockLocation._id},
@@ -867,7 +867,6 @@ Meteor.methods({
                         {upsert: true}
                     );
                 }
-
                 items.forEach(function (item) {
                     let inventory = AverageInventories.findOne({
                         branchId: branch._id,
