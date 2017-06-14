@@ -201,7 +201,7 @@ newTmpl.events({
         receiveItemDate = moment(receiveItemDate).startOf('days').toDate();
         if (inventoryDate && (receiveItemDate > inventoryDate.inventoryDate)) {
             swal({
-                title: "Date is greater then current Date!",
+                title: "Date is greater then current Transaction Date!",
                 text: "Do You want to continue to process to " + moment(receiveItemDate).format('DD-MM-YYYY') +
                 "?\n"+ "Current Transaction Date is: '"+moment(inventoryDate.inventoryDate).format("DD-MM-YYYY")+"'" ,
                 type: "warning", showCancelButton: true,

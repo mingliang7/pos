@@ -35,7 +35,8 @@ indexTmpl.events({
         let branchId = Session.get('currentBranch');
         let doc = {};
         doc.date = AutoForm.getFieldValue('date', 'remove-transaction-form');
-        if (doc.date == null) {
+        let removeDate = $('[name="date"]').val();
+        if (doc.date == null || removeDate == "") {
             alertify.warning('Please input date');
             return;
         }
@@ -55,7 +56,8 @@ indexTmpl.events({
         let branchId = Session.get('currentBranch');
         let doc = {};
         doc.date = AutoForm.getFieldValue('date', 'remove-transaction-form');
-        if (doc.date == null) {
+        let removeDate = $('[name="date"]').val();
+        if (doc.date == null || removeDate == "") {
             alertify.warning('Please input date');
             return;
         }
