@@ -9,13 +9,16 @@ import {displaySuccess, displayError} from '../../../../core/client/libs/display
 import {destroyAction} from '../../../../core/client/libs/destroy-action.js';
 import {RemoveTransactionSchema} from '../../../imports/api/collections/removeTransaction.js'
 
-import {nullCollection} from '../../api/collections/tmpCollection';
+import {RemoveTransactionCollection} from '../../api/collections/tmpCollection';
 
 import './removeTransaction.html';
 let indexTmpl = Template.Pos_removeTransaction;
 indexTmpl.onCreated(function () {
 });
-let TransactionCollection = nullCollection;
+let TransactionCollection = RemoveTransactionCollection;
+indexTmpl.onDestroyed(function () {
+    TransactionCollection.remove({});
+});
 indexTmpl.onRendered(function () {
     $('.transaction-date').datepicker({
         format: 'yyyy-mm-dd'
@@ -77,6 +80,7 @@ indexTmpl.events({
             $.blockUI();
             Meteor.call('removeTransactions', branchId, doc, function (err, res) {
                 if (res) {
+                    console.log(res);
                     TransactionCollection.remove({});
                     TransactionCollection.insert(res);
                     $.unblockUI();
