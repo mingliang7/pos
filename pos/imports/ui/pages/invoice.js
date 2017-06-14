@@ -116,7 +116,7 @@ indexTmpl.events({
         let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
         let invoiceDate = moment(data.invoiceDate).startOf('days').toDate();
         if (inventoryDate && (invoiceDate < inventoryDate.inventoryDate)) {
-            alertify.warning("Can't Update. ExchangeRingPull's Date: " + moment(invoiceDate).format("DD-MM-YYYY")
+            alertify.warning("Can't Update. Invoice's Date: " + moment(invoiceDate).format("DD-MM-YYYY")
                 + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
         } else {
             Meteor.call('isInvoiceHasRelation', data._id, function (error, result) {
@@ -148,7 +148,7 @@ indexTmpl.events({
         let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
         let invoiceDate = moment(data.invoiceDate).startOf('days').toDate();
         if (inventoryDate && (invoiceDate < inventoryDate.inventoryDate)) {
-            alertify.warning("Can't Remove. ExchangeRingPull's Date: " + moment(invoiceDate).format("DD-MM-YYYY")
+            alertify.warning("Can't Remove. Invoice's Date: " + moment(invoiceDate).format("DD-MM-YYYY")
                 + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
             /*  swal({
              title: "Date is less then current Transaction Date!",

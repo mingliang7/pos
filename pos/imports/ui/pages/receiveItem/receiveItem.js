@@ -118,7 +118,7 @@ indexTmpl.events({
         let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
         let receiveItemDate = moment(data.receiveItemDate).startOf('days').toDate();
         if (inventoryDate && (receiveItemDate < inventoryDate.inventoryDate)) {
-            alertify.warning("Can't Update. ExchangeRingPull's Date: " + moment(receiveItemDate).format("DD-MM-YYYY")
+            alertify.warning("Can't Update. ReceiveItem's Date: " + moment(receiveItemDate).format("DD-MM-YYYY")
                 + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
         }else{
             itemsCollection.remove({});
@@ -130,7 +130,7 @@ indexTmpl.events({
         let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
         let receiveItemDate = moment(data.receiveItemDate).startOf('days').toDate();
         if (inventoryDate && (receiveItemDate < inventoryDate.inventoryDate)) {
-            alertify.warning("Can't Remove. ExchangeRingPull's Date: " + moment(receiveItemDate).format("DD-MM-YYYY")
+            alertify.warning("Can't Remove. ReceiveItem's Date: " + moment(receiveItemDate).format("DD-MM-YYYY")
                 + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
             /*swal({
                 title: "Date is less then current Transaction Date!",
