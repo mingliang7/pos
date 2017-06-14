@@ -114,15 +114,25 @@ indexTmpl.events({
         alertify.receiveItem(fa('plus', TAPi18n.__('pos.receiveItem.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        itemsCollection.remove({});
-        alertify.receiveItem(fa('pencil', TAPi18n.__('pos.receiveItem.title')), renderTemplate(editTmpl, this));
+        let data = this;
+        let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
+        let receiveItemDate = moment(data.receiveItemDate).startOf('days').toDate();
+        if (inventoryDate && (receiveItemDate < inventoryDate.inventoryDate)) {
+            alertify.warning("Can't Update. ExchangeRingPull's Date: " + moment(receiveItemDate).format("DD-MM-YYYY")
+                + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
+        }else{
+            itemsCollection.remove({});
+            alertify.receiveItem(fa('pencil', TAPi18n.__('pos.receiveItem.title')), renderTemplate(editTmpl, data));
+        }
     },
     'click .js-destroy' (event, instance) {
         let data = this;
         let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
         let receiveItemDate = moment(data.receiveItemDate).startOf('days').toDate();
         if (inventoryDate && (receiveItemDate < inventoryDate.inventoryDate)) {
-            swal({
+            alertify.warning("Can't Remove. ExchangeRingPull's Date: " + moment(receiveItemDate).format("DD-MM-YYYY")
+                + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
+            /*swal({
                 title: "Date is less then current Transaction Date!",
                 text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
                 type: "warning", showCancelButton: true,
@@ -140,7 +150,7 @@ indexTmpl.events({
                 if (dismiss === 'cancel') {
                     return false;
                 }
-            });
+            });*/
         }
         else {
             destroyAction(
