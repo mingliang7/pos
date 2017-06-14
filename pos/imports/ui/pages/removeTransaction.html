@@ -46,10 +46,10 @@
 
                         <tr>
                             <td>ID</td>
-                            <td>Transaction Name</td>
+                            <td>Customer/Vendor Name</td>
                             <td>Date</td>
                             <td>BranchId</td>
-                            <td>Action</td>
+                            <!--<td>Transaction Name</td>-->
                         </tr>
                         </thead>
                         <tbody>
@@ -64,7 +64,8 @@
                                     <td>{{_customer.name}}</td>
                                     <td>{{moFormat invoiceDate 'DD-MM-YYYY'}}</td>
                                     <td>{{branchId}}</td>
-                                    <td>{{numFormat  total '0,0.00'}}</td>
+                                    <!--<td>{{numFormat  total '0,0.00'}}</td>-->
+                                    <!--<td>Invoice</td>-->
                                 </tr>
                             {{/each}}
                         {{/if}}
@@ -78,7 +79,8 @@
                                     <td>{{_vendor.name}}</td>
                                     <td>{{moFormat enterBillDate 'DD-MM-YYYY'}}</td>
                                     <td>{{branchId}}</td>
-                                    <td>{{numFormat total '0,0.00'}}</td>
+                                    <!--<td>{{numFormat total '0,0.00'}}</td>-->
+                                    <!--<td>Enter Bill</td>-->
                                 </tr>
                             {{/each}}
                         {{/if}}
@@ -92,7 +94,8 @@
                                     <td>{{_vendor.name}}</td>
                                     <td>{{moFormat lendingStockDate 'DD-MM-YYYY'}}</td>
                                     <td>{{branchId}}</td>
-                                    <td>{{numFormat total '0,0.00'}}</td>
+                                    <!--<td>{{numFormat total '0,0.00'}}</td>-->
+                                    <!--<td>Lending Stock</td>-->
                                 </tr>
                             {{/each}}
                         {{/if}}
@@ -106,7 +109,7 @@
                                     <td></td>
                                     <td>{{moFormat locationTransferDate 'DD-MM-YYYY'}}</td>
                                     <td>From: {{fromBranchId}} - To: {{toBranchId}}</td>
-                                    <td>{{numFormat total '0,0.00'}}</td>
+                                    <!--<td>{{numFormat total '0,0.00'}}</td>-->
                                 </tr>
                             {{/each}}
                         {{/if}}
@@ -121,7 +124,7 @@
                                     <td>{{_customer.name}}</td>
                                     <td>{{moFormat exchangeRingPullDate 'DD-MM-YYYY'}}</td>
                                     <td>{{branchId}}</td>
-                                    <td>{{numFormat total '0,0.00'}}</td>
+                                    <!--<td>{{numFormat total '0,0.00'}}</td>-->
                                 </tr>
                             {{/each}}
                         {{/if}}
@@ -135,7 +138,7 @@
                                     <td>{{_vendor.name}}</td>
                                     <td>{{moFormat receiveItemDate 'DD-MM-YYYY'}}</td>
                                     <td>{{branchId}}</td>
-                                    <td>{{numFormat total '0,0.00'}}</td>
+                                    <!--<td>{{numFormat total '0,0.00'}}</td>-->
                                 </tr>
                             {{/each}}
                         {{/if}}
