@@ -97,20 +97,21 @@ EnterBills.after.insert(function (userId, doc) {
 
 
 EnterBills.before.update(function (userId, doc, fieldNames, modifier, options) {
-  /*  let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.enterBillDate < inventoryDateOld) {
         throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
     modifier = modifier == null ? {} : modifier;
-    modifier.$set.branchId=modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
-    modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
+    modifier.$set.branchId = modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
+    modifier.$set.stockLocationId = modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.enterBillDate < inventoryDate) {
         throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
-    }*/
+    }
+
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
@@ -392,11 +393,11 @@ function recalculatePaymentAfterRemoved({doc}) {
 
 Meteor.methods({
     correctAccountBill(){
-        let bills=EnterBills.find({});
+        let bills = EnterBills.find({});
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
-        let i=1;
+        let i = 1;
         bills.forEach(function (doc) {
             console.log(i);
             i++;

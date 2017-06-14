@@ -111,29 +111,36 @@ indexTmpl.events({
         //         }
         //     });
         // }
+
         let data = this;
-        Meteor.call('isInvoiceHasRelation', data._id, function (error, result) {
-            if (error) {
-                alertify.error(error.message);
-            } else {
-                if (result) {
-                    let msg = '';
-                    if (data.invoiceType == 'group') {
-                        msg = `Please Check Group #${data.paymentGroupId}`;
-                    }
-                    swal(
-                        'Cancelled',
-                        `Data has been used. Can't remove. ${msg}`,
-                        'error'
-                    );
-
+        let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
+        let invoiceDate = moment(data.invoiceDate).startOf('days').toDate();
+        if (inventoryDate && (invoiceDate < inventoryDate.inventoryDate)) {
+            alertify.warning("Can't Update. Invoice's Date: " + moment(invoiceDate).format("DD-MM-YYYY")
+                + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
+        } else {
+            Meteor.call('isInvoiceHasRelation', data._id, function (error, result) {
+                if (error) {
+                    alertify.error(error.message);
                 } else {
-                    excuteEditForm(data);
+                    if (result) {
+                        let msg = '';
+                        if (data.invoiceType == 'group') {
+                            msg = `Please Check Group #${data.paymentGroupId}`;
+                        }
+                        swal(
+                            'Cancelled',
+                            `Data has been used. Can't remove. ${msg}`,
+                            'error'
+                        );
+
+                    } else {
+                        excuteEditForm(data);
+                    }
                 }
-            }
 
-
-        });
+            });
+        }
 
     },
     'click .js-destroy'(event, instance) {
@@ -141,46 +148,48 @@ indexTmpl.events({
         let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
         let invoiceDate = moment(data.invoiceDate).startOf('days').toDate();
         if (inventoryDate && (invoiceDate < inventoryDate.inventoryDate)) {
-            swal({
-                title: "Date is less then current Transaction Date!",
-                text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
-                type: "warning", showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, Do it!",
-                closeOnConfirm: false
-            }).then(function () {
-                swal.close();
-                Meteor.call('isInvoiceHasRelation', data._id, function (error, result) {
-                    if (error) {
-                        alertify.error(error.message);
-                    } else {
-                        if (result) {
-                            let msg = '';
-                            if (data.invoiceType == 'group') {
-                                msg = `Please Check Group #${data.paymentGroupId}`;
-                            }
-                            swal(
-                                'Cancelled',
-                                `Data has been used. Can't remove. ${msg}`,
-                                'error'
-                            );
+            alertify.warning("Can't Remove. Invoice's Date: " + moment(invoiceDate).format("DD-MM-YYYY")
+                + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
+            /*  swal({
+             title: "Date is less then current Transaction Date!",
+             text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
+             type: "warning", showCancelButton: true,
+             confirmButtonColor: "#DD6B55",
+             confirmButtonText: "Yes, Do it!",
+             closeOnConfirm: false
+             }).then(function () {
+             swal.close();
+             Meteor.call('isInvoiceHasRelation', data._id, function (error, result) {
+             if (error) {
+             alertify.error(error.message);
+             } else {
+             if (result) {
+             let msg = '';
+             if (data.invoiceType == 'group') {
+             msg = `Please Check Group #${data.paymentGroupId}`;
+             }
+             swal(
+             'Cancelled',
+             `Data has been used. Can't remove. ${msg}`,
+             'error'
+             );
 
-                        } else {
-                            destroyAction(
-                                Invoices,
-                                {_id: data._id},
-                                {title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id}
-                            );
-                        }
-                    }
+             } else {
+             destroyAction(
+             Invoices,
+             {_id: data._id},
+             {title: TAPi18n.__('pos.invoice.title'), itemTitle: data._id}
+             );
+             }
+             }
 
 
-                });
-            }, function (dismiss) {
-                if (dismiss === 'cancel') {
-                    return false;
-                }
-            });
+             });
+             }, function (dismiss) {
+             if (dismiss === 'cancel') {
+             return false;
+             }
+             });*/
         }
         else {
             Meteor.call('isInvoiceHasRelation', data._id, function (error, result) {
@@ -257,7 +266,7 @@ newTmpl.events({
             swal({
                 title: "Date is greater then current Date!",
                 text: "Do You want to continue to process to " + moment(invoiceDate).format('DD-MM-YYYY') +
-                "?\n"+ "Current Transaction Date is: '"+moment(inventoryDate.inventoryDate).format("DD-MM-YYYY")+"'" ,
+                "?\n" + "Current Transaction Date is: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
                 type: "warning", showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, Do it!",

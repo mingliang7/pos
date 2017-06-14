@@ -101,14 +101,24 @@ indexTmpl.events({
         //         }
         //     });
         // }
-        excuteEditForm(this);
+        let data = this;
+        let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
+        let exchangeRingPullDate = moment(data.exchangeRingPullDate).startOf('days').toDate();
+        if (inventoryDate && (exchangeRingPullDate < inventoryDate.inventoryDate)) {
+            alertify.warning("Can't Remove. ExchangeRingPull's Date: " + moment(exchangeRingPullDate).format("DD-MM-YYYY")
+                + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
+        }else{
+            excuteEditForm(data);
+        }
     },
     'click .js-destroy' (event, instance) {
         let data = this;
         let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
         let exchangeRingPullDate = moment(data.exchangeRingPullDate).startOf('days').toDate();
         if (inventoryDate && (exchangeRingPullDate < inventoryDate.inventoryDate)) {
-            swal({
+            alertify.warning("Can't Remove. ExchangeRingPull's Date: " + moment(exchangeRingPullDate).format("DD-MM-YYYY")
+                + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
+           /* swal({
                 title: "Date is less then current Transaction Date!",
                 text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
                 type: "warning", showCancelButton: true,
@@ -126,7 +136,7 @@ indexTmpl.events({
                 if (dismiss === 'cancel') {
                     return false;
                 }
-            });
+            });*/
         }
         else {
             destroyAction(

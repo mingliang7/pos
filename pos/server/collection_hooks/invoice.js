@@ -50,7 +50,7 @@ Invoices.before.insert(function (userId, doc) {
 });
 
 Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
- /*   let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.invoiceDate < inventoryDateOld) {
         throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
@@ -64,7 +64,7 @@ Invoices.before.update(function (userId, doc, fieldNames, modifier, options) {
         throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
-*/
+
     let postDoc = {itemList: modifier.$set.items};
     let stockLocationId = modifier.$set.stockLocationId;
     let data = {stockLocationId: doc.stockLocationId, items: doc.items};
@@ -676,9 +676,9 @@ function invoiceManageStock(invoice) {
             stockLocationId: invoice.stockLocationId
         }, {sort: {_id: -1}});
         if (inventory) {
-            let inventoryDate=moment(invoice.invoiceDate).startOf('days').toDate();
-            let lastInventoryDate=moment(inventory.inventoryDate).startOf('days').toDate();
-            inventoryDate=inventoryDate>=lastInventoryDate?inventoryDate:lastInventoryDate;
+            let inventoryDate = moment(invoice.invoiceDate).startOf('days').toDate();
+            let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
             item.cost = inventory.averagePrice;
             item.amountCost = inventory.averagePrice * item.qty;
             item.profit = item.amount - item.amountCost;
@@ -895,7 +895,7 @@ Meteor.methods({
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
-        let i=1;
+        let i = 1;
 
         let invoices = Invoices.find({});
         invoices.forEach(function (doc) {

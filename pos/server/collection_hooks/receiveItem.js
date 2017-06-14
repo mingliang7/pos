@@ -31,20 +31,20 @@ ReceiveItems.before.insert(function (userId, doc) {
 
 
 ReceiveItems.before.update(function (userId, doc, fieldNames, modifier, options) {
- /*   let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
+    let inventoryDateOld = StockFunction.getLastInventoryDate(doc.branchId, doc.stockLocationId);
     if (modifier.$set.receiveItemDate < inventoryDateOld) {
         throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDateOld).format('YYYY-MM-DD') + '"');
     }
 
     modifier = modifier == null ? {} : modifier;
-    modifier.$set.branchId=modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
-    modifier.$set.stockLocationId= modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
+    modifier.$set.branchId = modifier.$set.branchId == null ? doc.branchId : modifier.$set.branchId;
+    modifier.$set.stockLocationId = modifier.$set.stockLocationId == null ? doc.stockLocationId : modifier.$set.stockLocationId;
     let inventoryDate = StockFunction.getLastInventoryDate(modifier.$set.branchId, modifier.$set.stockLocationId);
     if (modifier.$set.receiveItemDate < inventoryDate) {
         throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
-    }*/
+    }
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
@@ -281,7 +281,7 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
         } else {
             throw Meteor.Error('Require Receive Item type');
         }
-        reduceFromInventory(preDoc, 'receiveItem-return',doc.receiveItemDate);
+        reduceFromInventory(preDoc, 'receiveItem-return', doc.receiveItemDate);
         doc.items.forEach(function (item) {
             StockFunction.averageInventoryInsert(
                 doc.branchId,
@@ -355,7 +355,7 @@ ReceiveItems.after.remove(function (userId, doc) {
         } else {
             throw Meteor.Error('Require Receive Item type');
         }
-        reduceFromInventory(doc, 'receiveItem-return',doc.receiveItemDate);
+        reduceFromInventory(doc, 'receiveItem-return', doc.receiveItemDate);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
@@ -526,7 +526,7 @@ function increaseExchangeGratis(preDoc) {
 }
 
 
-function reduceFromInventory(receiveItem, type,receiveItemDate) {
+function reduceFromInventory(receiveItem, type, receiveItemDate) {
     receiveItem.items.forEach(function (item) {
         StockFunction.minusAverageInventoryInsert(
             receiveItem.branchId,
@@ -545,9 +545,9 @@ Meteor.methods({
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
-        let i=1;
+        let i = 1;
 
-        let receiveItems=ReceiveItems.find({});
+        let receiveItems = ReceiveItems.find({});
         receiveItems.forEach(function (doc) {
             console.log(i);
             i++;
@@ -642,7 +642,6 @@ Meteor.methods({
             else {
                 throw Meteor.Error('Require Receive Item type');
             }
-
 
 
             //Account Integration
