@@ -46,7 +46,8 @@ Module.Pos = {
         'receive-item-summary-report',
         'transfer-money-report',
         'group-sale-report',
-        'group-balance-report'
+        'group-balance-report',
+        'remove-transaction'
     ],
     dump: {
         setting: [
