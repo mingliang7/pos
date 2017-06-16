@@ -282,90 +282,16 @@ export default class ClosingStock {
     }
 
     static insertClosingStock(transaction, branchId) {
-        let lastClosingStock = ClosingStockBalance.findOne({
-            branchId,
-        }, {sort: {closingDate: -1}});
-        if (lastClosingStock) {
-            console.log(lastClosingStock);
-            console.log('inside last closing stock');
-            ClosingStockBalance.insert({
-                branchId,
-                closingDate: moment(transaction.date).toDate(),
-                closingDateString: transaction.date,
-                items: lastClosingStock.items
-            }, function (er, id) {
-                transaction.items.forEach(function (item) {
-                    let closingStock = ClosingStockBalance.findOne({_id: id});
-                    let existItem = closingStock.items.find(o => o.itemId == item.itemId);
-                    if (existItem) {
-                        let balance = 0;
-                        if (item.type == 'in') {
-                            ClosingStockBalance.update({
-                                _id: id,
-                                'items.itemId': item.itemId
-                            }, {$set: {'items.$.balance': existItem.balance + item.qty}});
-                        } else {
-                            ClosingStockBalance.update({
-                                _id: id,
-                                'items.itemId': item.itemId
-                            }, {$set: {'items.$.balance': existItem.balance - item.qty}});
-                        }
-
-                    } else {
-                        let balance = 0;
-                        if (item.type == 'in') {
-                            balance = item.qty
-                        } else {
-                            balance = -item.qty
-                        }
-                        ClosingStockBalance.update({
-                            _id: id
-                        }, {$push: {items: {itemId: item.itemId, qty: item.qty, balance: balance}}})
-                    }
-
-                });
-            })
-        } else {
-            transaction.items.forEach(function (item) {
-                let closingStock = ClosingStockBalance.findOne({branchId, closingDateString: transaction.date});
-                if (closingStock) {
-                    let existItem = closingStock.items.find(o => o.itemId == item.itemId);
-                    if (existItem) {
-                        let balance = 0;
-                        if (item.type == 'in') {
-                            ClosingStockBalance.update({
-                                _id: closingStock._id,
-                                'items.itemId': item.itemId
-                            }, {$set: {'items.$.balance': existItem.balance + item.qty}});
-                        } else {
-                            ClosingStockBalance.update({
-                                _id: closingStock._id,
-                                'items.itemId': item.itemId
-                            }, {$set: {'items.$.balance': existItem.balance - item.qty}});
-                        }
-
-                    } else {
-                        let balance = 0;
-                        if (item.type == 'in') {
-                            balance = item.qty
-                        } else {
-                            balance = -item.qty
-                        }
-                        ClosingStockBalance.update({
-                            _id: closingStock._id
-                        }, {$push: {items: {itemId: item.itemId, qty: item.qty, balance: balance}}})
-                    }
-                } else {
-                    if (item.type == 'in') {
-                        item.balance = item.qty;
-                    } else {
-                        item.balance = -item.qty;
-                    }
-                    ClosingStock.insertNonExistClosingStockTransaction(transaction.date, branchId, item);
-                }
-            });
-
-        }
+        transaction.items.forEach(function (item) {
+            let closingStock = ClosingStockBalance.findOne({branchId: branchId, closingDateString: transaction.date});
+            if (!closingStock) {
+                ClosingStock.insertNonExistClosingStockTransaction(transaction.date, branchId, item);
+            } else {
+                ClosingStockBalance.update({_id: closingStock._id}, {$push: {items: item}});
+            }
+        });
+        Meteor._sleepForMs(1000);
+        
 
     }
 
@@ -375,7 +301,7 @@ export default class ClosingStock {
             closingDateString: stringDate,
             closingDate: moment(stringDate).toDate(),
             branchId: branchId,
-            items: [{itemId: item.itemId, qty: item.qty, balance: item.balance}]
+            items: [item]
         };
         ClosingStockBalance.insert(selector)
     }

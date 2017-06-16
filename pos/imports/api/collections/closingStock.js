@@ -17,6 +17,13 @@ ClosingStockBalance.schema = new SimpleSchema({
         type: Object,
         blackbox: true
     },
+    balance: {
+        type: [Object]
+    },
+    'balance.$': {
+        type: Object,
+        blackbox: true
+    },
     branchId: {
         type: String
     }
