@@ -13,7 +13,7 @@ import {Exchange} from '../../../../core/imports/api/collections/exchange';
 import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
 import {exchangeCoefficient} from '../../../imports/api/libs/exchangeCoefficient';
 import ReportFn from "../../../imports/api/libs/report";
-export const  termCustomerBalanceReport = new ValidatedMethod({
+export const termCustomerBalanceReport = new ValidatedMethod({
     name: 'pos.termCustomerBalanceReport',
     mixins: [CallPromiseMixin],
     validate: null,
@@ -52,12 +52,12 @@ export const  termCustomerBalanceReport = new ValidatedMethod({
             if (params.date) {
                 data.title.date = moment(params.date).format('YYYY-MMM-DD');
                 data.title.exchange = `USD = ${coefficient.usd.$multiply[1]} $, KHR = ${coefficient.khr.$multiply[1]}<small> ៛</small>, THB = ${coefficient.thb.$multiply[1]} B`;
-                if(params.type == 'active'){
+                if (params.type == 'active') {
                     selector.$or = [
                         // {status: {$in: ['active', 'partial']}, invoiceDate: {$lte: date}},
                         {invoiceDate: {$lte: date}, status: 'active'}
                     ];
-                }else{
+                } else {
                     selector.$or = [
                         {status: {$in: ['active', 'partial']}, invoiceDate: {$lte: date}},
                         {invoiceDate: {$lte: date}, status: 'closed', closedAt: {$gt: date}}
@@ -66,6 +66,17 @@ export const  termCustomerBalanceReport = new ValidatedMethod({
             }
             if (params.customer && params.customer != '') {
                 selector.customerId = params.customer;
+            }
+            if (params.reps && params.reps != '') {
+                selector.repId = {$in: params.reps.split(',')};
+            }
+            let agingSelector = {dueDate: {$ne: ''}}
+            if (params.showAging && params.showAging != '') {
+                if (params.showAging == 'overdue') {
+                    agingSelector = {dueDate: {$lt: date}}
+                } else {
+                    agingSelector = {dueDate: {$gte: date}}
+                }
             }
             if (params.filter && params.filter != '') {
                 let filters = params.filter.split(','); //map specific field
@@ -102,7 +113,7 @@ export const  termCustomerBalanceReport = new ValidatedMethod({
             data.title.company = Company.findOne();
             /****** Content *****/
             let invoices = [];
-            if(params.type == 'active'){
+            if (params.type == 'active') {
                 invoices = Invoices.aggregate([
                     {$match: selector},
                     {
@@ -197,6 +208,9 @@ export const  termCustomerBalanceReport = new ValidatedMethod({
                         }
                     },
                     {
+                        $match: agingSelector
+                    },
+                    {
                         $group: {
                             _id: '$invoiceDoc.customerId',
                             data: {
@@ -221,6 +235,17 @@ export const  termCustomerBalanceReport = new ValidatedMethod({
                     {
                         $unwind: {path: '$customerDoc', preserveNullAndEmptyArrays: true}
                     },
+                    {
+                        $lookup: {
+                            from: "pos_reps",
+                            localField: "customerDoc.repId",
+                            foreignField: "_id",
+                            as: "customerDoc.repDoc"
+                        }
+                    },
+                    {
+                        $unwind: {path: '$customerDoc.repDoc', preserveNullAndEmptyArrays: true}
+                    },
                     {$sort: {'customerDoc.name': 1}},
                     {
                         $group: {
@@ -234,7 +259,7 @@ export const  termCustomerBalanceReport = new ValidatedMethod({
                         }
                     }
                 ]);
-            }else{
+            } else {
                 invoices = Invoices.aggregate([
                     {
                         $match: selector
@@ -341,6 +366,9 @@ export const  termCustomerBalanceReport = new ValidatedMethod({
                         }
                     },
                     {
+                        $match: agingSelector
+                    },
+                    {
                         $group: {
                             _id: '$invoiceDoc.customerId',
                             data: {
@@ -364,6 +392,17 @@ export const  termCustomerBalanceReport = new ValidatedMethod({
                     },
                     {
                         $unwind: {path: '$customerDoc', preserveNullAndEmptyArrays: true}
+                    },
+                    {
+                        $lookup: {
+                            from: "pos_reps",
+                            localField: "customerDoc.repId",
+                            foreignField: "_id",
+                            as: "customerDoc.repDoc"
+                        }
+                    },
+                    {
+                        $unwind: {path: '$customerDoc.repDoc', preserveNullAndEmptyArrays: true}
                     },
                     {
                         $redact: {

@@ -107,7 +107,7 @@ SelectOptMethods.rep = new ValidatedMethod({
                 selector = {_id: {$in: values}};
             }
 
-            let data = Reps.find(selector, {limit: 10});
+            let data = Reps.find(selector, {limit: 30});
             data.forEach(function (value) {
                 let label = value.name;
                 list.push({label: label, value: value._id});

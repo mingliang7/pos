@@ -46,24 +46,8 @@ indexTmpl.helpers({
     }
 });
 indexTmpl.events({
-    'click .fullScreen'(event, instance){
-        $('.sub-body').addClass('rpt rpt-body');
-        $('.sub-header').addClass('rpt rpt-header');
-        let arrFooterTool = [
-            {
-                item: "<button type='button'></button>",
-                event: "click",
-                btnclass: 'btn btn-sm btn-primary',
-                btntext: 'Print',
-                callback: function (event) {
-                    setTimeout(function () {
-                        $('#customer-total-credit-print').printThis();
-                    }, 500);
-                }
-            }
-        ];
-        JSPanel({footer: arrFooterTool,title: 'Total Credit', content: renderTemplate(invoiceDataTmpl).html}).maximize();
-
+    'click .print'(event, instance){
+        window.print();
     }
 });
 invoiceDataTmpl.onDestroyed(function () {
@@ -71,9 +55,7 @@ invoiceDataTmpl.onDestroyed(function () {
     $('.sub-header').removeClass('rpt rpt-header');
 });
 invoiceDataTmpl.events({
-    'click .print'(event, instance){
-        $('#to-print').printThis();
-    }
+
 });
 invoiceDataTmpl.helpers({
     company(){
