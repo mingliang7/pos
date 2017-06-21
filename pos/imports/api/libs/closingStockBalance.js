@@ -46,7 +46,6 @@ export default class ClosingStock {
                 let transactions = _.union(enterBills, receiveItemLendingStocks, receiveItemPrepaidOrders, receiveItemRingPulls, transferIns, lendingStocks, invoices, exchangeRingPulls, transferOuts)
                 let transactionObj = {};
                 let transactionArr = [];
-                let transactionArrSort = [];
                 transactions.forEach(function (transaction) {
                     transaction.items.forEach(function (item) {
                         if (_.isUndefined(transactionObj[transaction.date])) {
@@ -262,6 +261,30 @@ export default class ClosingStock {
                 }
             },
             {
+                $project: {
+                    _id: 1,
+                    date: 1,
+                    item: {
+                        type: 1,
+                        itemId: 1,
+                        itemDoc: 1,
+                        qty: {
+                            $cond: [
+                                {$eq: ['$item.type', 'in']},
+                                {$multiply: ['$item.qty', 1]},
+                                {$multiply: ['$item.qty', -1]}
+                            ]
+                        },
+                        amount: '$amount',
+                        price: '$price',
+                        transactionType: {$ifNull: ["$fake", transactionType]}
+                    }
+                }
+            },
+            {
+                $sort: {date: 1}
+            },
+            {
                 $group: {
                     _id: {day: '$_id.day', month: '$_id.month', year: '$_id.year'},
                     date: {$last: '$date'},
@@ -282,17 +305,48 @@ export default class ClosingStock {
     }
 
     static insertClosingStock(transaction, branchId) {
+        let lastClosingStock = ClosingStockBalance.findOne({branchId: branchId}, {sort: {closingDateString: -1}});
+        if (lastClosingStock) {
+            ClosingStockBalance.insert({
+                branchId,
+                closingDate: moment(transaction.date).toDate(),
+                closingDateString: transaction.date,
+                items: lastClosingStock.items
+            });
+        }
         transaction.items.forEach(function (item) {
-            let closingStock = ClosingStockBalance.findOne({branchId: branchId, closingDateString: transaction.date});
-            if (!closingStock) {
-                ClosingStock.insertNonExistClosingStockTransaction(transaction.date, branchId, item);
+            let currentStockClosing = ClosingStockBalance.findOne({branchId, closingDateString: transaction.date});
+            if (currentStockClosing) {
+                let currentStockClosingItem = currentStockClosing.items.find(x => x.itemId == item.itemId);
+                if (currentStockClosingItem) {
+                    let currentStockClosingItemBalance = item.qty + currentStockClosingItem.balance;
+                    ClosingStockBalance.update({_id: currentStockClosing._id, 'items.itemId': item.itemId}, {
+                        $set: {
+                            'items.$.balance': currentStockClosingItemBalance,
+                        },
+                        $inc: {'items.$.qty': item.qty}
+                    });
+                } else {
+                    ClosingStockBalance.update({_id: currentStockClosing._id}, {
+                        $push: {
+                            items: {
+                                itemId: item.itemId,
+                                qty: item.qty,
+                                balance: item.qty,
+                                itemDoc: item.itemDoc
+                            }
+                        }
+                    });
+                }
             } else {
-                ClosingStockBalance.update({_id: closingStock._id}, {$push: {items: item}});
+                ClosingStockBalance.insert({
+                    branchId,
+                    closingDate: moment(transaction.date).toDate(),
+                    closingDateString: transaction.date,
+                    items: [{itemDoc: item.itemDoc, itemId: item.itemId, qty: item.qty, balance: item.qty}]
+                })
             }
         });
-        Meteor._sleepForMs(1000);
-        
-
     }
 
 

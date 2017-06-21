@@ -415,6 +415,14 @@
                                 </a>
                             </li>
                         {{/if}}
+                        <!--{{#if isInRole 'closing-stock-balance' 'Pos'}}-->
+                            <li>
+                                <a href="{{closingStockBalance}}">
+                                    <i class="fa fa-file-o"></i>
+                                    <span>Closing Stock Balance</span>
+                                </a>
+                            </li>
+                        <!--{{/if}}-->
                         {{#if isInRole 'stock-ending-report' 'Pos'}}
                             <li>
                                 <a href="{{stockBalance}}">

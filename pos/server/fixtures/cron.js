@@ -1,1 +1,1 @@
-// SyncedCron.start();
+SyncedCron.start();
