@@ -27,5 +27,8 @@ Meteor.methods({
         } else {
             return 0;
         }
+    },
+    getItems(){
+        return Item.find({}).fetch();
     }
 });

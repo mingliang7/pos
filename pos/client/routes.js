@@ -711,3 +711,17 @@ PosRoutes.route('/closing', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/convertItemSetting'
+PosRoutes.route('/convert-item-setting', {
+    name: 'pos.convertItemSetting',
+    title: 'ConvertItemSetting',
+    action: function (params,queryParams) {
+        Layout.main('Pos_convertItemSetting');
+    },
+    breadcrumb: {
+        title: 'Convert Item Setting',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
