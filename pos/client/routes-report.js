@@ -606,3 +606,18 @@ PosRoutes.route('/report/receiveItemBalance', {
         parent: 'pos.mainReport'
     }
 });
+
+import '../imports/ui/reports/closingStockBalance';
+PosRoutes.route('/report/closingStockBalance', {
+    name: 'pos.closingStockBalanceReport',
+    title: 'Closing Stock',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_closingStockReport');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Closing Stock',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});

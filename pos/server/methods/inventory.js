@@ -14,6 +14,7 @@ import {Branch} from '../../../core/imports/api/collections/branch.js'
 import {TransferMoney} from '../../imports/api/collections/transferMoney.js'
 import {StockLocations} from '../../imports/api/collections/stockLocation.js'
 import {InventoryDates} from '../../imports/api/collections/inventoryDate.js'
+import {ClosingStockBalance} from '../../imports/api/collections/closingStock.js'
 import {idGenerator} from 'meteor/theara:id-generator';
 import 'meteor/matb33:collection-hooks';
 import StockFunction from '../../imports/api/libs/stock';
@@ -880,6 +881,10 @@ Meteor.methods({
                     }
                 })
             })
+        });
+        //remove closing stock balance
+        Meteor.defer(function () {
+            ClosingStockBalance.remove({branchId: {$in: branchIds}, closingDate: {$gte: date}});
         });
         return getTransactionsAfterRemove(branchId, doc);
         //});

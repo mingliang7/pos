@@ -117,7 +117,10 @@ Template.Pos_sidebarMenu.helpers({
         return `/pos/report/stockBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
     },
     stockDetail(){
-        return `/pos/report/stockDetail?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
+        return `/pos/report/stockDetail?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
+    },
+    closingStockBalance(){
+        return `/pos/report/closingStockBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branchId=${Session.get('currentBranch')}`;
     },
     ringPullSummary(){
         return `/pos/report/ringpullSummary?asDate=${moment().endOf('days').format('YYYY-MM-DD')}&branchId=${Session.get('currentBranch')}`;

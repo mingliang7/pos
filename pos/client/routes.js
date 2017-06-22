@@ -698,6 +698,18 @@ PosRoutes.route('/target-item', {
 
 });
 
+import '../imports/ui/pages/closing'
+PosRoutes.route('/closing', {
+    name: 'pos.closing',
+    title: 'Closing',
+    action: function (params, queryParams) {
+        Layout.main('Pos_closing');
+    },
+    breadcrumb: {
+        title: 'Closing',
+    }
+});
+
 import '../imports/ui/pages/removeTransaction';
 PosRoutes.route('/removeTransaction', {
     name: 'pos.removeTransaction',
