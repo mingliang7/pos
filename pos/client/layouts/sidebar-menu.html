@@ -182,6 +182,14 @@
                         <span>Exchange Gratis</span>
                     </a>
                 </li>
+                {{#if isInRole 'remove-transaction' 'Pos'}}
+                    <li class="{{isActiveRoute name='pos.removeTransaction'}}">
+                        <a href="{{pathFor 'pos.removeTransaction'}}">
+                            <i class="fa fa-gift" aria-hidden="true"></i>
+                            <span>Remove Transaction</span>
+                        </a>
+                    </li>
+                {{/if}}
             </ul>
         </li>
     {{/if}}

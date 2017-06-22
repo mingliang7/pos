@@ -336,10 +336,10 @@ itemsTmpl.events({
                         let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
                         inventoryQty += soldQty;
                         if (checkQty <= inventoryQty) {
-                            let exist = itemsCollection.findOne({
+                            /*  let exist = itemsCollection.findOne({
                                 itemId: itemId
                             });
-                            if (exist) {
+                           if (exist) {
                                 qty += parseFloat(exist.qty);
                                 amount = math.round(qty * price, 2);
                                 itemsCollection.update({
@@ -351,7 +351,7 @@ itemsTmpl.events({
                                         amount: amount
                                     }
                                 });
-                            } else {
+                            } else {*/
                                 itemsCollection.insert({
                                     itemId: itemId,
                                     qty: qty,
@@ -359,7 +359,7 @@ itemsTmpl.events({
                                     amount: amount,
                                     name: instance.name
                                 });
-                            }
+                            /*}*/
                         }
                         else {
                             alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);
@@ -425,7 +425,7 @@ itemsTmpl.events({
                         }
                         let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
                         if (checkQty <= inventoryQty) {
-                            let exist = itemsCollection.findOne({
+                         /*   let exist = itemsCollection.findOne({
                                 itemId: itemId
                             });
                             if (exist) {
@@ -442,7 +442,7 @@ itemsTmpl.events({
                                     }
                                 });
                             }
-                            else {
+                            else {*/
                                 itemsCollection.insert({
                                     itemId: itemId,
                                     qty: qty,
@@ -450,7 +450,7 @@ itemsTmpl.events({
                                     amount: amount,
                                     name: instance.name
                                 });
-                            }
+                           /* }*/
                         }
                         else {
                             alertify.warning('Qty not enough for sale. QtyOnHand is ' + inventoryQty);

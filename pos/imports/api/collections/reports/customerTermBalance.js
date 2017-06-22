@@ -96,5 +96,37 @@ export const customerTermBalanceSchema = new SimpleSchema({
                 ]
             }
         }
+    },
+    repId: {
+        type: [String],
+        optional: true,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+                multiple: true,
+                optionsMethod: 'pos.selectOptMethods.rep',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let currentBranch = Session.get('currentBranch');
+                        return {branchId: currentBranch};
+                    }
+                }
+            }
+        }
+    },
+    showAging:{
+        type: String,
+        optional: true,
+        autoform: {
+            type: 'select',
+            options(){
+                return [
+                    {label: 'All', value: ''},
+                    {label: 'Overdue', value: 'overdue'},
+                    {label: 'Normal', value: 'normal'}
+                ]
+            }
+        }
     }
 });

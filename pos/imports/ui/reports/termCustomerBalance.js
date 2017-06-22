@@ -93,6 +93,8 @@ invoiceDataTmpl.helpers({
             }else if(obj.field == '_id'){
                 let val = col[obj.field];
                 data += `<td>${val.substr(val.length - 10 , val.length -1)}</td>`
+            }else if(obj.field == 'invoice') {
+                data += `<td>&emsp;&emsp;${col[obj.field]}</td>`;
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
@@ -107,7 +109,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td class="text-right"><u>${numeral(dueAmount).format('0,0.00')}</u></td><td class="text-right"><u>${numeral(paidAmount).format('0,0.00')}</u></td><td class="text-right"><u>${numeral(total).format('0,0.00')}</u></td>`;
+        string += `<td>Total ${_.capitalize(customerName)}:</td><td class="text-right">${numeral(dueAmount).format('0,0.00')}</td><td class="text-right">${numeral(paidAmount).format('0,0.00')}</td><td class="text-right">${numeral(total).format('0,0.00')}</td>`;
         return string;
     },
     getTotalFooter(totalDue, totalPaid, totalBalance){
@@ -116,7 +118,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td style="border-top: 1px solid black;"><b>Total:</td></b><td style="border-top: 1px solid black;" class="text-right"><b>${numeral(totalDue).format('0,0.00')}</b></td><td style="border-top: 1px solid black;" class="text-right"><b>${numeral(totalPaid).format('0,0.00')}</b></td><td style="border-top: 1px solid black;" class="text-right"><b>${numeral(totalBalance).format('0,0.00')}</b></td>`;
+        string += `<td style="border-top: 1px solid #000;"><b>Total:</td></b><td style="border-top: 1px solid #000;" class="text-right"><b>${numeral(totalDue).format('0,0.00')}</b></td><td style="border-top: 1px solid #000;" class="text-right"><b>${numeral(totalPaid).format('0,0.00')}</b></td><td style="border-top: 1px solid #000;" class="text-right"><b>${numeral(totalBalance).format('0,0.00')}</b></td>`;
         return string;
     },
     capitalize(customerName){
@@ -140,8 +142,8 @@ AutoForm.hooks({
             if (doc.customer) {
                 params.customer = doc.customer
             }
-            if (doc.filter) {
-                params.filter = doc.filter.join(',');
+            if (doc.repId) {
+                params.reps = doc.repId.join(',');
             }
             if(doc.branchId) {
                 params.branchId = doc.branchId.join(',');
@@ -151,6 +153,9 @@ AutoForm.hooks({
             }
             if(doc.type){
                 params.type = doc.type;
+            }
+            if(doc.showAging) {
+                params.showAging = doc.showAging;
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());

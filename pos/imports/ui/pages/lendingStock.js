@@ -77,37 +77,55 @@ indexTmpl.events({
         alertify.lendingStock(fa('plus', TAPi18n.__('pos.lendingStock.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        var data = this;
-        Meteor.call('isLendingStockHasRelation', data._id, function (error, result) {
-            if (error) {
-                alertify.error(error.message);
-            } else {
-                if (result) {
-                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
-                } else {
-                    alertify.lendingStock(fa('pencil', TAPi18n.__('pos.lendingStock.title')), renderTemplate(editTmpl, data));
 
+        let data = this;
+        let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
+        let lendingStockDate = moment(data.lendingStockDate).startOf('days').toDate();
+        if (inventoryDate && (lendingStockDate < inventoryDate.inventoryDate)) {
+            alertify.warning("Can't Update. LendingStock's Date: " + moment(lendingStockDate).format("DD-MM-YYYY")
+                + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
+        }else{
+            Meteor.call('isLendingStockHasRelation', data._id, function (error, result) {
+                if (error) {
+                    alertify.error(error.message);
+                } else {
+                    if (result) {
+                        swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+                    } else {
+                        alertify.lendingStock(fa('pencil', TAPi18n.__('pos.lendingStock.title')), renderTemplate(editTmpl, data));
+
+                    }
                 }
-            }
-        });
+            });
+        }
+
     },
     'click .js-destroy' (event, instance) {
-        var id = this._id;
-        Meteor.call('isLendingStockHasRelation', id, function (error, result) {
-            if (error) {
-                alertify.error(error.message);
-            } else {
-                if (result) {
-                    swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+
+        let id = this._id;
+        let data = this;
+        let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
+        let lendingStockDate = moment(data.lendingStockDate).startOf('days').toDate();
+        if (inventoryDate && (lendingStockDate < inventoryDate.inventoryDate)) {
+            alertify.warning("Can't Remove. LendingStock's Date: " + moment(lendingStockDate).format("DD-MM-YYYY")
+                + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
+        }else {
+            Meteor.call('isLendingStockHasRelation', id, function (error, result) {
+                if (error) {
+                    alertify.error(error.message);
                 } else {
-                    destroyAction(
-                        LendingStocks,
-                        {_id: id},
-                        {title: TAPi18n.__('pos.lendingStock.title'), itemTitle: id}
-                    );
+                    if (result) {
+                        swal('បញ្ជាក់!', `សូមធ្វើការលុប Receive Item លេខ​ ${result} ជាមុនសិន!​​​​`, 'error');
+                    } else {
+                        destroyAction(
+                            LendingStocks,
+                            {_id: id},
+                            {title: TAPi18n.__('pos.lendingStock.title'), itemTitle: id}
+                        );
+                    }
                 }
-            }
-        });
+            });
+        }
     },
     'click .js-display' (event, instance) {
         Meteor.call('lendingStockShow', {_id: this._id}, function (err, result) {
@@ -140,7 +158,7 @@ newTmpl.events({
         lendingStockDate = moment(lendingStockDate).startOf('days').toDate();
         if (inventoryDate && (lendingStockDate > inventoryDate.inventoryDate)) {
             swal({
-                title: "Date is greater then current Date!",
+                title: "Date is greater then current Transaction Date!",
                 text: "Do You want to continue to process to " + moment(lendingStockDate).format('DD-MM-YYYY') +
                 "?\n"+ "Current Transaction Date is: '"+moment(inventoryDate.inventoryDate).format("DD-MM-YYYY")+"'" ,
                 type: "warning", showCancelButton: true,

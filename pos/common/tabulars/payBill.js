@@ -24,7 +24,7 @@ tabularOpts.columns = [
     {data: "_id", title: '#ID'},
     {data: "billId", title: "Bill ID"},
     {
-        data: "billDate",
+        data: "paymentDate",
         title: "Date",
         render: function (val) {
             return moment(val).format('YYYY-MM-DD HH:mm')
