@@ -4,31 +4,101 @@
             <i class="fa fa-home"></i> <span>{{_ "pos.sidebarMenu.home"}}</span>
         </a>
     </li>
-    {{#if isInRole 'setting' 'Pos'}}
-        <li class="{{isActiveRoute name='pos.adminDashboard'}}">
-            <a href="{{pathFor 'pos.adminDashboard'}}">
-                <i class="fa fa-tachometer"></i> <span>Admin Dashboard</span>
+    <!--{{#if isInRole 'setting' 'Pos'}}-->
+        <!--<li class="{{isActiveRoute name='pos.adminDashboard'}}">-->
+            <!--<a href="{{pathFor 'pos.adminDashboard'}}">-->
+                <!--<i class="fa fa-tachometer"></i> <span>Admin Dashboard</span>-->
+            <!--</a>-->
+        <!--</li>-->
+    <!--{{/if}}-->
+    <!--{{#if isInRole 'journal' 'Pos'}}-->
+        <!--<li class="treeview {{isActiveRoute name='acc.journal'}}">-->
+            <!--<a href="{{pathFor 'acc.journal'}}">-->
+                <!--<i class="fa fa-plus"></i>-->
+                <!--<span>{{_ "acc.sidebarMenu.journal"}}</span>-->
+            <!--</a>-->
+        <!--</li>-->
+    <!--{{/if}}-->
+    <!--{{#if isInRole 'paid-to-order' 'Pos'}}-->
+        <!--<li class="treeview {{isActiveRoute name='pos.prepaidOrder'}}">-->
+            <!--<a href="{{pathFor 'pos.prepaidOrder'}}">-->
+                <!--<i class="fa fa-plus"></i>-->
+                <!--<span>{{_ "pos.sidebarMenu.prepaidOrder"}}</span>-->
+            <!--</a>-->
+        <!--</li>-->
+    <!--{{/if}}s-->
+    <!--Account-->
+    {{#if isInRole 'data-insert,data-update,data-remove' 'Acc'}}
+        <li class="treeview">
+            <a href="#">
+                <i class=""></i>
+                <span>Account</span>
+                <i class="fa fa-angle-left pull-right"></i>
             </a>
+            <ul class="treeview-menu">
+                <li class="{{isActiveRoute name='acc.journal'}}">
+                    <a href="{{pathFor 'acc.journal'}}">
+                        <i class="fa fa-plus"></i>
+                        <span>{{_ "acc.sidebarMenu.journal"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='acc.payment'}}">
+                    <a href="{{pathFor 'acc.payment'}}">
+                        <i class="fa fa-plus"></i>
+                        <span>{{_ "acc.sidebarMenu.payment"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='acc.received'}}">
+                    <a href="{{pathFor 'acc.received'}}">
+                        <i class="fa fa-plus"></i>
+                        <span>{{_ "acc.sidebarMenu.received"}}</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.prepaidOrder'}}">
+                    <a href="{{pathFor 'pos.prepaidOrder'}}">
+                        <i class="fa fa-plus"></i>
+                        <span>{{_ "pos.sidebarMenu.prepaidOrder"}}</span>
+                    </a>
+                </li>
+                <li style="border-bottom: 1px solid #263238" class="divider">
+                </li>
+                {{#if isInRole 'reporter-profitLost' 'Acc'}}
+                    <li class="{{isActiveRoute name='acc.ProfitLostReport'}}">
+                        <a href="{{pathFor 'acc.ProfitLostReport'}}">
+                            <i class="fa fa-angle-right"></i> <span>{{_ "acc.sidebarMenu.profitLostReport"}}</span>
+                        </a>
+                    </li>
+                {{/if}}
+                {{#if isInRole 'reporter-balanceSheet' 'Acc'}}
+                    <li class="{{isActiveRoute name='acc.balanceSheetReport'}}">
+                        <a href="{{pathFor 'acc.balanceSheetReport'}}">
+                            <i class="fa fa-angle-right"></i> <span>{{_ "acc.sidebarMenu.balanceSheetReport"}}</span>
+                        </a>
+                    </li>
+                {{/if}}
+                {{#if isInRole 'reporter-cash' 'Acc'}}
+                    <li class="{{isActiveRoute name='acc.cashReport'}}">
+                        <a href="{{pathFor 'acc.cashReport'}}">
+                            <i class="fa fa-angle-right"></i> <span>{{_ "acc.sidebarMenu.cashReport"}}</span>
+                        </a>
+                    </li>
+                {{/if}}
+                {{#if isInRole 'reporter-profitLostComparation' 'Acc'}}
+                    <li class="{{isActiveRoute name='acc.profitLostComparationReport'}}">
+                        <a href="{{pathFor 'acc.profitLostComparationReport'}}">
+                            <i class="fa fa-angle-right"></i> <span>{{_
+                                "acc.sidebarMenu.profitLostComparationReport"}}</span>
+                        </a>
+                    </li>
+                {{/if}}
+
+            </ul>
         </li>
     {{/if}}
-    {{#if isInRole 'journal' 'Pos'}}
-        <li class="treeview {{isActiveRoute name='acc.journal'}}">
-            <a href="{{pathFor 'acc.journal'}}">
-                <i class="fa fa-plus"></i>
-                <span>{{_ "acc.sidebarMenu.journal"}}</span>
-            </a>
-        </li>
-    {{/if}}
-    {{#if isInRole 'paid-to-order' 'Pos'}}
-        <li class="treeview {{isActiveRoute name='pos.prepaidOrder'}}">
-            <a href="{{pathFor 'pos.prepaidOrder'}}">
-                <i class="fa fa-plus"></i>
-                <span>{{_ "pos.sidebarMenu.prepaidOrder"}}</span>
-            </a>
-        </li>
-    {{/if}}
+
     <!--Data-->
     {{#if isInRole 'data-insert,data-update,data-remove' 'Pos'}}
+
         <li class="treeview active">
             <a href="#">
                 <i class=""></i>
@@ -423,14 +493,14 @@
                                 </a>
                             </li>
                         {{/if}}
-                        <!--{{#if isInRole 'closing-stock-balance' 'Pos'}}-->
-                            <li>
-                                <a href="{{closingStockBalance}}">
-                                    <i class="fa fa-file-o"></i>
-                                    <span>Closing Stock Balance</span>
-                                </a>
-                            </li>
-                        <!--{{/if}}-->
+                            <!--{{#if isInRole 'closing-stock-balance' 'Pos'}}-->
+                        <li>
+                            <a href="{{closingStockBalance}}">
+                                <i class="fa fa-file-o"></i>
+                                <span>Closing Stock Balance</span>
+                            </a>
+                        </li>
+                            <!--{{/if}}-->
                         {{#if isInRole 'stock-ending-report' 'Pos'}}
                             <li>
                                 <a href="{{stockBalance}}">
