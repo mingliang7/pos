@@ -111,6 +111,12 @@ invoiceDataTmpl.helpers({
             return `<td></td><td>${numeral(Math.abs(this.qty)).format('0,0.00')}</td>`;
         }
         return `<td>${numeral(this.qty).format('0,0.00')}</td><td></td>`;
+    },
+    no(index){
+        return index + 1;
+    },
+    notZero(val){
+        return val == 0 ? '' : numeral(val).format('0,0.00');
     }
 });
 invoiceDataTmpl.onDestroyed(function () {
@@ -126,18 +132,15 @@ AutoForm.hooks({
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
-            params.branch = Session.get('currentBranch');
-            if (doc.startDate && doc.endDate) {
-                params.date = `${moment(doc.startDate).startOf('days').format('YYYY-MM-DD')}, ${moment(doc.endDate).endOf('days').format('YYYY-MM-DD')}`;
-            }
-            if (doc.filter) {
-                params.filter = doc.filter.join(',');
+            params.branchId = Session.get('currentBranch');
+            if (doc.asDate ){
+                params.date = `${moment(doc.asDate).endOf('days').format('YYYY-MM-DD')}`;
             }
             if (doc.items) {
                 params.items = doc.items.join(',')
             }
-            if (doc.branch) {
-                params.branch = doc.branch.join(',');
+            if (doc.branchId) {
+                params.branchId = doc.branchId;
             }
             if (doc.location) {
                 params.location = doc.location.join(',');

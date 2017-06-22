@@ -43,7 +43,7 @@
         {{#with company}}
             <div class="col-xs-12">
                 <h4 class="text-center text-aqua">{{khName}}</h4>
-                <h5 class="text-center">STOCK DETAILS REPORT</h5>
+                <h5 class="text-center">CLOSING STOCK REPORT</h5>
             </div>
         {{/with}}
         <div class="row">
@@ -55,7 +55,7 @@
                             <strong>Date:</strong>
                             {{data.title.date}}<br>
                             <strong>Branch:</strong>
-                            {{data.title.branch}}
+                            {{data.title.branch.khName}}
                         </address>
                     </div>
                     <div class="col-xs-6 text-right">
@@ -71,60 +71,51 @@
         <table class="table table-striped">
             <thead class="rpt-header">
             <tr>
-                <th>Date</th>
-                <th>N៖</th>
-                <th>Name</th>
-                <th>Representative</th>
-                <th>Des</th>
-                <th>Branch</th>
-                <th>Item</th>
-                <th>Stock In</th>
-                <th>Stock Out</th>
-                <th>Balance</th>
-                <th>Avg Cost</th>
-                <th>Amount</th>
+                <th rowspan="2" style="vertical-align: middle;">លរ</th>
+                <th rowspan="2" style="vertical-align: middle;">មុខទំនិញ</th>
+                <th rowspan="2" style="vertical-align: middle;">ដើមគ្រា</th>
+
+                <th colspan="6" style="text-align: center" >ស្តុកចូល</th>
+                <th colspan="5" style="text-align: center">ស្តុកចេញ</th>
+
+                <th rowspan="2" style="vertical-align: middle;">ក្នុងឃ្លាំង</th>
+            </tr>
+            <tr>
+
+                <th style="text-align: center">ទិញចូល</th>
+                <th style="text-align: center">សង</th>
+                <th style="text-align: center">កក់មុន</th>
+                <th style="text-align: center">ក្រវិល</th>
+                <th style="text-align: center">បន្ថែម</th>
+                <th style="text-align: center">សរុប</th>
+                <th style="text-align: center">ក្រុមហ៊ុនខ្ចី</th>
+                <th style="text-align: center">លក់ចេញ</th>
+                <th style="text-align: center">ប្តូរក្រវិល</th>
+                <th style="text-align: center">បង្វិល</th>
+                <th style="text-align: center">សរុប</th>
+
             </tr>
             </thead>
             <tbody class="rpt-body">
             {{#with data}}
                 {{#each content}}
-                    {{#each items}}
-                        {{#unless number}}
-                            <tr>
-                                <td>{{moFormat opDate 'DD/MM/YYYY'}}</td>
-                                <td>{{concat number}}</td>
-                                <td>{{name}}</td>
-                                <td>{{rep}}</td>
-                                <td>
-                                    <del>{{description}}</del>
-                                </td>
-                                <td>
-                                    <del>{{branchDoc.khName}}</del>
-                                </td>
-                                <td>
-                                    <del>{{item.name}}</del>
-                                </td>
-                                {{{displayStockOutQty}}}
-                                <td>{{numFormat remainQty '0,0'}}</td>
-                                <td>{{numFormat averagePrice '0,0.00'}}</td>
-                                <td>{{numFormat lastAmount '0,0.00'}}</td>
-                            </tr>
-                        {{else}}
-                            <tr>
-                                <td>{{moFormat opDate 'DD/MM/YYYY'}}</td>
-                                <td>{{concat number}}</td>
-                                <td>{{name}}</td>
-                                <td>{{rep}}</td>
-                                <td>{{description}}</td>
-                                <td>{{branchDoc.khName}}</td>
-                                <td>{{item.name}}</td>
-                                {{{displayStockOutQty}}}
-                                <td>{{numFormat remainQty '0,0'}}</td>
-                                <td>{{numFormat averagePrice '0,0.00'}}</td>
-                                <td>{{numFormat lastAmount '0,0.00'}}</td>
-                            </tr>
-                        {{/unless}}
-                    {{/each}}
+                    <tr>
+                        <td>{{no @index}}</td>
+                        <td>{{itemDoc.name}}</td>
+                        <td style="text-align: right">{{notZero balance}}</td>
+                        <td style="text-align: right">{{notZero enterBill}}</td>
+                        <td style="text-align: right">{{notZero receiveLendingStock}}</td>
+                        <td style="text-align: right">{{notZero receivePrepaidOrder}}</td>
+                        <td style="text-align: right">{{notZero receiveCompanyExchangeRingPull}}</td>
+                        <td style="text-align: right">{{notZero transferIn}}</td>
+                        <td style="text-align: right">{{notZero qtyIn}}</td>
+                        <td style="text-align: right">{{notZero lendingStock}}</td>
+                        <td style="text-align: right">{{notZero invoice}}</td>
+                        <td style="text-align: right">{{notZero exchangeRingPull}}</td>
+                        <td style="text-align: right">{{notZero transferOut}}</td>
+                        <td style="text-align: right">{{notZero qtyOut}}</td>
+                        <td style="text-align: right">{{notZero lastBalance}}</td>
+                    </tr>
                 {{/each}}
             {{/with}}
             </tbody>

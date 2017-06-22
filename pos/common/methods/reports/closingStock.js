@@ -5,6 +5,7 @@ import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 import {_} from 'meteor/erasaur:meteor-lodash';
 import {moment} from  'meteor/momentjs:moment';
 import {ClosingStockBalance} from '../../../imports/api/collections/closingStock';
+import {Branch} from '../../../../core/imports/api/collections/branch';
 import ClosingStock from '../../../imports/api/libs/closingStockBalance';
 export const closingStockReportMethod = new ValidatedMethod({
     name: 'pos.closingStockReport',
@@ -15,6 +16,7 @@ export const closingStockReportMethod = new ValidatedMethod({
             Meteor._sleepForMs(200);
             let selector = {};
             let itemObj = {};
+            let items = [];
             let data = {
                 title: {},
                 fields: [],
@@ -23,25 +25,28 @@ export const closingStockReportMethod = new ValidatedMethod({
                 footer: {}
             };
             let date, branchId;
+            if(params.items) {
+                items = params.items.split(',');
+            }
             if (params.date) {
                 date = moment(params.date).endOf('days').toDate();
+                data.title.date = moment(date).format('DD/MM/YYYY');
             }
             if (params.branchId) {
                 branchId = params.branchId;
+                data.title.branch = Branch.findOne({_id: branchId});
             } else {
                 return data;
             }
-            console.log(date);
             let lastClosingStockBalance = ClosingStockBalance.findOne({
                 branchId: branchId,
-                closingDate: {$lte: date}
+                closingDate: {$lt: moment(date).startOf('days').toDate()}
             }, {sort: {closingDateString: -1}});
-            let closingDate = lastClosingStockBalance ? moment(lastClosingStockBalance.closingDate).add(1, 'days').toDate() : undefined;
+            let closingDate = lastClosingStockBalance ? moment(lastClosingStockBalance.closingDate).endOf('days').toDate() : undefined;
             let closingStockData = calcStockClosing(date, closingDate, branchId);
             if (lastClosingStockBalance) {
                 lastClosingStockBalance.items.forEach(function (item) {
-                    console.log(item.balance);
-                    if(!itemObj[item.itemId]) {
+                    if (!itemObj[item.itemId]) {
                         itemObj[item.itemId] = {
                             enterBill: 0,
                             receiveLendingStock: 0,
@@ -55,14 +60,17 @@ export const closingStockReportMethod = new ValidatedMethod({
                         };
                         itemObj[item.itemId].balance = item.balance;
                         itemObj[item.itemId].qty = item.qty;
+                        itemObj[item.itemId].qtyIn = 0;
+                        itemObj[item.itemId].qtyOut = 0;
                         itemObj[item.itemId].itemId = item.itemId;
                         itemObj[item.itemId].itemDoc = item.itemDoc;
+                        itemObj[item.itemId].lastBalance = item.balance;
                     }
                 });
             }
             closingStockData.forEach(function (closingData) {
                 closingData.items.forEach(function (item) {
-                    if(!itemObj[item.itemId]) {
+                    if (!itemObj[item.itemId]) {
                         itemObj[item.itemId] = {
                             enterBill: 0,
                             receiveLendingStock: 0,
@@ -75,20 +83,45 @@ export const closingStockReportMethod = new ValidatedMethod({
                             transferOut: 0
                         };
                         itemObj[item.itemId].qty = Math.abs(item.qty);
-                        itemObj[item.itemId].balance = Math.abs(item.qty);
+                        itemObj[item.itemId].qtyIn = item.qty > 0 ? item.qty : 0;
+                        itemObj[item.itemId].qtyOut = item.qty < 0 ? Math.abs(item.qty) : 0;
+                        itemObj[item.itemId].balance = 0;
                         itemObj[item.itemId].itemId = item.itemId;
                         itemObj[item.itemId].itemDoc = item.itemDoc;
-                    }else{
+                        itemObj[item.itemId].lastBalance = (itemObj[item.itemId].qtyIn - itemObj[item.itemId].qtyOut) + itemObj[item.itemId].balance;
                         itemObj[item.itemId][item.transactionType] += Math.abs(item.qty);
+                    } else {
+                        itemObj[item.itemId][item.transactionType] += Math.abs(item.qty);
+                        itemObj[item.itemId].qty += Math.abs(item.qty);
+                        itemObj[item.itemId].qtyIn += item.qty > 0 ? item.qty : 0;
+                        itemObj[item.itemId].qtyOut += item.qty < 0 ? Math.abs(item.qty) : 0;
+                        itemObj[item.itemId].lastBalance = (itemObj[item.itemId].qtyIn - itemObj[item.itemId].qtyOut) + itemObj[item.itemId].balance
+
                     }
                 });
             });
-            console.log(itemObj);
-            // return data;
+            let arr = [];
+            for (let k in itemObj) {
+                if(items.length > 0) {
+                    if(_.includes(items, k)){
+                        arr.push(itemObj[k]);
+                    }
+                }else{
+                    arr.push(itemObj[k]);
+                }
+            }
+            data.content = arr.sort(compare);
+            return data;
         }
     }
 });
-
+function compare(a, b) {
+    if (a.itemDoc.name < b.itemDoc.name)
+        return -1;
+    if (a.itemDoc.name > b.itemDoc.name)
+        return 1;
+    return 0;
+}
 function calcStockClosing(inventoryDate, closingStockDate, branchId) {
     //--------------Stock In--------------------
     let enterBills = ClosingStock.lookupEnterBills({inventoryDate, closingStockDate, branchId});
