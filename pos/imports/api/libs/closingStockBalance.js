@@ -15,7 +15,7 @@ export default class ClosingStock {
             let inventory = InventoryDates.findOne({branchId: branch._id});
             let closingStockDate = closingStockBalance ? moment(closingStockBalance.closingDate).add(1, 'days').startOf('days').toDate() : null;
             if (inventory) {
-                let inventoryDate = moment(inventory.inventoryDate).subtract(1, 'days').endOf('days').toDate();
+                let inventoryDate = moment(inventory.inventoryDate).endOf('days').toDate();
                 //--------------Stock In--------------------
                 let enterBills = ClosingStock.lookupEnterBills({inventoryDate, closingStockDate, branchId});
                 let receiveItemLendingStocks = ClosingStock.lookupReceiveItemLendingStocks({
