@@ -725,3 +725,17 @@ PosRoutes.route('/convert-item-setting', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/convertItem'
+PosRoutes.route('/convert-item', {
+    name: 'pos.convertItem',
+    title: 'ConvertItem',
+    action: function (params,queryParams) {
+        Layout.main('Pos_convertItem');
+    },
+    breadcrumb: {
+        title: 'Convert Item',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
