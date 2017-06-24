@@ -26,6 +26,26 @@ ConvertItems.itemsSchema = new SimpleSchema({
     getQty: {
         type: Number
     },
+    fromItemPrice: {
+        type: Number,
+        decimal: true,
+        optional: true,
+    },
+    toItemPrice: {
+        type: Number,
+        decimal: true,
+        optional: true
+    },
+    fromItemAmount: {
+        type: Number,
+        decimal: true,
+        optional: true
+    },
+    toItemAmount: {
+        type: Number,
+        decimal: true,
+        optional: true
+    }
     /*price: {
      type: Number,
      decimal: true,
@@ -100,7 +120,18 @@ ConvertItems.schema = new SimpleSchema({
     items: {
         type: [ConvertItems.itemsSchema]
     },
-    total: {
+    fromItemTotal: {
+        type: Number,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        },
+        optional: true
+    },
+    toItemTotal: {
         type: Number,
         decimal: true,
         autoform: {
@@ -117,15 +148,6 @@ ConvertItems.schema = new SimpleSchema({
     status: {
         type: String,
         optional: true
-    },
-    repId: {
-        type: String,
-        autoform: {
-            type: 'universe-select',
-            afFieldInput: {
-                uniPlaceholder: 'Select One'
-            }
-        }
     },
     stockLocationId: {
         type: String,

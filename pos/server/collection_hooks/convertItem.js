@@ -53,19 +53,34 @@ ConvertItems.after.insert(function (userId, doc) {
         Meteor._sleepForMs(200);
         //ConvertItemManageStock(doc);
         //Account Integration
-        let total = 0;
+        let fromItemTotal=0;
+        let toItemTotal = 0;
         doc.items.forEach(function (item) {
-            let inventoryObj = AverageInventories.findOne({
+            let fromItemInventoryObj = AverageInventories.findOne({
                 itemId: item.fromItemId,
                 branchId: doc.branchId,
                 stockLocationId: doc.stockLocationId
             }, {sort: {_id: -1}});
-            if (inventoryObj) {
-                item.price = inventoryObj.averagePrice;
-                item.amount = item.qty * inventoryObj.averagePrice;
-                total += item.amount;
+            if (fromItemInventoryObj) {
+                item.fromItemPrice = fromItemInventoryObj.averagePrice;
+                item.fromItemAmount = item.qty * fromItemInventoryObj.averagePrice;
+                fromItemTotal += item.fromItemAmount;
             } else {
                 throw new Meteor.Error("Not Found Inventory. @ConvertItem-after-insert.");
+            }
+            let toInventoryObj=AverageInventories.findOne({
+                itemId:item.toItemId,
+                branchId:item.branch
+            });
+            if(toInventoryObj){
+                item.toItemPrice=toInventoryObj.averagePrice;
+                item.toItemAmount=item.getQty*toInventoryObj.averagePrice;
+                toItemTotal+=item.toItemAmount;
+            }else{
+                let toItem=Item.findOne({_id:toItemTotal});
+                item.toItemPrice=toItem.purchasePrice;
+                item.toItemAmount=toItem.purchasePrice*item.getQty;
+                toItemTotal+=item.toItemAmount;
             }
         });
         let inventoryIdList = [];
