@@ -72,18 +72,12 @@ ConvertItems.itemsSchema = new SimpleSchema({
 ConvertItems.schema = new SimpleSchema({
     convertItemDate: {
         type: Date,
+        defaultValue: moment().toDate(),
         autoform: {
             afFieldInput: {
                 type: "bootstrap-datetimepicker",
                 dateTimePickerOptions: {
                     format: 'DD/MM/YYYY HH:mm:ss',
-
-                },
-                value(){
-                    let customerId = AutoForm.getFieldValue('customerId');
-                    if (customerId) {
-                        return moment().toDate();
-                    }
                 }
             }
 
@@ -165,6 +159,11 @@ ConvertItems.schema = new SimpleSchema({
             }
         }
     },
+    cash: {
+        type: Number,
+        decimal: true,
+        min:0
+    }
 });
 
 Meteor.startup(function () {

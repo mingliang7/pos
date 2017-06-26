@@ -32,6 +32,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">Convert Item</div>
                         <div class="panel-body">
+                            {{> afQuickField name="cash"}}
                             {{> afQuickField name="convertItemDate"}}
                             {{> afQuickField name="stockLocationId"}}
                             {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
@@ -77,7 +78,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">Convert Item</div>
                         <div class="panel-body">
-
+                            {{> afQuickField name="cash"}}
                             {{> afQuickField name="convertItemDate" value=convertItemDate}}
                             {{> afQuickField name="stockLocationId"}}
                             {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
