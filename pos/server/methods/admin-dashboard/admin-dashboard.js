@@ -538,7 +538,8 @@ Meteor.methods({
             date: `${moment().startOf('months').format('DD/MM/YYYY')} - ${moment().endOf('months').format('DD/MM/YYYY')}`,
             currencyId: 'All',
             branchId: 'All',
-            chartAccountId: id
+            chartAccountId: id,
+            transactionType: 'All'
         };
         branches.forEach(function (branch) {
             let exchange = Exchange.findOne({}, {sort: {_id: -1}});
@@ -546,7 +547,7 @@ Meteor.methods({
                 date: `${moment().startOf('months').format('DD/MM/YYYY')} - ${moment().endOf('months').format('DD/MM/YYYY')}`,
                 currencyId: 'All',
                 branchId: branch._id,
-                chartAccountId: id,
+                transactionType: 'All',
                 exchangeDate: exchange && exchange._id
             };
             Meteor.call("acc_cashReportMethod", params, function (err, result) {
@@ -557,11 +558,11 @@ Meteor.methods({
                 }
             });
         });
-        Meteor.call("acc_cashReportMethod", selector, function (err, result) {
-            if (!err) {
-                obj.footer = result.endingBalance;
-            }
-        });
+        // Meteor.call("acc_cashReportMethod", selector, function (err, result) {
+        //     if (!err) {
+        //         obj.footer = result.endingBalance;
+        //     }
+        // });
         return obj
     }
 });

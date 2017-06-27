@@ -39,10 +39,19 @@
         box-shadow: none;
         border: none;
     }
+
     table, .table > tr, .table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tbody > tr {
         font-size: 9px !important;
         padding: 2px;
     }
+}
+
+.border-ddd > th {
+    border: 1px solid #ddd !important;
+}
+
+.border-ddd > td {
+    border: 1px solid #ddd !important;
 }
 
 /*fixed header*/

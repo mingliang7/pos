@@ -51,37 +51,30 @@
                 <hr>
                 <div class="row">
                     <div class="col-xs-3">
-                        <address class="">
+                        <small class="">
                             <strong>Date:</strong>
                             {{data.title.date}}<br>
                             <strong>Branch:</strong>
                             {{data.title.branch.khName}}
-                        </address>
-                    </div>
-                    <div class="col-xs-6 text-right">
-                        <!-- <address>
-                             <strong>Order Date:</strong><br>
-                             March 7, 2014<br><br>
-                         </address>-->
+                        </small>
                     </div>
                 </div>
 
             </div>
         </div>
-        <table class="table table-striped">
+        <table class="table table-striped" style="border: 1px solid #ddd !important;">
             <thead class="rpt-header">
-            <tr>
+            <tr class="border-ddd">
                 <th rowspan="2" style="vertical-align: middle;">លរ</th>
                 <th rowspan="2" style="vertical-align: middle;">មុខទំនិញ</th>
-                <th rowspan="2" style="vertical-align: middle;">ដើមគ្រា</th>
+                <th rowspan="2" style="text-align: center;vertical-align: middle;">ដើមគ្រា</th>
 
-                <th colspan="6" style="text-align: center" >ស្តុកចូល</th>
+                <th colspan="6" style="text-align: center">ស្តុកចូល</th>
                 <th colspan="5" style="text-align: center">ស្តុកចេញ</th>
 
-                <th rowspan="2" style="vertical-align: middle;">ក្នុងឃ្លាំង</th>
+                <th rowspan="2" style="text-align: center;vertical-align: middle;">ក្នុងឃ្លាំង</th>
             </tr>
-            <tr>
-
+            <tr class="border-ddd">
                 <th style="text-align: center">ទិញចូល</th>
                 <th style="text-align: center">សង</th>
                 <th style="text-align: center">កក់មុន</th>
@@ -99,7 +92,7 @@
             <tbody class="rpt-body">
             {{#with data}}
                 {{#each content}}
-                    <tr>
+                    <tr class="border-ddd">
                         <td>{{no @index}}</td>
                         <td>{{itemDoc.name}}</td>
                         <td style="text-align: right">{{notZero balance}}</td>
