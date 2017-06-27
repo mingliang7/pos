@@ -108,25 +108,8 @@ indexTmpl.events({
         let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
         let convertItemDate = moment(data.convertItemDate).startOf('days').toDate();
         if (inventoryDate && (convertItemDate < inventoryDate.inventoryDate)) {
-            swal({
-                title: "Date is less then current Transaction Date!",
-                text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
-                type: "warning", showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, Do it!",
-                closeOnConfirm: false
-            }).then(function () {
-                swal.close();
-                destroyAction(
-                    ConvertItems,
-                    {_id: data._id},
-                    {title: TAPi18n.__('pos.convertItem.title'), itemTitle: data._id}
-                );
-            }, function (dismiss) {
-                if (dismiss === 'cancel') {
-                    return false;
-                }
-            });
+            alertify.warning("Can't Remove. ConvertItem's Date: " + moment(convertItemDate).format("DD-MM-YYYY")
+                + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"));
         }
         else {
             destroyAction(

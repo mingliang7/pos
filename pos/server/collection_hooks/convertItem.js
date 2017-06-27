@@ -15,7 +15,11 @@ ConvertItems.before.insert(function (userId, doc) {
         throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
-    let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
+    let newItems = [];
+    doc.items.forEach(function (item) {
+        newItems.push({itemId: item.fromItemId, price: 0, qty: item.qty, amount: 0});
+    });
+    let result = StockFunction.checkStockByLocation(doc.stockLocationId, newItems);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
     }
@@ -76,7 +80,7 @@ ConvertItems.after.insert(function (userId, doc) {
                 item.toItemAmount = item.getQty * toInventoryObj.averagePrice;
                 toItemTotal += item.toItemAmount;
             } else {
-                let toItem = Item.findOne({_id: toItemTotal});
+                let toItem = Item.findOne({_id: item.toItemId});
                 item.toItemPrice = toItem.purchasePrice;
                 item.toItemAmount = toItem.purchasePrice * item.getQty;
                 toItemTotal += item.toItemAmount;
@@ -196,58 +200,58 @@ ConvertItems.after.insert(function (userId, doc) {
 });
 ConvertItems.after.update(function (userId, doc) {
     Meteor.defer(() => {
-        let preDoc = this.previous;
-        Meteor._sleepForMs(200);
-        returnToInventory(preDoc, 'convertItem-return', doc.convertItemDate);
-        //Account Integration
-        let total = 0;
-        doc.items.forEach(function (item) {
-            let inventoryObj = AverageInventories.findOne({
-                itemId: item.itemId,
-                branchId: doc.branchId,
-                stockLocationId: doc.stockLocationId
-            }, {sort: {_id: -1}});
-            if (inventoryObj) {
-                item.price = inventoryObj.averagePrice;
-                item.amount = item.qty * inventoryObj.averagePrice;
-                total += item.amount;
-            } else {
-                throw new Meteor.Error("Not Found Inventory. @ConvertItem-after-insert.");
-            }
-        });
-        ConvertItemManageStock(doc);
-        doc.total = total;
-        ConvertItems.direct.update(doc._id, {$set: {items: doc.items, total: doc.total}});
+        /*       let preDoc = this.previous;
+         Meteor._sleepForMs(200);
+         returnToInventory(preDoc, 'convertItem-return', doc.convertItemDate);
+         //Account Integration
+         let total = 0;
+         doc.items.forEach(function (item) {
+         let inventoryObj = AverageInventories.findOne({
+         itemId: item.itemId,
+         branchId: doc.branchId,
+         stockLocationId: doc.stockLocationId
+         }, {sort: {_id: -1}});
+         if (inventoryObj) {
+         item.price = inventoryObj.averagePrice;
+         item.amount = item.qty * inventoryObj.averagePrice;
+         total += item.amount;
+         } else {
+         throw new Meteor.Error("Not Found Inventory. @ConvertItem-after-insert.");
+         }
+         });
+         ConvertItemManageStock(doc);
+         doc.total = total;
+         ConvertItems.direct.update(doc._id, {$set: {items: doc.items, total: doc.total}});
 
-        let setting = AccountIntegrationSetting.findOne();
-        if (setting && setting.integrate) {
-            let transaction = [];
-            let data = doc;
-            data.type = "ConvertItem";
+         let setting = AccountIntegrationSetting.findOne();
+         if (setting && setting.integrate) {
+         let transaction = [];
+         let data = doc;
+         data.type = "ConvertItem";
 
-            let customerDoc = Customers.findOne({_id: doc.customerId});
-            if (customerDoc) {
-                data.name = customerDoc.name;
-                data.des = data.des == "" || data.des == null ? ("ប្តូរក្រវិលពីអតិថិជនៈ " + data.name) : data.des;
-            }
+         let customerDoc = Customers.findOne({_id: doc.customerId});
+         if (customerDoc) {
+         data.name = customerDoc.name;
+         data.des = data.des == "" || data.des == null ? ("ប្តូរក្រវិលពីអតិថិជនៈ " + data.name) : data.des;
+         }
 
-            let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
-            let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
-            transaction.push({
-                account: ringPullChartAccount.account,
-                dr: data.total,
-                cr: 0,
-                drcr: data.total
-            }, {
-                account: inventoryChartAccount.account,
-                dr: 0,
-                cr: data.total,
-                drcr: -data.total
-            });
-            data.transaction = transaction;
-            data.journalDate = data.convertItemDate;
-            Meteor.call('updateAccountJournal', data);
-        }
+         let ringPullChartAccount = AccountMapping.findOne({name: 'Ring Pull'});
+         let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+         transaction.push({
+         account: ringPullChartAccount.account,
+         dr: data.total,
+         cr: 0,
+         drcr: data.total
+         }, {
+         account: inventoryChartAccount.account,
+         dr: 0,
+         cr: data.total,
+         drcr: -data.total
+         });
+         data.transaction = transaction;
+         data.journalDate = data.convertItemDate;
+         Meteor.call('updateAccountJournal', data);
+         }*/
         //End Account Integration
     })
 });
