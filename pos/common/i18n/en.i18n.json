@@ -225,6 +225,14 @@
         }
       }
     },
+    "convertItemSetting": {
+      "title": "Convert Item Setting",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        }
+      }
+    },
     "paymentGroup": {
       "title": "Payment Group",
       "schema": {
@@ -749,6 +757,48 @@
     },
     "penalty":{
       "title":"Penalty"
+    },
+    "convertItem": {
+      "title": "Convert Item",
+      "invoiceAction": "Convert Item",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "fromItemId": {
+          "label": "From Item"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "getQty":{
+          "label":"Get Qty"
+        },
+        "toItemId":{
+          "label":"To Item"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "convertItemDate": {
+          "label": "Date"
+        },
+        "customerId": {
+          "label": "Customer"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
     }
   }
 }

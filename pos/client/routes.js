@@ -723,3 +723,31 @@ PosRoutes.route('/removeTransaction', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/convertItemSetting'
+PosRoutes.route('/convert-item-setting', {
+    name: 'pos.convertItemSetting',
+    title: 'ConvertItemSetting',
+    action: function (params,queryParams) {
+        Layout.main('Pos_convertItemSetting');
+    },
+    breadcrumb: {
+        title: 'Convert Item Setting',
+        icon: '',
+        parent: 'pos.home'
+    }
+});
+
+import '../imports/ui/pages/convertItem'
+PosRoutes.route('/convert-item', {
+    name: 'pos.convertItem',
+    title: 'ConvertItem',
+    action: function (params,queryParams) {
+        Layout.main('Pos_convertItem');
+    },
+    breadcrumb: {
+        title: 'Convert Item',
+        icon: '',
+        parent: 'pos.home'
+    }
+});

@@ -218,7 +218,7 @@ export  default class StockFunction {
             let lastAmount = 0;
             let averagePrice = 0;
             if (remainQty != 0) {
-                lastAmount = inventory.lastAmount - (inventory.averagePrice * item.qty);
+                lastAmount = inventory.lastAmount - (item.price * item.qty);
                 averagePrice = lastAmount / remainQty;
             }
             let newInventory = {
@@ -227,8 +227,8 @@ export  default class StockFunction {
                 stockLocationId: stockLocationId,
                 itemId: item.itemId,
                 qty: -item.qty,
-                price: inventory.averagePrice,
-                amount: -item.qty * inventory.averagePrice,
+                price: item.price,
+                amount: -item.qty * item.price,
                 lastAmount: lastAmount,
                 remainQty: remainQty,
                 averagePrice: averagePrice,
