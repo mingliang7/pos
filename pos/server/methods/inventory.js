@@ -2,6 +2,9 @@ import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {ExchangeRingPulls} from '../../imports/api/collections/exchangeRingPull.js'
 import {EnterBills} from '../../imports/api/collections/enterBill.js'
 import {ReceiveItems} from '../../imports/api/collections/receiveItem.js'
+import {ReceivePayment} from '../../imports/api/collections/receivePayment.js'
+import {ConvertItems} from '../../imports/api/collections/convertItem.js'
+import {PayBills} from '../../imports/api/collections/payBill.js'
 import {LendingStocks} from '../../imports/api/collections/lendingStock.js'
 import {Invoices} from '../../imports/api/collections/invoice.js'
 import {LocationTransfers} from '../../imports/api/collections/locationTransfer.js'
@@ -760,6 +763,27 @@ Meteor.methods({
         if (exchangeRingPulls.count() > 0) {
             transaction.exchangeRingPulls = exchangeRingPulls.fetch();
         }
+
+        let convertItems = ConvertItems.find({convertItemDate: {$gte: date}, branchId: {$in: branchIds}});
+        if (convertItems.count() > 0) {
+            transaction.convertItems = convertItems.fetch();
+        }
+        let invoiceIds = [];
+        invoices.forEach(function (inv) {
+            invoiceIds.push(inv._id);
+        });
+        let billIds = [];
+        enterBills.forEach(function (bill) {
+            billIds.push(bill._id);
+        });
+        let receivePayments = ReceivePayment.find({invoiceId: {$in: invoiceIds}});
+        if (receivePayments.count() > 0) {
+            transaction.receivePayments = receivePayments.fetch();
+        }
+        let payBills = PayBills.find({billId: {$in: billIds}});
+        if (payBills.count() > 0) {
+            transaction.payBills = payBills.fetch();
+        }
         return transaction;
 
 
@@ -795,8 +819,40 @@ Meteor.methods({
             branchId: {$in: branchIds}
         });
 
+        let convertItems = ConvertItems.find({convertItemDate: {$gte: date}, branchId: {$in: branchIds}});
+        let invoiceIds = [];
+        invoices.forEach(function (inv) {
+            invoiceIds.push(inv._id);
+        });
+        let billIds = [];
+        enterBills.forEach(function (bill) {
+            billIds.push(bill._id);
+        });
+        let receivePayments = ReceivePayment.find({invoiceId: {$in: invoiceIds}});
+        let payBills = PayBills.find({billId: {$in: billIds}});
+
+
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
+            if (convertItems.count() > 0) {
+                convertItems.forEach(function (obj) {
+                    let data = {_id: obj._id, type: 'ConvertItem'};
+                    Meteor.call('removeAccountJournal', data);
+                })
+            }
+            if (receivePayments.count() > 0) {
+                receivePayments.forEach(function (obj) {
+                    let data = {_id: obj._id, type: 'ReceivePayment'};
+                    Meteor.call('removeAccountJournal', data);
+                })
+            }
+            if (payBills.count() > 0) {
+                payBills.forEach(function (obj) {
+                    let data = {_id: obj._id, type: "PayBill"};
+                    Meteor.call('removeAccountJournal', data);
+                })
+            }
+
             if (locationTransfers.count() > 0) {
                 locationTransfers.forEach(function (obj) {
                     let data = {_id: obj._id, type: 'LocationTransfer'};
@@ -836,6 +892,9 @@ Meteor.methods({
             }
         }
 
+        ConvertItems.direct.remove({convertItemDate: {$gte: date}, branchId: {$in: branchIds}});
+        ReceivePayment.direct.remove({invoiceId: {$in: {invoiceIds}}});
+        PayBills.direct.remove({billId: {$in: {billIds}}});
         LocationTransfers.direct.remove({
             $or: [{journalDate: {$gte: date}, fromBranchId: branchId},
                 {journalDate: {$gte: date}, toBranchId: branchId}]
@@ -937,9 +996,26 @@ function getTransactionsAfterRemove(branchId, doc) {
     if (exchangeRingPulls.count() > 0) {
         transaction.exchangeRingPulls = exchangeRingPulls.fetch();
     }
+
+    let convertItems = ConvertItems.find({convertItemDate: {$gte: date}, branchId: {$in: branchIds}});
+    if (convertItems.count() > 0) {
+        transaction.convertItems = convertItems.fetch();
+    }
+    let invoiceIds = invoices.map(function (inv) {
+        return inv._id;
+    });
+    let billIds = enterBills.map(function (bill) {
+        return bill._id;
+    });
+    let receivePayments = ReceivePayment.find({invoiceId: {$in: invoiceIds}});
+    if (receivePayments.count() > 0) {
+        transaction.receivePayments = receivePayments.fetch();
+    }
+    let payBills = PayBills.find({billId: {$in: billIds}});
+    if (payBills.count() > 0) {
+        transaction.payBills = payBills.fetch();
+    }
     return transaction;
-
-
 }
 
 function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
