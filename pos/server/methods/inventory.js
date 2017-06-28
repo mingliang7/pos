@@ -893,8 +893,8 @@ Meteor.methods({
         }
 
         ConvertItems.direct.remove({convertItemDate: {$gte: date}, branchId: {$in: branchIds}});
-        ReceivePayment.direct.remove({invoiceId: {$in: {invoiceIds}}});
-        PayBills.direct.remove({billId: {$in: {billIds}}});
+        ReceivePayment.direct.remove({invoiceId: {$in: invoiceIds}});
+        PayBills.direct.remove({billId: {$in: billIds}});
         LocationTransfers.direct.remove({
             $or: [{journalDate: {$gte: date}, fromBranchId: branchId},
                 {journalDate: {$gte: date}, toBranchId: branchId}]

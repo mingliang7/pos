@@ -128,8 +128,8 @@ ConvertItems.after.insert(function (userId, doc) {
             let data = doc;
             data.type = "ConvertItem";
             data.des = "ប្តូរទំនិញ";
-            let itemConvertIncome = AccountMapping.findOne({name: 'Item Covert Income'});
-            let itemCovertExpense = AccountMapping.findOne({name: 'Item Covert Expense'});
+            let itemConvertIncome = AccountMapping.findOne({name: 'Gain on Item Covert Income'});
+            let itemCovertExpense = AccountMapping.findOne({name: 'Lost on Item Covert Expense'});
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let transaction = [];

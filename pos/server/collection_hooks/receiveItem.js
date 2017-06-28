@@ -74,6 +74,7 @@ ReceiveItems.after.insert(function (userId, doc) {
         //Account Integration
         if (setting && setting.integrate) {
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            let bonusInventoryChartAccount = AccountMapping.findOne({name: 'Bonus Inventory'});
             let lostInventoryChartAccount = AccountMapping.findOne({name: 'Lost Inventory'});
 
 
@@ -85,10 +86,17 @@ ReceiveItems.after.insert(function (userId, doc) {
             });
             if (totalLostAmount > 0) {
                 transaction.push({
+                    account: bonusInventoryChartAccount.account,
+                    cr: totalLostAmount,
+                    dr: 0,
+                    drcr: -totalLostAmount
+                });
+            }else if(totalLostAmount<0){
+                transaction.push({
                     account: lostInventoryChartAccount.account,
-                    dr: totalLostAmount,
+                    dr: -totalLostAmount,
                     cr: 0,
-                    drcr: totalLostAmount
+                    drcr: -totalLostAmount
                 });
             }
         }
@@ -200,6 +208,7 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
         //Account Integration
         if (setting && setting.integrate) {
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+            let bonusInventoryChartAccount = AccountMapping.findOne({name: 'Bonus Inventory'});
             let lostInventoryChartAccount = AccountMapping.findOne({name: 'Lost Inventory'});
 
 
@@ -211,10 +220,17 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
             });
             if (totalLostAmount > 0) {
                 transaction.push({
+                    account: bonusInventoryChartAccount.account,
+                    cr: totalLostAmount,
+                    dr: 0,
+                    drcr: -totalLostAmount
+                });
+            }else if(totalLostAmount<0){
+                transaction.push({
                     account: lostInventoryChartAccount.account,
-                    dr: totalLostAmount,
+                    dr: -totalLostAmount,
                     cr: 0,
-                    drcr: totalLostAmount
+                    drcr: -totalLostAmount
                 });
             }
         }

@@ -142,6 +142,34 @@
                                 </tr>
                             {{/each}}
                         {{/if}}
+                        {{#if receivePayments}}
+                            <tr style="background-color: #3b5998; color: #ffffff;font-size: 16px;">
+                                <th colspan="5" style="text-align: center">Receive Payment</th>
+                            </tr>
+                            {{#each receivePayments}}
+                                <tr>
+                                    <td>{{_id}}</td>
+                                    <td>{{_customer.name}}</td>
+                                    <td>{{moFormat paymentDate 'DD-MM-YYYY'}}</td>
+                                    <td>{{branchId}}</td>
+                                    <!--<td>{{numFormat total '0,0.00'}}</td>-->
+                                </tr>
+                            {{/each}}
+                        {{/if}}
+                        {{#if payBills}}
+                            <tr style="background-color: #3b5998; color: #ffffff;font-size: 16px;">
+                                <th colspan="5" style="text-align: center">Pay Bill</th>
+                            </tr>
+                            {{#each payBills}}
+                                <tr>
+                                    <td>{{_id}}</td>
+                                    <td>{{_vendor.name}}</td>
+                                    <td>{{moFormat paymentDate 'DD-MM-YYYY'}}</td>
+                                    <td>{{branchId}}</td>
+                                    <!--<td>{{numFormat total '0,0.00'}}</td>-->
+                                </tr>
+                            {{/each}}
+                        {{/if}}
                         </tbody>
                     {{/with}}
                 </table>
