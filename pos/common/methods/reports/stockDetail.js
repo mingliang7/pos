@@ -1101,7 +1101,7 @@ function projectionField({item, description, name, number, rep, opDate}) {
 }
 function groupLast() {
     return {
-        _id: '$refId',
+        _id: '$_id',
         branchId: {$last: '$branchId'},
         stockLocationId: {$last: '$stockLocationId'},
         itemId: {$last: '$itemId'},
