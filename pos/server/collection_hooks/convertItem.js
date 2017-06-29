@@ -133,6 +133,7 @@ ConvertItems.after.insert(function (userId, doc) {
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let transaction = [];
+            let totalForInsertAccount = 0;
 
             if (totalAllItemConverted > 0) {
                 transaction.push({
@@ -141,6 +142,7 @@ ConvertItems.after.insert(function (userId, doc) {
                     cr: totalAllItemConverted,
                     drcr: -totalAllItemConverted
                 });
+                totalForInsertAccount += totalAllItemConverted;
             } else if (totalAllItemConverted < 0) {
                 transaction.push({
                     account: inventoryChartAccount.account,
@@ -162,20 +164,21 @@ ConvertItems.after.insert(function (userId, doc) {
             if (totalForAccount > 0) {
                 transaction.push({
                     account: itemConvertIncome.account,
-                    dr: totalForAccount,
-                    cr: 0,
-                    drcr: totalForAccount
+                    dr: 0,
+                    cr: totalForAccount,
+                    drcr: -totalForAccount
                 });
+                totalForInsertAccount += totalForAccount;
             }
             else if (totalForAccount < 0) {
                 transaction.push({
                     account: itemCovertExpense.account,
-                    dr: 0,
-                    cr: -totalForAccount,
-                    drcr: totalForAccount
+                    dr: -totalForAccount,
+                    cr: 0,
+                    drcr: -totalForAccount
                 });
             }
-
+            data.total=totalForInsertAccount;
             data.transaction = transaction;
             data.journalDate = data.convertItemDate;
             Meteor.call('insertAccountJournal', data);

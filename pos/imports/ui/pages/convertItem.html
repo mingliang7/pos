@@ -135,7 +135,7 @@
                 <div class="col-xs-12">
                     <div class="row">
                         <div class="col-xs-6 pull-left">
-                            <h2>EXCHANGE RING PULL</h2>
+                            <h2>Convert Item</h2>
                         </div>
                         <div class="col-xs-6 pull-left">
                             <h3 class="pull-right">#{{_id}}</h3>
@@ -145,9 +145,8 @@
 
                     <div class="row">
                         <div class="col-md-4" style="padding: 10px;">
-                            <strong>Customer: </strong> {{customer.name}}<br>
-                            <span><strong>Convert Date: </strong>{{moFormat convertItemDate
-                                                                            'YYYY-MM-DD HH:mm:ss'}}</span><br>
+                            <span><strong>Cash: </strong>${{numFormat cash '0,0.00'}}</span><br>
+                            <span><strong>Convert Date: </strong>{{moFormat convertItemDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>
                             <span><strong>Status: </strong>{{{colorizeStatus status}}}
                                 </span><br>
                         </div>
@@ -167,27 +166,39 @@
                                 <table class="table table-condensed">
                                     <thead>
                                     <tr>
-                                        <td><strong>Item</strong></td>
+                                        <td><strong>From Item</strong></td>
+                                        <td><strong>To Item</strong></td>
                                         <td class="text-center"><strong>Qty</strong></td>
-                                        <td class="text-right"><strong>Price</strong></td>
-                                        <td class="text-right"><strong>Amount</strong></td>
+                                        <td class="text-center"><strong>Get Qty</strong></td>
+                                        <td class="text-right"><strong>From Price</strong></td>
+                                        <td class="text-right"><strong>To Price</strong></td>
+                                        <td class="text-right"><strong>From Amount</strong></td>
+                                        <td class="text-right"><strong>To Amount</strong></td>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <!-- foreach ($order->lineItems as $line) or some such thing here -->
                                     {{#each item in items}}
                                         <tr>
-                                            <td><a href="#">{{item.itemName}}</a></td>
+                                            <td><a href="#">{{item.fromItemName}}</a></td>
+                                            <td><a href="#">{{item.toItemName}}</a></td>
                                             <td class="text-center">{{item.qty}}</td>
-                                            <td class="text-right">${{numFormat item.price '0,0.00'}}</td>
-                                            <td class="text-right">${{numFormat item.amount '0,0.00'}}</td>
+                                            <td class="text-center">{{item.getQty}}</td>
+                                            <td class="text-right">${{numFormat item.fromItemPrice '0,0.00'}}</td>
+                                            <td class="text-right">${{numFormat item.toItemPrice '0,0.00'}}</td>
+                                            <td class="text-right">${{numFormat item.fromItemAmount '0,0.00'}}</td>
+                                            <td class="text-right">${{numFormat item.toItemAmount '0,0.00'}}</td>
                                         </tr>
                                     {{/each}}
                                     <tr>
                                         <td class="no-line"></td>
                                         <td class="no-line"></td>
-                                        <td class="no-line text-right"><strong>Total</strong></td>
-                                        <td class="no-line text-right">${{numFormat total '0,0.00'}}</td>
+                                        <td class="no-line"></td>
+                                        <td class="no-line"></td>
+                                        <td class="no-line"></td>
+                                        <td class="no-line">Total:</td>
+                                        <td class="no-line text-right">${{numFormat fromItemTotal '0,0.00'}}</td>
+                                        <td class="no-line text-right">${{numFormat toItemTotal '0,0.00'}}</td>
                                     </tr>
                                     </tbody>
                                 </table>

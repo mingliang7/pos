@@ -43,12 +43,12 @@ import './customer.html';
 //import {customerInfo} from '../../../common/methods/customer.js';
 
 Tracker.autorun(function () {
-   /* if (Session.get("getCustomerId")) {
-        customerInfo.callPromise({_id: Session.get("getCustomerId")})
-            .then(function (result) {
-                Session.set('customerInfo', result);
-            });
-    }*/
+    /* if (Session.get("getCustomerId")) {
+     customerInfo.callPromise({_id: Session.get("getCustomerId")})
+     .then(function (result) {
+     Session.set('customerInfo', result);
+     });
+     }*/
 });
 
 // Declare template
@@ -125,10 +125,15 @@ indexTmpl.events({
             title: "Pleas Wait",
             text: "Getting ConvertItems....", showConfirmButton: false
         });
-        this.customer = CustomerNullCollection.findOne(this.customerId).name;
+
         Meteor.call('convertItemShow', {_id: this._id}, function (err, result) {
-            swal.close();
-            alertify.convertItemShow(fa('eye', TAPi18n.__('pos.convertItem.title')), renderTemplate(showTmpl, result)).maximize();
+            if (result) {
+                swal.close();
+                alertify.convertItemShow(fa('eye', TAPi18n.__('pos.convertItem.title')), renderTemplate(showTmpl, result)).maximize();
+            } else {
+                swal.close();
+                alertify.error("Can't find info")
+            }
         });
     },
     'click .js-convertItem' (event, instance) {
@@ -210,15 +215,15 @@ newTmpl.events({
     },
 });
 newTmpl.helpers({
-  /*  repId(){
-        if (Session.get('customerInfo')) {
-            try {
-                return Session.get('customerInfo').repId;
-            } catch (e) {
+    /*  repId(){
+     if (Session.get('customerInfo')) {
+     try {
+     return Session.get('customerInfo').repId;
+     } catch (e) {
 
-            }
-        }
-    },*/
+     }
+     }
+     },*/
     options(){
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().repList) {
@@ -239,19 +244,19 @@ newTmpl.helpers({
         }
         return {total};
     },
- /*   customerInfo() {
-        let customerInfo = Session.get('customerInfo');
-        if (!customerInfo) {
-            return {empty: true, message: 'No data available'}
-        }
+    /*   customerInfo() {
+     let customerInfo = Session.get('customerInfo');
+     if (!customerInfo) {
+     return {empty: true, message: 'No data available'}
+     }
 
-        return {
-            fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
-              <li>Opening Balance: <span class="label label-success">0</span></li>
-              <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
-              <li>Sale Order to be convertItem: <span class="label label-primary">0</span>`
-        };
-    },*/
+     return {
+     fields: `<li>Phone: <b>${customerInfo.telephone ? customerInfo.telephone : ''}</b></li>
+     <li>Opening Balance: <span class="label label-success">0</span></li>
+     <li >Credit Limit: <span class="label label-warning">${customerInfo.creditLimit ? numeral(customerInfo.creditLimit).format('0,0.00') : 0}</span></li>
+     <li>Sale Order to be convertItem: <span class="label label-primary">0</span>`
+     };
+     },*/
     collection(){
         return ConvertItems;
     },

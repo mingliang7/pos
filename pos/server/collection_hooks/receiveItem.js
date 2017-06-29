@@ -70,7 +70,7 @@ ReceiveItems.after.insert(function (userId, doc) {
             total += item.qty * item.price;
             totalLostAmount += item.lostQty * item.price;
         });
-        doc.total = total;
+
         //Account Integration
         if (setting && setting.integrate) {
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
@@ -80,9 +80,9 @@ ReceiveItems.after.insert(function (userId, doc) {
 
             transaction.push({
                 account: inventoryChartAccount.account,
-                dr: doc.total,
+                dr: total,
                 cr: 0,
-                drcr: doc.total
+                drcr: total
             });
             if (totalLostAmount > 0) {
                 transaction.push({
@@ -100,7 +100,8 @@ ReceiveItems.after.insert(function (userId, doc) {
                 });
             }
         }
-        doc.total = doc.total + totalLostAmount;
+        let ownInventory=total-totalLostAmount;
+
         if (doc.type == 'PrepaidOrder') {
             //Account Integration
             if (setting && setting.integrate) {
@@ -109,8 +110,8 @@ ReceiveItems.after.insert(function (userId, doc) {
                 transaction.push({
                     account: InventoryOwingChartAccount.account,
                     dr: 0,
-                    cr: doc.total,
-                    drcr: -doc.total
+                    cr: ownInventory,
+                    drcr: -ownInventory
                 });
             }
             reducePrepaidOrder(doc);
@@ -123,8 +124,8 @@ ReceiveItems.after.insert(function (userId, doc) {
                 transaction.push({
                     account: InventoryOwingChartAccount.account,
                     dr: 0,
-                    cr: doc.total,
-                    drcr: -doc.total
+                    cr: ownInventory,
+                    drcr: -ownInventory
                 });
             }
             reduceLendingStock(doc);
@@ -137,8 +138,8 @@ ReceiveItems.after.insert(function (userId, doc) {
                 transaction.push({
                     account: InventoryOwingChartAccount.account,
                     dr: 0,
-                    cr: doc.total,
-                    drcr: -doc.total
+                    cr: ownInventory,
+                    drcr: -ownInventory
                 });
             }
             reduceExchangeGratis(doc);
@@ -151,8 +152,8 @@ ReceiveItems.after.insert(function (userId, doc) {
                 transaction.push({
                     account: InventoryOwingChartAccount.account,
                     dr: 0,
-                    cr: doc.total,
-                    drcr: -doc.total
+                    cr: ownInventory,
+                    drcr: -ownInventory
                 });
             }
             reduceCompanyExchangeRingPull(doc);
@@ -234,7 +235,7 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
                 });
             }
         }
-        doc.total = doc.total + totalLostAmount;
+        let ownInventory=total-totalLostAmount;
 
         if (doc.type == 'PrepaidOrder') {
             //Account Integration
@@ -246,8 +247,8 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
                 transaction.push({
                     account: InventoryOwingChartAccount.account,
                     dr: 0,
-                    cr: doc.total,
-                    drcr: -doc.total
+                    cr: ownInventory,
+                    drcr: -ownInventory
                 });
             }
             increasePrepaidOrder(preDoc);
@@ -260,8 +261,8 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
                 transaction.push({
                     account: InventoryOwingChartAccount.account,
                     dr: 0,
-                    cr: doc.total,
-                    drcr: -doc.total
+                    cr: ownInventory,
+                    drcr: -ownInventory
                 });
             }
             increaseLendingStock(preDoc);
@@ -274,8 +275,8 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
                 transaction.push({
                     account: InventoryOwingChartAccount.account,
                     dr: 0,
-                    cr: doc.total,
-                    drcr: -doc.total
+                    cr: ownInventory,
+                    drcr: -ownInventory
                 });
             }
             increaseExchangeGratis(preDoc);
@@ -288,8 +289,8 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
                 transaction.push({
                     account: InventoryOwingChartAccount.account,
                     dr: 0,
-                    cr: doc.total,
-                    drcr: -doc.total
+                    cr: ownInventory,
+                    drcr: -ownInventory
                 });
             }
             increaseCompanyExchangeRingPull(preDoc);
