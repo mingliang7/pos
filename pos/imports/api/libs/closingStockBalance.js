@@ -13,6 +13,7 @@ export default class ClosingStock {
             let branchId = branch._id;
             let closingStockBalance = ClosingStockBalance.findOne({branchId: branch._id}, {sort: {closingDate: -1}});
             let inventory = InventoryDates.findOne({branchId: branch._id});
+            ClosingStockBalance.remove({branchId: branchId._id, closingDate: {$gte: inventory.inventoryDate}});
             let closingStockDate = closingStockBalance ? moment(closingStockBalance.closingDate).add(1, 'days').startOf('days').toDate() : null;
             if (inventory) {
                 let inventoryDate = moment(inventory.inventoryDate).endOf('days').toDate();

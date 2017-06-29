@@ -9,6 +9,7 @@ import {Exchange} from '../../../../core/imports/api/collections/exchange';
 
 Meteor.methods({
     'dashboard.customerTotalCredit' ({date}) {
+        let convertDate = moment(date).toDate();
         Meteor._sleepForMs(100);
         let obj = {
             items: [],
@@ -70,7 +71,7 @@ Meteor.methods({
                     paidAmount: {
                         $cond: [
                             {
-                                $lte: ['$paymentDoc.paymentDate', date]
+                                $lte: ['$paymentDoc.paymentDate', convertDate]
                             },
                             '$paymentDoc.paidAmount',
                             0
@@ -553,7 +554,7 @@ Meteor.methods({
             Meteor.call("acc_cashReportMethod", params, function (err, result) {
                 if (!err) {
                     obj.dataByBranches.push({branchDoc: branch, balance: result.endingBalance});
-                }else{
+                } else {
                     console.log(err.message)
                 }
             });
