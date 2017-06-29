@@ -85,11 +85,11 @@ itemsTmpl.helpers({
             key: 'qty',
             label: __(`${i18nPrefix}.qty.label`),
             fn(value, obj, key){
-                return  value;
+                return value;
             }
         }, {
             key: 'lostQty',
-            label: __(`${i18nPrefix}.lostQty.label`),
+            label: `Adjustment`,
             fn(value, obj, key){
                 return Spacebars.SafeString(`<input type="text" value=${value} class="lost-qty">`);
             }
@@ -278,44 +278,27 @@ itemsTmpl.events({
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
         let currentItem = itemsCollection.findOne({itemId: itemId});
         let selector = {};
-        debugger
-        if (currentLostQty >= currentItem.exactQty) {
-            $(event.currentTarget).val(0);
-            selector.$set = {
-                amount: currentItem.exactQty * currentItem.price,
-                qty: currentItem.exactQty,
-                lostQty: 0
-            }
-        } else {
-            if (currentLostQty != '') {
-                selector.$set = {
-                    amount: (currentItem.exactQty - currentLostQty) * currentItem.price,
-                    qty: currentItem.exactQty - currentLostQty,
-                    lostQty: currentLostQty
-                }
-            } else if (currentLostQty == '0') {
-                selector.$set = {
-                    amount: currentItem.exactQty * currentItem.price,
-                    qty: currentItem.exactQty,
-                    lostQty: currentLostQty
-                }
-            }
-            else {
-                selector.$set = {
-                    amount: currentItem.exactQty * currentItem.price,
-                    qty: currentItem.exactQty,
-                    lostQty: currentLostQty
-                }
-            }
+        let lostQty = 0;
+        let curentQty = currentItem.exactQty;
+        if(currentLostQty != '') {
+            lostQty = parseFloat(currentLostQty);
+            curentQty += lostQty;
+        }
+        selector.$set = {
+            amount: curentQty * currentItem.price,
+            qty: curentQty,
+            lostQty: lostQty
         }
 
         itemsCollection.update({itemId: itemId}, selector);
     },
-    "keypress .item-qty .lost-qty" (evt) {
+    "keypress .item-qty .lost-qty"(evt)
+    {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
         return !(charCode > 31 && (charCode < 48 || charCode > 57));
     }
-});
+})
+;
 
 
 // Edit
