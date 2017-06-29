@@ -103,7 +103,24 @@ Meteor.startup(function () {
                 "name": "COGS",
                 isUsed: true,
                 //"account" : "666666 | COGS"
-            }];
+            },
+            {
+                "_id":"017",
+                "name":"Gain on Item Covert Income",
+                isUsed:true
+            },
+            {
+                "_id":"018",
+                "name":"Lost on Item Covert Expense",
+                isUsed:true
+            },
+            {
+                "_id":"019",
+                "name":"Bonus Inventory",
+                isUsed:true
+            }
+
+        ];
         chartAccount.forEach(function (obj) {
             AccountMapping.insert(obj);
         });
