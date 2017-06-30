@@ -142,6 +142,7 @@ let insertLendingStockItem = ({self, remainQty, lendingStockItem, lendingStockId
     Meteor.call('getItem', self.itemId, (err, result) => {
         self.lendingStockId = lendingStockId;
         self.qty = remainQty;
+        self.exactQty = remainQty
         self.name = result.name;
         self.lostQty = 0;
         self.amount = self.qty * self.price;

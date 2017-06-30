@@ -787,6 +787,7 @@ let insertPrepaidOrderItem = ({self, remainQty, prepaidOrderItem, prepaidOrderId
         self.prepaidOrderId = prepaidOrderId;
         self.qty = remainQty;
         self.lostQty = 0;
+        self.exactQty = remainQty;
         self.name = result.name;
         self.amount = self.qty * self.price;
         let getItem = itemsCollection.findOne({itemId: self.itemId});

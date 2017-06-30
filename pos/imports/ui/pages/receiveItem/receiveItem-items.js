@@ -280,6 +280,7 @@ itemsTmpl.events({
         let selector = {};
         let lostQty = 0;
         let curentQty = currentItem.exactQty;
+        console.log(currentItem);
         if(currentLostQty != '') {
             lostQty = parseFloat(currentLostQty);
             curentQty += lostQty;
@@ -289,7 +290,6 @@ itemsTmpl.events({
             qty: curentQty,
             lostQty: lostQty
         }
-
         itemsCollection.update({itemId: itemId}, selector);
     },
     "keypress .item-qty .lost-qty"(evt)

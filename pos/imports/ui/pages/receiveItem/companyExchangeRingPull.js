@@ -71,8 +71,9 @@ companyExchangeRingPullTmpl.events({
                         insertCompanyExchangeRingPullItem({
                             self: this,
                             remainQty: parseFloat(remainQty),
+                            exactQty: parseFloat(remainQty),
                             companyExchangeRingPullItem: companyExchangeRingPullIdExist,
-                            companyExchangeRingPullId: companyExchangeRingPullId
+                            companyExchangeRingPullId: companyExchangeRingPullIdExist.companyExchangeRingPullId
                         });
                     } else {
                         swal("Retry!", "Item Must be in the same companyExchangeRingPullId", "warning")
@@ -115,6 +116,7 @@ companyExchangeRingPullTmpl.events({
                         insertCompanyExchangeRingPullItem({
                             self: this,
                             remainQty: parseFloat(remainQty),
+                            exactQty: parseFloat(remainQty),
                             companyExchangeRingPullItem: companyExchangeRingPullIdExist,
                             companyExchangeRingPullId: companyExchangeRingPullId
                         });
@@ -143,11 +145,13 @@ companyExchangeRingPullTmpl.events({
     }
 });
 //insert companyExchagneRingPull order item to itemsCollection
-let insertCompanyExchangeRingPullItem = ({self, remainQty, companyExchagneRingPullItem, companyExchagneRingPullId}) => {
+let insertCompanyExchangeRingPullItem = ({self, remainQty, companyExchagneRingPullItem, companyExchangeRingPullId}) => {
     Meteor.call('getItem', self.itemId, (err, result) => {
-        self.companyExchagneRingPullId = companyExchagneRingPullId;
+        self.companyExchangeRingPullId = companyExchangeRingPullId;
         self.qty = remainQty;
+        self.exactQty = remainQty;
         self.name = result.name;
+        self.exchange = remainQty;
         self.lostQty = 0;
         self.amount = self.qty * self.price;
         let getItem = itemsCollection.findOne({itemId: self.itemId});
