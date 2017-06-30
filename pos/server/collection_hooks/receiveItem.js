@@ -66,9 +66,15 @@ ReceiveItems.after.insert(function (userId, doc) {
         let type = '';
         let total = 0;
         let totalLostAmount = 0;
+        let totalBonusAmount = 0;
+        let totalForAccount = 0;
         doc.items.forEach(function (item) {
             total += item.qty * item.price;
-            totalLostAmount += item.lostQty * item.price;
+            if (item.lostQty > 0) {
+                totalBonusAmount += item.lostQty * item.price;
+            } else if (item.lostQty < 0) {
+                totalLostAmount += item.lostQty * item.price;
+            }
         });
 
         //Account Integration
@@ -84,14 +90,18 @@ ReceiveItems.after.insert(function (userId, doc) {
                 cr: 0,
                 drcr: total
             });
-            if (totalLostAmount > 0) {
+            totalForAccount += total;
+            if (totalBonusAmount > 0) {
                 transaction.push({
                     account: bonusInventoryChartAccount.account,
-                    cr: totalLostAmount,
+                    cr: totalBonusAmount,
                     dr: 0,
-                    drcr: -totalLostAmount
+                    drcr: -totalBonusAmount
                 });
-            }else if(totalLostAmount<0){
+            }
+
+            if (totalLostAmount < 0) {
+                totalForAccount += (-totalLostAmount);
                 transaction.push({
                     account: lostInventoryChartAccount.account,
                     dr: -totalLostAmount,
@@ -100,7 +110,7 @@ ReceiveItems.after.insert(function (userId, doc) {
                 });
             }
         }
-        let ownInventory=total-totalLostAmount;
+        let ownInventory = (total - totalBonusAmount) - totalLostAmount;
 
         if (doc.type == 'PrepaidOrder') {
             //Account Integration
@@ -179,6 +189,7 @@ ReceiveItems.after.insert(function (userId, doc) {
             data.type = type;
             data.transaction = transaction;
             data.journalDate = data.receiveItemDate;
+            data.total = totalForAccount;
 
             let vendorDoc = Vendors.findOne({_id: doc.vendorId});
             if (vendorDoc) {
@@ -201,9 +212,15 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
         let type = '';
         let totalLostAmount = 0;
         let total = 0;
+        let totalBonusAmount = 0;
+        let totalForAccount=0;
         doc.items.forEach(function (item) {
             total += item.qty * item.price;
-            totalLostAmount += item.lostQty * item.price;
+            if (item.lostQty > 0) {
+                totalBonusAmount += item.lostQty * item.price;
+            } else if (item.lostQty < 0) {
+                totalLostAmount += item.lostQty * item.price;
+            }
         });
         doc.total = total;
         //Account Integration
@@ -219,14 +236,18 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
                 cr: 0,
                 drcr: doc.total
             });
-            if (totalLostAmount > 0) {
+            totalForAccount+=total;
+            if (totalBonusAmount > 0) {
                 transaction.push({
                     account: bonusInventoryChartAccount.account,
-                    cr: totalLostAmount,
+                    cr: totalBonusAmount,
                     dr: 0,
-                    drcr: -totalLostAmount
+                    drcr: -totalBonusAmount
                 });
-            }else if(totalLostAmount<0){
+            }
+
+            if (totalLostAmount < 0) {
+                totalForAccount+=(-totalLostAmount);
                 transaction.push({
                     account: lostInventoryChartAccount.account,
                     dr: -totalLostAmount,
@@ -235,7 +256,7 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
                 });
             }
         }
-        let ownInventory=total-totalLostAmount;
+        let ownInventory = (total - totalBonusAmount) - totalLostAmount;
 
         if (doc.type == 'PrepaidOrder') {
             //Account Integration
@@ -315,6 +336,7 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
             data.type = type;
             data.transaction = transaction;
             data.journalDate = data.receiveItemDate;
+            data.total = totalForAccount;
             let vendorDoc = Vendors.findOne({_id: doc.vendorId});
             if (vendorDoc) {
                 data.name = vendorDoc.name;
