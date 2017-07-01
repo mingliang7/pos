@@ -213,7 +213,7 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
         let totalLostAmount = 0;
         let total = 0;
         let totalBonusAmount = 0;
-        let totalForAccount=0;
+        let totalForAccount = 0;
         doc.items.forEach(function (item) {
             total += item.qty * item.price;
             if (item.lostQty > 0) {
@@ -236,7 +236,7 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
                 cr: 0,
                 drcr: doc.total
             });
-            totalForAccount+=total;
+            totalForAccount += total;
             if (totalBonusAmount > 0) {
                 transaction.push({
                     account: bonusInventoryChartAccount.account,
@@ -247,7 +247,7 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
             }
 
             if (totalLostAmount < 0) {
-                totalForAccount+=(-totalLostAmount);
+                totalForAccount += (-totalLostAmount);
                 transaction.push({
                     account: lostInventoryChartAccount.account,
                     dr: -totalLostAmount,
@@ -443,8 +443,8 @@ function reducePrepaidOrder(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -item.qty,
-                    "items.$.remainQty": -item.qty
+                    sumRemainQty: -(item.qty - item.lostQty),
+                    "items.$.remainQty": -(item.qty - item.lostQty)
                 }
             });
     });
@@ -461,7 +461,7 @@ function increasePrepaidOrder(preDoc) {
     preDoc.items.forEach(function (item) {
         PrepaidOrders.direct.update(
             {_id: preDoc.prepaidOrderId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
+            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
         ); //re sum remain qty
     });
 }
@@ -475,8 +475,8 @@ function reduceLendingStock(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -item.qty,
-                    "items.$.remainQty": -item.qty
+                    sumRemainQty: -(item.qty - item.lostQty),
+                    "items.$.remainQty": -(item.qty - item.lostQty)
                 }
             });
     });
@@ -493,7 +493,7 @@ function increaseLendingStock(preDoc) {
     preDoc.items.forEach(function (item) {
         LendingStocks.direct.update(
             {_id: preDoc.lendingStockId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
+            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
         ); //re sum remain qty
     });
 }
@@ -508,8 +508,8 @@ function reduceCompanyExchangeRingPull(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -item.qty,
-                    "items.$.remainQty": -item.qty
+                    sumRemainQty: -(item.qty - item.lostQty),
+                    "items.$.remainQty": -(item.qty - item.lostQty)
                 }
             });
     });
@@ -526,7 +526,7 @@ function increaseCompanyExchangeRingPull(preDoc) {
     preDoc.items.forEach(function (item) {
         CompanyExchangeRingPulls.direct.update(
             {_id: preDoc.companyExchangeRingPullId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
+            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
         ); //re sum remain qty
     });
 }
@@ -541,8 +541,8 @@ function reduceExchangeGratis(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -item.qty,
-                    "items.$.remainQty": -item.qty
+                    sumRemainQty: -(item.qty - item.lostQty),
+                    "items.$.remainQty": -(item.qty - item.lostQty)
                 }
             });
     });
@@ -559,7 +559,7 @@ function increaseExchangeGratis(preDoc) {
     preDoc.items.forEach(function (item) {
         ExchangeGratis.direct.update(
             {_id: preDoc.exchangeGratisId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': item.qty, sumRemainQty: item.qty}}
+            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
         ); //re sum remain qty
     });
 }
