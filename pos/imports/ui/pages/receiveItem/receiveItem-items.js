@@ -166,7 +166,7 @@ itemsTmpl.events({
     'keyup [name="qty"],[name="price"]': function (event, instance) {
         let qty = instance.$('[name="qty"]').val();
         let price = instance.$('[name="price"]').val();
-        qty = _.isEmpty(qty) ? 0 : parseInt(qty);
+        qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
         let amount = qty * price;
 
@@ -179,15 +179,15 @@ itemsTmpl.events({
             return;
         }
         let qty = instance.$('[name="qty"]').val();
-        qty = qty == "" ? 1 : parseInt(qty);
-        let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
-        let amount = math.round(qty * price, 2);
+        qty = qty == "" ? 1 : parseFloat(qty);
+        let price = parseFloat(instance.$('[name="price"]').val());
+        let amount = qty * price;
         // Check exist
         let exist = itemsCollection.findOne({
             itemId: itemId
         });
         if (exist) {
-            amount = math.round(qty * price, 2);
+            amount = qty * price;
             itemsCollection.update({
                 _id: exist._id
             }, {
@@ -330,7 +330,7 @@ editItemsTmpl.events({
     'keyup [name="qty"],[name="price"]': function (event, instance) {
         let qty = instance.$('[name="qty"]').val();
         let price = instance.$('[name="price"]').val();
-        qty = _.isEmpty(qty) ? 0 : parseInt(qty);
+        qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
         let amount = qty * price;
 
@@ -357,7 +357,7 @@ let hooksObject = {
             if (exist) {
                 let newQty = exist.qty + insertDoc.qty;
                 let newPrice = insertDoc.price;
-                let newAmount = math.round(newQty * newPrice, 2);
+                let newAmount = newQty * newPrice;
 
                 itemsCollection.update({
                     _id: insertDoc._id

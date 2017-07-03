@@ -47,11 +47,12 @@ export const ItemsSchema = new SimpleSchema({
         type: Number,
         label: 'Qty',
         optional: true,
+        decimal: true,
         min: 1,
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.integer();
+                return inputmaskOptions.decimal({digits:4});
             }
         }
     },
@@ -64,7 +65,7 @@ export const ItemsSchema = new SimpleSchema({
             type: 'inputmask',
             optional: true,
             inputmaskOptions: function () {
-                return inputmaskOptions.currency({digits: 2});
+                return inputmaskOptions.currency({digits: 3});
             }
         }
     },
@@ -115,7 +116,7 @@ export const ItemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.currency({digits: 2});
+                return inputmaskOptions.currency({digits: 3});
             }
         }
 
@@ -142,6 +143,7 @@ export const RingPullItemsSchema = new SimpleSchema({
         type: Number,
         label: 'Qty',
         optional: true,
+        decimal: true,
         min: 1,
         autoform: {
             type: 'inputmask',
@@ -256,7 +258,7 @@ export const EnterBillItemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.integer();
+                return inputmaskOptions.decimal();
             }
         }
     },
@@ -297,7 +299,7 @@ export const EnterBillItemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.currency();
+                return inputmaskOptions.currency({digits: 3});
             }
         }
     }

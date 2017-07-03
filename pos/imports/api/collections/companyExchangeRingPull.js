@@ -1,12 +1,12 @@
-import {Meteor} from 'meteor/meteor';
-import {Mongo} from 'meteor/mongo';
-import {SimpleSchema} from 'meteor/aldeed:simple-schema';
-import {AutoForm} from 'meteor/aldeed:autoform';
-import {moment} from 'meteor/momentjs:moment';
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { AutoForm } from 'meteor/aldeed:autoform';
+import { moment } from 'meteor/momentjs:moment';
 
 // Lib
-import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
-import {SelectOpts} from '../../ui/libs/select-opts.js';
+import { __ } from '../../../../core/common/libs/tapi18n-callback-helper.js';
+import { SelectOpts } from '../../ui/libs/select-opts.js';
 
 export const CompanyExchangeRingPulls = new Mongo.Collection("pos_companyExchangeRingPulls");
 // Items sub schema
@@ -16,6 +16,7 @@ CompanyExchangeRingPulls.itemsSchema = new SimpleSchema({
     },
     qty: {
         type: Number,
+        decimal: true,
         min: 1
     },
     remainQty: {
@@ -56,7 +57,7 @@ CompanyExchangeRingPulls.schema = new SimpleSchema({
                     format: 'DD/MM/YYYY HH:mm:ss',
 
                 },
-                value(){
+                value() {
                     let vendorId = AutoForm.getFieldValue('vendorId');
                     if (vendorId) {
                         return moment().toDate();
@@ -76,7 +77,7 @@ CompanyExchangeRingPulls.schema = new SimpleSchema({
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
                         let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
+                        return { branchId: currentBranch };
                     }
                 }
             }
@@ -84,7 +85,7 @@ CompanyExchangeRingPulls.schema = new SimpleSchema({
     },
     staffId: {
         type: String,
-        autoValue(){
+        autoValue() {
             if (this.isInsert) {
                 return Meteor.user()._id;
             }

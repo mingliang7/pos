@@ -17,6 +17,7 @@ Order.itemsSchema = new SimpleSchema({
     },
     qty: {
         type: Number,
+        decimal: true,
         min: 1
     },
     price: {

@@ -133,7 +133,7 @@ itemsTmpl.helpers({
             key: 'amount',
             label: __(`${i18nPrefix}.amount.label`),
             fn(value, object, key) {
-                return numeral(value).format('0,0.00');
+                return numeral(value).format('0,0.000');
             }
         }, {
             key: '_id',
@@ -246,8 +246,8 @@ itemsTmpl.events({
         }
         let qty = instance.$('[name="qty"]').val();
         qty = qty == '' ? 1 : parseFloat(qty);
-        let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
-        let amount = math.round(qty * price, 2);
+        let price = parseFloat(instance.$('[name="price"]').val());
+        let amount = qty * price;
         let stockLocationId = $('[name="stockLocationId"]').val();
         if (stockLocationId == "") {
             alertify.warning("Please choose stock location.");
@@ -626,7 +626,7 @@ let hooksObject = {
             if (exist) {
                 let newQty = exist.qty + insertDoc.qty;
                 let newPrice = insertDoc.price;
-                let newAmount = math.round(newQty * newPrice, 2);
+                let newAmount = newQty * newPrice;
 
                 itemsCollection.update({
                     _id: insertDoc._id
