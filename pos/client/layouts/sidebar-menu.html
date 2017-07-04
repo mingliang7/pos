@@ -252,6 +252,12 @@
                         <span>Exchange Gratis</span>
                     </a>
                 </li>
+                <li class="{{isActiveRoute name='pos.convertItem'}}">
+                    <a href="{{pathFor 'pos.convertItem'}}">
+                        <i class="fa fa-gift" aria-hidden="true"></i>
+                        <span>Convert Item</span>
+                    </a>
+                </li>
                 {{#if isInRole 'remove-transaction' 'Pos'}}
                     <li class="{{isActiveRoute name='pos.removeTransaction'}}">
                         <a href="{{pathFor 'pos.removeTransaction'}}">

@@ -697,7 +697,6 @@ listPrepaidOrder.events({
         let remainQty = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.remain-qty').val();
         let prepaidOrderId = $(event.currentTarget).parents('.prepaid-order-item-parents').find('.prepaidOrderId').text().trim();
         let tmpCollection = itemsCollection.find().fetch();
-        debugger
         if (remainQty != '' && remainQty != '0') {
             if (this.remainQty > 0) {
                 if (tmpCollection.length > 0) {

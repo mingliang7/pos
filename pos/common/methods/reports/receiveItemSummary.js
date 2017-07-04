@@ -77,7 +77,7 @@ export const receiveItemSummary = new ValidatedMethod({
                       items: {
                           lostQty: 1,
                           qty: 1,
-                          totalQty: {$add: ['$items.qty', '$items.lostQty']},
+                          totalQty: {$subtract: ['$items.qty', '$items.lostQty']},
                           itemId: 1,
                           price: 1,
                           amount: 1,
