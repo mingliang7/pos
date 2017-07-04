@@ -23,6 +23,7 @@ AverageInventories.schema = new SimpleSchema({
         decimal: true
     },
     qty: {
+        decimal: true,
         type: Number
     },
     amount: {

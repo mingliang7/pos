@@ -16,7 +16,7 @@ export const itemInfo = new ValidatedMethod({
     validate: new SimpleSchema({
         _id: {type: String},
         customerId: {type: String, optional: true},
-        qty: {type: Number, optional: true},
+        qty: {decimal: true, type: Number, optional: true},
         routeName: {type: String, optional: true}
     }).validator(),
     run({_id, customerId, qty, routeName}) {
@@ -35,8 +35,13 @@ export const itemInfo = new ValidatedMethod({
                 }
             }
             if (qty && (routeName == 'pos.order' || routeName == 'pos.invoice')) {
-                console.log(data._id, typeof(qty));
-                let qtyRangePrice = QuantityRangeMapping.findOne({itemId: _id, startQty: {$lte: qty},endQty: {$gte: qty}});
+                qty = Math.floor(qty);
+                let qtyRangePrice = QuantityRangeMapping.findOne({
+                    itemId: _id,
+                    startQty: {$lte: qty},
+                    endQty: {$gte: qty}
+                });
+                console.log(qtyRangePrice);
                 if (qtyRangePrice && data.mappingEnable) {
                     data.price = qtyRangePrice.price;
                 }
@@ -70,7 +75,7 @@ export const getUnitName = new ValidatedMethod({
         let listUnit = "";
         if (!this.isSimulation) {
             if (data.sellingUnit.length > 0) {
-                data.sellingUnit.forEach((unit)=> {
+                data.sellingUnit.forEach((unit) => {
                     listUnit += Units.findOne(unit.unitId).name + `, converter: ${unit.converter}`;
                 })
             }

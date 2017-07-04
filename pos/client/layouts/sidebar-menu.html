@@ -198,7 +198,12 @@
                 <i class="fa fa-angle-left pull-right"></i>
             </a>
             <ul class="treeview-menu" style="display: none;">
-                <li class="{{isActiveRoute name='pos.transferMoney'}}">
+                <li class="{{isActiveRoute name='pos.convertItem'}}">
+                    <a href="{{pathFor 'pos.convertItem'}}">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                        <span>Convert Item</span>
+                    </a>
+                </li> <li class="{{isActiveRoute name='pos.transferMoney'}}">
                     <a href="{{pathFor 'pos.transferMoney'}}">
                         <i class="fa fa-money" aria-hidden="true"></i>
                         <span>Transfer Money</span>
