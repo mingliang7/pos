@@ -39,7 +39,8 @@ AverageInventories.schema = new SimpleSchema({
         decimal: true
     },
     remainQty: {
-        type: Number
+        type: Number,
+        decimal:true
     },
     branchId: {
         type: String
