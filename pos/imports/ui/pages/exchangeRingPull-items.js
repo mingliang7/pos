@@ -457,7 +457,6 @@ itemsTmpl.events({
             }
         }
         itemsCollection.update({ itemId: itemId }, selector);*/
-        debugger;
         let thisObj = $(event.currentTarget);
         let currentQty =parseFloat(event.currentTarget.value);
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
@@ -522,10 +521,10 @@ itemsTmpl.events({
             });
         }
     },
-    "keypress .item-qty"(evt) {
-        var charCode = (evt.which) ? evt.which : evt.keyCode;
-        return !(charCode > 31 && (charCode < 48 || charCode > 57));
-    }
+    // "keypress .item-qty"(evt) {
+    //     var charCode = (evt.which) ? evt.which : evt.keyCode;
+    //     return !(charCode > 31 && (charCode < 48 || charCode > 57));
+    // }
 });
 //destroy
 itemsTmpl.onDestroyed(function () {

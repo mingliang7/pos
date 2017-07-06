@@ -594,14 +594,14 @@ itemsTmpl.events({
         }
 
     },
-    "keypress .item-qty"(evt) {
-        var charCode = (evt.which) ? evt.which : evt.keyCode;
-        return !(charCode > 31 && (charCode < 48 || charCode > 57));
-    },
-    'keypress [name="qty"]'(evt) {
-        var charCode = (evt.which) ? evt.which : evt.keyCode;
-        return !(charCode > 31 && (charCode < 48 || charCode > 57));
-    }
+    // "keypress .item-qty"(evt) {
+    //     var charCode = (evt.which) ? evt.which : evt.keyCode;
+    //     return !(charCode > 31 && (charCode < 48 || charCode > 57));
+    // },
+    // 'keypress [name="qty"]'(evt) {
+    //     var charCode = (evt.which) ? evt.which : evt.keyCode;
+    //     return !(charCode > 31 && (charCode < 48 || charCode > 57));
+    // }
 });
 itemsTmpl.onDestroyed(function () {
     Session.set('itemFilterState', {});

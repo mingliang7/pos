@@ -90,9 +90,9 @@
                 {{#each content}}
                     <tr>
                         <td>{{itemDoc.name}}</td>
-                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat totalQty '0,0'}}</td>
-                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat receiveQty '0,0'}}</td>
-                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat remainQty '0,0'}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat totalQty "0,0.00"}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat receiveQty "0,0.00"}}</td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat remainQty "0,0.00"}}</td>
                         <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat price '0,0.00'}}</td>
                         <td class="text-right" style="border: 1px solid #E0E0E0;">{{numFormat amount '0,0.00'}}</td>
                     </tr>
@@ -100,9 +100,9 @@
                 {{#with footer}}
                     <tr style="border-top: 1px solid #000;">
                         <td class="text-right"><b>Total:</b></td>
-                        <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat totalQty '0,0'}}</b></td>
-                        <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat totalReceiveQty '0,0'}}</b></td>
-                        <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat totalRemainQty '0,0'}}</b></td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat totalQty "0,0.00"}}</b></td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat totalReceiveQty "0,0.00"}}</b></td>
+                        <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat totalRemainQty "0,0.00"}}</b></td>
                         <td></td>
                         <td class="text-right" style="border: 1px solid #E0E0E0;"><b>{{numFormat totalAmount '0,0.00'}}</b></td>
                     </tr>
