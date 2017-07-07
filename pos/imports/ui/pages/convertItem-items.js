@@ -503,7 +503,7 @@ let hooksObject = {
             if (exist) {
                 let newQty = exist.qty + insertDoc.qty;
                 let newPrice = insertDoc.price;
-                let newAmount = math.round(newQty * newPrice, 2);
+                let newAmount =newQty * newPrice;
 
                 itemsCollection.update({
                     _id: insertDoc._id

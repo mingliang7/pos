@@ -291,9 +291,9 @@ let hooksObject = {
             if (btnType == "save" || btnType == "save-print") {
                 doc.status = "active";
                 doc.paidAmount = 0;
-                doc.dueAmount = math.round(doc.total, 2);
+                doc.dueAmount = doc.total;
             } else if (btnType == "pay") {
-                doc.dueAmount = math.round((doc.total - doc.paidAmount), 2);
+                doc.dueAmount = (doc.total - doc.paidAmount);
                 if (doc.dueAmount <= 0) {
                     doc.status = "close";
                 } else {
@@ -315,9 +315,9 @@ let hooksObject = {
             if (btnType == "save" || btnType == "save-print") {
                 doc.$set.status = "active";
                 doc.$set.paidAmount = 0;
-                doc.$set.dueAmount = math.round(doc.total, 2);
+                doc.$set.dueAmount = doc.total;
             } else if (btnType == "pay") {
-                doc.$set.dueAmount = math.round((doc.$set.total - doc.$set.paidAmount), 2);
+                doc.$set.dueAmount = (doc.$set.total - doc.$set.paidAmount);
                 if (doc.$set.dueAmount <= 0) {
                     doc.$set.status = "close";
                 } else {
