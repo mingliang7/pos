@@ -149,8 +149,8 @@ itemsTmpl.events({
         let itemId = instance.$('[name="itemId"]').val();
         let qty = instance.$('[name="qty"]').val();
         qty = qty == "" ? 1 : parseInt(qty);
-        let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
-        let amount = math.round(qty * price, 2);
+        let price =parseFloat(instance.$('[name="price"]').val());
+        let amount =qty * price;
 
         // Check exist
         let exist = itemsCollection.findOne({
@@ -158,7 +158,7 @@ itemsTmpl.events({
         });
         if (exist) {
             qty += parseInt(exist.qty);
-            amount = math.round(qty * price, 2);
+            amount =qty * price;
 
             itemsCollection.update({
                 _id: exist._id
@@ -274,7 +274,7 @@ let hooksObject = {
             if (exist) {
                 let newQty = exist.qty + insertDoc.qty;
                 let newPrice = insertDoc.price;
-                let newAmount = math.round(newQty * newPrice, 2);
+                let newAmount = newQty * newPrice;
 
                 itemsCollection.update({
                     _id: insertDoc._id

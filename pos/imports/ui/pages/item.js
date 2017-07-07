@@ -332,8 +332,8 @@ Template.schemeItem.events({
     'click .js-add-item': function (event, instance) {
         let itemId = instance.$('[name="itemId"]').val();
         let qty = parseInt(instance.$('[name="qty"]').val() == '' ? 1 : instance.$('[name="qty"]').val());
-        let price = math.round(parseFloat(instance.$('[name="price"]').val()), 2);
-        let amount = math.round(qty * price, 2);
+        let price = parseFloat(instance.$('[name="price"]').val());
+        let amount = qty * price;
         // Check exist
         // let exist = tmpCollection.findOne({itemId: itemId});
         // if (exist) {
