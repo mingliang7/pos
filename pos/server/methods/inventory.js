@@ -1,3 +1,6 @@
+import {ExchangeGratis} from '../../imports/api/collections/exchangeGratis.js';
+import {PrepaidOrders} from '../../imports/api/collections/prepaidOrder.js';
+import {CompanyExchangeRingPulls} from '../../imports/api/collections/companyExchangeRingPull.js';
 import {AverageInventories} from '../../imports/api/collections/inventory.js';
 import {ExchangeRingPulls} from '../../imports/api/collections/exchangeRingPull.js'
 import {EnterBills} from '../../imports/api/collections/enterBill.js'
@@ -784,9 +787,18 @@ Meteor.methods({
         if (payBills.count() > 0) {
             transaction.payBills = payBills.fetch();
         }
+        let companyExchangeRingPulls = CompanyExchangeRingPulls.find({
+            companyExchangeRingPullDate: {$gte: date},
+            branchId: {$in: branchIds}
+        });
+        if (companyExchangeRingPulls.count() > 0) {
+            transaction.companyExchangeRingPulls = companyExchangeRingPulls.fetch();
+        }
+        let prepaidOrders = PrepaidOrders.find({prepaidOrderDate: {$gte: date}, branchId: {$in: branchIds}});
+        if (prepaidOrders.count() > 0) {
+            transaction.prepaidOrders = prepaidOrders.fetch();
+        }
         return transaction;
-
-
     },
     removeTransactions(branchId, doc){
         //  Meteor.defer(function () {
@@ -879,9 +891,38 @@ Meteor.methods({
             }
             if (receiveItems.count() > 0) {
                 receiveItems.forEach(function (obj) {
-                    let type = obj.type == 'CompanyExchangeRingPull' ? "RingPull-RI" : obj.type + "-RI";
-                    let data = {_id: obj._id, type: type};
-                    Meteor.call('removeAccountJournal', data);
+                    let type = '';
+                    Meteor.defer(function () {
+                        if (obj.type == 'PrepaidOrder') {
+                            type = 'PrepaidOrder-RI';
+                            increasePrepaidOrder(obj);
+                            let prepaidOrder = PrepaidOrders.findOne(obj.prepaidOrderId);
+                            PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'active'}});
+                        } else if (obj.type == 'LendingStock') {
+                            type = 'LendingStock-RI';
+                            increaseLendingStock(obj);
+                            let lendingStock = LendingStocks.findOne(obj.lendingStockId);
+                            LendingStocks.direct.update(lendingStock._id, {$set: {status: 'active'}});
+                        } else if (obj.type == 'ExchangeGratis') {
+                            type = 'ExchangeGratis-RI';
+                            increaseExchangeGratis(obj);
+                            let exchangeGratis = ExchangeGratis.findOne(obj.exchangeGratisId);
+                            ExchangeGratis.direct.update(exchangeGratis._id, {$set: {status: 'active'}});
+                        } else if (obj.type == 'CompanyExchangeRingPull') {
+                            type = 'RingPull-RI';
+                            increaseCompanyExchangeRingPull(obj);
+                            let companyExchangeRingPull = CompanyExchangeRingPulls.findOne(obj.companyExchangeRingPullId);
+                            CompanyExchangeRingPulls.direct.update(companyExchangeRingPull._id, {$set: {status: 'active'}});
+                        } else {
+                            throw Meteor.Error('Require Receive Item type');
+                        }
+                        //Account Integration
+                        let data = {_id: obj._id, type: type};
+                        Meteor.call('removeAccountJournal', data);
+                        //End Account Integration
+                    });
+
+
                 });
             }
             if (exchangeRingPulls.count() > 0) {
@@ -892,6 +933,8 @@ Meteor.methods({
             }
         }
 
+        CompanyExchangeRingPulls.remove({companyExchangeRingPullDate: {$gte: date}, branchId: {$in: branchIds}});
+        PrepaidOrders.remove({prepaidOrderDate: {$gte: date}, branchId: {$in: branchIds}});
         ConvertItems.direct.remove({convertItemDate: {$gte: date}, branchId: {$in: branchIds}});
         ReceivePayment.direct.remove({invoiceId: {$in: invoiceIds}});
         PayBills.direct.remove({billId: {$in: billIds}});
@@ -1015,9 +1058,19 @@ function getTransactionsAfterRemove(branchId, doc) {
     if (payBills.count() > 0) {
         transaction.payBills = payBills.fetch();
     }
+    let companyExchangeRingPulls = CompanyExchangeRingPulls.find({
+        companyExchangeRingPullDate: {$gte: date},
+        branchId: {$in: branchIds}
+    });
+    if (companyExchangeRingPulls.count() > 0) {
+        transaction.companyExchangeRingPulls = companyExchangeRingPulls.fetch();
+    }
+    let prepaidOrders = PrepaidOrders.find({prepaidOrderDate: {$gte: date}, branchId: {$in: branchIds}});
+    if (prepaidOrders.count() > 0) {
+        transaction.prepaidOrders = prepaidOrders.fetch();
+    }
     return transaction;
 }
-
 function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
     let lastPurchasePrice = 0;
     let remainQuantity = 0;
@@ -1083,7 +1136,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         nextInventory.stockLocationId = stockLocationId;
         nextInventory.itemId = item.itemId;
         nextInventory.qty = item.qty;
-        nextInventory.price =price;
+        nextInventory.price = price;
         nextInventory.remainQty = totalQty;
         nextInventory.type = type;
         nextInventory.coefficient = 1;
@@ -1137,3 +1190,39 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
  }
  //End Account Integration
  */
+function increasePrepaidOrder(preDoc) {
+    let updatedFlag;
+    preDoc.items.forEach(function (item) {
+        PrepaidOrders.direct.update(
+            {_id: preDoc.prepaidOrderId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+        ); //re sum remain qty
+    });
+}
+function increaseLendingStock(preDoc) {
+    //let updatedFlag;
+    preDoc.items.forEach(function (item) {
+        LendingStocks.direct.update(
+            {_id: preDoc.lendingStockId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+        ); //re sum remain qty
+    });
+}
+function increaseCompanyExchangeRingPull(preDoc) {
+    //let updatedFlag;
+    preDoc.items.forEach(function (item) {
+        CompanyExchangeRingPulls.direct.update(
+            {_id: preDoc.companyExchangeRingPullId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+        ); //re sum remain qty
+    });
+}
+function increaseExchangeGratis(preDoc) {
+    //let updatedFlag;
+    preDoc.items.forEach(function (item) {
+        ExchangeGratis.direct.update(
+            {_id: preDoc.exchangeGratisId, 'items.itemId': item.itemId},
+            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+        ); //re sum remain qty
+    });
+}

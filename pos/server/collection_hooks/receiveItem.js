@@ -358,39 +358,22 @@ ReceiveItems.after.remove(function (userId, doc) {
             type = 'PrepaidOrder-RI';
             increasePrepaidOrder(doc);
             let prepaidOrder = PrepaidOrders.findOne(doc.prepaidOrderId);
-            if (prepaidOrder.sumRemainQty == 0) {
-                PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'closed'}});
-            } else {
-                PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'active'}});
-            }
+            PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'active'}});
         } else if (doc.type == 'LendingStock') {
             type = 'LendingStock-RI';
             increaseLendingStock(doc);
             let lendingStock = LendingStocks.findOne(doc.lendingStockId);
-            if (lendingStock.sumRemainQty == 0) {
-                LendingStocks.direct.update(lendingStock._id, {$set: {status: 'closed'}});
-            } else {
-                LendingStocks.direct.update(lendingStock._id, {$set: {status: 'active'}});
-            }
+            LendingStocks.direct.update(lendingStock._id, {$set: {status: 'active'}});
         } else if (doc.type == 'ExchangeGratis') {
             type = 'ExchangeGratis-RI';
             increaseExchangeGratis(doc);
             let exchangeGratis = ExchangeGratis.findOne(doc.exchangeGratisId);
-            if (exchangeGratis.sumRemainQty == 0) {
-                ExchangeGratis.direct.update(exchangeGratis._id, {$set: {status: 'closed'}});
-            } else {
-                ExchangeGratis.direct.update(exchangeGratis._id, {$set: {status: 'active'}});
-            }
+            ExchangeGratis.direct.update(exchangeGratis._id, {$set: {status: 'active'}});
         } else if (doc.type == 'CompanyExchangeRingPull') {
             type = 'RingPull-RI';
             increaseCompanyExchangeRingPull(doc);
             let companyExchangeRingPull = CompanyExchangeRingPulls.findOne(doc.companyExchangeRingPullId);
-            if (companyExchangeRingPull.sumRemainQty == 0) {
-                CompanyExchangeRingPulls.direct.update(companyExchangeRingPull._id, {$set: {status: 'closed'}});
-            } else {
-                CompanyExchangeRingPulls.direct.update(companyExchangeRingPull._id, {$set: {status: 'active'}});
-            }
-
+            CompanyExchangeRingPulls.direct.update(companyExchangeRingPull._id, {$set: {status: 'active'}});
         } else {
             throw Meteor.Error('Require Receive Item type');
         }
@@ -449,7 +432,8 @@ function reducePrepaidOrder(doc) {
             });
     });
     let prepaidOrder = PrepaidOrders.findOne(doc.prepaidOrderId);
-    if (prepaidOrder.sumRemainQty == 0) {
+    let sumRemainQty=math.round(prepaidOrder.sumRemainQty,2);
+    if (sumRemainQty== 0) {
         PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'closed'}});
     } else {
         PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'active'}});
@@ -481,7 +465,8 @@ function reduceLendingStock(doc) {
             });
     });
     let lendingStock = LendingStocks.findOne(doc.lendingStockId);
-    if (lendingStock.sumRemainQty == 0) {
+    let sumRemainQty=math.round(lendingStock.sumRemainQty,2);
+    if (sumRemainQty== 0) {
         LendingStocks.direct.update(lendingStock._id, {$set: {status: 'closed'}});
     } else {
         LendingStocks.direct.update(lendingStock._id, {$set: {status: 'active'}});
@@ -514,7 +499,9 @@ function reduceCompanyExchangeRingPull(doc) {
             });
     });
     let companyExchangeRingPull = CompanyExchangeRingPulls.findOne(doc.companyExchangeRingPullId);
-    if (companyExchangeRingPull.sumRemainQty == 0) {
+
+    let sumRemainQty=math.round(companyExchangeRingPull.sumRemainQty,2);
+    if (sumRemainQty== 0) {
         CompanyExchangeRingPulls.direct.update(companyExchangeRingPull._id, {$set: {status: 'closed'}});
     } else {
         CompanyExchangeRingPulls.direct.update(companyExchangeRingPull._id, {$set: {status: 'active'}});
@@ -547,7 +534,8 @@ function reduceExchangeGratis(doc) {
             });
     });
     let exchangeGratis = ExchangeGratis.findOne(doc.exchangeGratisId);
-    if (exchangeGratis.sumRemainQty == 0) {
+    let sumRemainQty=math.round(exchangeGratis.sumRemainQty,2);
+    if (sumRemainQty== 0) {
         ExchangeGratis.direct.update(exchangeGratis._id, {$set: {status: 'closed'}});
     } else {
         ExchangeGratis.direct.update(exchangeGratis._id, {$set: {status: 'active'}});
