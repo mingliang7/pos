@@ -359,13 +359,13 @@ itemsTmpl.events({
         let itemDoc = this;
         if (AutoForm.getFormId() == "Pos_companyExchangeRingPullUpdate") { //check if update form
             swal({
-                    title: "Are you sure?",
-                    text: "លុបទំនិញមួយនេះ?",
-                    type: "warning", showCancelButton: true,
-                    confirmButtonColor: "#DD6B55",
-                    confirmButtonText: "Yes, delete it!",
-                    closeOnConfirm: false
-                },
+                title: "Are you sure?",
+                text: "លុបទំនិញមួយនេះ?",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            }).then(
                 function () {
                     if (!deletedItem.findOne({itemId: itemDoc.itemId})) {
                         deletedItem.insert(itemDoc);

@@ -170,7 +170,7 @@ Meteor.methods({
         }
         return obj
     },
-    'dashboard.dailySale' ({date}) {
+    'dashboard.dailySale' ({date,startDate,endDate}) {
         let obj = {
             dataByBranches: [],
             footer: {
@@ -186,6 +186,10 @@ Meteor.methods({
         let fromDate = moment(date)
             .startOf('days')
             .toDate();
+        if(endDate){
+            fromDate = moment(startDate).startOf('days').toDate();
+            toDate = moment(endDate).endOf('days').toDate();
+        }
         let dailySale = Invoices.aggregate([
             {
                 $facet: {
