@@ -95,7 +95,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalKhr).format('0,0')}<small>៛</small></b></td><td><b>${numeral(totalThb).format('0,0')}B</b></td><td><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(totalKhr).format("0,0.00")}<small>៛</small></b></td><td><b>${numeral(totalThb).format("0,0.00")}B</b></td><td><b>${numeral(total).format('0,0.00')}$</b></td>`;
         return string;
     },
     capitalize(customerName){

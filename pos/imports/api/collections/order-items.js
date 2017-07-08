@@ -254,6 +254,7 @@ export const EnterBillItemsSchema = new SimpleSchema({
         type: Number,
         label: 'Qty',
         optional: true,
+        decimal: true,
         min: 1,
         autoform: {
             type: 'inputmask',
@@ -340,6 +341,7 @@ export const ConvertItemItemsSchema = new SimpleSchema({
         type: Number,
         label: 'Qty',
         optional: true,
+        decimal: true,
         min: 1,
         autoform: {
             type: 'inputmask',
@@ -352,6 +354,7 @@ export const ConvertItemItemsSchema = new SimpleSchema({
         type: Number,
         label: 'Qty',
         optional: true,
+        decimal: true,
         min: 1,
         autoform: {
             type: 'inputmask',
