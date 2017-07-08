@@ -170,6 +170,34 @@
                                 </tr>
                             {{/each}}
                         {{/if}}
+                        {{#if companyExchangeRingPulls}}
+                            <tr style="background-color: #3b5998; color: #ffffff;font-size: 16px;">
+                                <th colspan="5" style="text-align: center">Company Exchange RingPull</th>
+                            </tr>
+                            {{#each companyExchangeRingPulls}}
+                                <tr>
+                                    <td>{{_id}}</td>
+                                    <td>{{_vendor.name}}</td>
+                                    <td>{{moFormat companyExchangeRingPullDate 'DD-MM-YYYY'}}</td>
+                                    <td>{{branchId}}</td>
+                                    <!--<td>{{numFormat total '0,0.00'}}</td>-->
+                                </tr>
+                            {{/each}}
+                        {{/if}}
+                        {{#if prepaidOrders}}
+                            <tr style="background-color: #3b5998; color: #ffffff;font-size: 16px;">
+                                <th colspan="5" style="text-align: center">Prepaid Order</th>
+                            </tr>
+                            {{#each prepaidOrders}}
+                                <tr>
+                                    <td>{{_id}}</td>
+                                    <td>{{_vendor.name}}</td>
+                                    <td>{{moFormat prepaidOrderDate 'DD-MM-YYYY'}}</td>
+                                    <td>{{branchId}}</td>
+                                    <!--<td>{{numFormat total '0,0.00'}}</td>-->
+                                </tr>
+                            {{/each}}
+                        {{/if}}
                         </tbody>
                     {{/with}}
                 </table>
