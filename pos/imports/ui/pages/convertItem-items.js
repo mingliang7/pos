@@ -93,9 +93,7 @@ itemsTmpl.helpers({
         }, {
             key: 'getQty',
             label: __(`${i18nPrefix}.getQty.label`),
-            fn(value, obj, key) {
-                return FlowRouter.query.get('customerId') ? value : Spacebars.SafeString(`<input type="text" value=${value} class="item-qty">`);
-            }
+
         }, /*{
          key: 'price',
          label: __(`${i18nPrefix}.price.label`),
@@ -176,7 +174,7 @@ itemsTmpl.events({
     'keyup [name="qty"],[name="price"]': function (event, instance) {
         let qty = instance.$('[name="qty"]').val();
         let price = instance.$('[name="price"]').val();
-        qty = _.isEmpty(qty) ? 1 : parseInt(qty);
+        qty = _.isEmpty(qty) ? 1 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
         let amount = qty * price;
         instance.state('amount', amount);
@@ -194,7 +192,7 @@ itemsTmpl.events({
             return;
         }
         let qty = instance.$('[name="qty"]').val();
-        qty = qty == '' ? 1 : parseInt(qty);
+        qty = qty == '' ? 1 : parseFloat(qty);
         let stockLocationId = $('[name="stockLocationId"]').val();
         if (stockLocationId == "") {
             alertify.warning("Please choose stock location.");
@@ -229,7 +227,7 @@ itemsTmpl.events({
                             toItemId: toItemId
                         });
                         if (exist) {
-                            qty += parseInt(exist.qty);
+                            qty += parseFloat(exist.qty);
                             itemsCollection.update({_id: exist._id}, {
                                 $set: {
                                     qty: qty,
@@ -274,7 +272,7 @@ itemsTmpl.events({
                             toItemId: toItemId
                         });
                         if (exist) {
-                            qty += parseInt(exist.qty);
+                            qty += parseFloat(exist.qty);
                             itemsCollection.update({
                                 _id: exist._id
                             }, {
@@ -342,7 +340,7 @@ itemsTmpl.events({
     'change .item-qty'(event, instance) {
         debugger;
         let thisObj = $(event.currentTarget);
-        let currentQty = parseInt(event.currentTarget.value);
+        let currentQty = parseFloat(event.currentTarget.value);
         let fromItemId = $(event.currentTarget).parents('tr').find('.fromItemId').text();
         let toItemId = $(event.currentTarget).parents('tr').find('.toItemId').text();
         let currentItem = itemsCollection.findOne({fromItemId: fromItemId, toItemId: toItemId});
@@ -437,10 +435,10 @@ itemsTmpl.events({
             );
         }
     },
-    "keypress .item-qty"(evt) {
+    /*"keypress .item-qty"(evt) {
         let charCode = (evt.which) ? evt.which : evt.keyCode;
         return !(charCode > 31 && (charCode < 48 || charCode > 57));
-    }
+    }*/
 });
 //destroy
 itemsTmpl.onDestroyed(function () {
@@ -476,7 +474,7 @@ editItemsTmpl.events({
     'keyup [name="qty"],[name="price"]': function (event, instance) {
         let qty = instance.$('[name="qty"]').val();
         let price = instance.$('[name="price"]').val();
-        qty = _.isEmpty(qty) ? 0 : parseInt(qty);
+        qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
         let amount = qty * price;
 

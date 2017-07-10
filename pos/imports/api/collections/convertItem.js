@@ -21,10 +21,12 @@ ConvertItems.itemsSchema = new SimpleSchema({
     },
     qty: {
         type: Number,
-        min: 1
+        min: 1,
+        decimal: true
     },
     getQty: {
-        type: Number
+        type: Number,
+        decimal: true
     },
     fromItemPrice: {
         type: Number,
@@ -162,7 +164,7 @@ ConvertItems.schema = new SimpleSchema({
     cash: {
         type: Number,
         decimal: true,
-        min:0
+        min: 0
     }
 });
 
