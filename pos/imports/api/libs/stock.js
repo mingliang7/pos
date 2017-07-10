@@ -22,7 +22,7 @@ export  default class StockFunction {
             let lastAmount = inventory.lastAmount + (item.qty * item.price);
             let averagePrice = lastAmount / totalQty;
             let nextInventory = {};
-            nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+            //nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
             nextInventory.branchId = branchId;
             nextInventory.stockLocationId = stockLocationId;
             nextInventory.itemId = item.itemId;
@@ -49,7 +49,7 @@ export  default class StockFunction {
             let lastAmount = item.qty * item.price;
             let averagePrice = lastAmount / totalQty;
             let inventoryObj = {};
-            inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+            //inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
             inventoryObj.branchId = branchId;
             inventoryObj.stockLocationId = stockLocationId;
             inventoryObj.itemId = item.itemId;
@@ -96,7 +96,7 @@ export  default class StockFunction {
             let lastAmount = inventory.lastAmount + (item.qty * item.price);
             let averagePrice = lastAmount / totalQty;
             let nextInventory = {};
-            nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+            // nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
             nextInventory.branchId = branchId;
             nextInventory.stockLocationId = stockLocationId;
             nextInventory.itemId = item.itemId;
@@ -124,7 +124,7 @@ export  default class StockFunction {
             let lastAmount = item.qty * item.price;
             let averagePrice = lastAmount / totalQty;
             let inventoryObj = {};
-            inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+            //inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
             inventoryObj.branchId = branchId;
             inventoryObj.stockLocationId = stockLocationId;
             inventoryObj.itemId = item.itemId;
@@ -323,7 +323,7 @@ export  default class StockFunction {
         }, {sort: {createdAt: -1}});
         if (gratisInventory == null) {
             let gratisInventoryObj = {};
-            gratisInventoryObj._id = idGenerator.genWithPrefix(GratisInventories, prefix, 13);
+          //  gratisInventoryObj._id = idGenerator.genWithPrefix(GratisInventories, prefix, 13);
             gratisInventoryObj.branchId = branchId;
             gratisInventoryObj.stockLocationId = stockLocationId;
             gratisInventoryObj.itemId = item.itemId;
@@ -356,7 +356,7 @@ export  default class StockFunction {
         }
         else {
             let gratisInventoryObj = {};
-            gratisInventoryObj._id = idGenerator.genWithPrefix(GratisInventories, prefix, 13);
+           // gratisInventoryObj._id = idGenerator.genWithPrefix(GratisInventories, prefix, 13);
             gratisInventoryObj.branchId = branchId;
             gratisInventoryObj.stockLocationId = stockLocationId;
             gratisInventoryObj.itemId = item.itemId;
@@ -401,7 +401,7 @@ export  default class StockFunction {
 
     static checkStockByLocationWhenUpdate(stockLocationId, ArgItems, doc) {
         let items = [];
-        if (ArgItems && ArgItems.length>0) {
+        if (ArgItems && ArgItems.length > 0) {
             ArgItems.reduce(function (res, value) {
                 if (!res[value.itemId]) {
                     res[value.itemId] = {
