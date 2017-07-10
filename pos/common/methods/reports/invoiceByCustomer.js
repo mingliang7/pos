@@ -74,7 +74,9 @@ export const invoiceByCustomerReport = new ValidatedMethod({
             } else {
                 project = {
                     'invoice': '$invoice',
-                    '_id': '$_id',
+                    '_id': {
+                        $ifNull: ['$voucherId', '$_id']
+                    },
                     'items': '$items',
                     'invoiceDate': '$invoiceDate',
                     'total': '$total'
@@ -109,6 +111,7 @@ export const invoiceByCustomerReport = new ValidatedMethod({
                 {
                     $group: {
                         _id: '$_id',
+                        voucherId: {$last: '$voucherId'},
                         customerId: {$last: '$customerId'},
                         total: {$sum: '$items.amount'},
                         dueDate: {$last: '$dueDate'},
@@ -160,6 +163,7 @@ export const invoiceByCustomerReport = new ValidatedMethod({
                 {
                     $project: {
                         invoice: {$concat: ["Invoice", '']},
+                        voucherId: 1,
                         totalUsd: coefficient.usd,
                         totalThb: coefficient.thb,
                         totalKhr: coefficient.khr,

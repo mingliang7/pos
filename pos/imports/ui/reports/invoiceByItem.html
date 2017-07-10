@@ -25,22 +25,26 @@
                             </div>
                             {{#autoForm schema=schema id='invoiceReport'}}
                                 <div class="row">
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         {{> afQuickField name="fromDate" label= 'From Date' value=fromDate}}
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         {{> afQuickField name="toDate" label='To Date' value=endDate}}
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         {{> afQuickField name="customer" label="Customer"}}
                                     </div>
-                                    <div class="col-md-2">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {{> afQuickField name="repId" label="Reps"}}
+                                    </div>
+                                    <div class="col-md-4">
                                         {{> afQuickField name="itemId" label="Item"}}
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         {{> afQuickField name="branchId" label="Branch"}}
                                     </div>
-
                                 </div>
                                 <input type="checkbox" class="show-items-summary" checked>SHOW ITEMS SUMMARY
                                 <input type="checkbox" class="show-invoices-summary" checked>SHOW INV SUMMARY
@@ -71,17 +75,14 @@
     <div class="container-fluid " id="to-print">
         {{#with company}}
             <div class="col-xs-12">
-                <h3 class="text-center">{{khName}}</h3>
-                <h4 class="text-center">{{enName}}</h4>
+                <h5 class="text-center"><b>{{khName}}</b></h5>
                 <h5 class="text-center">{{khAddress}}</h5>
-                <h5 class="text-center"><i class="fa fa-phone-square"></i> {{telephone}}</h5>
-                <br>
             </div>
         {{/with}}
         <div class="col-xs-12" align="center">
-            <h3>
+            <h5 class="text-aqua">
                 <u>SALE BY ITEMS REPORT</u>
-            </h3>
+            </h5>
             <p class="text-center"><b>Date: </b>{{data.title.date}}</p>
         </div>
         <table class="table table-responsive table-striped">
@@ -102,14 +103,19 @@
                             <td>{{col.customerDoc.name}}</td>
                             <td>{{col.customerDoc.address}}</td>
                             <td>{{col.customerDoc.telephone}}</td>
+                            <td>{{col.repDoc.name}}</td>
                             <td>{{col.itemDoc.name}}</td>
                             <td class="text-right">{{numFormat col.items.qty '0,0.00'}}</td>
                             <td class="text-right">{{numFormat col.items.price '0,0.00'}}</td>
                             <td class="text-right">{{numFormat col.items.amount '0,0.00'}}</td>
                         </tr>
+                        {{{lastItem @index col.itemDoc._id data.itemObj}}}
                     {{/each}}
                     <hr>
-
+                    <tr>
+                        <td colspan="6"></td>
+                        <td colspan="3" class="text-right" style="border-top: 1px solid black;"></td>
+                    </tr>
                     <tr>
                         {{{getTotalFooter footer.totalQty footer.total 3}}}
                     </tr>

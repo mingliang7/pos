@@ -116,4 +116,22 @@ export const invoiceSchema = new SimpleSchema({
             }
         }
     },
+    repId: {
+        type: [String],
+        optional: true,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+                multiple: true,
+                optionsMethod: 'pos.selectOptMethods.rep',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let currentBranch = Session.get('currentBranch');
+                        return {branchId: currentBranch};
+                    }
+                }
+            }
+        }
+    },
 });

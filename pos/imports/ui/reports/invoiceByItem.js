@@ -84,7 +84,7 @@ indexTmpl.events({
     'click .fullScreen'(event, instance){
         $('.rpt-body').addClass('rpt');
         $('.rpt-header').addClass('rpt');
-        alertify.invoiceByItemReport(fa('',''), renderTemplate(invoiceDataTmpl)).maximize();
+        alertify.invoiceByItemReport(fa('', ''), renderTemplate(invoiceDataTmpl)).maximize();
     }
 });
 invoiceDataTmpl.events({
@@ -97,6 +97,19 @@ invoiceDataTmpl.onDestroyed(function () {
     $('.rpt-header').removeClass('rpt');
 });
 invoiceDataTmpl.helpers({
+    lastItem(index, itemId, itemObj){
+        let item = itemObj[itemId];
+        if (index == item.itemIndex) {
+            return `
+                <tr>
+                    <td colspan="7" class="text-right">Total <b>${item.itemDoc.name}:</b></td>
+                    <td class="text-right" style="border-top: 1px solid black;"><b><i>${numeral(item.totalQty).format('0,0.00')}</i></b></td>
+                    <td style="border-top: 1px solid black;"></td>
+                    <td class="text-right" style="border-top: 1px solid black;"><b><i>${numeral(item.total).format('0,0.00')}</i></b></td>
+                </tr>
+            `
+        }
+    },
     showItemsSummary(){
         return showItemsSummary.get();
     },
@@ -146,7 +159,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</b></td><td class="text-right"><b>${numeral(qty).format('0,0.00')}</b></td><td></td><td class="text-right"><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td class="text-right"><b>Grand Total:</b></td><td style='border-top: 1px solid black;' class="text-right"><b>${numeral(qty).format('0,0.00')}</b></td><td style='border-top: 1px solid black;'></td><td style='border-top: 1px solid black;' class="text-right"><b>${numeral(total).format('0,0.00')}$</b></td>`;
         return string;
     },
     capitalize(customerName){
@@ -170,13 +183,16 @@ AutoForm.hooks({
             if (doc.customer) {
                 params.customer = doc.customer
             }
+            if(doc.repId) {
+                params.repId = doc.repId.join(',');
+            }
             if (doc.filter) {
                 params.filter = doc.filter.join(',');
             }
-            if(doc.branchId) {
+            if (doc.branchId) {
                 params.branchId = doc.branchId.join(',');
             }
-            if(doc.itemId){
+            if (doc.itemId) {
                 params.itemId = doc.itemId;
             }
             FlowRouter.query.set(params);

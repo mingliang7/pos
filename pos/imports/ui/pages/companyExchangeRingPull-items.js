@@ -443,7 +443,7 @@ itemsTmpl.events({
                     };
                     itemsCollection.update({itemId: itemId}, selector);
                     thisObj.val(currentItem.qty);
-                    alertify.warning('Qty not enough for company exchange ring pull. QtyOnHand is ' + qtyResult);
+                    alertify.warning('Qty not enough for company exchange ring pull. QtyOnHand is ' + numeral(qtyResult).format('0,0.00'));
                 }
 
             });

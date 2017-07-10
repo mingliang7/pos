@@ -41,7 +41,6 @@ export const invoiceByItemReport = new ValidatedMethod({
             let exchange = Exchange.findOne({}, {sort: {_id: -1}});
             let coefficient = exchangeCoefficient({exchange, fieldToCalculate: '$total'})
 
-            // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.invoiceType = {$ne: 'group'};
             selector.status = {$in: ['active', 'partial', 'closed']};
@@ -56,11 +55,16 @@ export const invoiceByItemReport = new ValidatedMethod({
             if (params.customer && params.customer != '') {
                 selector.customerId = params.customer;
             }
+            if(params.repId && params.repId != '') {
+                selector.repId = {
+                    $in: params.repId.split(',')
+                };
+            }
             if (params.itemId) {
                 itemSelector = {$in: [params.itemId]}
             }
-            data.fields = [{field: '<th>Date</th>'}, {field: '<th>INVN</th>'}, {field: '<th>Name</th>'}, {field: '<th>Addr</th>'}, {field: '<th>Tel</th>'}, {field: '<th>Item</th>'}, {field: '<th class="text-right">Qty</th>'},{field: '<th class="text-right">Price</th>'}, {field: '<th class="text-right">Amount</th>'}];
-            data.displayFields = [{field: 'date'}, {field: 'invoiceId'}, {field: 'customer'}, {field: 'address'}, {field: 'tel'}, {field: 'itemName'}, {field: 'qty'}, {field: 'amount'}];
+            data.fields = [{field: '<th>Date</th>'}, {field: '<th>INVN</th>'}, {field: '<th>Name</th>'}, {field: '<th>Addr</th>'}, {field: '<th>Tel</th>'},{field: '<th>Rep</th>'}, {field: '<th>Item</th>'}, {field: '<th class="text-right">Qty</th>'}, {field: '<th class="text-right">Price</th>'}, {field: '<th class="text-right">Amount</th>'}];
+            data.displayFields = [{field: 'date'}, {field: 'invoiceId'}, {field: 'customer'}, {field: 'address'}, {field: 'tel'},{field: 'rep'}, {field: 'itemName'}, {field: 'qty'}, {field: 'amount'}];
 
             // project['$invoice'] = 'Invoice';
             /****** Title *****/
@@ -79,7 +83,18 @@ export const invoiceByItemReport = new ValidatedMethod({
                     }
                 },
                 {
+                    $lookup: {
+                        from: 'pos_reps',
+                        localField: 'repId',
+                        foreignField: '_id',
+                        as: 'repDoc'
+                    }
+                },
+                {
                     $unwind: {path: '$customerDoc', preserveNullAndEmptyArrays: true}
+                },
+                {
+                    $unwind: {path: '$repDoc', preserveNullAndEmptyArrays: true}
                 },
                 {
                     $unwind: {path: '$items', preserveNullAndEmptyArrays: true}
@@ -105,9 +120,13 @@ export const invoiceByItemReport = new ValidatedMethod({
                         _id: 0,
                         invoiceDate: '$invoiceDate',
                         customerDoc: 1,
+                        repDoc: 1,
                         itemDoc: 1,
                         items: 1
                     }
+                },
+                {
+                    $sort: {'itemDoc.name': 1}
                 },
                 {
                     $group: {
@@ -120,6 +139,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                     }
                 }
             ]);
+
             let invoiceItemSummary = Invoices.aggregate([
                 {
                     $match: selector
@@ -152,7 +172,25 @@ export const invoiceByItemReport = new ValidatedMethod({
                 {$sort: {itemName: 1}}
             ]);
             if (invoices.length > 0) {
+                let itemObj = {};
                 data.content = invoices[0].data;
+                let index=0;
+                data.content.forEach(function (item) {
+                        if (!itemObj[item.items.itemId]) {
+                            itemObj[item.items.itemId] = {
+                                itemDoc: item.itemDoc,
+                                itemIndex: index,
+                                total: item.items.amount,
+                                totalQty: item.items.qty
+                            }
+                        } else {
+                            itemObj[item.items.itemId].total += item.items.amount;
+                            itemObj[item.items.itemId].itemIndex = index;
+                            itemObj[item.items.itemId].totalQty += item.items.qty
+                        }
+                        index++;
+                });
+                data.itemObj = itemObj;
                 data.footer = {
                     itemsSummary: invoiceItemSummary,
                     totalQty: invoices[0].totalQty,

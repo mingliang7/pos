@@ -35,11 +35,12 @@ export const LocationTransfersItemSchema = new SimpleSchema({
         type: Number,
         label: 'Qty',
         optional: true,
+        decimal: true,
         min: 1,
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.decimal();
+                return inputmaskOptions.decimal({digits: 3});
             }
         }
     },

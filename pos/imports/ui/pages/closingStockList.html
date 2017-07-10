@@ -1,0 +1,15 @@
+<template name="Pos_closingStockList">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            <button type="button" class="btn-primary">Re-Generate</button>
+        </h3>
+    </div>
+    <div class="box-body">
+        {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
+    </div>
+</template>
+<template name="Pos_closingStockListAction">
+    {{#columnAction align="right"}}
+        <li><a class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
+    {{/columnAction}}
+</template>
