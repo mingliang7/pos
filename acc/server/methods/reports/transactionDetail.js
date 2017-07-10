@@ -192,20 +192,20 @@ Meteor.methods({
                         isHeader: false,
                         isFooter: true,
                         name: "Total " + obj.code + ":" + obj.name,
-                        drcr: math.round(totalDrCr, 2),
-                        balance: math.round(cof * balance, 2),
-                        dr: math.round(totalDr, 2),
-                        cr: math.round(totalCr, 2),
-                        endingCr: math.round(endingCr, 2),
+                        drcr: math.round(totalDrCr, 3),
+                        balance: math.round(cof * balance, 3),
+                        dr: math.round(totalDr, 3),
+                        cr: math.round(totalCr, 3),
+                        endingCr: math.round(endingCr, 3),
                         currencyId: baseCurrency
                     });
 
                 });
 
-            data.endingBalance = math.round(endingBalance, 2);
-            data.endingAmount = math.round(endingAmount, 2);
-            data.endingDr = math.round(endingDr, 2);
-            data.endingCr = math.round(endingCr, 2);
+            data.endingBalance = math.round(endingBalance, 3);
+            data.endingAmount = math.round(endingAmount, 3);
+            data.endingDr = math.round(endingDr, 3);
+            data.endingCr = math.round(endingCr, 3);
             data.currencyId = baseCurrency;
 
             if (content.length > 0) {

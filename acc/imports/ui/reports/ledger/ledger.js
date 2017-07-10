@@ -212,7 +212,7 @@ ledgerTpl.events({
 //Helper
 ledgerShow.helpers({
     formatMoney: function (val) {
-        return numeral(val).format('0,0.00');
+        return numeral(val).format('0,0.000');
     },
     getCurrency: function (id) {
         let currency = Currency.findOne({_id: id});

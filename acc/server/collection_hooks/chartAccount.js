@@ -17,6 +17,7 @@ import {CloseChartAccount} from '../../imports/api/collections/closeChartAccount
 import {CloseChartAccountPerMonth} from '../../imports/api/collections/closeChartAccountPerMonth';
 
 import {AccountMapping} from '../../../pos/imports/api/collections/accountMapping';
+import {SpaceChar} from "../../common/configs/space";
 
 
 ChartAccount.before.insert(function (userId, doc) {
@@ -89,7 +90,7 @@ ChartAccount.after.update(function (userId, doc, fieldNames, modifier, options) 
 
     MapFixAsset.direct.update({'fixAssetExpenseDoc._id': doc._id}, {
         $set: {
-            fixAssetExpenseDoc: doc,
+            fixAssetExpenseDoc: doc
         }
     }, {multi: true});
 
@@ -108,47 +109,77 @@ ChartAccount.after.update(function (userId, doc, fieldNames, modifier, options) 
         }
     }, {multi: true});
     //FixAssetExpense
-    FixAssetExpense.direct.update({'transactionExpense.account': oldData.code + " | " + oldData.name}, {
+    FixAssetExpense.direct.update({'transactionExpense.account': oldData.code + " | " + oldData.name,}, {
         $set: {
-            'transactionExpense.$.account': doc.code + " | " + doc.name,
+            'transactionExpense.$.account': doc.code + " | " + doc.name
         }
     }, {multi: true});
 
     //FixAsset Dep
     FixAssetDep.direct.update({'transactionAsset.account': oldData.code + " | " + oldData.name}, {
         $set: {
-            'transactionAsset.$.account': doc.code + " | " + doc.name,
+            'transactionAsset.$.account': doc.code + " | " + doc.name
         }
     }, {multi: true});
     //DepExpList
     DepExpList.direct.update({account: oldData.code + " | " + oldData.name}, {
         $set: {
-            account: doc.code + " | " + doc.name,
+            account: doc.code + " | " + doc.name
         }
     }, {multi: true});
+
+
     //CloseChartAccount
+    let setObjCloseChartAccount = {};
+    if (doc.parentId != undefined) {
+        setObjCloseChartAccount = {
+            accountTypeId: doc.accountTypeId,
+            code: doc.code,
+            name: doc.name,
+            parentId: doc.parentId,
+            level: doc.level
+        }
+    } else {
+        setObjCloseChartAccount = {
+            accountTypeId: doc.accountTypeId,
+            code: doc.code,
+            name: doc.name
+        }
+    }
+
     CloseChartAccount.direct.update({closeChartAccountId: doc._id}, {
-        $set: {
-            accountTypeId: doc.accountTypeId,
-            name: doc.name,
-        }
+        $set: setObjCloseChartAccount
     }, {multi: true});
 
     //CloseChartAccountPerMonth
+
+    let setObjCloseChartAccountPerMonth = {};
+    if (doc.parentId != undefined) {
+        setObjCloseChartAccountPerMonth = {
+            accountTypeId: doc.accountTypeId,
+            code: doc.code,
+            name: doc.name,
+            parentId: doc.parentId,
+            level: doc.level
+        }
+
+    } else {
+        setObjCloseChartAccountPerMonth = {
+            accountTypeId: doc.accountTypeId,
+            code: doc.code,
+            name: doc.name
+        }
+    }
+
     CloseChartAccountPerMonth.direct.update({closeChartAccountId: doc._id}, {
-        $set: {
-            accountTypeId: doc.accountTypeId,
-            name: doc.name,
-        }
+        $set: setObjCloseChartAccountPerMonth
     }, {multi: true});
 
 
     //CloseChartAccountPerMonth
-
-
-    AccountMapping.direct.update({account: oldData.code + " : " + oldData.name}, {
+    let isTrue = AccountMapping.direct.update({account: oldData.code + " | " + oldData.name}, {
         $set: {
-            account: doc.code + " : " + doc.name,
+            account: doc.code + " | " + doc.name
         }
     }, {multi: true});
 

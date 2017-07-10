@@ -284,9 +284,9 @@ Meteor.methods({
                 var closeChartAccount = CloseChartAccountPerMonth.findOne(selector);
                 if (closeChartAccount != undefined) {
                     if (["20", "21", "30", "40", "41"].indexOf(closeChartAccount.accountTypeId) > -1) {
-                        valueAccountList.push(numeral().unformat(numeral(-1 * closeChartAccount.value).format('(0,0.00)')));
+                        valueAccountList.push(numeral().unformat(numeral(-1 * closeChartAccount.value).format('(0,0.000)')));
                     } else {
-                        valueAccountList.push(numeral().unformat(numeral(closeChartAccount.value).format('(0,0.00)')));
+                        valueAccountList.push(numeral().unformat(numeral(closeChartAccount.value).format('(0,0.000)')));
                     }
                 } else {
                     valueAccountList.push(0);
@@ -324,9 +324,9 @@ Meteor.methods({
                 var closeChartAccount = CloseChartAccountPerMonth.findOne(selector);
                 if (closeChartAccount != undefined) {
                     if (["20", "21", "30", "40", "41"].indexOf(closeChartAccount.accountTypeId) > -1) {
-                        valueAccountList.push(numeral().unformat(numeral(-1 * closeChartAccount.value).format('(0,0.00)')));
+                        valueAccountList.push(numeral().unformat(numeral(-1 * closeChartAccount.value).format('(0,0.000)')));
                     } else {
-                        valueAccountList.push(numeral().unformat(numeral(closeChartAccount.value).format('(0,0.00)')));
+                        valueAccountList.push(numeral().unformat(numeral(closeChartAccount.value).format('(0,0.000)')));
                     }
                 } else {
                     valueAccountList.push(0);
@@ -372,7 +372,7 @@ Meteor.methods({
 
         amountList.forEach(function (obj) {
             if (['40', '41'].indexOf(obj.accountTypeId) != -1) {
-                valueAccountListIncome.push({y: -1 * math.round(obj.value, 2), name: obj.code + " | " + obj.name});
+                valueAccountListIncome.push({y: -1 * math.round(obj.value, 3), name: obj.code + " | " + obj.name});
                 accountListIncome.push(obj.code + " | " + obj.name);
             } else if (['50', '51'].indexOf(obj.accountTypeId) != -1) {
                 valueAccountListExpense.push({y: math.round(obj.value), name: obj.code + " | " + obj.name});

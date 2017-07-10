@@ -115,7 +115,7 @@ Meteor.methods({
           i++;
           result.push(key[val.account]);
         } else {
-          key[val.account].result += math.round(val.result, 2);
+          key[val.account].result += math.round(val.result, 3);
         }
         return key;
       }, {});
@@ -123,9 +123,9 @@ Meteor.methods({
 
       result.map(function (o) {
         if (o.result > 0) {
-          grandTotalDr += math.round(o.result, 2);
+          grandTotalDr += math.round(o.result, 3);
         } else {
-          grandTotalCr += math.round(o.result, 2);
+          grandTotalCr += math.round(o.result, 3);
         }
       });
       data.grandTotalDr = grandTotalDr;

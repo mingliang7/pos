@@ -1026,58 +1026,58 @@ Meteor.methods({
             dataMain.equity = equity;
 
             dataMain.totalOtherCurrentAsset = math.round(totalOtherCurrentAsset,
-                2);
+                3);
             dataMain.totalOtherCurrentAssetUSD = math.round(
                 totalOtherCurrentAssetUSD,
-                2);
+                3);
             dataMain.totalOtherCurrentAssetRiel = math.round(
                 totalOtherCurrentAssetRiel,
-                2);
+                3);
             dataMain.totalOtherCurrentAssetBath = math.round(
                 totalOtherCurrentAssetBath,
-                2);
+                3);
 
-            dataMain.totalFixAsset = math.round(totalFixAsset, 2);
-            dataMain.totalFixAssetUSD = math.round(totalFixAssetUSD, 2);
-            dataMain.totalFixAssetRiel = math.round(totalFixAssetRiel, 2);
-            dataMain.totalFixAssetBath = math.round(totalFixAssetBath, 2);
+            dataMain.totalFixAsset = math.round(totalFixAsset, 3);
+            dataMain.totalFixAssetUSD = math.round(totalFixAssetUSD, 3);
+            dataMain.totalFixAssetRiel = math.round(totalFixAssetRiel, 3);
+            dataMain.totalFixAssetBath = math.round(totalFixAssetBath, 3);
 
-            dataMain.totalOtherFixAsset = math.round(totalOtherFixAsset, 2);
-            dataMain.totalOtherFixAssetUSD = math.round(totalOtherFixAssetUSD, 2);
+            dataMain.totalOtherFixAsset = math.round(totalOtherFixAsset, 3);
+            dataMain.totalOtherFixAssetUSD = math.round(totalOtherFixAssetUSD, 3);
             dataMain.totalOtherFixAssetRiel = math.round(totalOtherFixAssetRiel,
-                2);
+                3);
             dataMain.totalOtherFixAssetBath = math.round(totalOtherFixAssetBath,
-                2);
+                3);
 
             dataMain.totalOtherCurrentLiability = (-1) * math.round(
-                    totalOtherCurrentLiability, 2);
+                    totalOtherCurrentLiability, 3);
             dataMain.totalOtherCurrentLiabilityUSD = (-1) * math.round(
-                    totalOtherCurrentLiabilityUSD, 2);
+                    totalOtherCurrentLiabilityUSD, 3);
             dataMain.totalOtherCurrentLiabilityRiel = (-1) * math.round(
-                    totalOtherCurrentLiabilityRiel, 2);
+                    totalOtherCurrentLiabilityRiel, 3);
             dataMain.totalOtherCurrentLiabilityBath = (-1) * math.round(
-                    totalOtherCurrentLiabilityBath, 2);
+                    totalOtherCurrentLiabilityBath, 3);
 
             dataMain.totalLongTermLiability = (-1) * math.round(
-                    totalLongTermLiability, 2);
+                    totalLongTermLiability, 3);
             dataMain.totalLongTermLiabilityUSD = (-1) * math.round(
-                    totalLongTermLiabilityUSD, 2);
+                    totalLongTermLiabilityUSD, 3);
             dataMain.totalLongTermLiabilityRiel = (-1) * math.round(
-                    totalLongTermLiabilityRiel, 2);
+                    totalLongTermLiabilityRiel, 3);
             dataMain.totalLongTermLiabilityBath = (-1) * math.round(
-                    totalLongTermLiabilityBath, 2);
+                    totalLongTermLiabilityBath, 3);
 
-            dataMain.totalEquity = ((-1) * math.round(totalEquity, 2)) + math.round(
-                    contentProfit.profit, 2);
-            dataMain.totalEquityUSD = ((-1) * math.round(totalEquityUSD, 2)) +
+            dataMain.totalEquity = ((-1) * math.round(totalEquity, 3)) + math.round(
+                    contentProfit.profit, 3);
+            dataMain.totalEquityUSD = ((-1) * math.round(totalEquityUSD, 3)) +
                 math.round(
-                    contentProfit.profitUSD, 2);
-            dataMain.totalEquityRiel = ((-1) * math.round(totalEquityRiel, 2)) +
+                    contentProfit.profitUSD, 3);
+            dataMain.totalEquityRiel = ((-1) * math.round(totalEquityRiel, 3)) +
                 math.round(
-                    contentProfit.profitRiel, 2);
-            dataMain.totalEquityBath = ((-1) * math.round(totalEquityBath, 2)) +
+                    contentProfit.profitRiel, 3);
+            dataMain.totalEquityBath = ((-1) * math.round(totalEquityBath, 3)) +
                 math.round(
-                    contentProfit.profitBath, 2);
+                    contentProfit.profitBath, 3);
 
 
             dataMain.totalAsset = parseFloat(dataMain.totalOtherCurrentAsset) +
@@ -1939,15 +1939,15 @@ Meteor.methods({
             dataMain.equity = equity;
 
             dataMain.totalOtherCurrentAsset = math.round(totalOtherCurrentAsset,
-                2);
-            dataMain.totalFixAsset = math.round(totalFixAsset, 2);
-            dataMain.totalOtherFixAsset = math.round(totalOtherFixAsset, 2);
+                3);
+            dataMain.totalFixAsset = math.round(totalFixAsset, 3);
+            dataMain.totalOtherFixAsset = math.round(totalOtherFixAsset, 3);
             dataMain.totalOtherCurrentLiability = (-1) * math.round(
-                    totalOtherCurrentLiability, 2);
+                    totalOtherCurrentLiability, 3);
             dataMain.totalLongTermLiability = (-1) * math.round(
-                    totalLongTermLiability, 2);
-            dataMain.totalEquity = ((-1) * math.round(totalEquity, 2)) + math.round(
-                    contentProfit.profit, 2);
+                    totalLongTermLiability, 3);
+            dataMain.totalEquity = ((-1) * math.round(totalEquity, 3)) + math.round(
+                    contentProfit.profit, 3);
 
             dataMain.totalAsset = parseFloat(dataMain.totalOtherCurrentAsset) +
                 parseFloat(dataMain.totalFixAsset) + parseFloat(dataMain.totalOtherFixAsset);

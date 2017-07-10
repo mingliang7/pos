@@ -82,11 +82,11 @@ Meteor.methods({
                 i++;
 
                 if (c.currencyId == "USD") {
-                    grandTotalDollar += math.round(c.total, 2);
+                    grandTotalDollar += math.round(c.total, 3);
                 } else if (c.currencyId == "KHR") {
-                    grandTotalRiel += math.round(c.total, 2);
+                    grandTotalRiel += math.round(c.total, 3);
                 } else if (c.currencyId == "THB") {
-                    grandTotalBath += math.round(c.total, 2);
+                    grandTotalBath += math.round(c.total, 3);
                 }
             });
 

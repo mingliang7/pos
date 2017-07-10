@@ -285,8 +285,8 @@ if (Meteor.isClient) {
  myNewChart = new Chart(ctx, {});
  new Chart(ctx).Bar(m_data, {
  scaleBeginAtZero: false,
- scaleLabel: "<%=numeral(value).format('0,0.00')%>",
- tooltipTemplate: "<%= numeral(value).format('0,0.00') %>"
+ scaleLabel: "<%=numeral(value).format('0,0.000')%>",
+ tooltipTemplate: "<%= numeral(value).format('0,0.000') %>"
  });
  }, 300);
 

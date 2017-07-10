@@ -181,9 +181,9 @@ DateEndOfProcess.after.insert(function (userId, doc) {
 
         var selector = {};
         selector.date = doc.closeDate;
-        selector.riel = math.round(data.profitR, 2);
-        selector.baht = math.round(data.profitB, 2);
-        selector.dollar = math.round(data.profitUSD, 2);
+        selector.riel = math.round(data.profitR, 3);
+        selector.baht = math.round(data.profitB, 3);
+        selector.dollar = math.round(data.profitUSD, 3);
         selector.endId = doc._id;
         selector.year = year;
         selector.month = moment(doc.closeDate, "DD/MM/YYYY").format("MM");
@@ -204,14 +204,14 @@ DateEndOfProcess.after.insert(function (userId, doc) {
                 baht += obj.baht;
             })
 
-            var rielDr = riel > 0 ? 0 : math.round(riel, 2) * (-1);
-            var rielCr = riel > 0 ? math.round(riel, 2) : 0;
+            var rielDr = riel > 0 ? 0 : math.round(riel, 3) * (-1);
+            var rielCr = riel > 0 ? math.round(riel, 3) : 0;
 
-            var dollarDr = dollar > 0 ? 0 : math.round(dollar, 2) * (-1);
-            var dollarCr = dollar > 0 ? math.round(dollar, 2) : 0;
+            var dollarDr = dollar > 0 ? 0 : math.round(dollar, 3) * (-1);
+            var dollarCr = dollar > 0 ? math.round(dollar, 3) : 0;
 
-            var bahtDr = baht > 0 ? 0 : math.round(baht, 2) * (-1);
-            var bahtCr = baht > 0 ? math.round(baht, 2) : 0;
+            var bahtDr = baht > 0 ? 0 : math.round(baht, 3) * (-1);
+            var bahtCr = baht > 0 ? math.round(baht, 3) : 0;
 
             var accountDet = MapClosing.findOne({chartAccountCompare: "Retain Earning"});
 

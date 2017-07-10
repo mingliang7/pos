@@ -206,38 +206,38 @@ Meteor.methods({
                         };
                         if (val.accountType >= 40 && val.accountType <= 49) {
                             resultIncome.push(key[val.account]);
-                            grandTotalIncome += math.round(val.result, 2);
-                            grandTotalIncomeYearToDate += math.round(val.result, 2);
+                            grandTotalIncome += math.round(val.result, 3);
+                            grandTotalIncomeYearToDate += math.round(val.result, 3);
                         } else if (val.accountType >= 50 && val.accountType <= 59) {
                             resultExpense.push(key[val.account]);
-                            grandTotalExpense += math.round(val.result, 2);
-                            grandTotalExpenseYearToDate += math.round(val.result, 2);
+                            grandTotalExpense += math.round(val.result, 3);
+                            grandTotalExpenseYearToDate += math.round(val.result, 3);
                         } else {
-                            grandTotalCOGS += math.round(val.result, 2);
-                            grandTotalCOGSYearToDate += math.round(val.result, 2);
+                            grandTotalCOGS += math.round(val.result, 3);
+                            grandTotalCOGSYearToDate += math.round(val.result, 3);
                             resultCOGS.push(key[val.account]);
                         }
                     } else {
-                        key[val.account].result += math.round(val.result, 2);
+                        key[val.account].result += math.round(val.result, 3);
                         key[val.account].resultYearToDate += math.round(val.result,
                             2);
                         if (val.currency == "USD") {
-                            key[val.account].amountUsd += math.round(val.value, 2);
+                            key[val.account].amountUsd += math.round(val.value, 3);
                         } else if (val.currency == "KHR") {
-                            key[val.account].amountRiel += math.round(val.value, 2);
+                            key[val.account].amountRiel += math.round(val.value, 3);
                         } else if (val.currency == "THB") {
-                            key[val.account].amountThb += math.round(val.value, 2);
+                            key[val.account].amountThb += math.round(val.value, 3);
                         }
 
                         if (val.accountType >= 40 && val.accountType <= 49) {
-                            grandTotalIncome += math.round(val.result, 2);
-                            grandTotalIncomeYearToDate += math.round(val.result, 2);
+                            grandTotalIncome += math.round(val.result, 3);
+                            grandTotalIncomeYearToDate += math.round(val.result, 3);
                         } else if (val.accountType >= 50 && val.accountType <= 59) {
-                            grandTotalExpense += math.round(val.result, 2);
-                            grandTotalExpenseYearToDate += math.round(val.result, 2);
+                            grandTotalExpense += math.round(val.result, 3);
+                            grandTotalExpenseYearToDate += math.round(val.result, 3);
                         } else {
-                            grandTotalCOGS += math.round(val.result, 2);
-                            grandTotalCOGSYearToDate += math.round(val.result, 2);
+                            grandTotalCOGS += math.round(val.result, 3);
+                            grandTotalCOGSYearToDate += math.round(val.result, 3);
                         }
                     }
 
@@ -259,23 +259,23 @@ Meteor.methods({
                         };
                         if (val.accountType >= 40 && val.accountType <= 49) {
                             resultIncome.push(key[val.account]);
-                            grandTotalIncomeYearToDate += math.round(val.result, 2);
+                            grandTotalIncomeYearToDate += math.round(val.result, 3);
                         } else if (val.accountType >= 50 && val.accountType <= 59) {
                             resultExpense.push(key[val.account]);
-                            grandTotalExpenseYearToDate += math.round(val.result, 2);
+                            grandTotalExpenseYearToDate += math.round(val.result, 3);
                         } else {
                             resultCOGS.push(key[val.account]);
-                            grandTotalCOGSYearToDate += math.round(val.result, 2);
+                            grandTotalCOGSYearToDate += math.round(val.result, 3);
                         }
                     } else {
                         key[val.account].resultYearToDate += math.round(val.result,
                             2);
                         if (val.accountType >= 40 && val.accountType <= 49) {
-                            grandTotalIncomeYearToDate += math.round(val.result, 2);
+                            grandTotalIncomeYearToDate += math.round(val.result, 3);
                         } else if (val.accountType >= 50 && val.accountType <= 59) {
-                            grandTotalExpenseYearToDate += math.round(val.result, 2);
+                            grandTotalExpenseYearToDate += math.round(val.result, 3);
                         } else {
-                            grandTotalCOGSYearToDate += math.round(val.result, 2);
+                            grandTotalCOGSYearToDate += math.round(val.result, 3);
                         }
 
                     }
@@ -741,51 +741,51 @@ Meteor.methods({
 
                     }
                     else {
-                        key[val.account].result += math.round(val.result, 2);
-                        key[val.account].resultYearToDate += math.round(val.result, 2);
+                        key[val.account].result += math.round(val.result, 3);
+                        key[val.account].resultYearToDate += math.round(val.result, 3);
 
                         if (val.currency == "USD") {
-                            key[val.account].amountUsd += math.round(val.value, 2);
+                            key[val.account].amountUsd += math.round(val.value, 3);
                         } else if (val.currency == "KHR") {
-                            key[val.account].amountRiel += math.round(val.value, 2);
+                            key[val.account].amountRiel += math.round(val.value, 3);
                         } else if (val.currency == "THB") {
-                            key[val.account].amountThb += math.round(val.value, 2);
+                            key[val.account].amountThb += math.round(val.value, 3);
                         }
                     }
 
 
                     if (val.accountType >= 40 && val.accountType <= 49) {
-                        grandTotalIncome += math.round(val.result, 2);
-                        grandTotalIncomeYearToDate += math.round(val.result, 2);
+                        grandTotalIncome += math.round(val.result, 3);
+                        grandTotalIncomeYearToDate += math.round(val.result, 3);
                         if (val.currency == "USD") {
-                            grandTotalIncomeUSD += math.round(val.value, 2);
+                            grandTotalIncomeUSD += math.round(val.value, 3);
                         } else if (val.currency == "KHR") {
-                            grandTotalIncomeR += math.round(val.value, 2);
+                            grandTotalIncomeR += math.round(val.value, 3);
                         } else if (val.currency == "THB") {
-                            grandTotalIncomeB += math.round(val.value, 2);
+                            grandTotalIncomeB += math.round(val.value, 3);
                         }
                     }
                     else if (val.accountType >= 50 && val.accountType <= 59) {
-                        grandTotalExpense += math.round(val.result, 2);
-                        grandTotalExpenseYearToDate += math.round(val.result, 2);
+                        grandTotalExpense += math.round(val.result, 3);
+                        grandTotalExpenseYearToDate += math.round(val.result, 3);
 
                         if (val.currency == "USD") {
-                            grandTotalExpenseUSD += math.round(val.value, 2);
+                            grandTotalExpenseUSD += math.round(val.value, 3);
                         } else if (val.currency == "KHR") {
-                            grandTotalExpenseR += math.round(val.value, 2);
+                            grandTotalExpenseR += math.round(val.value, 3);
                         } else if (val.currency == "THB") {
-                            grandTotalExpenseB += math.round(val.value, 2);
+                            grandTotalExpenseB += math.round(val.value, 3);
                         }
                     } else {
-                        grandTotalCOGS += math.round(val.result, 2);
-                        grandTotalCOGSYearToDate += math.round(val.result, 2);
+                        grandTotalCOGS += math.round(val.result, 3);
+                        grandTotalCOGSYearToDate += math.round(val.result, 3);
 
                         if (val.currency == "USD") {
-                            grandTotalCOGSUSD += math.round(val.value, 2);
+                            grandTotalCOGSUSD += math.round(val.value, 3);
                         } else if (val.currency == "KHR") {
-                            grandTotalCOGSR += math.round(val.value, 2);
+                            grandTotalCOGSR += math.round(val.value, 3);
                         } else if (val.currency == "THB") {
-                            grandTotalCOGSB += math.round(val.value, 2);
+                            grandTotalCOGSB += math.round(val.value, 3);
                         }
                     }
 
@@ -808,25 +808,25 @@ Meteor.methods({
                         if (val.accountType >= 40 && val.accountType <= 49) {
 
                             resultIncome.push(key[val.account]);
-                            grandTotalIncomeYearToDate += math.round(val.result, 2);
+                            grandTotalIncomeYearToDate += math.round(val.result, 3);
                         } else if (val.accountType >= 50 && val.accountType <= 59) {
 
                             resultExpense.push(key[val.account]);
-                            grandTotalExpenseYearToDate += math.round(val.result, 2);
+                            grandTotalExpenseYearToDate += math.round(val.result, 3);
                         } else {
                             resultCOGS.push(key[val.account]);
-                            grandTotalCOGSYearToDate += math.round(val.result, 2);
+                            grandTotalCOGSYearToDate += math.round(val.result, 3);
                         }
                     }
                     else {
-                        key[val.account].resultYearToDate += math.round(val.result, 2);
+                        key[val.account].resultYearToDate += math.round(val.result, 3);
 
                         if (val.accountType >= 40 && val.accountType <= 49) {
-                            grandTotalIncomeYearToDate += math.round(val.result, 2);
+                            grandTotalIncomeYearToDate += math.round(val.result, 3);
                         } else if (val.accountType >= 50 && val.accountType <= 59) {
-                            grandTotalExpenseYearToDate += math.round(val.result, 2);
+                            grandTotalExpenseYearToDate += math.round(val.result, 3);
                         } else {
-                            grandTotalCOGSYearToDate += math.round(val.result, 2);
+                            grandTotalCOGSYearToDate += math.round(val.result, 3);
                         }
                     }
 

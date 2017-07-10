@@ -120,15 +120,15 @@ Meteor.methods({
                     } else {
                         grandTotalCr += o.result;
                     }
-                    grandTotal += math.round(o.result, 2);
+                    grandTotal += math.round(o.result, 3);
                 });
                 data.grandTotal = grandTotal;
 
                 if (grandTotal > 0) {
                     data.grandTotalDr = grandTotalDr;
-                    data.grandTotalCr = -1 * (math.round(grandTotalCr - grandTotal, 2));
+                    data.grandTotalCr = -1 * (math.round(grandTotalCr - grandTotal, 3));
                 } else {
-                    data.grandTotalDr = math.round(grandTotalDr - grandTotal, 2);
+                    data.grandTotalDr = math.round(grandTotalDr - grandTotal, 3);
                     data.grandTotalCr = -1 * grandTotalCr;
                 }
 
@@ -168,16 +168,16 @@ Meteor.methods({
                     } else {
                         grandTotalCrBase += o.result;
                     }
-                    grandTotalBase += math.round(o.result, 2);
+                    grandTotalBase += math.round(o.result, 3);
                 });
                 data.grandTotalBase = grandTotalBase;
 
                 if (grandTotal > 0) {
                     data.grandTotalDrBase = grandTotalDrBase;
-                    data.grandTotalCrBase = -1 * (math.round(grandTotalCrBase - grandTotalBase, 2));
+                    data.grandTotalCrBase = -1 * (math.round(grandTotalCrBase - grandTotalBase, 3));
 
                 } else {
-                    data.grandTotalDrBase = math.round(grandTotalDrBase - grandTotalBase, 2);
+                    data.grandTotalDrBase = math.round(grandTotalDrBase - grandTotalBase, 3);
                     data.grandTotalCrBase = -1 * grandTotalCrBase;
                 }
 
@@ -233,9 +233,9 @@ Meteor.methods({
                         data.result.forEach(function (obj) {
                             if (obj.result > 0) {
                                 var dr = 0;
-                                var cr = math.round(Math.abs(obj.result), 2);
+                                var cr = math.round(Math.abs(obj.result), 3);
                             } else {
-                                var dr = math.round(Math.abs(obj.result), 2);
+                                var dr = math.round(Math.abs(obj.result), 3);
                                 var cr = 0;
                             }
                             var accountDetail = ChartAccount.findOne({
@@ -256,13 +256,13 @@ Meteor.methods({
                         });
                         var dr, cr;
                         if (data.grandTotal > 0) {
-                            dr = math.round(Math.abs(data.grandTotal), 2);
+                            dr = math.round(Math.abs(data.grandTotal), 3);
                             cr = 0;
-                            equival = math.round(Math.abs(data.grandTotal), 2);
+                            equival = math.round(Math.abs(data.grandTotal), 3);
                         } else {
                             dr = 0;
-                            cr = math.round(Math.abs(data.grandTotal), 2);
-                            equival = math.round(Math.abs(data.grandTotal), 2);
+                            cr = math.round(Math.abs(data.grandTotal), 3);
+                            equival = math.round(Math.abs(data.grandTotal), 3);
                         }
 
                         arr.push({
@@ -310,11 +310,11 @@ Meteor.methods({
                     if (data.grandTotalDrBase > 0) {
                         data.resultBase.forEach(function (obj) {
                             if (obj.result > 0) {
-                                var dr = math.round(Math.abs(obj.result), 2);
+                                var dr = math.round(Math.abs(obj.result), 3);
                                 var cr = 0;
                             } else {
                                 var dr = 0;
-                                var cr = math.round(Math.abs(obj.result), 2);
+                                var cr = math.round(Math.abs(obj.result), 3);
                             }
                             var accountDetail = ChartAccount.findOne({
                                 _id: obj.account
@@ -335,12 +335,12 @@ Meteor.methods({
 
                         if (data.grandTotalBase > 0) {
                             dr = 0;
-                            cr = math.round(Math.abs(data.grandTotalBase), 2);
-                            equivalBase = math.round(Math.abs(data.grandTotalBase), 2);
+                            cr = math.round(Math.abs(data.grandTotalBase), 3);
+                            equivalBase = math.round(Math.abs(data.grandTotalBase), 3);
                         } else {
-                            dr = math.round(Math.abs(data.grandTotalBase), 2);
+                            dr = math.round(Math.abs(data.grandTotalBase), 3);
                             cr = 0;
-                            equivalBase = math.round(Math.abs(data.grandTotalBase), 2);
+                            equivalBase = math.round(Math.abs(data.grandTotalBase), 3);
                         }
 
 
@@ -433,7 +433,7 @@ Meteor.methods({
                     var foreignExDetail = [];
 
                     var foreinExchange = math.round(-1 * amountEquiv - 1 *
-                        amountEquivBase, 2);
+                        amountEquivBase, 3);
 
                     if (foreinExchange > 0) {
                         foreignExDetail.push({
