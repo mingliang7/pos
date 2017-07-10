@@ -4,29 +4,29 @@
             <i class="fa fa-home"></i> <span>{{_ "pos.sidebarMenu.home"}}</span>
         </a>
     </li>
-    <!--{{#if isInRole 'setting' 'Pos'}}-->
-        <!--<li class="{{isActiveRoute name='pos.adminDashboard'}}">-->
-            <!--<a href="{{pathFor 'pos.adminDashboard'}}">-->
-                <!--<i class="fa fa-tachometer"></i> <span>Admin Dashboard</span>-->
-            <!--</a>-->
-        <!--</li>-->
-    <!--{{/if}}-->
-    <!--{{#if isInRole 'journal' 'Pos'}}-->
-        <!--<li class="treeview {{isActiveRoute name='acc.journal'}}">-->
-            <!--<a href="{{pathFor 'acc.journal'}}">-->
-                <!--<i class="fa fa-plus"></i>-->
-                <!--<span>{{_ "acc.sidebarMenu.journal"}}</span>-->
-            <!--</a>-->
-        <!--</li>-->
-    <!--{{/if}}-->
-    <!--{{#if isInRole 'paid-to-order' 'Pos'}}-->
-        <!--<li class="treeview {{isActiveRoute name='pos.prepaidOrder'}}">-->
-            <!--<a href="{{pathFor 'pos.prepaidOrder'}}">-->
-                <!--<i class="fa fa-plus"></i>-->
-                <!--<span>{{_ "pos.sidebarMenu.prepaidOrder"}}</span>-->
-            <!--</a>-->
-        <!--</li>-->
-    <!--{{/if}}s-->
+        <!--{{#if isInRole 'setting' 'Pos'}}-->
+    <!--<li class="{{isActiveRoute name='pos.adminDashboard'}}">-->
+    <!--<a href="{{pathFor 'pos.adminDashboard'}}">-->
+    <!--<i class="fa fa-tachometer"></i> <span>Admin Dashboard</span>-->
+    <!--</a>-->
+    <!--</li>-->
+        <!--{{/if}}-->
+        <!--{{#if isInRole 'journal' 'Pos'}}-->
+    <!--<li class="treeview {{isActiveRoute name='acc.journal'}}">-->
+    <!--<a href="{{pathFor 'acc.journal'}}">-->
+    <!--<i class="fa fa-plus"></i>-->
+    <!--<span>{{_ "acc.sidebarMenu.journal"}}</span>-->
+    <!--</a>-->
+    <!--</li>-->
+        <!--{{/if}}-->
+        <!--{{#if isInRole 'paid-to-order' 'Pos'}}-->
+    <!--<li class="treeview {{isActiveRoute name='pos.prepaidOrder'}}">-->
+    <!--<a href="{{pathFor 'pos.prepaidOrder'}}">-->
+    <!--<i class="fa fa-plus"></i>-->
+    <!--<span>{{_ "pos.sidebarMenu.prepaidOrder"}}</span>-->
+    <!--</a>-->
+    <!--</li>-->
+        <!--{{/if}}s-->
     <!--Account-->
     {{#if isInRole 'data-insert,data-update,data-remove' 'Acc'}}
         <li class="treeview">
@@ -203,7 +203,8 @@
                         <i class="fa fa-money" aria-hidden="true"></i>
                         <span>Convert Item</span>
                     </a>
-                </li> <li class="{{isActiveRoute name='pos.transferMoney'}}">
+                </li>
+                <li class="{{isActiveRoute name='pos.transferMoney'}}">
                     <a href="{{pathFor 'pos.transferMoney'}}">
                         <i class="fa fa-money" aria-hidden="true"></i>
                         <span>Transfer Money</span>
@@ -255,6 +256,12 @@
                     <a href="{{pathFor 'pos.exchangeGratis'}}">
                         <i class="fa fa-gift" aria-hidden="true"></i>
                         <span>Exchange Gratis</span>
+                    </a>
+                </li>
+                <li class="{{isActiveRoute name='pos.closingStockList'}}">
+                    <a href="{{pathFor 'pos.closingStockList'}}">
+                        <i class="fa fa-gift" aria-hidden="true"></i>
+                        <span>Closing Stock List</span>
                     </a>
                 </li>
                 {{#if isInRole 'remove-transaction' 'Pos'}}

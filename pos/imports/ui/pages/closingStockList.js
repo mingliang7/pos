@@ -26,7 +26,7 @@ import '../../../../core/client/components/form-footer.js';
 import {ClosingStockBalance} from '../../api/collections/closingStock.js';
 
 // Tabular
-import {CategoryTabular} from '../../../common/tabulars/category.js';
+import {ClosingStockBalanceTabular} from '../../../common/tabulars/closingStockList.js';
 
 // Page
 import './closingStockList.html';
@@ -41,7 +41,7 @@ indexTmpl.onCreated(function () {
 
 indexTmpl.helpers({
     tabularTable(){
-        return CategoryTabular;
+        return ClosingStockBalanceTabular;
     },
     selector() {
         return {
@@ -52,35 +52,50 @@ indexTmpl.helpers({
 });
 
 indexTmpl.events({
-    'click .js-create' (event, instance) {
-        Session.set('CategoryIdSession', null);
-        alertify.category(fa('plus', TAPi18n.__('pos.category.title')), renderTemplate(newTmpl));
+    'click .generate-closingStock' (event, instance) {
+        $.blockUI();
+        Meteor.call("testClosingStock", function (err, result) {
+            if (!err) {
+                alertify.success(`Generate successfully`);
+
+            }
+            $.unblockUI();
+        });
     },
-    'click .js-update' (event, instance) {
-        Session.set('CategoryIdSession', this._id);
-        alertify.category(fa('pencil', TAPi18n.__('pos.category.title')), renderTemplate(editTmpl, this));
-    },
-    'click .js-destroy' (event, instance) {
-        var id = this._id;
-        Meteor.call('isCategoryHasRelation', id, function (error, result) {
-            if (error) {
-                alertify.error(error.message);
+    'click .js-destroy'(event, instance){
+        Meteor.call('removeClosingStock', {
+            branchId: Session.get('currentBranch'),
+            _id: this._id,
+            closingDateString: this.closingDateString
+        }, (err, result) => {
+            if (!err) {
+                alertify.success(`Remove ${this.closingDateString} successfully`);
             } else {
-                if (result) {
-                    alertify.warning("Data has been used. Can't remove.");
-                } else {
-                    destroyAction(
-                        Categories,
-                        {_id: id},
-                        {title: TAPi18n.__('pos.category.title'), itemTitle: id}
-                    );
-                }
+                alertify.error(err.message);
             }
         });
-
-
     },
-    'click .js-display' (event, instance) {
-        alertify.categoryShow(fa('eye', TAPi18n.__('pos.category.title')), renderTemplate(showTmpl, this));
+    'click .js-destroy-all'(event, instance){
+        swal({
+            title: 'Remove Closing Stock',
+            text: `Are you sure to remove all ?`,
+            type: 'warning',
+            allowEscapeKey: false,
+            allowOutsideClick: true,
+            showCloseButton: true,
+            showConfirmButton: true,
+            confirmButtonColor: "#dd4b39",
+            confirmButtonText: 'Yes, remove all.',
+            showCancelButton: true
+        }).then(function () {
+            $.blockUI();
+            Meteor.call('removeClosingStockByBranch', {branchId: Session.get('currentBranch')}, (err, result) => {
+                if (!err) {
+                    alertify.success(`Remove All in branch ${Session.get('currentBranch')} successfully`);
+                }
+                $.unblockUI();
+            });
+        }).done();
+
     }
 });

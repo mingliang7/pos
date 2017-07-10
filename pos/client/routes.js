@@ -751,3 +751,17 @@ PosRoutes.route('/convert-item', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/closingStockList'
+PosRoutes.route('/closing-stock-list', {
+    name: 'pos.closingStockList',
+    title: 'Closing Stock List',
+    action: function (params,queryParams) {
+        Layout.main('Pos_closingStockList');
+    },
+    breadcrumb: {
+        title: 'Closing Stock List',
+        icon: '',
+        parent: 'pos.home'
+    }
+});

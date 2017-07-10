@@ -6,5 +6,6 @@ Meteor.methods({
     },
     testClosingStock(){
         ClosingStock.generateClosingStockBalance();
+        return;
     }
 });

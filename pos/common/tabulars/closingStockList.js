@@ -21,8 +21,10 @@ tabularOpts.name = 'pos.closingStockList';
 tabularOpts.collection = ClosingStockBalance;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_closingStockListAction},
-    {data: "closingDateString", title: "Closing Date"},
-    // {data: "description", title: "Description"}
+    {
+        data: "closingDateString"
+    },
+    {data: "branchId", title: "BranchId"}
 ];
-//tabularOpts.extraFields=['_parent'];
+tabularOpts.extraFields = ['_id'];
 export const ClosingStockBalanceTabular = new Tabular.Table(tabularOpts);
