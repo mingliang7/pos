@@ -46,7 +46,7 @@ Meteor.methods({
                 arr.push({
                     account: obj._id.account,
                     name: obj._id.name,
-                    result: math.round(re, 2),
+                    result: math.round(re, 3),
                     code: obj._id.code
                 });
             }
@@ -77,7 +77,7 @@ Meteor.methods({
                         arr.push({
                             account: lastBal.closeChartAccountId,
                             name: lastBal.name,
-                            result: math.round(re, 2),
+                            result: math.round(re, 3),
                             code: lastBal.code
                         });
                     }

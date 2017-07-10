@@ -108,15 +108,15 @@ invoiceDataTmpl.helpers({
     },
     displayStockOutQty(){
         if (this.coefficient < 0) {
-            return `<td></td><td>${numeral(Math.abs(this.qty)).format('0,0.00')}</td>`;
+            return `<td></td><td>${numeral(Math.abs(this.qty)).format('0,0.000')}</td>`;
         }
-        return `<td>${numeral(this.qty).format('0,0.00')}</td><td></td>`;
+        return `<td>${numeral(this.qty).format('0,0.000')}</td><td></td>`;
     },
     no(index){
         return index + 1;
     },
     notZero(val){
-        return val == 0 ? '' : numeral(val).format('0,0.00');
+        return val == 0 ? '' : numeral(val).format('0,0.000');
     }
 });
 invoiceDataTmpl.onDestroyed(function () {

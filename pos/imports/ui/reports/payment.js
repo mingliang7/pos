@@ -118,7 +118,7 @@ receivePaymentTmpl.helpers({
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
             } else if (obj.field == 'actualDueAmount' || obj.field == 'dueAmount' || obj.field == 'paidAmount' || obj.field == 'balanceAmount') {
-                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
+                data += `<td>${numeral(col[obj.field]).format('0,0.000')}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
@@ -132,9 +132,9 @@ receivePaymentTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(dueAmount).format('0,0.00')}</b></td>`;
-        string += `<td><b>${numeral(paidAmount).format('0,0.00')}</b></td>`;
-        string += `<td><b>${numeral(balanceAmount).format('0,0.00')}</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(dueAmount).format('0,0.000')}</b></td>`;
+        string += `<td><b>${numeral(paidAmount).format('0,0.000')}</b></td>`;
+        string += `<td><b>${numeral(balanceAmount).format('0,0.000')}</b></td>`;
         return string;
     }
 });

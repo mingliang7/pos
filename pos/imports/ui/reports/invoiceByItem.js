@@ -134,7 +134,7 @@ invoiceDataTmpl.helpers({
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
             } else if (obj.field == 'qty' || obj.field == 'price' || obj.field == 'total' || obj.field == 'amount') {
-                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.00')}</td>`
+                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.000')}</td>`
             }
             else {
                 data += `<td>${col[obj.field] || ''}</td>`;
@@ -149,7 +149,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><u>Total:</u></td><td><u>${numeral(total).format('0,0.00')}</u></td>`;
+        string += `<td><u>Total:</u></td><td><u>${numeral(total).format('0,0.000')}</u></td>`;
         return string;
     },
     getTotalFooter(totalQty, total, n){
@@ -159,7 +159,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td class="text-right"><b>Grand Total:</b></td><td style='border-top: 1px solid black;' class="text-right"><b>${numeral(qty).format('0,0.00')}</b></td><td style='border-top: 1px solid black;'></td><td style='border-top: 1px solid black;' class="text-right"><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td class="text-right"><b>Grand Total:</b></td><td style='border-top: 1px solid black;' class="text-right"><b>${numeral(qty).format('0,0.00')}</b></td><td style='border-top: 1px solid black;'></td><td style='border-top: 1px solid black;' class="text-right"><b>${numeral(total).format('0,0.000')}$</b></td>`;
         return string;
     },
     capitalize(customerName){

@@ -2,7 +2,7 @@
 
     .display-on-print-div {
         font-family: Arial, Verdana, Geneva, sans-serif;
-        font-size: 9px;
+        font-size: 15px !important;
         color: #000000;
         margin: 0px auto;
         padding: 0px;
@@ -14,7 +14,7 @@
         margin-top: 30px;
         font-family: Arial, Verdana, Geneva, sans-serif;
         color: #000000;
-        font-size: 10px;
+        font-size: 15px !important;
         border-collapse: collapse;
         border: 1px solid black !important;
     }
@@ -24,7 +24,7 @@
         width: 100%;
         padding: 0px;
         font-family: Arial, Verdana, Geneva, sans-serif;
-        font-size: 10px;
+        font-size: 15px !important;
         color: #000000;
         border-collapse: collapse;
     }
@@ -33,20 +33,33 @@
         font-weight: bold;
         background-color: lightgray !important;
         -webkit-print-color-adjust: exact;
+        font-size: 15px !important;
         text-align: center !important;
+        padding: 3px;
     }
 
     .display-on-print-body {
         border-collapse: collapse;
         width: 100%;
         margin-top: 30px;
+        font-size: 15px !important;
+        padding: 3px;
     }
 
-      .display-on-print-div > .table > thead > tr > th, .display-on-print-div > .table > tbody > tr > th,.display-on-print-div > .table > tfoot > tr > th,.display-on-print-div > .table > thead > tr > td,.display-on-print-div > .table > tbody > tr > td,.display-on-print-div > .table > tfoot > tr > td {
+    .display-on-print-div > .table > thead > tr > th, .display-on-print-div > .table > tbody > tr > th, .display-on-print-div > .table > tfoot > tr > th, .display-on-print-div > .table > thead > tr > td, .display-on-print-div > .table > tbody > tr > td, .display-on-print-div > .table > tfoot > tr > td {
         border: 1px solid black !important;
+        font-size: 15px !important;
+        padding: 3px;
     }
 
+    footer {
+        position: relative;
+        bottom: 0;
+    }
 
+    footer > p {
+        page-break-inside: avoid !important;
+    }
 }
 
 .sub-div {
@@ -54,6 +67,7 @@
     color: #000000;
     font-size: 14px;
 }
+
 .sub-body {
     font-family: Arial, Verdana, Geneva, sans-serif;
     color: #000000;
@@ -66,7 +80,7 @@
     font-size: 14px;
 }
 
-.display-on-print-div > .table > thead > tr > th, .display-on-print-div > .table > tbody > tr > th,.display-on-print-div > .table > tfoot > tr > th,.display-on-print-div > .table > thead > tr > td,.display-on-print-div > .table > tbody > tr > td,.display-on-print-div > .table > tfoot > tr > td {
+.display-on-print-div > .table > thead > tr > th, .display-on-print-div > .table > tbody > tr > th, .display-on-print-div > .table > tfoot > tr > th, .display-on-print-div > .table > thead > tr > td, .display-on-print-div > .table > tbody > tr > td, .display-on-print-div > .table > tfoot > tr > td {
     border: 1px solid black !important;
 }
 

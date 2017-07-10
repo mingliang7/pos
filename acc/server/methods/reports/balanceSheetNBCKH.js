@@ -232,13 +232,13 @@ Meteor.methods({
           };
           result.push(key[val.account]);
         } else {
-          key[val.account].result += math.round(val.result, 2);
+          key[val.account].result += math.round(val.result, 3);
           if (val.currency == "USD") {
-            key[val.account].amountUsd += math.round(val.result, 2);
+            key[val.account].amountUsd += math.round(val.result, 3);
           } else if (val.currency == "KHR") {
-            key[val.account].amountRiel += math.round(val.result, 2);
+            key[val.account].amountRiel += math.round(val.result, 3);
           } else if (val.currency == "THB") {
-            key[val.account].amountThb += math.round(val.result, 2);
+            key[val.account].amountThb += math.round(val.result, 3);
           }
         }
         return key;
@@ -691,308 +691,308 @@ Meteor.methods({
       /*
        * Assets
        * */
-      data.cashOnHandTotal = math.round(data.cashOnHand, 2) + math.round(
-              data.cashOnHandOther, 2);
-      data.balanceNBCTotal = math.round(data.balanceNBC, 2) + math.round(
-              data.balanceNBCOther, 2);
-      data.accountBankTotal = math.round(data.accountBank, 2) + math.round(
-              data.accountBankOther, 2);
+      data.cashOnHandTotal = math.round(data.cashOnHand, 3) + math.round(
+              data.cashOnHandOther, 3);
+      data.balanceNBCTotal = math.round(data.balanceNBC, 3) + math.round(
+              data.balanceNBCOther, 3);
+      data.accountBankTotal = math.round(data.accountBank, 3) + math.round(
+              data.accountBankOther, 3);
 
-      data.interestReceivableTotal = math.round(data.interestReceivable, 2) +
-          math.round(data.interestReceivableOther, 2);
+      data.interestReceivableTotal = math.round(data.interestReceivable, 3) +
+          math.round(data.interestReceivableOther, 3);
 
 
       data.creditBalanceLessThanOneMonthTotal = math.round(data.creditBalanceLessThanOneMonth,
-              2) + math.round(data.creditBalanceLessThanOneMonthOther, 2);
+              2) + math.round(data.creditBalanceLessThanOneMonthOther, 3);
 
-      data.loanLossReverseTotal = math.round(data.loanLossReverse, 2) +
-          math.round(data.loanLossReverseOther, 2);
+      data.loanLossReverseTotal = math.round(data.loanLossReverse, 3) +
+          math.round(data.loanLossReverseOther, 3);
 
       data.netCreditBalanceTotal = math.round(data.netCreditBalance,
-              2) + math.round(data.netCreditBalanceOther, 2);
+              2) + math.round(data.netCreditBalanceOther, 3);
 
-      data.interestReceivableCreditTotal = math.round(data.interestReceivableCredit, 2) + math.round(
-              data.interestReceivableCreditOther, 2);
+      data.interestReceivableCreditTotal = math.round(data.interestReceivableCredit, 3) + math.round(
+              data.interestReceivableCreditOther, 3);
 
       data.landTotal = math.round(data.land,
-              2) + math.round(data.landOther, 2);
+              2) + math.round(data.landOther, 3);
 
 
-      data.landAccumulatedDepTotal = math.round(data.landAccumulatedDep, 2) +
-          math.round(data.landAccumulatedDepOther, 2);
+      data.landAccumulatedDepTotal = math.round(data.landAccumulatedDep, 3) +
+          math.round(data.landAccumulatedDepOther, 3);
 
-      data.buildingAtCostTotal = math.round(data.buildingAtCost, 2) + math.round(
-              data.buildingAtCostOther, 2);
+      data.buildingAtCostTotal = math.round(data.buildingAtCost, 3) + math.round(
+              data.buildingAtCostOther, 3);
       data.buildingAccumulatedDepTotal = math.round(data.buildingAccumulatedDep,
-              2) + math.round(data.buildingAccumulatedDepOther, 2);
+              2) + math.round(data.buildingAccumulatedDepOther, 3);
 
       data.otherFixAssetsAtCostTotal = math.round(data.otherFixAssetsAtCost,
-              2) + math.round(data.otherFixAssetsAtCostOther, 2);
+              2) + math.round(data.otherFixAssetsAtCostOther, 3);
 
       data.otherFixedAssetAccumulatedDepTotal = math.round(data.otherFixedAssetAccumulatedDep,
-              2) + math.round(data.otherFixedAssetAccumulatedDepOther, 2);
+              2) + math.round(data.otherFixedAssetAccumulatedDepOther, 3);
 
-      data.sofeAssetValueTotal = math.round(data.sofeAssetValue, 2) + math.round(
-              data.sofeAssetValueOther, 2);
+      data.sofeAssetValueTotal = math.round(data.sofeAssetValue, 3) + math.round(
+              data.sofeAssetValueOther, 3);
 
-      data.sofeAssetAccumulatedDepTotal = math.round(data.sofeAssetAccumulatedDep, 2) + math.round(
-              data.sofeAssetAccumulatedDepOther, 2);
+      data.sofeAssetAccumulatedDepTotal = math.round(data.sofeAssetAccumulatedDep, 3) + math.round(
+              data.sofeAssetAccumulatedDepOther, 3);
 
-      data.chapterTotal = math.round(data.chapter, 2) + math.round(
-              data.chapterOther, 2);
+      data.chapterTotal = math.round(data.chapter, 3) + math.round(
+              data.chapterOther, 3);
 
-      data.otherFixTotal = math.round(data.otherFix, 2) + math.round(
-              data.otherFixOther, 2);
+      data.otherFixTotal = math.round(data.otherFix, 3) + math.round(
+              data.otherFixOther, 3);
 
 
-      data.cashAndBalanceWithNBC = math.round(math.round(data.cashOnHand, 2) +
-          math.round(data.balanceNBC, 2) + math.round(data.accountBank, 2) +
-          math.round(data.interestReceivable, 2), 2);
+      data.cashAndBalanceWithNBC = math.round(math.round(data.cashOnHand, 3) +
+          math.round(data.balanceNBC, 3) + math.round(data.accountBank, 3) +
+          math.round(data.interestReceivable, 3), 3);
       data.cashAndBalanceWithNBCOther = math.round(math.round(data.cashOnHandOther,
-              2) + math.round(data.balanceNBCOther, 2) + math.round(data.accountBankOther,
-              2) + math.round(data.interestReceivableOther, 2), 2);
+              2) + math.round(data.balanceNBCOther, 3) + math.round(data.accountBankOther,
+              2) + math.round(data.interestReceivableOther, 3), 3);
       data.cashAndBalanceWithNBCTotal = math.round(math.round(data.cashOnHandTotal,
-              2) + math.round(data.balanceNBCTotal, 2) + math.round(data.accountBankTotal,
-              2) + math.round(data.interestReceivableTotal, 2), 2);
+              2) + math.round(data.balanceNBCTotal, 3) + math.round(data.accountBankTotal,
+              2) + math.round(data.interestReceivableTotal, 3), 3);
 
-      data.creditBalance = math.round(math.round(data.creditBalanceLessThanOneMonth, 2) +
-          math.round(data.loanLossReverse, 2), 2);
-      data.creditBalanceOther = math.round(math.round(data.creditBalanceLessThanOneMonthOther, 2) +
-          math.round(data.loanLossReverseOther, 2), 2);
-      data.creditBalanceTotal = math.round(math.round(data.creditBalanceLessThanOneMonthTotal, 2) +
-          math.round(data.loanLossReverseTotal, 2), 2);
+      data.creditBalance = math.round(math.round(data.creditBalanceLessThanOneMonth, 3) +
+          math.round(data.loanLossReverse, 3), 3);
+      data.creditBalanceOther = math.round(math.round(data.creditBalanceLessThanOneMonthOther, 3) +
+          math.round(data.loanLossReverseOther, 3), 3);
+      data.creditBalanceTotal = math.round(math.round(data.creditBalanceLessThanOneMonthTotal, 3) +
+          math.round(data.loanLossReverseTotal, 3), 3);
 
 
       data.loanAndAdvancedToCustomer = math.round(math.round(data.creditBalance,
-              2) + math.round(data.netCreditBalance, 2) + math.round(data.interestReceivableCredit,
-              2), 2);
+              2) + math.round(data.netCreditBalance, 3) + math.round(data.interestReceivableCredit,
+              2), 3);
       data.loanAndAdvancedToCustomerOther = math.round(math.round(data.creditBalanceOther,
-              2) + math.round(data.netCreditBalanceOther, 2) + math.round(data.interestReceivableCreditOther,
-              2), 2);
+              2) + math.round(data.netCreditBalanceOther, 3) + math.round(data.interestReceivableCreditOther,
+              2), 3);
       data.loanAndAdvancedToCustomerTotal = math.round(math.round(data.creditBalanceTotal,
-              2) + math.round(data.netCreditBalanceTotal, 2) + math.round(data.interestReceivableCreditTotal,
-              2), 2);
+              2) + math.round(data.netCreditBalanceTotal, 3) + math.round(data.interestReceivableCreditTotal,
+              2), 3);
 
 
-      data.landNet = math.round(math.round(data.land, 2) + math.round(data.landAccumulatedDep),
+      data.landNet = math.round(math.round(data.land, 3) + math.round(data.landAccumulatedDep),
           2);
-      data.landNetOther = math.round(math.round(data.landOther, 2) + math.round(
-              data.landAccumulatedDepOther), 2);
-      data.landNetTotal = math.round(math.round(data.landTotal, 2) + math.round(
-              data.landAccumulatedDepTotal), 2);
+      data.landNetOther = math.round(math.round(data.landOther, 3) + math.round(
+              data.landAccumulatedDepOther), 3);
+      data.landNetTotal = math.round(math.round(data.landTotal, 3) + math.round(
+              data.landAccumulatedDepTotal), 3);
 
-      data.buildingNet = math.round(math.round(data.buildingAtCost, 2) +
-          math.round(data.buildingAccumulatedDep, 2), 2);
+      data.buildingNet = math.round(math.round(data.buildingAtCost, 3) +
+          math.round(data.buildingAccumulatedDep, 3), 3);
       data.buildingNetOther = math.round(math.round(data.buildingAtCostOther,
-              2) + math.round(data.buildingAccumulatedDepOther, 2), 2);
+              2) + math.round(data.buildingAccumulatedDepOther, 3), 3);
       data.buildingNetTotal = math.round(math.round(data.buildingAtCostTotal,
-              2) + math.round(data.buildingAccumulatedDepTotal, 2), 2);
+              2) + math.round(data.buildingAccumulatedDepTotal, 3), 3);
 
       data.otherFixAssetNet = math.round(math.round(data.otherFixAssetsAtCost,
-              2) + math.round(data.otherFixedAssetAccumulatedDep, 2), 2);
+              2) + math.round(data.otherFixedAssetAccumulatedDep, 3), 3);
       data.otherFixAssetNetOther = math.round(math.round(data.otherFixAssetsAtCostOther,
-              2) + math.round(data.otherFixedAssetAccumulatedDepOther, 2), 2);
+              2) + math.round(data.otherFixedAssetAccumulatedDepOther, 3), 3);
       data.otherFixAssetNetTotal = math.round(math.round(data.otherFixAssetsAtCostTotal,
-              2) + math.round(data.otherFixedAssetAccumulatedDepTotal, 2), 2);
+              2) + math.round(data.otherFixedAssetAccumulatedDepTotal, 3), 3);
 
 
       data.sofeAsset = math.round(math.round(data.sofeAssetValue,
-              2) + math.round(data.sofeAssetAccumulatedDep, 2), 2);
+              2) + math.round(data.sofeAssetAccumulatedDep, 3), 3);
       data.sofeAssetOther = math.round(math.round(data.sofeAssetValueOther,
-              2) + math.round(data.sofeAssetAccumulatedDepOther, 2), 2);
+              2) + math.round(data.sofeAssetAccumulatedDepOther, 3), 3);
       data.sofeAssetTotal = math.round(math.round(data.sofeAssetValueTotal,
-              2) + math.round(data.sofeAssetAccumulatedDepTotal, 2), 2);
+              2) + math.round(data.sofeAssetAccumulatedDepTotal, 3), 3);
 
 
-      data.propertyAndEquipment = math.round(math.round(data.landNet, 2) +
-          math.round(data.buildingNet, 2) + math.round(data.otherFixAssetNet,
-              2) + math.round(data.sofeAsset, 2), 2);
+      data.propertyAndEquipment = math.round(math.round(data.landNet, 3) +
+          math.round(data.buildingNet, 3) + math.round(data.otherFixAssetNet,
+              2) + math.round(data.sofeAsset, 3), 3);
       data.propertyAndEquipmentOther = math.round(math.round(data.landNetOther,
-              2) + math.round(data.buildingNetOther, 2) + math.round(data.otherFixAssetNetOther,
-              2) + math.round(data.sofeAssetOther, 2), 2);
+              2) + math.round(data.buildingNetOther, 3) + math.round(data.otherFixAssetNetOther,
+              2) + math.round(data.sofeAssetOther, 3), 3);
       data.propertyAndEquipmentTotal = math.round(math.round(data.landNetTotal,
-              2) + math.round(data.buildingNetTotal, 2) + math.round(data.otherFixAssetNetTotal,
-              2) + math.round(data.sofeAssetTotal, 2), 2);
+              2) + math.round(data.buildingNetTotal, 3) + math.round(data.otherFixAssetNetTotal,
+              2) + math.round(data.sofeAssetTotal, 3), 3);
 
       data.fixAssetReceivable = math.round(math.round(data.chapter,
-              2) + math.round(data.otherFix, 2), 2);
+              2) + math.round(data.otherFix, 3), 3);
       data.fixAssetReceivableOther = math.round(math.round(data.chapterOther,
-              2) + math.round(data.otherFixOther, 2), 2);
+              2) + math.round(data.otherFixOther, 3), 3);
       data.fixAssetReceivableTotal = math.round(math.round(data.chapterTotal,
-              2) + math.round(data.otherFixTotal, 2), 2);
+              2) + math.round(data.otherFixTotal, 3), 3);
 
-      data.totalAsset = math.round(data.cashAndBalanceWithNBC, 2) + math.round(
-              data.loanAndAdvancedToCustomer, 2) + math.round(data.propertyAndEquipment,
-              2) + math.round(data.fixAssetReceivable, 2);
-      data.totalAssetOther = math.round(data.cashAndBalanceWithNBCOther, 2) + math.round(
-              data.loanAndAdvancedToCustomerOther, 2) + math.round(data.propertyAndEquipmentOther,
-              2) + math.round(data.fixAssetReceivableOther, 2);
-      data.totalAssetTotal = math.round(data.cashAndBalanceWithNBCTotal, 2) + math.round(
-              data.loanAndAdvancedToCustomerTotal, 2) + math.round(data.propertyAndEquipmentTotal,
-              2) + math.round(data.fixAssetReceivableTotal, 2);
+      data.totalAsset = math.round(data.cashAndBalanceWithNBC, 3) + math.round(
+              data.loanAndAdvancedToCustomer, 3) + math.round(data.propertyAndEquipment,
+              2) + math.round(data.fixAssetReceivable, 3);
+      data.totalAssetOther = math.round(data.cashAndBalanceWithNBCOther, 3) + math.round(
+              data.loanAndAdvancedToCustomerOther, 3) + math.round(data.propertyAndEquipmentOther,
+              2) + math.round(data.fixAssetReceivableOther, 3);
+      data.totalAssetTotal = math.round(data.cashAndBalanceWithNBCTotal, 3) + math.round(
+              data.loanAndAdvancedToCustomerTotal, 3) + math.round(data.propertyAndEquipmentTotal,
+              2) + math.round(data.fixAssetReceivableTotal, 3);
 
 
       /*
        * Liability
        * */
 
-      data.owingNBCLessThanMonthTotal = math.round(data.owingNBCLessThanMonth, 2) + math.round(data.owingNBCLessThanMonthOther, 2);
-      data.owingOtherLessThanMonthTotal = math.round(data.owingOtherLessThanMonth, 2) + math.round(data.owingOtherLessThanMonthOther, 2);
-      data.interestNBCTotal = math.round(data.interestNBC, 2) + math.round(data.interestNBCOther, 2);
+      data.owingNBCLessThanMonthTotal = math.round(data.owingNBCLessThanMonth, 3) + math.round(data.owingNBCLessThanMonthOther, 3);
+      data.owingOtherLessThanMonthTotal = math.round(data.owingOtherLessThanMonth, 3) + math.round(data.owingOtherLessThanMonthOther, 3);
+      data.interestNBCTotal = math.round(data.interestNBC, 3) + math.round(data.interestNBCOther, 3);
 
 
-      data.owingNBC = math.round(data.owingNBCLessThanMonth, 2);
-      data.owingNBCOther = math.round(data.owingNBCLessThanMonthOther, 2);
-      data.owingNBCTotal = math.round(data.owingNBCLessThanMonthTotal, 2);
+      data.owingNBC = math.round(data.owingNBCLessThanMonth, 3);
+      data.owingNBCOther = math.round(data.owingNBCLessThanMonthOther, 3);
+      data.owingNBCTotal = math.round(data.owingNBCLessThanMonthTotal, 3);
 
-      data.owingOther = math.round(data.owingOtherLessThanMonth, 2);
-      data.owingOtherOther = math.round(data.owingOtherLessThanMonthOther, 2);
-      data.owingOtherTotal = math.round(data.owingOtherLessThanMonthTotal, 2);
+      data.owingOther = math.round(data.owingOtherLessThanMonth, 3);
+      data.owingOtherOther = math.round(data.owingOtherLessThanMonthOther, 3);
+      data.owingOtherTotal = math.round(data.owingOtherLessThanMonthTotal, 3);
 
-      data.owingNBCandOther = (math.round(data.owingNBC, 2) +
-      math.round(data.owingOther, 2) + math.round(data.interestNBC, 2));
-      data.owingNBCandOtherOther = (math.round(data.owingNBCOther, 2) +
-      math.round(data.owingOtherOther, 2) + math.round(data.interestNBCOther, 2));
-      data.owingNBCandOtherTotal = (math.round(data.owingNBCTotal, 2) +
-      math.round(data.owingOtherTotal, 2) + math.round(data.interestNBCTotal, 2));
+      data.owingNBCandOther = (math.round(data.owingNBC, 3) +
+      math.round(data.owingOther, 3) + math.round(data.interestNBC, 3));
+      data.owingNBCandOtherOther = (math.round(data.owingNBCOther, 3) +
+      math.round(data.owingOtherOther, 3) + math.round(data.interestNBCOther, 3));
+      data.owingNBCandOtherTotal = (math.round(data.owingNBCTotal, 3) +
+      math.round(data.owingOtherTotal, 3) + math.round(data.interestNBCTotal, 3));
 
 
-      data.compulsorySavingTotal = (math.round(data.compulsorySaving, 2) +
-      math.round(data.compulsorySavingOther, 2));
-      data.savingDepositTotal = (math.round(data.savingDeposit, 2) + math.round(
-          data.savingDepositOther, 2));
-      data.demandDepositeTotal = (math.round(data.demandDeposite, 2) + math
-          .round(data.demandDepositeOther, 2));
-      data.termDepositeTotal = (math.round(data.termDeposite, 2) + math.round(
-          data.termDepositeOther, 2));
+      data.compulsorySavingTotal = (math.round(data.compulsorySaving, 3) +
+      math.round(data.compulsorySavingOther, 3));
+      data.savingDepositTotal = (math.round(data.savingDeposit, 3) + math.round(
+          data.savingDepositOther, 3));
+      data.demandDepositeTotal = (math.round(data.demandDeposite, 3) + math
+          .round(data.demandDepositeOther, 3));
+      data.termDepositeTotal = (math.round(data.termDeposite, 3) + math.round(
+          data.termDepositeOther, 3));
 
-      data.interestPayableTotal = (math.round(data.interestPayable, 2) +
-      math.round(data.interestPayableOther, 2));
+      data.interestPayableTotal = (math.round(data.interestPayable, 3) +
+      math.round(data.interestPayableOther, 3));
       data.accountPayableTotal = (math.round(data.accountPayable,
-          2) + math.round(data.accountPayableOther, 2));
+          2) + math.round(data.accountPayableOther, 3));
       data.interestPayTotal = (math.round(data.interestPay,
-          2) + math.round(data.interestPayOther, 2));
+          2) + math.round(data.interestPayOther, 3));
 
       data.taxPayTotal = (math.round(data.taxPay,
-          2) + math.round(data.taxPayOther, 2));
+          2) + math.round(data.taxPayOther, 3));
 
       data.otherFixedAssetTotal = (math.round(data.otherFixedAsset,
-          2) + math.round(data.otherFixedAssetOther, 2));
+          2) + math.round(data.otherFixedAssetOther, 3));
 
 
-      data.premiumOnShareCapitalTotal = (math.round(data.premiumOnShareCapital, 2) +
-      math.round(data.premiumOnShareCapitalOther, 2));
-      data.unPremiumOnShareCapitalTotal = (math.round(data.unPremiumOnShareCapital, 2) +
-      math.round(data.unPremiumOnShareCapitalOther, 2));
+      data.premiumOnShareCapitalTotal = (math.round(data.premiumOnShareCapital, 3) +
+      math.round(data.premiumOnShareCapitalOther, 3));
+      data.unPremiumOnShareCapitalTotal = (math.round(data.unPremiumOnShareCapital, 3) +
+      math.round(data.unPremiumOnShareCapitalOther, 3));
 
-      data.littleAPTotal = (math.round(data.littleAP, 2) + math
-          .round(data.littleAPOther, 2));
-      data.reservesAndAppropriationsTotal = (math.round(data.reservesAndAppropriations, 2) + math
-          .round(data.reservesAndAppropriationsOther, 2));
+      data.littleAPTotal = (math.round(data.littleAP, 3) + math
+          .round(data.littleAPOther, 3));
+      data.reservesAndAppropriationsTotal = (math.round(data.reservesAndAppropriations, 3) + math
+          .round(data.reservesAndAppropriationsOther, 3));
 
-      data.retainedEarningTotal = (math.round(data.retainedEarning, 2) + math
-          .round(data.retainedEarningOther, 2));
-
-
-      data.donatedCapitalTotal = (math.round(data.donatedCapital, 2) + math
-          .round(data.donatedCapitalOther, 2));
-      data.hybridCapitalInvestmentTotal = (math.round(data.hybridCapitalInvestment, 2) + math
-          .round(data.hybridCapitalInvestmentOther, 2));
+      data.retainedEarningTotal = (math.round(data.retainedEarning, 3) + math
+          .round(data.retainedEarningOther, 3));
 
 
-      data.owingNBCandOther = math.round(data.owingNBC, 2) + math.round(
-              data.owingOther, 2) + math.round(data.interestNBC, 2);
-      data.owingNBCandOtherOther = math.round(data.owingNBCOther, 2) + math.round(
-              data.owingOtherOther, 2) + math.round(data.interestNBCOther, 2);
-      data.owingNBCandOtherTotal = math.round(data.owingNBCTotal, 2) + math.round(
-              data.owingOtherTotal, 2) + math.round(data.interestNBCTotal, 2);
+      data.donatedCapitalTotal = (math.round(data.donatedCapital, 3) + math
+          .round(data.donatedCapitalOther, 3));
+      data.hybridCapitalInvestmentTotal = (math.round(data.hybridCapitalInvestment, 3) + math
+          .round(data.hybridCapitalInvestmentOther, 3));
 
 
-      data.voluntarySaving = math.round(data.savingDeposit, 2) + math.round(
-              data.demandDeposite, 2) + math.round(data.termDeposite, 2);
-      data.voluntarySavingOther = math.round(data.savingDepositOther, 2) +
-          math.round(data.demandDepositeOther, 2) + math.round(data.termDepositeOther,
+      data.owingNBCandOther = math.round(data.owingNBC, 3) + math.round(
+              data.owingOther, 3) + math.round(data.interestNBC, 3);
+      data.owingNBCandOtherOther = math.round(data.owingNBCOther, 3) + math.round(
+              data.owingOtherOther, 3) + math.round(data.interestNBCOther, 3);
+      data.owingNBCandOtherTotal = math.round(data.owingNBCTotal, 3) + math.round(
+              data.owingOtherTotal, 3) + math.round(data.interestNBCTotal, 3);
+
+
+      data.voluntarySaving = math.round(data.savingDeposit, 3) + math.round(
+              data.demandDeposite, 3) + math.round(data.termDeposite, 3);
+      data.voluntarySavingOther = math.round(data.savingDepositOther, 3) +
+          math.round(data.demandDepositeOther, 3) + math.round(data.termDepositeOther,
               2);
-      data.voluntarySavingTotal = math.round(data.savingDepositTotal, 2) +
-          math.round(data.demandDepositeTotal, 2) + math.round(data.termDepositeTotal,
-              2);
-
-
-      data.customerDeposit = math.round(data.compulsorySaving, 2) + math.round(
-              data.voluntarySaving, 2) + math.round(data.interestPayable, 2);
-      data.customerDepositOther = math.round(data.compulsorySavingOther, 2) +
-          math.round(data.voluntarySavingOther, 2) + math.round(data.interestPayableOther,
-              2);
-      data.customerDepositTotal = math.round(data.compulsorySavingTotal, 2) +
-          math.round(data.voluntarySavingTotal, 2) + math.round(data.interestPayableTotal,
+      data.voluntarySavingTotal = math.round(data.savingDepositTotal, 3) +
+          math.round(data.demandDepositeTotal, 3) + math.round(data.termDepositeTotal,
               2);
 
 
-      data.accountsPayableAndOtherLiabilities = math.round(data.accountPayable, 2) + math.round(
-              data.interestPay, 2) + math.round(data.taxPay, 2) + math.round(data.otherFixedAsset, 2);
-      data.accountsPayableAndOtherLiabilitiesOther = math.round(data.accountPayableOther, 2) + math.round(
-              data.interestPayOther, 2) + math.round(data.taxPayOther, 2) + math.round(data.otherFixedAssetOther, 2);
-      data.accountsPayableAndOtherLiabilitiesTotal = math.round(data.accountPayableTotal, 2) + math.round(
-              data.interestPayTotal, 2) + math.round(data.taxPayTotal, 2) + math.round(data.otherFixedAssetTotal, 2);
+      data.customerDeposit = math.round(data.compulsorySaving, 3) + math.round(
+              data.voluntarySaving, 3) + math.round(data.interestPayable, 3);
+      data.customerDepositOther = math.round(data.compulsorySavingOther, 3) +
+          math.round(data.voluntarySavingOther, 3) + math.round(data.interestPayableOther,
+              2);
+      data.customerDepositTotal = math.round(data.compulsorySavingTotal, 3) +
+          math.round(data.voluntarySavingTotal, 3) + math.round(data.interestPayableTotal,
+              2);
 
 
-      data.paidUpCapital = (math.round(data.premiumOnShareCapital, 2) + math.round(
-          data.unPremiumOnShareCapital, 2));
-      data.paidUpCapitalOther = (math.round(data.premiumOnShareCapitalOther, 2) + math.round(
-          data.unPremiumOnShareCapitalOther, 2));
-      data.paidUpCapitalTotal = (math.round(data.premiumOnShareCapitalTotal, 2) + math.round(
-          data.unPremiumOnShareCapitalTotal, 2));
+      data.accountsPayableAndOtherLiabilities = math.round(data.accountPayable, 3) + math.round(
+              data.interestPay, 3) + math.round(data.taxPay, 3) + math.round(data.otherFixedAsset, 3);
+      data.accountsPayableAndOtherLiabilitiesOther = math.round(data.accountPayableOther, 3) + math.round(
+              data.interestPayOther, 3) + math.round(data.taxPayOther, 3) + math.round(data.otherFixedAssetOther, 3);
+      data.accountsPayableAndOtherLiabilitiesTotal = math.round(data.accountPayableTotal, 3) + math.round(
+              data.interestPayTotal, 3) + math.round(data.taxPayTotal, 3) + math.round(data.otherFixedAssetTotal, 3);
+
+
+      data.paidUpCapital = (math.round(data.premiumOnShareCapital, 3) + math.round(
+          data.unPremiumOnShareCapital, 3));
+      data.paidUpCapitalOther = (math.round(data.premiumOnShareCapitalOther, 3) + math.round(
+          data.unPremiumOnShareCapitalOther, 3));
+      data.paidUpCapitalTotal = (math.round(data.premiumOnShareCapitalTotal, 3) + math.round(
+          data.unPremiumOnShareCapitalTotal, 3));
 
 
       data.donatedCapitalNet = (math.round(data.donatedCapital,
-          2) + math.round(data.hybridCapitalInvestment, 2));
+          2) + math.round(data.hybridCapitalInvestment, 3));
       data.donatedCapitalNetOther = (math.round(data.donatedCapitalOther,
-          2) + math.round(data.hybridCapitalInvestmentOther, 2));
+          2) + math.round(data.hybridCapitalInvestmentOther, 3));
       data.donatedCapitalNetTotal = (math.round(data.donatedCapitalTotal,
-          2) + math.round(data.hybridCapitalInvestmentTotal, 2));
+          2) + math.round(data.hybridCapitalInvestmentTotal, 3));
 
 
       data.netIncomeOther = math.round((contentProfit.profitUSD +
-          contentProfit.profitB) / 1000000, 2);
-      data.netIncome = math.round(contentProfit.profitR / 1000000, 2);
-      data.netIncomeTotal = math.round(contentProfit.profit / 1000000, 2);
+          contentProfit.profitB) / 1000000, 3);
+      data.netIncome = math.round(contentProfit.profitR / 1000000, 3);
+      data.netIncomeTotal = math.round(contentProfit.profit / 1000000, 3);
 
 
       data.shareHolder = math.round(data.paidUpCapital,
-              2) + math.round(data.littleAP, 2)
-          + math.round(data.reservesAndAppropriations, 2)
-          + math.round(data.retainedEarning, 2)
-          + math.round(data.netIncome, 2)
-          + math.round(data.donatedCapitalNet, 2);
+              2) + math.round(data.littleAP, 3)
+          + math.round(data.reservesAndAppropriations, 3)
+          + math.round(data.retainedEarning, 3)
+          + math.round(data.netIncome, 3)
+          + math.round(data.donatedCapitalNet, 3);
       data.shareHolderOther = math.round(data.paidUpCapitalOther,
-              2) + math.round(data.littleAPOther, 2)
-          + math.round(data.reservesAndAppropriationsOther, 2)
-          + math.round(data.retainedEarningOther, 2)
-          + math.round(data.netIncomeOther, 2)
-          + math.round(data.donatedCapitalNetOther, 2);
+              2) + math.round(data.littleAPOther, 3)
+          + math.round(data.reservesAndAppropriationsOther, 3)
+          + math.round(data.retainedEarningOther, 3)
+          + math.round(data.netIncomeOther, 3)
+          + math.round(data.donatedCapitalNetOther, 3);
       data.shareHolderTotal = math.round(data.paidUpCapitalTotal,
-              2) + math.round(data.littleAPTotal, 2)
-          + math.round(data.reservesAndAppropriationsTotal, 2)
-          + math.round(data.retainedEarningTotal, 2)
-          + math.round(data.netIncomeTotal, 2)
-          + math.round(data.donatedCapitalNetTotal, 2);
+              2) + math.round(data.littleAPTotal, 3)
+          + math.round(data.reservesAndAppropriationsTotal, 3)
+          + math.round(data.retainedEarningTotal, 3)
+          + math.round(data.netIncomeTotal, 3)
+          + math.round(data.donatedCapitalNetTotal, 3);
 
 
-      data.totalLiabilitiesAndEquity = math.round(data.owingNBCandOther, 2) +
-          math.round(data.customerDeposit, 2) +
-          math.round(data.accountsPayableAndOtherLiabilities, 2) +
-          math.round(data.shareHolder, 2);
-      data.totalLiabilitiesAndEquityOther = math.round(data.owingNBCandOtherOther, 2) +
-          math.round(data.customerDepositOther, 2) +
-          math.round(data.accountsPayableAndOtherLiabilitiesOther, 2) +
-          math.round(data.shareHolderOther, 2);
-      data.totalLiabilitiesAndEquityTotal = math.round(data.owingNBCandOtherTotal, 2) +
-          math.round(data.customerDepositTotal, 2) +
-          math.round(data.accountsPayableAndOtherLiabilitiesTotal, 2) +
-          math.round(data.shareHolderTotal, 2);
+      data.totalLiabilitiesAndEquity = math.round(data.owingNBCandOther, 3) +
+          math.round(data.customerDeposit, 3) +
+          math.round(data.accountsPayableAndOtherLiabilities, 3) +
+          math.round(data.shareHolder, 3);
+      data.totalLiabilitiesAndEquityOther = math.round(data.owingNBCandOtherOther, 3) +
+          math.round(data.customerDepositOther, 3) +
+          math.round(data.accountsPayableAndOtherLiabilitiesOther, 3) +
+          math.round(data.shareHolderOther, 3);
+      data.totalLiabilitiesAndEquityTotal = math.round(data.owingNBCandOtherTotal, 3) +
+          math.round(data.customerDepositTotal, 3) +
+          math.round(data.accountsPayableAndOtherLiabilitiesTotal, 3) +
+          math.round(data.shareHolderTotal, 3);
 
 
-      var compare = math.round(data.totalAssetTotal, 2) - math.round(data.totalLiabilitiesAndEquityTotal, 2);
+      var compare = math.round(data.totalAssetTotal, 3) - math.round(data.totalLiabilitiesAndEquityTotal, 3);
       if (math.abs(compare) < 0.05) {
         data.totalLiabilitiesAndEquityTotal = data.totalAssetTotal;
         data.totalLiabilitiesAndEquityOther = data.totalLiabilitiesAndEquityOther + compare;

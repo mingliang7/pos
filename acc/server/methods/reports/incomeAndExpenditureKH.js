@@ -692,78 +692,78 @@ Meteor.methods({
 
 
             data.loanAndAdvancesToCustomerTotal = math.round(data.loanAndAdvancesToCustomer,
-                    2) + math.round(data.loanAndAdvancesToCustomerOther, 2);
-            data.accountWithBankTotal = math.round(data.accountWithBank, 2) +
-                math.round(data.accountWithBankOther, 2);
+                    2) + math.round(data.loanAndAdvancesToCustomerOther, 3);
+            data.accountWithBankTotal = math.round(data.accountWithBank, 3) +
+                math.round(data.accountWithBankOther, 3);
 
-            data.incomeOtherTotal = math.round(data.incomeOther, 2) + math.round(
-                    data.incomeOtherOther, 2);
-            data.customerDespositsTotal = math.round(data.customerDesposits, 2) +
-                math.round(data.customerDespositsOther, 2);
+            data.incomeOtherTotal = math.round(data.incomeOther, 3) + math.round(
+                    data.incomeOtherOther, 3);
+            data.customerDespositsTotal = math.round(data.customerDesposits, 3) +
+                math.round(data.customerDespositsOther, 3);
             data.amountOwingtoBankAndOtherFinTotal = math.round(data.amountOwingtoBankAndOtherFin,
-                    2) + math.round(data.amountOwingtoBankAndOtherFinOther, 2);
-            data.expenseOtherTotal = math.round(data.expenseOther, 2) + math.round(
-                    data.expenseOtherOther, 2);
-            data.nonInterestIncomeTotal = math.round(data.nonInterestIncome, 2) +
-                math.round(data.nonInterestIncomeOther, 2);
-            data.nonInterestExpenseTotal = math.round(data.nonInterestExpense, 2) +
-                math.round(data.nonInterestExpenseOther, 2);
+                    2) + math.round(data.amountOwingtoBankAndOtherFinOther, 3);
+            data.expenseOtherTotal = math.round(data.expenseOther, 3) + math.round(
+                    data.expenseOtherOther, 3);
+            data.nonInterestIncomeTotal = math.round(data.nonInterestIncome, 3) +
+                math.round(data.nonInterestIncomeOther, 3);
+            data.nonInterestExpenseTotal = math.round(data.nonInterestExpense, 3) +
+                math.round(data.nonInterestExpenseOther, 3);
 
 
             data.foreignExchangeGainTotal = math.round(data.foreignExchangeGain,
-                    2) + math.round(data.foreignExchangeGainOther, 2);
+                    2) + math.round(data.foreignExchangeGainOther, 3);
             data.foreignExchangeLossTotal = math.round(data.foreignExchangeLoss,
-                    2) + math.round(data.foreignExchangeLossOther, 2);
-            data.otherIncomeTotal = math.round(data.otherIncome, 2) + math.round(
-                    data.otherIncomeOther, 2);
+                    2) + math.round(data.foreignExchangeLossOther, 3);
+            data.otherIncomeTotal = math.round(data.otherIncome, 3) + math.round(
+                    data.otherIncomeOther, 3);
 
 
-            data.salaryExpenseTotal = math.round(data.salaryExpense, 2) + math.round(
-                    data.salaryExpenseOther, 2);
-            data.personalExpenseTotal = math.round(data.personalExpense, 2) +
-                math.round(data.personalExpenseOther, 2);
+            data.salaryExpenseTotal = math.round(data.salaryExpense, 3) + math.round(
+                    data.salaryExpenseOther, 3);
+            data.personalExpenseTotal = math.round(data.personalExpense, 3) +
+                math.round(data.personalExpenseOther, 3);
 
-            data.rentExpenseTotal = math.round(data.rentExpense, 2) +
-                math.round(data.rentExpenseOther, 2);
+            data.rentExpenseTotal = math.round(data.rentExpense, 3) +
+                math.round(data.rentExpenseOther, 3);
 
-            data.buildingExpenseTotal = math.round(data.buildingExpense, 2) +
-                math.round(data.buildingExpenseOther, 2);
+            data.buildingExpenseTotal = math.round(data.buildingExpense, 3) +
+                math.round(data.buildingExpenseOther, 3);
 
-            data.materialExpenseTotal = math.round(data.materialExpense, 2) +
-                math.round(data.materialExpenseOther, 2);
+            data.materialExpenseTotal = math.round(data.materialExpense, 3) +
+                math.round(data.materialExpenseOther, 3);
 
-            data.officedExpenseTotal = math.round(data.officedExpense, 2) + math.round(
-                    data.officedExpenseOther, 2);
-            data.occupancyWithBankTotal = math.round(data.occupancyWithBank, 2) +
-                math.round(data.occupancyWithBankOther, 2);
+            data.officedExpenseTotal = math.round(data.officedExpense, 3) + math.round(
+                    data.officedExpenseOther, 3);
+            data.occupancyWithBankTotal = math.round(data.occupancyWithBank, 3) +
+                math.round(data.occupancyWithBankOther, 3);
 
-            data.depreExpenseTotal = math.round(data.depreExpense, 2) + math.round(
-                    data.depreExpenseOther, 2);
-            data.otherExpenseTotal = math.round(data.otherExpense, 2) + math.round(
-                    data.otherExpenseOther, 2);
+            data.depreExpenseTotal = math.round(data.depreExpense, 3) + math.round(
+                    data.depreExpenseOther, 3);
+            data.otherExpenseTotal = math.round(data.otherExpense, 3) + math.round(
+                    data.otherExpenseOther, 3);
 
 
             data.reverseOnLossTotal = math.round(data.reverseOnLoss,
-                    2) + math.round(data.reverseOnLossOther, 2);
+                    2) + math.round(data.reverseOnLossOther, 3);
 
-            data.returnTotal = math.round(data.return, 2) + math.round(
-                    data.returnOther, 2);
+            data.returnTotal = math.round(data.return, 3) + math.round(
+                    data.returnOther, 3);
 
 
             data.otherTotal = math.round(data.other,
-                    2) + math.round(data.otherOther, 2);
+                    2) + math.round(data.otherOther, 3);
 
             data.specialIncomeGiftTotal = math.round(data.specialIncomeGift,
-                    2) + math.round(data.specialIncomeGiftOther, 2);
+                    2) + math.round(data.specialIncomeGiftOther, 3);
             data.specialExpenseTotal = math.round(data.specialExpense,
-                    2) + math.round(data.specialExpenseOther, 2);
+                    2) + math.round(data.specialExpenseOther, 3);
 
-            data.taxOnProfitTotal = math.round(data.taxOnProfit, 2) + math.round(
-                    data.taxOnProfitOther, 2);
-            data.dividendPaymentsTotal = math.round(data.dividendPayments, 2) +
-                math.round(data.dividendPaymentsOther, 2);
-            data.netProfitAvailableAfterDividendTotal = math.round(data.netProfitAvailableAfterDividend, 2) +
-                math.round(data.netProfitAvailableAfterDividendOther, 2);
+            data.taxOnProfitTotal = math.round(data.taxOnProfit, 3) + math.round(
+                    data.taxOnProfitOther, 3);
+            data.dividendPaymentsTotal = math.round(data.dividendPayments, 3) +
+                math.round(data.dividendPaymentsOther, 3);
+            data.netProfitAvailableAfterDividendTotal = math.round(data.netProfitAvailableAfterDividend, 3) +
+                math.round(data.netProfitAvailableAfterDividendOther, 3);
 
             /*
              * Year TO Date
@@ -1039,146 +1039,146 @@ Meteor.methods({
             });
 
 
-            data.interestIncome = math.round(data.loanAndAdvancesToCustomer, 2) +
-                math.round(data.accountWithBank, 2) + math.round(data.incomeOther, 2);
+            data.interestIncome = math.round(data.loanAndAdvancesToCustomer, 3) +
+                math.round(data.accountWithBank, 3) + math.round(data.incomeOther, 3);
             data.interestIncomeOther = math.round(data.loanAndAdvancesToCustomerOther,
-                    2) + math.round(data.accountWithBankOther, 2) + math.round(data.incomeOtherOther, 2);
+                    2) + math.round(data.accountWithBankOther, 3) + math.round(data.incomeOtherOther, 3);
             data.interestIncomeTotal = math.round(data.loanAndAdvancesToCustomerTotal,
-                    2) + math.round(data.accountWithBankTotal, 2) + math.round(data.incomeOtherTotal, 2);
+                    2) + math.round(data.accountWithBankTotal, 3) + math.round(data.incomeOtherTotal, 3);
             data.interestIncomeToDate = math.round(data.loanAndAdvancesToCustomerToDate,
-                    2) + math.round(data.accountWithBankToDate, 2) + math.round(data.incomeOtherToDate, 2);
+                    2) + math.round(data.accountWithBankToDate, 3) + math.round(data.incomeOtherToDate, 3);
 
 
             data.interestExpensesAndSimilarCharge = math.round(data.customerDesposits,
-                    2) + math.round(data.amountOwingtoBankAndOtherFin, 2) + math.round(
-                    data.expenseOther, 2);
+                    2) + math.round(data.amountOwingtoBankAndOtherFin, 3) + math.round(
+                    data.expenseOther, 3);
             data.interestExpensesAndSimilarChargeOther = math.round(data.customerDespositsOther,
-                    2) + math.round(data.amountOwingtoBankAndOtherFinOther, 2) + math
-                    .round(data.expenseOtherOther, 2);
+                    2) + math.round(data.amountOwingtoBankAndOtherFinOther, 3) + math
+                    .round(data.expenseOtherOther, 3);
             data.interestExpensesAndSimilarChargeTotal = math.round(data.customerDespositsTotal,
-                    2) + math.round(data.amountOwingtoBankAndOtherFinTotal, 2) + math
-                    .round(data.expenseOtherTotal, 2);
+                    2) + math.round(data.amountOwingtoBankAndOtherFinTotal, 3) + math
+                    .round(data.expenseOtherTotal, 3);
             data.interestExpensesAndSimilarChargeToDate = math.round(data.customerDespositsToDate,
-                    2) + math.round(data.amountOwingtoBankAndOtherFinToDate, 2) +
-                math.round(data.expenseOtherToDate, 2);
+                    2) + math.round(data.amountOwingtoBankAndOtherFinToDate, 3) +
+                math.round(data.expenseOtherToDate, 3);
 
 
-            data.netInterestIncome = math.round(data.interestIncome, 2) - math.round(
-                    data.interestExpensesAndSimilarCharge, 2);
-            data.netInterestIncomeOther = math.round(data.interestIncomeOther, 2) -
-                math.round(data.interestExpensesAndSimilarChargeOther, 2);
-            data.netInterestIncomeTotal = math.round(data.interestIncomeTotal, 2) -
-                math.round(data.interestExpensesAndSimilarChargeTotal, 2);
+            data.netInterestIncome = math.round(data.interestIncome, 3) - math.round(
+                    data.interestExpensesAndSimilarCharge, 3);
+            data.netInterestIncomeOther = math.round(data.interestIncomeOther, 3) -
+                math.round(data.interestExpensesAndSimilarChargeOther, 3);
+            data.netInterestIncomeTotal = math.round(data.interestIncomeTotal, 3) -
+                math.round(data.interestExpensesAndSimilarChargeTotal, 3);
             data.netInterestIncomeToDate = math.round(data.interestIncomeToDate,
-                    2) - math.round(data.interestExpensesAndSimilarChargeToDate, 2);
+                    2) - math.round(data.interestExpensesAndSimilarChargeToDate, 3);
 
 
-            data.netCommission = math.round(data.nonInterestIncome, 2) -
-                math.round(data.nonInterestExpense, 2);
+            data.netCommission = math.round(data.nonInterestIncome, 3) -
+                math.round(data.nonInterestExpense, 3);
             data.netCommissionOther = math.round(data.nonInterestIncomeOther,
-                    2) - math.round(data.nonInterestExpenseOther, 2);
+                    2) - math.round(data.nonInterestExpenseOther, 3);
             data.netCommissionTotal = math.round(data.nonInterestIncomeTotal,
-                    2) - math.round(data.nonInterestExpenseTotal, 2);
+                    2) - math.round(data.nonInterestExpenseTotal, 3);
             data.netCommissionToDate = math.round(data.nonInterestIncomeToDate,
-                    2) - math.round(data.nonInterestExpenseToDate, 2);
+                    2) - math.round(data.nonInterestExpenseToDate, 3);
 
 
-            data.foreignExchangeGainNet = math.round(data.foreignExchangeGain, 2) -
-                math.round(data.foreignExchangeLoss, 2);
+            data.foreignExchangeGainNet = math.round(data.foreignExchangeGain, 3) -
+                math.round(data.foreignExchangeLoss, 3);
             data.foreignExchangeGainNetOther = math.round(data.foreignExchangeGainOther,
-                    2) - math.round(data.foreignExchangeLossOther, 2);
+                    2) - math.round(data.foreignExchangeLossOther, 3);
             data.foreignExchangeGainNetTotal = math.round(data.foreignExchangeGainTotal,
-                    2) - math.round(data.foreignExchangeLossTotal, 2);
+                    2) - math.round(data.foreignExchangeLossTotal, 3);
             data.foreignExchangeGainNetToDate = math.round(data.foreignExchangeGainToDate,
-                    2) - math.round(data.foreignExchangeLossToDate, 2);
+                    2) - math.round(data.foreignExchangeLossToDate, 3);
 
 
-            data.nonInterestIncomeNet = math.round(data.netCommission, 2) + math.round(data.foreignExchangeGainNet,
-                    2) + math.round(data.otherIncome, 2);
-            data.nonInterestIncomeNetOther = math.round(data.netCommissionOther, 2) + math.round(data.foreignExchangeGainNetOther,
-                    2) + math.round(data.otherIncomeOther, 2);
-            data.nonInterestIncomeNetTotal = math.round(data.netCommissionTotal, 2) + math.round(data.foreignExchangeGainNetTotal,
-                    2) + math.round(data.otherIncomeTotal, 2);
-            data.nonInterestIncomeNetToDate = math.round(data.netCommissionToDate, 2) + math.round(data.foreignExchangeGainNetToDate,
-                    2) + math.round(data.otherIncomeToDate, 2);
+            data.nonInterestIncomeNet = math.round(data.netCommission, 3) + math.round(data.foreignExchangeGainNet,
+                    2) + math.round(data.otherIncome, 3);
+            data.nonInterestIncomeNetOther = math.round(data.netCommissionOther, 3) + math.round(data.foreignExchangeGainNetOther,
+                    2) + math.round(data.otherIncomeOther, 3);
+            data.nonInterestIncomeNetTotal = math.round(data.netCommissionTotal, 3) + math.round(data.foreignExchangeGainNetTotal,
+                    2) + math.round(data.otherIncomeTotal, 3);
+            data.nonInterestIncomeNetToDate = math.round(data.netCommissionToDate, 3) + math.round(data.foreignExchangeGainNetToDate,
+                    2) + math.round(data.otherIncomeToDate, 3);
 
-            data.operatingIncome = math.round(data.netInterestIncome, 2) + math.round(data.nonInterestIncomeNet, 2);
-            data.operatingIncomeOther = math.round(data.netInterestIncomeOther, 2) + math.round(data.nonInterestIncomeNetOther, 2);
-            data.operatingIncomeTotal = math.round(data.netInterestIncomeTotal, 2) + math.round(data.nonInterestIncomeNetTotal, 2);
-            data.operatingIncomeToDate = math.round(data.netInterestIncomeToDate, 2) + math.round(data.nonInterestIncomeNetToDate, 2);
+            data.operatingIncome = math.round(data.netInterestIncome, 3) + math.round(data.nonInterestIncomeNet, 3);
+            data.operatingIncomeOther = math.round(data.netInterestIncomeOther, 3) + math.round(data.nonInterestIncomeNetOther, 3);
+            data.operatingIncomeTotal = math.round(data.netInterestIncomeTotal, 3) + math.round(data.nonInterestIncomeNetTotal, 3);
+            data.operatingIncomeToDate = math.round(data.netInterestIncomeToDate, 3) + math.round(data.nonInterestIncomeNetToDate, 3);
 
 
             data.generalAndAdministrativeExpense = math.round(data.salaryExpense,
-                    2) + math.round(data.officedExpense, 2) + math.round(data.personalExpense, 2)
-                + math.round(data.rentExpense, 2) + math.round(data.buildingExpense, 2)
-                + math.round(data.materialExpense, 2) + math.round(data.depreExpense, 2)
-                + math.round(data.occupancyWithBank, 2) + math.round(data.otherExpense, 2);
+                    2) + math.round(data.officedExpense, 3) + math.round(data.personalExpense, 3)
+                + math.round(data.rentExpense, 3) + math.round(data.buildingExpense, 3)
+                + math.round(data.materialExpense, 3) + math.round(data.depreExpense, 3)
+                + math.round(data.occupancyWithBank, 3) + math.round(data.otherExpense, 3);
 
             data.generalAndAdministrativeExpenseOther = math.round(data.salaryExpenseOther,
-                    2) + math.round(data.officedExpenseOther, 2) + math.round(data.personalExpenseOther, 2)
-                + math.round(data.rentExpenseOther, 2) + math.round(data.buildingExpenseOther, 2)
-                + math.round(data.materialExpenseOther, 2) + math.round(data.depreExpenseOther, 2)
-                + math.round(data.occupancyWithBankOther, 2) + math.round(data.otherExpenseOther, 2);
+                    2) + math.round(data.officedExpenseOther, 3) + math.round(data.personalExpenseOther, 3)
+                + math.round(data.rentExpenseOther, 3) + math.round(data.buildingExpenseOther, 3)
+                + math.round(data.materialExpenseOther, 3) + math.round(data.depreExpenseOther, 3)
+                + math.round(data.occupancyWithBankOther, 3) + math.round(data.otherExpenseOther, 3);
 
             data.generalAndAdministrativeExpenseTotal = math.round(data.salaryExpenseTotal,
-                    2) + math.round(data.officedExpenseTotal, 2) + math.round(data.personalExpenseTotal, 2)
-                + math.round(data.rentExpenseTotal, 2) + math.round(data.buildingExpenseTotal, 2)
-                + math.round(data.materialExpenseTotal, 2) + math.round(data.depreExpenseTotal, 2)
-                + math.round(data.occupancyWithBankTotal, 2) + math.round(data.otherExpenseTotal, 2);
+                    2) + math.round(data.officedExpenseTotal, 3) + math.round(data.personalExpenseTotal, 3)
+                + math.round(data.rentExpenseTotal, 3) + math.round(data.buildingExpenseTotal, 3)
+                + math.round(data.materialExpenseTotal, 3) + math.round(data.depreExpenseTotal, 3)
+                + math.round(data.occupancyWithBankTotal, 3) + math.round(data.otherExpenseTotal, 3);
 
             data.generalAndAdministrativeExpenseToDate = math.round(data.salaryExpenseToDate,
-                    2) + math.round(data.officedExpenseToDate, 2) + math.round(data.personalExpenseToDate, 2)
-                + math.round(data.rentExpenseToDate, 2) + math.round(data.buildingExpenseToDate, 2)
-                + math.round(data.materialExpenseToDate, 2) + math.round(data.depreExpenseToDate, 2)
-                + math.round(data.occupancyWithBankToDate, 2) + math.round(data.otherExpenseToDate, 2);
+                    2) + math.round(data.officedExpenseToDate, 3) + math.round(data.personalExpenseToDate, 3)
+                + math.round(data.rentExpenseToDate, 3) + math.round(data.buildingExpenseToDate, 3)
+                + math.round(data.materialExpenseToDate, 3) + math.round(data.depreExpenseToDate, 3)
+                + math.round(data.occupancyWithBankToDate, 3) + math.round(data.otherExpenseToDate, 3);
 
 
-            data.netIncome = math.round(data.operatingIncome, 2) - math.round(data.generalAndAdministrativeExpense, 2);
-            data.netIncomeOther = math.round(data.operatingIncomeOther, 2) - math.round(data.generalAndAdministrativeExpenseOther, 2);
-            data.netIncomeTotal = math.round(data.operatingIncomeTotal, 2) - math.round(data.generalAndAdministrativeExpenseTotal, 2);
-            data.netIncomeToDate = math.round(data.operatingIncomeToDate, 2) - math.round(data.generalAndAdministrativeExpenseToDate, 2);
+            data.netIncome = math.round(data.operatingIncome, 3) - math.round(data.generalAndAdministrativeExpense, 3);
+            data.netIncomeOther = math.round(data.operatingIncomeOther, 3) - math.round(data.generalAndAdministrativeExpenseOther, 3);
+            data.netIncomeTotal = math.round(data.operatingIncomeTotal, 3) - math.round(data.generalAndAdministrativeExpenseTotal, 3);
+            data.netIncomeToDate = math.round(data.operatingIncomeToDate, 3) - math.round(data.generalAndAdministrativeExpenseToDate, 3);
 
 
-            data.reverse = math.round(data.reverseOnLoss, 2) - math.round(data.return, 2) + math.round(data.other, 2);
-            data.reverseOther = math.round(data.reverseOnLossOther, 2) - math.round(data.returnOther, 2) + math.round(data.otherOther, 2);
-            data.reverseTotal = math.round(data.reverseOnLossTotal, 2) - math.round(data.returnTotal, 2) + math.round(data.otherTotal, 2);
-            data.reverseToDate = math.round(data.reverseOnLossToDate, 2) - math.round(data.returnToDate, 2) + math.round(data.otherToDate, 2);
+            data.reverse = math.round(data.reverseOnLoss, 3) - math.round(data.return, 3) + math.round(data.other, 3);
+            data.reverseOther = math.round(data.reverseOnLossOther, 3) - math.round(data.returnOther, 3) + math.round(data.otherOther, 3);
+            data.reverseTotal = math.round(data.reverseOnLossTotal, 3) - math.round(data.returnTotal, 3) + math.round(data.otherTotal, 3);
+            data.reverseToDate = math.round(data.reverseOnLossToDate, 3) - math.round(data.returnToDate, 3) + math.round(data.otherToDate, 3);
 
 
-            data.specialIncome = math.round(data.specialIncomeGift, 2);
-            data.specialIncomeOther = math.round(data.specialIncomeGiftOther, 2);
-            data.specialIncomeTotal = math.round(data.specialIncomeGiftTotal, 2);
-            data.specialIncomeToDate = math.round(data.specialIncomeGiftToDate, 2);
+            data.specialIncome = math.round(data.specialIncomeGift, 3);
+            data.specialIncomeOther = math.round(data.specialIncomeGiftOther, 3);
+            data.specialIncomeTotal = math.round(data.specialIncomeGiftTotal, 3);
+            data.specialIncomeToDate = math.round(data.specialIncomeGiftToDate, 3);
 
-            data.specailChapter = math.round(data.specialIncome, 2) - math.round(data.specialExpense, 2);
-            data.specailChapterOther = math.round(data.specialIncomeOther, 2) - math.round(data.specialExpenseOther, 2);
-            data.specailChapterTotal = math.round(data.specialIncomeTotal, 2) - math.round(data.specialExpenseTotal, 2);
-            data.specailChapterToDate = math.round(data.specialIncomeToDate, 2) - math.round(data.specialExpenseToDate, 2);
-
-
-            data.profitBeforeTaxes = math.round(data.netIncome, 2) + math.round(data.reverse, 2) + math.round(data.specailChapter, 2);
-            data.profitBeforeTaxesOther = math.round(data.netIncomeOther, 2) + math.round(data.reverseOther, 2) + math.round(data.specailChapterOther, 2);
-            data.profitBeforeTaxesTotal = math.round(data.netIncomeTotal, 2) + math.round(data.reverseTotal, 2) + math.round(data.specailChapterTotal, 2);
-            data.profitBeforeTaxesToDate = math.round(data.netIncomeToDate, 2) + math.round(data.reverseToDate, 2) + math.round(data.specailChapterToDate, 2);
+            data.specailChapter = math.round(data.specialIncome, 3) - math.round(data.specialExpense, 3);
+            data.specailChapterOther = math.round(data.specialIncomeOther, 3) - math.round(data.specialExpenseOther, 3);
+            data.specailChapterTotal = math.round(data.specialIncomeTotal, 3) - math.round(data.specialExpenseTotal, 3);
+            data.specailChapterToDate = math.round(data.specialIncomeToDate, 3) - math.round(data.specialExpenseToDate, 3);
 
 
-            data.netProfitForPeriod = math.round(data.profitBeforeTaxes, 2) -
-                math.round(data.taxOnProfit, 2);
+            data.profitBeforeTaxes = math.round(data.netIncome, 3) + math.round(data.reverse, 3) + math.round(data.specailChapter, 3);
+            data.profitBeforeTaxesOther = math.round(data.netIncomeOther, 3) + math.round(data.reverseOther, 3) + math.round(data.specailChapterOther, 3);
+            data.profitBeforeTaxesTotal = math.round(data.netIncomeTotal, 3) + math.round(data.reverseTotal, 3) + math.round(data.specailChapterTotal, 3);
+            data.profitBeforeTaxesToDate = math.round(data.netIncomeToDate, 3) + math.round(data.reverseToDate, 3) + math.round(data.specailChapterToDate, 3);
+
+
+            data.netProfitForPeriod = math.round(data.profitBeforeTaxes, 3) -
+                math.round(data.taxOnProfit, 3);
             data.netProfitForPeriodOther = math.round(data.profitBeforeTaxesOther,
-                    2) - math.round(data.taxOnProfitOther, 2);
+                    2) - math.round(data.taxOnProfitOther, 3);
             data.netProfitForPeriodTotal = math.round(data.profitBeforeTaxesTotal,
-                    2) - math.round(data.taxOnProfitTotal, 2);
+                    2) - math.round(data.taxOnProfitTotal, 3);
             data.netProfitForPeriodToDate = math.round(data.profitBeforeTaxesToDate,
-                    2) - math.round(data.taxOnProfitToDate, 2);
+                    2) - math.round(data.taxOnProfitToDate, 3);
 
             data.netProfitAvailableAfterDividend = math.round(data.netProfitForPeriod,
-                    2) + math.round(data.dividendPayments, 2);
+                    2) + math.round(data.dividendPayments, 3);
             data.netProfitAvailableAfterDividendOther = math.round(data.netProfitForPeriodOther,
-                    2) + math.round(data.dividendPaymentsOther, 2);
+                    2) + math.round(data.dividendPaymentsOther, 3);
             data.netProfitAvailableAfterDividendTotal = math.round(data.netProfitForPeriodTotal,
-                    2) + math.round(data.dividendPaymentsTotal, 2);
+                    2) + math.round(data.dividendPaymentsTotal, 3);
             data.netProfitAvailableAfterDividendToDate = math.round(data.netProfitForPeriodToDate,
-                    2) + math.round(data.dividendPaymentsToDate, 2);
+                    2) + math.round(data.dividendPaymentsToDate, 3);
 
             return data;
         }

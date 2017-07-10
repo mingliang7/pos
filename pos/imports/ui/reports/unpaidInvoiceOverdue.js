@@ -69,7 +69,7 @@ invoiceDataTmpl.helpers({
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
             } else if (obj.field == 'total' || obj.field == 'dueAmount' || obj.field == 'paidAmount' || obj.field == 'balanceAmount') {
-                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
+                data += `<td>${numeral(col[obj.field]).format('0,0.000')}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
@@ -86,9 +86,9 @@ invoiceDataTmpl.helpers({
         }
         string += `
                 <td><u>Total ${_.capitalize(customerName)}:</u></td>
-                <td><u>${numeral(dueAmount).format('0,0.00')}</u></td>
-                <td><u>${numeral(paidAmount).format('0,0.00')}</u></td>
-                <td><u>${numeral(balanceAmount).format('0,0.00')}</u></td>
+                <td><u>${numeral(dueAmount).format('0,0.000')}</u></td>
+                <td><u>${numeral(paidAmount).format('0,0.000')}</u></td>
+                <td><u>${numeral(balanceAmount).format('0,0.000')}</u></td>
                 `;
         return string;
     },
@@ -98,7 +98,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalKhr).format("0,0.00")}<small>៛</small></b></td><td><b>${numeral(totalThb).format("0,0.00")}B</b></td><td><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(totalKhr).format("0,0.000")}<small>៛</small></b></td><td><b>${numeral(totalThb).format("0,0.000")}B</b></td><td><b>${numeral(total).format('0,0.000')}$</b></td>`;
         return string;
     },
     capitalize(customerName){

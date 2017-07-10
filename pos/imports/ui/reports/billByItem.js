@@ -103,7 +103,7 @@ invoiceDataTmpl.helpers({
                 console.log(col[obj.field]);
                 data += `<td>${moment(col[obj.field]).format('DD/MM/YYYY')}</td>`;
             } else if (obj.field == 'total') {
-                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
+                data += `<td>${numeral(col[obj.field]).format('0,0.000')}</td>`
             }
             else {
                 data += `<td>${col[obj.field] || ''}</td>`;
@@ -118,7 +118,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td><u>${numeral(total).format('0,0.00')}</u></td>`;
+        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td><u>${numeral(total).format('0,0.000')}</u></td>`;
         return string;
     },
     getTotalFooter(totalQty, total, n){
@@ -127,7 +127,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalQty).format("0,0.00")}</b></td><td></td><td><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(totalQty).format("0,0.000")}</b></td><td></td><td><b>${numeral(total).format('0,0.000')}$</b></td>`;
         return string;
     },
     capitalize(customerName){

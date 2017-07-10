@@ -197,7 +197,7 @@ Template.acc_chartAccount.events({
         } else if (val == "Balance") {
             getMapping();
 
-            return state.set('status', 2);
+            return state.set('status', 3);
         }
     }
 });

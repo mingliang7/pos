@@ -53,7 +53,7 @@ FixAssetExpense.before.insert(function (userId, doc) {
                 for (let ob of obj.transactionAsset) {
                     if (ob.status == false) {
                         var depTime = ob.maxMonth < depType.depPerTime ? ob.maxMonth : depType.depPerTime;
-                        var depValue = numeral(depTime * ob.perMonth).format('0,0.00');
+                        var depValue = numeral(depTime * ob.perMonth).format('0,0.000');
                         selectorExpenseObj.value = numeral().unformat(depValue);
                         break;
                     }

@@ -107,12 +107,12 @@ Tracker.autorun(function () {
             totalDr += obj.dr;
             totalCr += obj.cr;
         })
-        state.set('totalDr', math.round(totalDr, 2));
-        state.set('totalCr', math.round(totalCr, 2));
+        state.set('totalDr', math.round(totalDr, 3));
+        state.set('totalCr', math.round(totalCr, 3));
 
         let fixAssetLength = fixAssetDepCollection.find().count();
 
-        if (math.round(totalDr, 2) == math.round(totalCr, 2) && (math.round(totalCr, 2) > 0 || fixAssetLength > 0)) {
+        if (math.round(totalDr, 3) == math.round(totalCr, 3) && (math.round(totalCr, 3) > 0 || fixAssetLength > 0)) {
             state.set('cssClassForSubmit', '');
         } else {
             state.set('cssClassForSubmit', 'disabled');

@@ -78,7 +78,7 @@ invoiceDataTmpl.helpers({
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
             } else if (obj.field == 'dueAmount' || obj.field == 'paidAmount' || obj.field == 'balance') {
-                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.00')}</td>`
+                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.000')}</td>`
             }
             else if (obj.field == 'dueDate') {
                 let date = FlowRouter.query.get('date');
@@ -109,7 +109,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td>Total ${_.capitalize(customerName)}:</td><td class="text-right">${numeral(dueAmount).format('0,0.00')}</td><td class="text-right">${numeral(paidAmount).format('0,0.00')}</td><td class="text-right">${numeral(total).format('0,0.00')}</td>`;
+        string += `<td>Total ${_.capitalize(customerName)}:</td><td class="text-right">${numeral(dueAmount).format('0,0.000')}</td><td class="text-right">${numeral(paidAmount).format('0,0.000')}</td><td class="text-right">${numeral(total).format('0,0.000')}</td>`;
         return string;
     },
     getTotalFooter(totalDue, totalPaid, totalBalance){
@@ -118,7 +118,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td style="border-top: 1px solid #000;"><b>Total:</td></b><td style="border-top: 1px solid #000;" class="text-right"><b>${numeral(totalDue).format('0,0.00')}</b></td><td style="border-top: 1px solid #000;" class="text-right"><b>${numeral(totalPaid).format('0,0.00')}</b></td><td style="border-top: 1px solid #000;" class="text-right"><b>${numeral(totalBalance).format('0,0.00')}</b></td>`;
+        string += `<td style="border-top: 1px solid #000;"><b>Total:</td></b><td style="border-top: 1px solid #000;" class="text-right"><b>${numeral(totalDue).format('0,0.000')}</b></td><td style="border-top: 1px solid #000;" class="text-right"><b>${numeral(totalPaid).format('0,0.000')}</b></td><td style="border-top: 1px solid #000;" class="text-right"><b>${numeral(totalBalance).format('0,0.000')}</b></td>`;
         return string;
     },
     capitalize(customerName){

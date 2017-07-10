@@ -38,7 +38,7 @@ tabularOpts.columns = [
                     }
                 });
                 let balanceAmount = balanceTmpCollection.findOne(val).balanceAmount;
-                return numeral(balanceAmount).format('0,0.00');
+                return numeral(balanceAmount).format('0,0.000');
             }catch(e){
 
             }

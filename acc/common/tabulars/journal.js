@@ -49,7 +49,7 @@ tabularOpts.columns = [
                 if (currencySymbol) {
                     symbol = currencySymbol.symbol;
                 }
-                return symbol + numeral(val).format("0,0.00");
+                return symbol + numeral(val).format("0,0.000");
             }
         }
     },

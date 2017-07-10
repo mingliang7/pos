@@ -105,9 +105,9 @@
                             <td>{{col.customerDoc.telephone}}</td>
                             <td>{{col.repDoc.name}}</td>
                             <td>{{col.itemDoc.name}}</td>
-                            <td class="text-right">{{numFormat col.items.qty '0,0.00'}}</td>
-                            <td class="text-right">{{numFormat col.items.price '0,0.00'}}</td>
-                            <td class="text-right">{{numFormat col.items.amount '0,0.00'}}</td>
+                            <td class="text-right">{{numFormat col.items.qty '0,0.000'}}</td>
+                            <td class="text-right">{{numFormat col.items.price '0,0.000'}}</td>
+                            <td class="text-right">{{numFormat col.items.amount '0,0.000'}}</td>
                         </tr>
                         {{{lastItem @index col.itemDoc._id data.itemObj}}}
                     {{/each}}
@@ -137,9 +137,9 @@
                     {{#each footer.itemsSummary}}
                         <tr>
                             <td>{{itemName}}</td>
-                            <td class="text-right">{{numFormat qty '0,0.00'}}</td>
-                            <td class="text-right">{{numFormat price '0,0.00'}}</td>
-                            <td class="text-right"><u>{{numFormat amount '0,0.00'}}</u></td>
+                            <td class="text-right">{{numFormat qty '0,0.000'}}</td>
+                            <td class="text-right">{{numFormat price '0,0.000'}}</td>
+                            <td class="text-right"><u>{{numFormat amount '0,0.000'}}</u></td>
                         </tr>
                     {{/each}}
                     <br>

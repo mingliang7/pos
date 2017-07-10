@@ -23,7 +23,7 @@
                 <small>គិតត្រឹម:</small> {{displayAsDate}})
             </h1>
             <h3 class="pricingTable-subtitle text-black">សរុបទាំងអស់: <b>${{numFormat data.footer.balanceAmount
-                                                                                      '0,0.00'}}</b>
+                                                                                      '0,0.000'}}</b>
             </h3>
             {{#if notReady}}
                 <h4 class="text-center">
@@ -36,7 +36,7 @@
                             <li class="pricingTable-firstTable_table animated bounceIn">
                                 <h1 class="pricingTable-firstTable_table__header">{{branchDoc.khName}}</h1>
                                 <p class="pricingTable-firstTable_table__pricing">
-                                    <span>$</span><span>{{numFormat balanceAmount '0,0.00'}}</span><span></span>
+                                    <span>$</span><span>{{numFormat balanceAmount '0,0.000'}}</span><span></span>
                                 </p>
                                 <ul class="pricingTable-firstTable_table__options">
                                     <li>ចំនួនវិក័យប័ត្រមិនទាន់បានបង់អស់នៅសល់: {{invoiceCount}}</li>
@@ -58,7 +58,7 @@
     <div class="pricingTable">
         <h2 class="pricingTable-title">របាយការណ៍លក់ប្រចាំថ្ងៃ ({{displayDailyDate}})</h2>
         {{#with dailySaleData}}
-            <!--<h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.00'}}</h3>-->
+            <!--<h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.000'}}</h3>-->
             <!-- Responsive table starts here -->
             <!-- For correct display on small screens you must add 'data-title' to each 'td' in your table -->
             <div class="table-responsive-vertical shadow-z-1">
@@ -102,7 +102,7 @@
     <div class="pricingTable">
         <h2 class="pricingTable-title">របាយការណ៍ស្តុក (គិតត្រឹមៈ {{displayDailyDate}})</h2>
         {{#with dailyStockData}}
-            <!--<h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.00'}}</h3>-->
+            <!--<h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.000'}}</h3>-->
             <!-- Responsive table starts here -->
             <!-- For correct display on small screens you must add 'data-title' to each 'td' in your table -->
             <input type="checkbox" class="showPOSM"> បង្ហាញទំនិញ Free
@@ -147,7 +147,7 @@
     <div class="pricingTable">
         <h2 class="pricingTable-title">របាយការណ៍សាច់ប្រាក់</h2>
         {{#with dailyCashData}}
-            <!--<h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.00'}}</h3>-->
+            <!--<h3 class="pricingTable-subtitle">សរុបទាំងអស់: ${{numFormat data.footer.total '0,0.000'}}</h3>-->
             <!-- Responsive table starts here -->
             <!-- For correct display on small screens you must add 'data-title' to each 'td' in your table -->
             <div class="table-responsive-vertical shadow-z-1">
@@ -169,12 +169,12 @@
                             {{#each field in dataByBranches}}
                                 <tr>
                                     <td><a href="/acc/cashReportGen?branchId={{field.branchDoc._id}}&currencyId=All&date={{getCurrentDate}}">{{field.branchDoc.khName}}</a></td>
-                                    <td class="text-center">${{numFormat field.balance '0,0.00'}}</td>
+                                    <td class="text-center">${{numFormat field.balance '0,0.000'}}</td>
                                 </tr>
                             {{/each}}
                             <tr style="border-top: 1px dotted black;" class="text-center">
                                 <td class="text-center">សរុបទាំងអស់:</td>
-                                <td>${{numFormat footer '0,0.00'}}</td>
+                                <td>${{numFormat footer '0,0.000'}}</td>
                             </tr>
                             </tbody>
                         {{/with}}

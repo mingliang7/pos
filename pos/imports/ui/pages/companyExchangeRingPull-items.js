@@ -110,13 +110,13 @@ itemsTmpl.helpers({
          key: 'price',
          label: __(`${i18nPrefix}.price.label`),
          fn(value, object, key) {
-         return numeral(value).format('0,0.00');
+         return numeral(value).format('0,0.000');
          }
          }, {
          key: 'amount',
          label: __(`${i18nPrefix}.amount.label`),
          fn(value, object, key) {
-         return numeral(value).format('0,0.00');
+         return numeral(value).format('0,0.000');
          }
          },*/ {
             key: '_id',
