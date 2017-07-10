@@ -280,12 +280,12 @@ export const ringpullDetailReport = new ValidatedMethod({
                 });
                 data.content = sortRingPulls;
             }
-            data.footer.totalExchangeRP = numeral(totalExchangeRP).format('0,0.00');
-            data.footer.totalCompanyExchangeRP = numeral(totalCompanyExchangeRP).format('0,0.00');
-            data.footer.totalTransferOutRP = numeral(totalTransferOutRP).format('0,0.00');
-            data.footer.totalTransferInRP = numeral(totalTransferInRP).format('0,0.00');
-            data.footer.endingBalance = numeral(endingBalance).format('0,0.00');
-            data.footer.endingBalanceAmount = numeral(endingBalanceAmount).format('0,0.00');
+            data.footer.totalExchangeRP = numeral(totalExchangeRP).format('0,0.000');
+            data.footer.totalCompanyExchangeRP = numeral(totalCompanyExchangeRP).format('0,0.000');
+            data.footer.totalTransferOutRP = numeral(totalTransferOutRP).format('0,0.000');
+            data.footer.totalTransferInRP = numeral(totalTransferInRP).format('0,0.000');
+            data.footer.endingBalance = numeral(endingBalance).format('0,0.000');
+            data.footer.endingBalanceAmount = numeral(endingBalanceAmount).format('0,0.000');
             return data
         }
     }

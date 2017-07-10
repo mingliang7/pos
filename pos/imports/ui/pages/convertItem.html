@@ -145,7 +145,7 @@
 
                     <div class="row">
                         <div class="col-md-4" style="padding: 10px;">
-                            <span><strong>Cash: </strong>${{numFormat cash '0,0.00'}}</span><br>
+                            <span><strong>Cash: </strong>${{numFormat cash '0,0.000'}}</span><br>
                             <span><strong>Convert Date: </strong>{{moFormat convertItemDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>
                             <span><strong>Status: </strong>{{{colorizeStatus status}}}
                                 </span><br>
@@ -184,10 +184,10 @@
                                             <td><a href="#">{{item.toItemName}}</a></td>
                                             <td class="text-center">{{item.qty}}</td>
                                             <td class="text-center">{{item.getQty}}</td>
-                                            <td class="text-right">${{numFormat item.fromItemPrice '0,0.00'}}</td>
-                                            <td class="text-right">${{numFormat item.toItemPrice '0,0.00'}}</td>
-                                            <td class="text-right">${{numFormat item.fromItemAmount '0,0.00'}}</td>
-                                            <td class="text-right">${{numFormat item.toItemAmount '0,0.00'}}</td>
+                                            <td class="text-right">${{numFormat item.fromItemPrice '0,0.000'}}</td>
+                                            <td class="text-right">${{numFormat item.toItemPrice '0,0.000'}}</td>
+                                            <td class="text-right">${{numFormat item.fromItemAmount '0,0.000'}}</td>
+                                            <td class="text-right">${{numFormat item.toItemAmount '0,0.000'}}</td>
                                         </tr>
                                     {{/each}}
                                     <tr>
@@ -197,8 +197,8 @@
                                         <td class="no-line"></td>
                                         <td class="no-line"></td>
                                         <td class="no-line">Total:</td>
-                                        <td class="no-line text-right">${{numFormat fromItemTotal '0,0.00'}}</td>
-                                        <td class="no-line text-right">${{numFormat toItemTotal '0,0.00'}}</td>
+                                        <td class="no-line text-right">${{numFormat fromItemTotal '0,0.000'}}</td>
+                                        <td class="no-line text-right">${{numFormat toItemTotal '0,0.000'}}</td>
                                     </tr>
                                     </tbody>
                                 </table>

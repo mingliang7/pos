@@ -118,9 +118,9 @@
                                 <td><del>{{branchDoc.khName}}</del></td>
                                 <td><del>{{item.name}}</del></td>
                                 {{{displayStockOutQty}}}
-                                <td>{{numFormat remainQty "0,0.00"}}</td>
-                                <td>{{numFormat averagePrice '0,0.00'}}</td>
-                                <td>{{numFormat lastAmount '0,0.00'}}</td>
+                                <td>{{numFormat remainQty "0,0.000"}}</td>
+                                <td>{{numFormat averagePrice '0,0.000'}}</td>
+                                <td>{{numFormat lastAmount '0,0.000'}}</td>
                             </tr>
                         {{else}}
                             <tr>
@@ -132,9 +132,9 @@
                                 <td>{{branchDoc.khName}}</td>
                                 <td>{{item.name}}</td>
                                 {{{displayStockOutQty}}}
-                                <td>{{numFormat remainQty "0,0.00"}}</td>
-                                <td>{{numFormat averagePrice '0,0.00'}}</td>
-                                <td>{{numFormat lastAmount '0,0.00'}}</td>
+                                <td>{{numFormat remainQty "0,0.000"}}</td>
+                                <td>{{numFormat averagePrice '0,0.000'}}</td>
+                                <td>{{numFormat lastAmount '0,0.000'}}</td>
                             </tr>
                         {{/unless}}
                     {{/each}}

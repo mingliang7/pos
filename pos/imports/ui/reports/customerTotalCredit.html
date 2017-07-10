@@ -72,7 +72,7 @@
                         <td>{{customerDoc.name}}</td>
                         <td>{{customerDoc.telephone}}</td>
                         <td>{{customerDoc.address}}</td>
-                        <td class="text-right">{{numFormat total '0,0.00'}}</td>
+                        <td class="text-right">{{numFormat total '0,0.000'}}</td>
                     </tr>
                 {{/each}}
                 <tr>
@@ -80,7 +80,7 @@
                     <td></td>
                     <td class="text-right"><u><b>Grand Total</b></u></td>
                     <td style="border-top: 1px dotted black;" class="text-right"><b>{{numFormat footer.grandTotal
-                                                                                                '0,0.00'}}</b></td>
+                                                                                                '0,0.000'}}</b></td>
                 </tr>
             {{/with}}
             </tbody>

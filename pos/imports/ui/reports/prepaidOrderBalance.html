@@ -126,7 +126,7 @@
                             <td>{{receive}}</td>
                             <td>{{balance}}</td>
                             <td>{{price}}</td>
-                            <td>{{numFormat amount '0,0.00'}}</td>
+                            <td>{{numFormat amount '0,0.000'}}</td>
                             <!--<td>{{item.remainQty}}</td>-->
                         </tr>
                     {{/each}}
@@ -152,17 +152,17 @@
                 <tr>
                     <td colspan="5"></td>
                     <td>{{itemName}}</td>
-                    <td class="text-right">{{numFormat balance '0,0.00'}}</td>
-                    <td class="text-right">{{numFormat amount '0,0.00'}}</td>
+                    <td class="text-right">{{numFormat balance '0,0.000'}}</td>
+                    <td class="text-right">{{numFormat amount '0,0.000'}}</td>
                 </tr>
             {{/each}}
             <tr>
                 <td colspan="5"></td>
                 <td style="border-top: 1px dotted black" class="text-right"><b>TOTAL:</b></td>
                 <td style="border-top: 1px dotted black" class="text-right">{{numFormat data.footer.sum.qty
-                                                                                        '0,0.00'}}</td>
+                                                                                        '0,0.000'}}</td>
                 <td style="border-top: 1px dotted black" class="text-right">{{numFormat data.footer.sum.total
-                                                                                        '0,0.00'}}</td>
+                                                                                        '0,0.000'}}</td>
             </tr>
             </tbody>
         </table>

@@ -180,9 +180,9 @@ invoiceDataTmpl.helpers({
             });
         }
         return {
-            balance: numeral(balance).format('0,0.00'),
-            sumBalance: numeral(beginningBalance + balance).format('0,0.00'),
-            beginningBalance: numeral(beginningBalance).format('0,0.00')
+            balance: numeral(balance).format('0,0.000'),
+            sumBalance: numeral(beginningBalance + balance).format('0,0.000'),
+            beginningBalance: numeral(beginningBalance).format('0,0.000')
         };
 
     },

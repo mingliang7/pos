@@ -462,13 +462,13 @@ export const ringPullSummaryReport = new ValidatedMethod({
             }
 
             data.content = ringPullDetailsArr.sort(compareName);
-            data.footer.totalExchangeRP = numeral(totalExchangeRP).format('0,0.00');
-            data.footer.totalCompanyExchangeRP = numeral(totalCompanyExchangeRP).format('0,0.00');
-            data.footer.totalTransferOutRP = numeral(totalTransferOutRP).format('0,0.00');
-            data.footer.totalTransferInRP = numeral(totalTransferInRP).format('0,0.00');
-            data.footer.endingBalance = numeral(totalEndingBalance).format('0,0.00');
-            data.footer.begginingBalance = numeral(totalBegginingBalance).format('0,0.00');
-            data.footer.totalAmount = numeral(totalAmount).format('0,0.00');
+            data.footer.totalExchangeRP = numeral(totalExchangeRP).format('0,0.000');
+            data.footer.totalCompanyExchangeRP = numeral(totalCompanyExchangeRP).format('0,0.000');
+            data.footer.totalTransferOutRP = numeral(totalTransferOutRP).format('0,0.000');
+            data.footer.totalTransferInRP = numeral(totalTransferInRP).format('0,0.000');
+            data.footer.endingBalance = numeral(totalEndingBalance).format('0,0.000');
+            data.footer.begginingBalance = numeral(totalBegginingBalance).format('0,0.000');
+            data.footer.totalAmount = numeral(totalAmount).format('0,0.000');
             return data
         }
     }

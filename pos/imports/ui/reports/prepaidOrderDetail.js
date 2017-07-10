@@ -109,7 +109,7 @@ invoiceDataTmpl.helpers({
             } else if (obj.field == 'customerId') {
                 data += `<td>${col && col._customer.name}</td>`
             } else if (obj.field == 'total') {
-                data += `<td>${numeral(col && col[obj.field]).format('0,0.00')}</td>`
+                data += `<td>${numeral(col && col[obj.field]).format('0,0.000')}</td>`
             }
             else {
                 data += `<td>${col[obj.field]}</td>`;
@@ -124,7 +124,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalRemainQty).format("0,0.00")}</b></td></td><td><b>${numeral(total).format('0,0.00')}</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(totalRemainQty).format("0,0.000")}</b></td></td><td><b>${numeral(total).format('0,0.000')}</b></td>`;
         return string;
     },
     checkIfZero(val){

@@ -72,7 +72,7 @@ invoiceDataTmpl.helpers({
         let data = '';
         this.displayFields.forEach(function (obj) {
             if(obj.field == 'amountDue') {
-                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.00')}</td>`;
+                data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.000')}</td>`;
             }else{
                 data += `<td>${col[obj.field]}</td>`;
             }
@@ -85,7 +85,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td class="text-right"><u>${numeral(dueAmount).format('0,0.00')}</u></td><td class="text-right"><u>${numeral(paidAmount).format('0,0.00')}</u></td><td class="text-right"><u>${numeral(total).format('0,0.00')}</u></td>`;
+        string += `<td><u>Total ${_.capitalize(customerName)}:</u></td><td class="text-right"><u>${numeral(dueAmount).format('0,0.000')}</u></td><td class="text-right"><u>${numeral(paidAmount).format('0,0.000')}</u></td><td class="text-right"><u>${numeral(total).format('0,0.000')}</u></td>`;
         return string;
     },
     getTotalFooter(total){
@@ -94,7 +94,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td ><b>Total:</td></b><td style="border-top: 1px solid black;" class="text-right"><b>${numeral(total).format('0,0.00')}$</b></td>`;
+        string += `<td ><b>Total:</td></b><td style="border-top: 1px solid black;" class="text-right"><b>${numeral(total).format('0,0.000')}$</b></td>`;
         return string;
     },
     capitalize(customerName){

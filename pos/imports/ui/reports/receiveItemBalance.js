@@ -82,7 +82,7 @@ invoiceDataTmpl.helpers({
         if(val == 0) {
             return ''
         }
-        return numeral(val).format('0,0.00');
+        return numeral(val).format('0,0.000');
     },
     company(){
         let doc = Session.get('currentUserStockAndAccountMappingDoc');

@@ -74,12 +74,12 @@
                 {{#each content}}
                     <tr>
                         <td>{{name}}</td>
-                        <td >{{numFormat balance '0,0.00'}}</td>
+                        <td >{{numFormat balance '0,0.000'}}</td>
                     </tr>
                 {{/each}}
                 <tr>
                     <td class="text-right">Total: </td>
-                    <td><b>{{numFormat footer.totalBalance '0,0.00'}}</b></td>
+                    <td><b>{{numFormat footer.totalBalance '0,0.000'}}</b></td>
                 </tr>
                 </tbody>
             </table>

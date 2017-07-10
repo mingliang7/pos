@@ -77,7 +77,7 @@ invoiceDataTmpl.helpers({
                 let tel = col.vendor.telephone;
                 data += `<td>${ tel ? tel : ''}</td>`;
             } else if (obj.field == 'total') {
-                data += `<td>${numeral(col[obj.field]).format('0,0.00')}</td>`
+                data += `<td>${numeral(col[obj.field]).format('0,0.000')}</td>`
             }
             else {
                 data += `<td>${col[obj.field] ? col[obj.field] : ''}</td>`;
@@ -92,7 +92,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalRemainQty).format("0,0.00")}</b></td></td><td><b>${numeral(remainAmount).format('0,0.00')}</b></td><td><b>${numeral(total).format('0,0.00')}</b></td>`;
+        string += `<td><b>Total:</td></b><td><b>${numeral(totalRemainQty).format("0,0.000")}</b></td></td><td><b>${numeral(remainAmount).format('0,0.000')}</b></td><td><b>${numeral(total).format('0,0.000')}</b></td>`;
         return string;
     }
 });
