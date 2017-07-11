@@ -122,9 +122,9 @@
                     {{#each items}}
                         <tr>
                             <td>{{itemName}}</td>
-                            <td>{{totalQty}}</td>
-                            <td>{{lostQty}}</td>
-                            <td>{{remainQty}}</td>
+                            <td>{{numFormat totalQty '0,0.00'}}</td>
+                            <td>{{numFormat lostQty '0,0.00'}}</td>
+                            <td>{{numFormat remainQty '0,0.00'}}</td>
                             <td>{{numFormat price '0,0.000'}}</td>
                             <td><u>{{numFormat totalAmount '0,0.000'}}</u></td>
                         </tr>

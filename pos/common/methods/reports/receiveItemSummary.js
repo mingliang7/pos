@@ -36,6 +36,11 @@ export const receiveItemSummary = new ValidatedMethod({
             let fromDate, toDate;
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
+            if (params.branchId && params.branchId != '') {
+                selector.branchId = params.branchId;
+            } else {
+                return data;
+            }
             if (params.date) {
                 let dateAsArray = params.date.split(',');
                 fromDate = moment(dateAsArray[0]).toDate();
@@ -71,19 +76,19 @@ export const receiveItemSummary = new ValidatedMethod({
                 },
                 {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
                 {
-                  $project: {
-                      type: 1,
-                      itemDoc: 1,
-                      items: {
-                          lostQty: 1,
-                          qty: 1,
-                          totalQty: {$subtract: ['$items.qty', '$items.lostQty']},
-                          itemId: 1,
-                          price: 1,
-                          amount: 1,
-                      }
+                    $project: {
+                        type: 1,
+                        itemDoc: 1,
+                        items: {
+                            lostQty: 1,
+                            qty: 1,
+                            totalQty: {$subtract: ['$items.qty', '$items.lostQty']},
+                            itemId: 1,
+                            price: 1,
+                            amount: 1,
+                        }
 
-                  }
+                    }
                 },
                 {
                     $group: {
@@ -95,10 +100,10 @@ export const receiveItemSummary = new ValidatedMethod({
                             $last: '$itemDoc'
                         },
                         lostQty: {
-                          $sum: '$items.lostQty',
+                            $sum: '$items.lostQty',
                         },
                         totalQty: {
-                          $sum: '$items.totalQty'
+                            $sum: '$items.totalQty'
                         },
                         itemQty: {
                             $sum: '$items.qty'
