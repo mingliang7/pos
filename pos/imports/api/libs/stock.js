@@ -172,7 +172,7 @@ export  default class StockFunction {
                 averagePrice = lastAmount / totalQty;
             }
             let newInventory = {
-                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+               // _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
                 branchId: branchId,
                 stockLocationId: stockLocationId,
                 itemId: item.itemId,
@@ -222,7 +222,7 @@ export  default class StockFunction {
                 averagePrice = lastAmount / remainQty;
             }
             let newInventory = {
-                _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+              //  _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
                 branchId: branchId,
                 stockLocationId: stockLocationId,
                 itemId: item.itemId,
