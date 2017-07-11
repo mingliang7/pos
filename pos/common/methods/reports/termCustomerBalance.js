@@ -100,13 +100,13 @@ export const termCustomerBalanceReport = new ValidatedMethod({
             } else {
                 project = {
                     'invoice': '$invoice',
-                    '_id': '$_id',
+                    '_id': {$ifNull: ['$voucherId','$_id']},
                     'invoiceDate': '$invoiceDate',
                     'dueDate': '$dueDate',
                     'total': '$total'
                 };
                 data.fields = [{field: 'Type'}, {field: 'ID'}, {field: 'Invoice Date'}, {field: 'Aging'}, {field: 'Last Payment'}, {field: 'DueAmount'}, {field: 'PaidAmount'}, {field: 'Balance'}];
-                data.displayFields = [{field: 'invoice'}, {field: '_id'}, {field: 'invoiceDate'}, {field: 'dueDate'}, {field: 'lastPaymentDate'}, {field: 'dueAmount'}, {field: 'paidAmount'}, {field: 'balance'}];
+                data.displayFields = [{field: 'invoice'}, {field: 'voucherId'}, {field: 'invoiceDate'}, {field: 'dueDate'}, {field: 'lastPaymentDate'}, {field: 'dueAmount'}, {field: 'paidAmount'}, {field: 'balance'}];
             }
             // project['$invoice'] = 'Invoice';
             /****** Title *****/
@@ -121,6 +121,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                             _id: 1,
                             status: 1,
                             invoiceDate: 1,
+                            voucherId: 1,
                             dueDate: 1,
                             customerId: 1,
                             total: 1,
@@ -149,6 +150,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                         $group: {
                             _id: '$_id',
                             status: {$last: '$status'},
+                            voucherId: {$last: '$voucherId'},
                             dueDate: {$last: '$dueDate'},
                             invoiceDoc: {$last: '$$ROOT'},
                             lastPaymentDate: {$last: '$lastPaymentDate'},
@@ -167,6 +169,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                         $project: {
                             _id: 1,
                             invoice: {$concat: 'Invoice'},
+                            voucherId: 1,
                             invoiceDoc: {
                                 customerId: 1,
                                 invoiceDate: 1
@@ -190,6 +193,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                         $project: {
                             _id: 1,
                             invoice: 1,
+                            voucherId: 1,
                             invoiceDoc: 1,
                             dueAmount: 1,
                             paidAmount: 1,
@@ -216,6 +220,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                             data: {
                                 $push: '$$ROOT'
                             },
+                            voucherId: {$last: '$voucherId'},
                             dueDate: {$last: '$dueDate'},
                             invoiceDate: {$last: '$invoiceDate'},
                             lastPaymentDate: {$last: '$lastPaymentDate'},
@@ -278,6 +283,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                             _id: 1,
                             customerId: 1,
                             invoiceId: 1,
+                            voucherId: 1,
                             invoiceDate: 1,
                             dueDate: 1,
                             total: 1,
@@ -300,6 +306,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                     {
                         $project: {
                             _id: 1,
+                            voucherId: 1,
                             status: 1,
                             invoiceDate: 1,
                             dueDate: 1,
@@ -312,6 +319,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                     {
                         $group: {
                             _id: '$_id',
+                            voucherId: {$last: '$voucherId'},
                             status: {$last: '$status'},
                             dueDate: {$last: '$dueDate'},
                             invoiceDoc: {$last: '$$ROOT'},
@@ -330,6 +338,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                     {
                         $project: {
                             _id: 1,
+                            voucherId: 1,
                             invoice: {$concat: 'Invoice'},
                             invoiceDoc: {
                                 customerId: 1,
@@ -354,6 +363,7 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                         $group: {
                             _id: '$_id',
                             invoice: {$last: '$invoice'},
+                            voucherId: {$last: '$voucherId'},
                             invoiceDoc: {$last: '$invoiceDoc'},
                             dueAmount: {$last: '$dueAmount'},
                             paidAmount: {$last: '$paidAmount'},
