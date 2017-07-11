@@ -92,7 +92,7 @@ invoiceDataTmpl.helpers({
                 }
             }else if(obj.field == '_id'){
                 let val = col[obj.field];
-                data += `<td>${val.substr(val.length - 10 , val.length -1)}</td>`
+                data += `<td>${val}</td>`
             }else if(obj.field == 'invoice') {
                 data += `<td>&emsp;&emsp;${col[obj.field]}</td>`;
             }
