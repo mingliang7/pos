@@ -933,6 +933,33 @@ Meteor.methods({
             }
         }
 
+        if (exchangeRingPulls.count() > 0) {
+            exchangeRingPulls.forEach(function (obj) {
+                obj.items.forEach(function (item) {
+                    //---Reduce from Ring Pull Stock---
+                    let ringPullInventory = RingPullInventories.findOne({
+                        branchId: obj.branchId,
+                        itemId: item.itemId,
+                    });
+                    if (ringPullInventory) {
+                        RingPullInventories.update(
+                            ringPullInventory._id,
+                            {
+                                $inc: {qty: -item.qty}
+                            });
+                    } else {
+                        RingPullInventories.insert({
+                            itemId: item.itemId,
+                            branchId: obj.branchId,
+                            qty: 0 - item.qty
+                        })
+                    }
+                });
+            });
+        }
+
+
+
         CompanyExchangeRingPulls.remove({companyExchangeRingPullDate: {$gte: date}, branchId: {$in: branchIds}});
         PrepaidOrders.remove({prepaidOrderDate: {$gte: date}, branchId: {$in: branchIds}});
         ConvertItems.direct.remove({convertItemDate: {$gte: date}, branchId: {$in: branchIds}});

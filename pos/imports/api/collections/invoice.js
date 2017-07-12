@@ -53,7 +53,8 @@ Invoices.schema = new SimpleSchema({
 
                 }
             }
-        }
+        },
+        optional:true,
     },
     voucherId: {
         type: String,
