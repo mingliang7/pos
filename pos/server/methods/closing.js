@@ -4,8 +4,8 @@ Meteor.methods({
     fetchAllBranches(){
         return Branch.find({}).fetch();
     },
-    testClosingStock(){
-        ClosingStock.generateClosingStockBalance();
+    testClosingStock(branchId){
+        ClosingStock.generateClosingStockBalance(branchId);
         return;
     }
 });

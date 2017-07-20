@@ -8,15 +8,19 @@ import {ReceiveItems} from '../collections/receiveItem';
 import {LocationTransfers} from '../collections/locationTransfer';
 import {ExchangeRingPulls} from '../collections/exchangeRingPull';
 export default class ClosingStock {
-    static generateClosingStockBalance() {
-        Branch.find({}).forEach(function (branch) {
+    static generateClosingStockBalance(branchId) {
+        let branchSelector = {};
+        if(branchId) {
+            branchSelector._id = branchId;
+        }
+        Branch.find(branchSelector).forEach(function (branch) {
             let branchId = branch._id;
-            let closingStockBalance = ClosingStockBalance.findOne({branchId: branch._id}, {sort: {closingDate: -1}});
             let inventory = InventoryDates.findOne({branchId: branch._id});
             ClosingStockBalance.remove({
                 branchId: branchId._id,
                 closingDate: {$gte: inventory && inventory.inventoryDate}
             });
+            let closingStockBalance = ClosingStockBalance.findOne({branchId: branch._id}, {sort: {closingDate: -1}});
             let closingStockDate = closingStockBalance ? moment(closingStockBalance.closingDate).add(1, 'days').startOf('days').toDate() : null;
             if (inventory) {
                 let inventoryDate = moment(inventory.inventoryDate).endOf('days').toDate();
@@ -140,13 +144,13 @@ export default class ClosingStock {
 
     //Location Transfer In (type in )
     static lookupLocationTransferIns({branchId, inventoryDate, closingStockDate}) {
-        let selector = {locationTransferDate: {$lte: inventoryDate}, toBranchId: branchId, status: 'closed'};
+        let selector = {journalDate: {$lte: inventoryDate}, toBranchId: branchId, status: 'closed'};
         if (closingStockDate) {
-            selector.locationTransferDate.$gte = closingStockDate;
+            selector.journalDate.$gte = closingStockDate;
         }
         return LocationTransfers.aggregate(this.closingStockQuery({
             selector: selector,
-            date: '$locationTransferDate',
+            date: '$journalDate',
             qty: 'qty',
             transactionType: 'transferIn',
             type: 'in'
@@ -201,16 +205,16 @@ export default class ClosingStock {
     //Location Transfer Out (type out )
     static lookupLocationTransferOut({branchId, inventoryDate, closingStockDate}) {
         let selector = {
-            locationTransferDate: {$lte: inventoryDate},
+            journalDate: {$lte: inventoryDate},
             fromBranchId: branchId,
             status: 'closed'
         };
         if (closingStockDate) {
-            selector.locationTransferDate.$gte = closingStockDate;
+            selector.journalDate.$gte = closingStockDate;
         }
         return LocationTransfers.aggregate(this.closingStockQuery({
             selector: selector,
-            date: '$locationTransferDate',
+            date: '$journalDate',
             qty: 'qty',
             transactionType: 'transferOut',
             type: 'out'

@@ -54,10 +54,9 @@ indexTmpl.helpers({
 indexTmpl.events({
     'click .generate-closingStock' (event, instance) {
         $.blockUI();
-        Meteor.call("testClosingStock", function (err, result) {
+        Meteor.call("testClosingStock", Session.get('currentBranch'), function (err, result) {
             if (!err) {
                 alertify.success(`Generate successfully`);
-
             }
             $.unblockUI();
         });
