@@ -54,7 +54,7 @@ Invoices.schema = new SimpleSchema({
                 }
             }
         },
-        optional:true,
+        optional: true,
     },
     voucherId: {
         type: String,
@@ -136,7 +136,7 @@ Invoices.schema = new SimpleSchema({
     staffId: {
         type: String,
         autoValue(){
-            if(this.isInsert) {
+            if (this.isInsert) {
                 return Meteor.user()._id;
             }
         }
@@ -185,8 +185,8 @@ Invoices.schema = new SimpleSchema({
                     if (Meteor.isClient) {
                         let currentUserStockAndAccountMappingDoc = Session.get('currentUserStockAndAccountMappingDoc');
                         let stockLocations = [];
-                        if(currentUserStockAndAccountMappingDoc && currentUserStockAndAccountMappingDoc.stockLocations) {
-                            stockLocations = currentUserStockAndAccountMappingDoc.stockLocations ;
+                        if (currentUserStockAndAccountMappingDoc && currentUserStockAndAccountMappingDoc.stockLocations) {
+                            stockLocations = currentUserStockAndAccountMappingDoc.stockLocations;
                         }
                         let currentBranch = Session.get('currentBranch');
                         return {
@@ -225,4 +225,86 @@ Meteor.startup(function () {
     Invoices.itemsSchema.i18n("pos.invoice.schema");
     Invoices.schema.i18n("pos.invoice.schema");
     Invoices.attachSchema(Invoices.schema);
+});
+
+
+export const InvoiceUpdateInfo_schema = new SimpleSchema({
+    _id: {
+        type: 'String',
+    },
+    deliveryDate: {
+        type: Date,
+        autoform: {
+            afFieldInput: {
+                type: "bootstrap-datetimepicker",
+                dateTimePickerOptions: {
+                    format: 'DD/MM/YYYY',
+
+                }
+            }
+        },
+        optional: true,
+    },
+    voucherId: {
+        type: String,
+        unique: true,
+    },
+    dueDate: {
+        type: Date,
+        defaultValue: moment().toDate(),
+        autoform: {
+            afFieldInput: {
+                type: "bootstrap-datetimepicker",
+                dateTimePickerOptions: {
+                    format: 'DD/MM/YYYY HH:mm:ss',
+
+                }
+            }
+        }
+    },
+    customerId: {
+        type: String,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Please search .... (Limit 10)',
+                optionsMethod: 'pos.selectOptMethods.customer',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let currentBranch = Session.get('currentBranch');
+                        return {branchId: currentBranch};
+                    }
+                }
+            }
+        }
+    },
+    repId: {
+        type: String,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One'
+            }
+        }
+    },
+    des: {
+        type: String,
+        optional: true,
+        autoform: {
+            afFieldInput: {
+                type: 'summernote',
+                class: 'editor', // optional
+                settings: {
+                    height: 150,                 // set editor height
+                    minHeight: null,             // set minimum height of editor
+                    maxHeight: null,             // set maximum height of editor
+                    toolbar: [
+                        ['font', ['bold', 'italic', 'underline', 'clear']], //['font', ['bold', 'italic', 'underline', 'clear']],
+                        ['para', ['ul', 'ol']] //['para', ['ul', 'ol', 'paragraph']],
+                        //['insert', ['link', 'picture']], //['insert', ['link', 'picture', 'hr']],
+                    ]
+                } // summernote options goes here
+            }
+        }
+    },
 });

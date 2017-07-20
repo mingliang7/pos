@@ -2,6 +2,9 @@ import {Item} from '../../imports/api/collections/item';
 import {ReceivePayment} from '../../imports/api/collections/receivePayment';
 import {Penalty} from '../../imports/api/collections/penalty';
 import {RemovedInvoice} from '../../imports/api/collections/removedCollection';
+import {Reps} from '../../imports/api/collections/rep.js';
+import {Customers} from '../../imports/api/collections/customer.js';
+import {Invoices} from '../../imports/api/collections/invoice.js';
 Meteor.methods({
     insertRemovedInvoice(doc){
         if (doc.invoiceType == 'term' && (doc.status == 'partial' || doc.status == 'closed')) {
@@ -27,7 +30,7 @@ Meteor.methods({
                     let lastReceivePayment = ReceivePayment.findOne({invoiceId: invoice._id}, {sort: {_id: -1}});
                     calculatePenalty[invoice._id] = (lastReceivePayment.balanceAmount * (penalty.rate / 100) * numberOfDayLate);
                 } else {
-                    calculatePenalty[invoice._id] =  (invoice.total * (penalty.rate / 100) * numberOfDayLate);
+                    calculatePenalty[invoice._id] = (invoice.total * (penalty.rate / 100) * numberOfDayLate);
                 }
                 lateInvoices.push(invoice._id);
             }
@@ -40,5 +43,22 @@ Meteor.methods({
             item.name = Item.findOne(item.itemId).name;
         });
         return doc;
+    },
+    updatedInvoiceInfo(doc){
+        /*customerId
+         repId*/
+        if (doc.repId) {
+            let rep = Reps.findOne({_id: doc.repId});
+            if (rep) {
+                doc._rep = {name: rep.name};
+            }
+        }
+        if (doc.customerId) {
+            let customer = Customers.findOne({_id: doc.customerId});
+            if (customer) {
+                doc._customer = {name: customer.name};
+            }
+        }
+        Invoices.direct.update(doc._id, {$set: doc});
     }
 });

@@ -13,6 +13,7 @@
 <!--Action-->
 <template name="Pos_invoiceAction">
     {{#columnAction}}
+        <li><a class="js-update-info"><i class="fa fa-pencil"></i> Update Info</a></li>
         <li><a class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
         <li><a class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
         <li><a class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
@@ -160,8 +161,8 @@
                 </div>
 
                 <!--<div class="col-md-3">-->
-                    <!--<label for="">Customer:</label>-->
-                    <!--<input type="text" readonly="true" value="{{customerId}} | {{_customer.name}}" class="form-control">-->
+                <!--<label for="">Customer:</label>-->
+                <!--<input type="text" readonly="true" value="{{customerId}} | {{_customer.name}}" class="form-control">-->
                 <!--</div>-->
 
                 <div class="col-md-3">
@@ -213,7 +214,7 @@
                     {{> afQuickField name="stockLocationId"}}
                 </div>
 
-                    {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
+                {{> afQuickField type="hidden" name="branchId" value=currentBranch}}
                 <div class="col-md-2">
                     {{> afQuickField name="repId" options=options value=repId label="Rep"}}
                 </div>
@@ -289,6 +290,45 @@
                     </div>
                 </div>
             </div>
+        {{/autoForm}}
+    </div>
+</template>
+
+
+<!--Update Info-->
+<template name="Pos_invoiceEditInfo">
+    <div class="box-body">
+        {{#autoForm schema=schema id="Pos_invoiceUpdateInfo" doc=this type="method"  meteormethod="updatedInvoiceInfo"}}
+            <div class="row">
+                <div class="col-md-6">
+                    {{> afQuickField name="_id" readonly=true}}
+                    {{> afQuickField name="customerId"}}
+                    {{> afQuickField name="deliveryDate"}}
+
+                </div>
+                <div class="col-md-6">
+                    {{> afQuickField name="dueDate" value=dueDate}}
+                    {{> afQuickField name="voucherId"}}
+                    {{> afQuickField name="repId" options=options value=repId label="Rep"}}
+
+                </div>
+            </div>
+            {{closeSwal}}
+            <!-- closing swal -->
+            <div class="row">
+                <div class="col-sm-12 pull-right">
+                    <!--{{> formFooterWithButton}}-->
+                    {{#formFooter}}
+                        <button type="submit" class="btn btn-primary update-invoice">
+                            <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
+                        </button>
+                        <button type="reset" class="btn btn-default">
+                            <i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
+                        </button>
+                    {{/formFooter}}
+                </div>
+            </div>
+
         {{/autoForm}}
     </div>
 </template>

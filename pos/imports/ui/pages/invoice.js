@@ -25,7 +25,7 @@ import '../../../../core/client/components/form-footer.js';
 
 // Collection
 import {InventoryDates} from '../../api/collections/inventoryDate.js';
-import {Invoices} from '../../api/collections/invoice.js';
+import {Invoices,InvoiceUpdateInfo_schema} from '../../api/collections/invoice.js';
 import {Order} from '../../api/collections/order';
 import {Item} from '../../api/collections/item';
 import {deletedItem} from './invoice-items';
@@ -64,6 +64,7 @@ let indexTmpl = Template.Pos_invoice,
     actionTmpl = Template.Pos_invoiceAction,
     newTmpl = Template.Pos_invoiceNew,
     editTmpl = Template.Pos_invoiceEdit,
+    editInfoTmpl = Template.Pos_invoiceEditInfo,
     showTmpl = Template.Pos_invoiceShow,
     listSaleOrder = Template.listSaleOrder;
 // Local collection
@@ -142,6 +143,10 @@ indexTmpl.events({
             });
         }
 
+    },
+    'click .js-update-info'(event, instance) {
+        let data = this;
+        alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editInfoTmpl, data));
     },
     'click .js-destroy'(event, instance) {
         let data = this;
@@ -491,6 +496,7 @@ editTmpl.onCreated(function () {
         this.isSaleOrder.set(true);
     }
 });
+
 editTmpl.onRendered(function () {
     dpChange($('[name="invoiceDate"]'));
 });
@@ -716,6 +722,77 @@ editTmpl.onDestroyed(function () {
     deletedItem.remove({});
 });
 
+
+editInfoTmpl.onCreated(function () {
+    Session.set('getCustomerId', this.data.customerId);
+    this.repOptions = new ReactiveVar();
+    this.isSaleOrder = new ReactiveVar(false);
+    this.invoiceDate = new ReactiveVar(this.data.invoiceDate);
+    dateState.set(this.data.invoiceDate);
+    Meteor.call('getRepList', (err, result) => {
+        this.repOptions.set(result);
+    });
+    if (this.data.invoiceType == 'saleOrder') {
+        FlowRouter.query.set('customerId', this.data.customerId);
+        this.isSaleOrder.set(true);
+    }
+});
+editInfoTmpl.helpers({
+
+    closeSwal() {
+        setTimeout(function () {
+            swal.close();
+        }, 500);
+    },
+    isSaleOrder() {
+        return Template.instance().isSaleOrder.get();
+    },
+    schema() {
+        return InvoiceUpdateInfo_schema;
+    },
+    repId() {
+        let {customerInfo} = Session.get('customerInfo');
+        if (customerInfo) {
+            try {
+                return customerInfo.repId;
+            } catch (e) {
+
+            }
+        }
+        return '';
+    },
+    options() {
+        let instance = Template.instance();
+        if (instance.repOptions.get() && instance.repOptions.get().repList) {
+            return instance.repOptions.get().repList
+        }
+        return '';
+    },
+    repId() {
+        try {
+            let {customerInfo} = Session.get('customerInfo');
+            if (customerInfo) {
+                return customerInfo.repId;
+            }
+        } catch (e) {
+        }
+    },
+    dueDate() {
+        try {
+            let date = dateState.get() || AutoForm.getFieldValue('invoiceDate');
+            let {customerInfo} = Session.get('customerInfo');
+            if (customerInfo) {
+                if (customerInfo._term) {
+                    let term = customerInfo._term;
+                    let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
+                    return dueDate;
+                }
+            }
+            return date;
+        } catch (e) {
+        }
+    },
+});
 // Show
 showTmpl.onCreated(function () {
     this.invoice = new ReactiveVar();
@@ -972,3 +1049,19 @@ AutoForm.addHooks([
     'Pos_invoiceNew',
     'Pos_invoiceUpdate'
 ], hooksObject);
+
+
+
+let hooksObjectInfo = {
+    onSuccess (formType, result) {
+        alertify.invoice().close();
+        displaySuccess();
+    },
+    onError (formType, error) {
+        alertify.error(error.message);
+    }
+};
+
+AutoForm.addHooks([
+    'Pos_invoiceUpdateInfo',
+], hooksObjectInfo);
