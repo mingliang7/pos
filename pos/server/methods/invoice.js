@@ -57,8 +57,14 @@ Meteor.methods({
             let customer = Customers.findOne({_id: doc.customerId});
             if (customer) {
                 doc._customer = {name: customer.name};
+                ReceivePayment.direct.update(
+                    {invoiceId: doc._id},
+                    {$set: {customerId: doc.customerId, '_customer.name': customer.name}},
+                    {multi: true});
             }
+
         }
         Invoices.direct.update(doc._id, {$set: doc});
+
     }
 });
