@@ -23,8 +23,8 @@ export const payBill = new ValidatedMethod({
         voucherId: {type: String}
     }).validator(),
     run({
-        enterBillsObj, paymentDate, branch, voucherId
-    }) {
+            enterBillsObj, paymentDate, branch, voucherId
+        }) {
         if (!this.isSimulation) {
             for (let k in enterBillsObj) {
                 let selector = {}
@@ -43,8 +43,8 @@ export const payBill = new ValidatedMethod({
                 };
                 let vendor = Vendors.findOne(obj.vendorId);
                 obj.paymentType = vendor.termId ? 'term' : 'group';
-                PayBills.insert(obj, function(err,res) {
-                    if(!err) {
+                PayBills.insert(obj, function (err, res) {
+                    if (!err) {
                         //Account Integration
                         obj._id = res;
                         let setting = AccountIntegrationSetting.findOne();
@@ -61,7 +61,7 @@ export const payBill = new ValidatedMethod({
                             let vendorDoc = Vendors.findOne({_id: obj.vendorId});
                             if (vendorDoc) {
                                 data.name = vendorDoc.name;
-                                data.des = data.des == "" || data.des == null ? ('បង់ប្រាក់ឱ្យក្រុមហ៊ុនៈ ' + data.name) : data.des;
+                                data.des = data.des == "" || data.des == null ? ('បង់ប្រាក់ឱ្យក្រុមហ៊ុនវិក្កយបត្រៈ ' + enterBillsObj[k].voucherId) : data.des;
                             }
 
                             transaction.push({
@@ -110,17 +110,17 @@ export const payBill = new ValidatedMethod({
                         //End Account Integration
                     }
                 });
-                if(obj.status == 'closed'){
+                if (obj.status == 'closed') {
                     selector.$set = {
                         status: 'closed',
                         closedAt: obj.paymentDate
                     }
-                }else{
+                } else {
                     selector.$set = {status: 'partial'};
                 }
-                if(vendor.termId) {
+                if (vendor.termId) {
                     EnterBills.direct.update(k, selector)
-                }else{
+                } else {
                     GroupBill.direct.update(k, selector);
                 }
             }

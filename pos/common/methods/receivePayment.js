@@ -82,7 +82,7 @@ export const receivePayment = new ValidatedMethod({
                             let customerDoc = Customers.findOne({_id: obj.customerId});
                             if (customerDoc) {
                                 data.name = customerDoc.name;
-                                data.des = data.des == "" || data.des == null ? ('ទទួលការបង់ប្រាក់ពីអតិថិជនៈ ' + data.name) : data.des;
+                                data.des = data.des == "" || data.des == null ? ('ទទួលការបង់ប្រាក់ពីវិក្កយបត្រៈ ' + invoicesObj[k].voucherId) : data.des;
                             }
                             data.journalDate = data.paymentDate;
                             Meteor.call('insertAccountJournal', data);

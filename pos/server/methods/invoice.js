@@ -5,6 +5,8 @@ import {RemovedInvoice} from '../../imports/api/collections/removedCollection';
 import {Reps} from '../../imports/api/collections/rep.js';
 import {Customers} from '../../imports/api/collections/customer.js';
 import {Invoices} from '../../imports/api/collections/invoice.js';
+import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js';
+import {Journal} from '../../../acc/imports/api/collections/journal.js';
 Meteor.methods({
     insertRemovedInvoice(doc){
         if (doc.invoiceType == 'term' && (doc.status == 'partial' || doc.status == 'closed')) {
@@ -45,8 +47,13 @@ Meteor.methods({
         return doc;
     },
     updatedInvoiceInfo(doc){
+        let setting = AccountIntegrationSetting.findOne();
         /*customerId
          repId*/
+        // let des = "វិក្កយបត្រ អតិថិជនៈ ";
+        let description = '';
+        let descriptionPayment = '';
+        let invoiceJournalSetObj = {};
         if (doc.repId) {
             let rep = Reps.findOne({_id: doc.repId});
             if (rep) {
@@ -61,10 +68,27 @@ Meteor.methods({
                     {invoiceId: doc._id},
                     {$set: {customerId: doc.customerId, '_customer.name': customer.name}},
                     {multi: true});
-            }
+                description = doc.des == "" || doc.des == null ? ("វិក្កយបត្រ អតិថិជនៈ " + customer.name) : doc.des;
+                invoiceJournalSetObj.cusAndVenname = customer.name;
+                invoiceJournalSetObj.memo = description;
+                if (setting && setting.integrate) {
+                    let payments = ReceivePayment.find({invoiceId: doc._id});
+                    payments.forEach(function (payment) {
+                        Journal.direct.update({refId: payment._id, refFrom: "ReceivePayment"},
+                            {
+                                $set: {
+                                    cusAndVenname: customer.name,
+                                    memo: "ទទួលការបង់ប្រាក់ពីវិក្កយបត្រៈ " + doc.voucherId
 
+                                }
+                            })
+                    });
+                    Journal.direct.update({refId: doc._id, refFrom: "Invoice"}, {$set: invoiceJournalSetObj});
+                }
+            }
         }
         Invoices.direct.update(doc._id, {$set: doc});
+
 
     }
 });
