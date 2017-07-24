@@ -178,13 +178,15 @@ export default class ClosingStock {
         if (closingStockDate) {
             selector.invoiceDate.$gte = closingStockDate;
         }
-        return Invoices.aggregate(this.closingStockQuery({
+        let invoices =  Invoices.aggregate(this.closingStockQuery({
             selector: selector,
             date: '$invoiceDate',
             qty: 'qty',
             transactionType: 'invoice',
             type: 'out'
         }));
+        console.log(Invoices.aggregate([{$match: selector}]));
+        return invoices;
     }
 
     //exchange Ring pull (type out)

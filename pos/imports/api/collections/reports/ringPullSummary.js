@@ -52,4 +52,22 @@ export const ringPullSummary = new SimpleSchema({
             }
         }
     },
+    balanceWith: {
+        type: String,
+        autoform: {
+            type: 'select2',
+            options(){
+                return [
+                    {
+                        label: 'Monthly',
+                        value: 'month'
+                    },
+                    {
+                        label: 'Daily',
+                        value: 'day'
+                    }
+                ]
+            }
+        }
+    }
 });

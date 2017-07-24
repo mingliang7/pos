@@ -22,6 +22,9 @@
                                     <div class="col-md-2">
                                         {{> afQuickField name="branchId" label="Branch"}}
                                     </div>
+                                    <div class="col-md-2">
+                                        {{> afQuickField name="balanceWith" label="Balance With" value="month"}}
+                                    </div>
                                 </div>
 
                                 <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
@@ -71,15 +74,15 @@
         <table class="table table-bordered">
             <thead>
             <tr>
-                <th>Name</th>
-                <th class="text-center">Beg</th>
-                <th class="text-center">Exchange R/P +</th>
-                <th class="text-center">C.Exchange R/P - </th>
-                <th class="text-center">Transfer Out R/P - </th>
-                <th class="text-center">Transfer In R/P + </th>
-                <th class="text-center">Ending R/P</th>
-                <th class="text-center">Price</th>
-                <th class="text-center">Amount</th>
+                <th>ឈ្មោះ</th>
+                <th class="text-center">ដើមគ្រា</th>
+                <th class="text-center">ប្តូរក្រវិល +</th>
+                <th class="text-center">ប្តូរក្រវិលទៅក្រុមហ៊ុន - </th>
+                <th class="text-center">ផ្ទេរក្រវិលចេញ - </th>
+                <th class="text-center">ទទួលក្រវិលចូល + </th>
+                <th class="text-center">សមតុល្យចុងគ្រា </th>
+                <th class="text-center">តម្លៃ</th>
+                <th class="text-center">សរុប</th>
             </tr>
             </thead>
             {{#with data}}

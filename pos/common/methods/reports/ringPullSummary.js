@@ -35,6 +35,12 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 footer: {}
             };
             let branch = [];
+            let balanceWith = '';
+            if (!params.balanceWith) {
+                return data;
+            } else {
+                balanceWith = params.balanceWith;
+            }
             if (params.branchId) {
                 companySelector.branchId = params.branchId;
                 ringpullTransferSelector.fromBranchId = params.branchId;
@@ -63,6 +69,11 @@ export const ringPullSummaryReport = new ValidatedMethod({
                 startOfMonth = moment(params.asDate).startOf('months').toDate();
                 endOfMonth = moment(params.asDate).endOf('months').toDate();
                 subOneMonth = moment(params.asDate).subtract(1, 'months').endOf('months').toDate();
+                if (balanceWith === 'day') {
+                    startOfMonth = moment(params.asDate).startOf('days').toDate();
+                    endOfMonth = moment(params.asDate).endOf('days').toDate();
+                    subOneMonth = moment(params.asDate).subtract(1,'days').endOf('days').toDate();
+                }
                 data.title.branch = Branch.findOne({_id: params.branchId});
                 data.title.date = moment(toDate).format('DD/MM/YYYY');
                 companySelector.companyExchangeRingPullDate = {$lte: toDate};
@@ -147,13 +158,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         transferRP: 1,
                         itemDoc: 1,
                         receiveTransfer: 1,
-                        itemData: {
-                            $filter: {
-                                input: '$itemData',
-                                as: 'item',
-                                cond: {$lte: ['$$item.date', subOneMonth]}
-                            }
-                        }
+                        itemData: filterBalanceWithDayOrMonth(balanceWith, startOfMonth, subOneMonth)
                     }
                 }
             ]);
@@ -228,13 +233,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         cExchangeRP: 1,
                         transferRP: 1,
                         receiveTransfer: 1,
-                        itemData: {
-                            $filter: {
-                                input: '$itemData',
-                                as: 'item',
-                                cond: {$lte: ['$$item.date', subOneMonth]}
-                            }
-                        }
+                        itemData: filterBalanceWithDayOrMonth(balanceWith, startOfMonth, subOneMonth)
                     }
                 }
             ]);
@@ -312,13 +311,7 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         transferRP: 1,
                         price: 1,
                         receiveTransfer: 1,
-                        itemData: {
-                            $filter: {
-                                input: '$itemData',
-                                as: 'item',
-                                cond: {$lte: ['$$item.date', subOneMonth]}
-                            }
-                        }
+                        itemData: filterBalanceWithDayOrMonth(balanceWith, startOfMonth, subOneMonth)
                     }
                 }
             ]);
@@ -396,20 +389,14 @@ export const ringPullSummaryReport = new ValidatedMethod({
                         price: 1,
                         transferRP: 1,
                         receiveTransfer: 1,
-                        itemData: {
-                            $filter: {
-                                input: '$itemData',
-                                as: 'item',
-                                cond: {$lte: ['$$item.date', subOneMonth]}
-                            }
-                        }
+                        itemData: filterBalanceWithDayOrMonth(balanceWith, startOfMonth, subOneMonth)
                     }
                 }
             ]);
             let ringPullDetails = _.union(companyExchange, exchangeRingPull, ringPullTransferOut, ringPullTransferIn);
             let itemObj = {};
             let ringPullDetailsArr = [];
-            ringPullDetails.forEach(function (doc) {
+            ringPullDetails.forEach(function (doc)  {
                 if (_.isUndefined(itemObj[doc._id])) {
                     itemObj[doc._id] = {
                         itemId: doc.items.itemId,
@@ -522,4 +509,30 @@ function aggMatchingDate(startofMonth, endOfMonth, condField, tokenField) {
             0
         ]
     }
+}
+function filterBalanceWithDayOrMonth(balanceWith, startOfMonth, subOneMonth,) {
+    // if (balanceWith === 'day') {
+    //     return {
+    //         $filter: {
+    //             input: '$itemData',
+    //             as: 'item',
+    //             cond: {
+    //                 $and: [
+    //                     {$lte: ['$$item.date', subOneMonth]},
+    //                     {
+    //                         $gte: ['$$item.date', startOfMonth]
+    //                     }
+    //                 ]
+    //             }
+    //         }
+    //     }
+    // } else {
+        return {
+            $filter: {
+                input: '$itemData',
+                as: 'item',
+                cond: {$lte: ['$$item.date', subOneMonth]}
+            }
+        }
+    // }
 }

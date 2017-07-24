@@ -111,6 +111,9 @@ AutoForm.hooks({
             if(doc.itemId) {
                 params.itemId = doc.itemId.join(',');
             }
+            if(doc.balanceWith) {
+                params.balanceWith = doc.balanceWith;
+            }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());
             return false;
