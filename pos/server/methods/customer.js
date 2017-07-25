@@ -32,7 +32,7 @@ Meteor.methods({
         let list = [];
         let customers = Customers.find({branchId});
         customers.forEach(function (customer) {
-            list.push({label: `${customer.name}`, value: `customer._id`});
+            list.push({label: `${customer.name}`, value: `${customer._id}`});
         });
         return list;
     }
