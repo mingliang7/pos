@@ -27,5 +27,13 @@ Meteor.methods({
     },
     getCustomer({customerId}){
         return Customers.findOne(customerId);
+    },
+    giveMeAllCustomerInSelectedBranch(branchId){
+        let list = [];
+        let customers = Customers.find({branchId});
+        customers.forEach(function (customer) {
+            list.push({label: `${customer.name}`, value: `customer._id`});
+        });
+        return list;
     }
 });

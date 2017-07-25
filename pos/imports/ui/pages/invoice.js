@@ -724,13 +724,18 @@ editTmpl.onDestroyed(function () {
 
 
 editInfoTmpl.onCreated(function () {
-    Session.set('getCustomerId', this.data.customerId);
     this.repOptions = new ReactiveVar();
+    this.customerOptions = new ReactiveVar([]);
     this.isSaleOrder = new ReactiveVar(false);
     this.invoiceDate = new ReactiveVar(this.data.invoiceDate);
     dateState.set(this.data.invoiceDate);
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
+    });
+    Meteor.call('giveMeAllCustomerInSelectedBranch', Session.get('currentBranch'), (err, result) => {
+        if(!err) {
+            this.customerOptions.set(result);
+        }
     });
     if (this.data.invoiceType == 'saleOrder') {
         FlowRouter.query.set('customerId', this.data.customerId);
@@ -747,19 +752,12 @@ editInfoTmpl.helpers({
     isSaleOrder() {
         return Template.instance().isSaleOrder.get();
     },
+    customerOptions(){
+        let instance = Template.instance();
+        return instance.customerOptions.get();
+    },
     schema() {
         return InvoiceUpdateInfo_schema;
-    },
-    repId() {
-        let {customerInfo} = Session.get('customerInfo');
-        if (customerInfo) {
-            try {
-                return customerInfo.repId;
-            } catch (e) {
-
-            }
-        }
-        return '';
     },
     options() {
         let instance = Template.instance();

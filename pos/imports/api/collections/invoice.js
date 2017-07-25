@@ -265,17 +265,17 @@ export const InvoiceUpdateInfo_schema = new SimpleSchema({
     customerId: {
         type: String,
         autoform: {
-            type: 'universe-select',
-            afFieldInput: {
-                uniPlaceholder: 'Please search .... (Limit 10)',
-                optionsMethod: 'pos.selectOptMethods.customer',
-                optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }
-                }
-            }
+            type: 'select2',
+            // afFieldInput: {
+            //     uniPlaceholder: 'Please search .... (Limit 10)',
+            //     optionsMethod: 'pos.selectOptMethods.customer',
+            //     optionsMethodParams: function () {
+            //         if (Meteor.isClient) {
+            //             let currentBranch = Session.get('currentBranch');
+            //             return {branchId: currentBranch};
+            //         }
+            //     }
+            // }
         }
     },
     repId: {
