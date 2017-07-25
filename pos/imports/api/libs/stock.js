@@ -160,7 +160,7 @@ export  default class StockFunction {
             branchId: branchId,
             itemId: item.itemId,
             stockLocationId: stockLocationId
-        }, {sort: {_id: -1}});
+        }, {sort: {createdAt: -1}});
         if (inventory) {
             let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
             inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
@@ -210,7 +210,7 @@ export  default class StockFunction {
             branchId: branchId,
             itemId: item.itemId,
             stockLocationId: stockLocationId
-        }, {sort: {_id: -1}});
+        }, {sort: {createdAt: -1}});
         if (inventory) {
             let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
             inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
@@ -521,7 +521,7 @@ export  default class StockFunction {
             let inventory = AverageInventories.findOne({
                 branchId: branchId,
                 stockLocationId: stockLocationId,
-            }, {sort: {_id: -1}});
+            }, {sort: {createdAt: -1}});
             if (inventory && inventory.inventoryDate) {
                 return inventory.inventoryDate;
             } else {

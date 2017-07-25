@@ -8,7 +8,6 @@ import {AccountMapping} from '../../imports/api/collections/accountMapping.js';
 import {Customers} from '../../imports/api/collections/customer.js';
 
 ReceivePayment.before.insert(function (userId, doc) {
-    console.log(doc._id);
     doc._id = idGenerator.genWithPrefix(ReceivePayment, `${doc.branchId}-`, 9);
 });
 

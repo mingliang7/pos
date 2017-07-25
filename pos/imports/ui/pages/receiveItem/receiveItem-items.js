@@ -68,7 +68,6 @@ itemsTmpl.helpers({
         return true;
     },
     tableSettings: function () {
-        console.log(itemsCollection.find().fetch());
         let i18nPrefix = 'pos.receiveItem.schema';
 
         reactiveTableSettings.showFilter = false;
@@ -226,7 +225,6 @@ itemsTmpl.events({
     'click .js-destroy-item': function (event, instance) {
         event.preventDefault();
         let itemDoc = this;
-        console.log('fuck you bitch swal');
         if (AutoForm.getFormId() == "Pos_receiveItemEdit") { //check if update form
             swal({
                 title: "Are you sure?",
@@ -280,7 +278,6 @@ itemsTmpl.events({
         let selector = {};
         let lostQty = 0;
         let curentQty = currentItem.exactQty;
-        console.log(currentItem);
         if(currentLostQty != '') {
             lostQty = parseFloat(currentLostQty);
             curentQty += lostQty;

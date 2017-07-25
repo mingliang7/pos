@@ -114,7 +114,6 @@ invoiceDataTmpl.helpers({
     display(col){
         let data = '';
         this.displayFields.forEach(function (obj) {
-            console.log(obj);
             if (obj.field == 'invoiceDate') {
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD ')}</td>`
             } else if (obj.field == 'total') {
@@ -156,7 +155,6 @@ AutoForm.hooks({
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
-            console.log(doc);
             if (doc.fromDate && doc.toDate) {
                 let fromDate = moment(doc.fromDate).startOf('days').format('YYYY-MM-DD HH:mm:ss');
                 let toDate = moment(doc.toDate).endOf('days').format('YYYY-MM-DD HH:mm:ss');

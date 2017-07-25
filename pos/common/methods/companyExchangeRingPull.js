@@ -19,7 +19,6 @@ export const companyExchangeRingPullInfo = new ValidatedMethod({
         _id
     }) {
         if (!this.isSimulation) {
-            console.log(_id);
             let companyExchangeRingPull = CompanyExchangeRingPulls.aggregate([{$match: {_id: _id}},{
                 $unwind: '$items'
             }, {

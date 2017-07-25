@@ -115,7 +115,6 @@ indexTmpl.helpers({
     dueAmount(){
         let total = this.total || 0;
         let lastPayment = getLastPayment(this._id);
-        console.log(lastPayment);
         return lastPayment == 0 ? `${numeral(total).format('0,0.000')}` : `${numeral(lastPayment).format('0,0.000')}`;
     },
     schema() {

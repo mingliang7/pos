@@ -284,7 +284,7 @@ function reduceFromInventory(enterBill) {
             branchId: enterBill.branchId,
             itemId: item.itemId,
             stockLocationId: enterBill.stockLocationId
-        }, {sort: {_id: -1}});
+        }, {sort: {createdAt: -1}});
 
         if (inventory) {
             let newInventory = {

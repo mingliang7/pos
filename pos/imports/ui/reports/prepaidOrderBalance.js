@@ -60,7 +60,6 @@ invoiceDataTmpl.helpers({
     },
     data(){
         if (invoiceData.get()) {
-            console.log(invoiceData.get());
             return invoiceData.get();
         }
     },

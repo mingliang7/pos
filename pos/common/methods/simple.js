@@ -12,7 +12,6 @@ export const simpleMethod = new ValidatedMethod({
     run({password}) {
         if (!this.isSimulation) {
 
-            console.log(password);
 
             let digest = Package.sha.SHA256(password);
 

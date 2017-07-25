@@ -185,7 +185,6 @@ export default class ClosingStock {
             transactionType: 'invoice',
             type: 'out'
         }));
-        console.log(Invoices.aggregate([{$match: selector}]));
         return invoices;
     }
 

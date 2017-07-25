@@ -143,7 +143,6 @@ invoiceDataTmpl.helpers({
         }
     },
     displayByDay(date){
-        console.log(date)
         let paymentDate = moment(date).format('DD/MM/YYYY');
         let data = invoiceData.get()
         let paymentData = data.payments[paymentDate];
@@ -160,7 +159,6 @@ invoiceDataTmpl.helpers({
     firstIndex(index,date ,data){
         let paymentDate = data[index - 1 ] && data[index - 1 ].date;
         let moPaymentDate = moment(paymentDate).format('YYYY-MM-DD');
-        console.log(data);
         if(!moment(moPaymentDate).isSame(moment(date).format('YYYY-MM-DD')) || data[index - 1] && data[index - 1].inv ){
             return true;
         }

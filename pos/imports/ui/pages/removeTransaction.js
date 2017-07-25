@@ -80,7 +80,6 @@ indexTmpl.events({
             $.blockUI();
             Meteor.call('removeTransactions', branchId, doc, function (err, res) {
                 if (res) {
-                    console.log(res);
                     TransactionCollection.remove({});
                     TransactionCollection.insert(res);
                     $.unblockUI();

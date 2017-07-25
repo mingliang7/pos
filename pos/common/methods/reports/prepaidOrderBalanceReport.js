@@ -124,7 +124,6 @@ export const prepaidOrderBalanceReport = new ValidatedMethod({
                         }
                     }
                 ]);
-            console.log(prepaidOrderBalances);
             if (prepaidOrderBalances.length > 0) {
                 let sortData = _.sortBy(prepaidOrderBalances[0].data, '_id');
                 prepaidOrderBalances[0].data = sortData;

@@ -27,7 +27,7 @@ Order.after.insert(function (userId, doc) {
             let inventoryObj = AverageInventories.findOne({
                 itemId: item.itemId,
                 branchId: doc.branchId
-            }, {sort: {_id: -1}});
+            }, {sort: {createdAt: -1}});
             let thisItemPrice = 0;
             if (inventoryObj) {
                 thisItemPrice = inventoryObj.price;
@@ -147,7 +147,7 @@ Order.after.update(function (userId, doc) {
             let inventoryObj = AverageInventories.findOne({
                 itemId: item.itemId,
                 branchId: doc.branchId
-            }, {sort: {_id: -1}});
+            }, {sort: {createdAt: -1}});
             let thisItemPrice = 0;
             if (inventoryObj) {
                 thisItemPrice = inventoryObj.price;

@@ -35,7 +35,6 @@ export const stockDetailReportMethod = new ValidatedMethod({
                     $lte: moment(date[1]).endOf('days').toDate()
                 };
             }
-            console.log(selector.inventoryDate);
             if (params.branch) {
                 let branch = '';
                 let branchArr = params.branch.split(',');
@@ -68,7 +67,7 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $match: selector
                             },
-                            {$sort: {inventoryDate: 1, _id: 1}},
+                            {$sort: {inventoryDate: 1, createdAt: 1}},
                             {
                                 $project: {
                                     inventoryDate: 1

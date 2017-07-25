@@ -19,7 +19,6 @@ export const invoiceInfo = new ValidatedMethod({
         _id
     }) {
         if (!this.isSimulation) {
-            console.log(_id);
             let invoice = Invoices.aggregate([{$match: {_id: _id}},{
                 $unwind: '$items'
             }, {

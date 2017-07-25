@@ -17,19 +17,14 @@ export const CheckStockByLocation = new ValidatedMethod({
     run({stockLocationId, items}) {
         if (!this.isSimulation) {
             let result = {isEnoughStock: true, message: ''};
-            let i = 1;
             items.forEach(function (item) {
                 let thisItem = Item.findOne(item.itemId);
                 let inventoryQty = thisItem.qtyOnHand[stockLocationId] == null ? 0 : thisItem.qtyOnHand[stockLocationId];
                 if (item.qty > inventoryQty) {
                     result.isEnoughStock = false;
                     result.message = thisItem.name + " is not enough in stock. Qty on hand: " + inventoryQty;
-                    console.log(result);
                     return false;
                 }
-                console.log(i);
-                i++;
-
             });
             return result;
         }

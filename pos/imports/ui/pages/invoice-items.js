@@ -174,7 +174,6 @@ itemsTmpl.helpers({
             if (Session.get('getCustomerId')) {
                 let deletedItemsTotal = 0;
                 if (AutoForm.getFormId() == "Pos_invoiceUpdate") {
-                    console.log(currentItemsInupdateForm.find().fetch());
                     if (currentItemsInupdateForm.find().count() > 0) {
                         currentItemsInupdateForm.find().forEach(function (item) {
                             deletedItemsTotal += item.amount;

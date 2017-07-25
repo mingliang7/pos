@@ -140,7 +140,7 @@ Invoices.after.insert(function (userId, doc) {
                         itemId: item.itemId,
                         branchId: doc.branchId,
                         stockLocationId: doc.stockLocationId
-                    }, {sort: {_id: -1}});
+                    }, {sort: {createdAt: -1}});
                     if (inventoryObj) {
                         totalGratis += item.qty * inventoryObj.averagePrice;
                     } else {
@@ -152,7 +152,7 @@ Invoices.after.insert(function (userId, doc) {
                         itemId: item.itemId,
                         branchId: doc.branchId,
                         stockLocationId: doc.stockLocationId
-                    }, {sort: {_id: -1}});
+                    }, {sort: {createdAt: -1}});
                     if (inventoryObj) {
                         totalCOGS += item.qty * inventoryObj.averagePrice;
                     } else {
@@ -223,7 +223,7 @@ Invoices.after.insert(function (userId, doc) {
                         itemId: item.itemId,
                         branchId: doc.branchId,
                         stockLocationId: doc.stockLocationId
-                    }, {sort: {_id: -1}});
+                    }, {sort: {createdAt: -1}});
                     if (inventoryObj) {
                         totalGratis += item.qty * inventoryObj.averagePrice;
                     } else {
@@ -234,7 +234,7 @@ Invoices.after.insert(function (userId, doc) {
                         itemId: item.itemId,
                         branchId: doc.branchId,
                         stockLocationId: doc.stockLocationId
-                    }, {sort: {_id: -1}});
+                    }, {sort: {createdAt: -1}});
                     if (inventoryObj) {
                         totalCOGS += item.qty * inventoryObj.averagePrice;
                     } else {
@@ -398,7 +398,7 @@ Invoices.after.update(function (userId, doc) {
                     itemId: item.itemId,
                     branchId: doc.branchId,
                     stockLocationId: doc.stockLocationId
-                }, {sort: {_id: -1}});
+                }, {sort: {createdAt: -1}});
                 if (inventoryObj) {
                     if (item.price == 0) {
                         increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
@@ -478,7 +478,7 @@ Invoices.after.update(function (userId, doc) {
                     itemId: item.itemId,
                     branchId: doc.branchId,
                     stockLocationId: doc.stockLocationId
-                }, {sort: {_id: -1}});
+                }, {sort: {createdAt: -1}});
                 if (inventoryObj) {
                     if (item.price == 0) {
                         increaseGratisInventory(item, doc.branchId, doc.stockLocationId)
@@ -674,7 +674,7 @@ function invoiceManageStock(invoice) {
             branchId: invoice.branchId,
             itemId: item.itemId,
             stockLocationId: invoice.stockLocationId
-        }, {sort: {_id: -1}});
+        }, {sort: {createdAt: -1}});
         if (inventory) {
             let inventoryDate = moment(invoice.invoiceDate).startOf('days').toDate();
             let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();

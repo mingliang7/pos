@@ -351,7 +351,6 @@ newTmpl.helpers({
                 let term = Session.get('vendorInfo')._term;
 
                 let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
-                console.log(dueDate);
                 return dueDate;
             }
         }
@@ -526,7 +525,6 @@ editTmpl.helpers({
                 let term = Session.get('vendorInfo')._term;
 
                 let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
-                console.log(dueDate);
                 return dueDate;
             }
         }

@@ -201,7 +201,6 @@ export const unpaidGroupInvoiceOverdue = new ValidatedMethod({
                     paidAmount: groupInvoices[0].paidAmount
                 }
             }
-            console.log(data.content);
             return data
         }
     }

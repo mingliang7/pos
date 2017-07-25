@@ -40,7 +40,6 @@ export const VendorBalanceSummary = new ValidatedMethod({
             }
             let vendors = Vendors.find(vendorSelector, {sort: {name: 1}}).fetch();
             let grandTotalDue = 0;
-            console.log(branchId);
             vendors.forEach(function (vendor) {
                 let totalAmountDue = 0;
                 let selector = {branchId: branchId, vendorId: vendor._id, status: {$in: ['active', 'partial']}};

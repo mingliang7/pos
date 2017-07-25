@@ -20,7 +20,7 @@ RingPullTransfers.after.insert(function (userId, doc) {
                 itemId: item.itemId,
                 branchId: doc.branchId,
                 stockLocationId: doc.stockLocationId
-            }, {sort: {_id: -1}});
+            }, {sort: {createdAt: -1}});
             let thisItemPrice = 0;
             if (inventoryObj) {
                 thisItemPrice = inventoryObj.price;
@@ -46,7 +46,7 @@ RingPullTransfers.after.update(function (userId, doc) {
                 itemId: item.itemId,
                 branchId: doc.branchId,
                 stockLocationId: doc.stockLocationId
-            }, {sort: {_id: -1}});
+            }, {sort: {createdAt: -1}});
             let thisItemPrice = 0;
             if (inventoryObj) {
                 thisItemPrice = inventoryObj.price;

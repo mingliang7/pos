@@ -55,7 +55,7 @@ Meteor.methods({
                     branchId: invoice.branchId,
                     itemId: item.itemId,
                     stockLocationId: invoice.stockLocationId
-                }, {sort: {_id: -1}});
+                }, {sort: {createdAt: -1}});
                 if (inventory) {
                     item.cost = inventory.price;
                     item.amountCost = inventory.price * item.qty;
@@ -146,7 +146,7 @@ Meteor.methods({
                     branchId: locationTransfer.fromBranchId,
                     itemId: item.itemId,
                     stockLocationId: locationTransfer.fromStockLocationId
-                }, {sort: {_id: -1}});
+                }, {sort: {createdAt: -1}});
 
                 if (inventory) {
                     item.price = inventory.averagePrice;
@@ -262,7 +262,7 @@ Meteor.methods({
                 itemId: item.itemId,
                 locationId: item.locationId,
                 price: item.price
-            }, {sort: {_id: -1}, fields: {_id: 1, remainQty: 1, quantity: 1}});
+            }, {sort: {createdAt: -1}, fields: {_id: 1, remainQty: 1, quantity: 1}});
             if (inventory.remainQty < item.qty) {
                 enough = false;
                 return false;
@@ -281,7 +281,7 @@ Meteor.methods({
                     branchId: enterBill.branchId,
                     itemId: item.itemId,
                     stockLocationId: enterBill.stockLocationId
-                }, {sort: {_id: -1}});
+                }, {sort: {createdAt: -1}});
                 if (inventory) {
                     let newInventory = {
                         _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
@@ -989,7 +989,7 @@ Meteor.methods({
                 let inventoryForDate = AverageInventories.findOne({
                     branchId: branch._id,
                     stockLocationId: stockLocation._id
-                }, {sort: {_id: -1}});
+                }, {sort: {createdAt: -1}});
                 if (inventoryForDate) {
                     InventoryDates.direct.update(
                         {branchId: branch._id, stockLocationId: stockLocation._id},
@@ -1002,7 +1002,7 @@ Meteor.methods({
                         branchId: branch._id,
                         stockLocationId: stockLocation._id,
                         itemId: item._id
-                    }, {sort: {_id: -1}});
+                    }, {sort: {createdAt: -1}});
                     if (inventory) {
                         let setModifier = {$set: {}};
                         setModifier.$set['qtyOnHand.' + stockLocation._id] = inventory.remainQty;

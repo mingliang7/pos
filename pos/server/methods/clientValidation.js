@@ -37,7 +37,6 @@ Meteor.methods({
         let toItem = Item.findOne(toId);
         let convertItemSetting = ConvertItemSettings.findOne({fromItemId: fromId, toItemId: toId});
         let getQty = convertItemSetting == null ? 1: convertItemSetting.qty;
-        console.log(getQty);
         return {fromItem: fromItem, toItem: toItem, getQty: getQty};
     }
 

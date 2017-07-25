@@ -19,7 +19,6 @@ export const exchangeRingPullInfo = new ValidatedMethod({
         _id
     }) {
         if (!this.isSimulation) {
-            console.log(_id);
             let exchangeRingPull = ExchangeRingPulls.aggregate([{$match: {_id: _id}},{
                 $unwind: '$items'
             }, {

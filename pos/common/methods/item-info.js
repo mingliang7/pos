@@ -41,7 +41,6 @@ export const itemInfo = new ValidatedMethod({
                     startQty: {$lte: qty},
                     endQty: {$gte: qty}
                 });
-                console.log(qtyRangePrice);
                 if (qtyRangePrice && data.mappingEnable) {
                     data.price = qtyRangePrice.price;
                 }

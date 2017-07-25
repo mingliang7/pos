@@ -25,7 +25,7 @@ indexTmpl.onCreated(function () {
                     toBranchId: Session.get('currentBranch'),
                     pending: transferState.get() == undefined ? true : transferState.get(),
                     status: statusState.get() || 'active'
-                }, {sort: {_id: -1}, limit: sumLoadMore.get()});
+                }, {sort: {createdAt: -1}, limit: sumLoadMore.get()});
             if (!subscription.ready()) {
                 swal({
                     title: "Please Wait",

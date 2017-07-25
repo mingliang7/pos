@@ -371,7 +371,6 @@ Meteor.methods({
                             $match: selector
                         }, {
                             $sort: {
-                                _id: 1,
                                 createdAt: 1
                             }
                         }, {
@@ -471,7 +470,6 @@ Meteor.methods({
                             $match: selector
                         }, {
                             $sort: {
-                                _id: 1,
                                 createdAt: 1
                             }
                         }, {

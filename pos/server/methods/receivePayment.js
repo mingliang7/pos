@@ -16,7 +16,6 @@ Meteor.methods({
         if (payments.count() == 1) {
             collections.direct.update(doc.invoiceId, selector)
         } else {
-            console.log('in else');
             ReceivePayment.update({
                 invoiceId: doc.invoiceId, status: {$ne: 'removed'},
                 _id: {$ne: doc._id},

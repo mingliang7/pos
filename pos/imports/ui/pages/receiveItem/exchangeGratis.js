@@ -16,7 +16,6 @@ exchangeGratisTmpl.helpers({
         let exchangeGratises = ExchangeGratis.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
         if (ReceiveDeletedItem.find().count() > 0) {
             ReceiveDeletedItem.find().forEach(function (item) {
-                console.log(item);
                 exchangeGratises.forEach(function (exchangeGratis) {
                     exchangeGratis.items.forEach(function (exchangeGratisItem) {
                         if (exchangeGratisItem.itemId == item.itemId) {
@@ -41,7 +40,6 @@ exchangeGratisTmpl.helpers({
     },
     getItemName(itemId){
         try {
-            console.log(Item.find().fetch());
             return Item.findOne(itemId).name;
         } catch (e) {
 

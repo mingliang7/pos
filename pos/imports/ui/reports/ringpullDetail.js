@@ -119,7 +119,6 @@ invoiceDataTmpl.helpers({
             if (obj.field == 'vendorId') {
                 data += `<td>${col._vendor.name}</td>`
             } else if (obj.field == 'date' && col.type) {
-                console.log(col[obj.field]);
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`;
             } else if (obj.field == 'total') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.000')}</td>`

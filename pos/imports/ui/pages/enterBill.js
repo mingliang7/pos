@@ -384,7 +384,6 @@ newTmpl.helpers({
                     let term = vendorInfo._term;
 
                     let dueDate = moment(date).add(term.netDueIn, 'days').toDate();
-                    console.log(dueDate);
                     return dueDate;
                 }
             }

@@ -281,7 +281,6 @@ indexTmpl.helpers({
             });
         }
         Session.set('balance', numeral(totalAmountDue).format('0,0.000'));
-        console.log(totalAmountDue);
         return totalAmountDue;
     },
     totalOriginAmount(){

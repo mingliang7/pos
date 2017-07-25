@@ -16,7 +16,6 @@ PayBills.after.remove(function (userId, doc) {
 
 PayBills.after.update(function (userId, doc) {
     Meteor.defer(function () {
-        console.log(doc);
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {

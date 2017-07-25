@@ -120,7 +120,6 @@ export const exchangeRingPullStockBalanceReport = new ValidatedMethod({
             if (exchangeRingPullStockBalance.length > 0) {
                 data.content = exchangeRingPullStockBalance;
             }
-            console.log(data.content);
             return data
         }
     }

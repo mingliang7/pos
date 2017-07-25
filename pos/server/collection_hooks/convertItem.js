@@ -63,7 +63,7 @@ ConvertItems.after.insert(function (userId, doc) {
                 itemId: item.fromItemId,
                 branchId: doc.branchId,
                 stockLocationId: doc.stockLocationId
-            }, {sort: {_id: -1}});
+            }, {sort: {createdAt: -1}});
             if (fromItemInventoryObj) {
                 item.fromItemPrice = fromItemInventoryObj.averagePrice;
                 item.fromItemAmount = item.qty * fromItemInventoryObj.averagePrice;
@@ -213,7 +213,7 @@ ConvertItems.after.update(function (userId, doc) {
          itemId: item.itemId,
          branchId: doc.branchId,
          stockLocationId: doc.stockLocationId
-         }, {sort: {_id: -1}});
+         }, {sort: {createdAt: -1}});
          if (inventoryObj) {
          item.price = inventoryObj.averagePrice;
          item.amount = item.qty * inventoryObj.averagePrice;

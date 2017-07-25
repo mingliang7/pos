@@ -29,7 +29,6 @@ Meteor.publish('pos.activeCompanyExchangeRingPull', function activeCompanyExchan
     if (this.userId) {
         Meteor._sleepForMs(200);
         let data = CompanyExchangeRingPulls.find(selector);
-        console.log(data.fetch());
         return data;
     }
     return this.ready();

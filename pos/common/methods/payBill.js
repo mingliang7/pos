@@ -105,7 +105,6 @@ export const payBill = new ValidatedMethod({
                             data.transaction = transaction;
                             data.journalDate = data.paymentDate;
                             Meteor.call('insertAccountJournal', data);
-                            console.log(data);
                         }
                         //End Account Integration
                     }

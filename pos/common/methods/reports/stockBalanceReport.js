@@ -90,7 +90,7 @@ export const stockBalanceReport = new ValidatedMethod({
             /****** Content *****/
             let inventories = AverageInventories.aggregate([
                 {$match: selector},
-                {$sort: {_id: 1, inventoryDate: 1}},
+                {$sort: {inventoryDate: 1,createdAt:1}},
                 {
                     $lookup: {
                         from: "pos_item",

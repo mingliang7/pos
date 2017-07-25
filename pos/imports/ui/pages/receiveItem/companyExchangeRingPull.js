@@ -46,7 +46,6 @@ companyExchangeRingPullTmpl.helpers({
     },
     getItemName(itemId){
         try {
-            console.log(Item.find().fetch());
             return Item.findOne(itemId).name;
         } catch (e) {
 

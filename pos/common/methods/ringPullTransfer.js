@@ -19,7 +19,6 @@ export const ringPullTransferInfo = new ValidatedMethod({
         _id
     }) {
         if (!this.isSimulation) {
-            console.log(_id);
             let ringPullTransfer = RingPullTransfers.aggregate([{$match: {_id: _id}},{
                 $unwind: '$items'
             }, {
