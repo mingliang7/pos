@@ -1,9 +1,9 @@
 import 'meteor/matb33:collection-hooks';
-import {idGenerator} from 'meteor/theara:id-generator';
+import { idGenerator } from 'meteor/theara:id-generator';
 
 
 // Collection
-import {Journal} from '../../../imports/api/collections/journal';
+import { Journal } from '../../../imports/api/collections/journal';
 
 Meteor.methods({
     api_journalInsert: function (data) {
@@ -56,7 +56,8 @@ Meteor.methods({
 
             return Journal.insert(data);
         } catch (error) {
-            console.log("Accounting Prepare By Narong Sao");
+            console.log("Accounting Prepare By Narong Sao Insert");
+            console.log(error.message);
             throw new Meteor.Error(error.message);
         }
     },
@@ -110,18 +111,20 @@ Meteor.methods({
                 return key;
             }, {});
 
-            return Journal.update({refId: data.refId, refFrom: data.refFrom}, {$set: data});
+            return Journal.update({ refId: data.refId, refFrom: data.refFrom }, { $set: data });
         } catch (error) {
-            console.log("Accounting Prepare By Narong Sao");
+            console.log("Accounting Prepare By Narong Sao update");
+            console.log(error.message);
             throw new Meteor.Error(error.message);
         }
     },
 
     api_journalRemove: function (refId, refFrom) {
         try {
-            return Journal.remove({refId: refId, refFrom: refFrom});
+            return Journal.remove({ refId: refId, refFrom: refFrom });
         } catch (error) {
-            console.log("Accounting Prepare By Narong Sao");
+            console.log("Accounting Prepare By Narong Sao remove");
+            console.log(error.message);
             throw new Meteor.Error(error.message);
         }
     }
