@@ -12,6 +12,8 @@ import {FixAssetDep} from '../../imports/api/collections/fixAssetDep';
 
 
 Journal.before.insert(function (userId, doc) {
+    console.log(doc);
+    console.log(doc.transaction);
     var depType = ConfigDep.findOne();
     var transaction = [];
     _.each(doc.transaction, function (obj) {
@@ -227,6 +229,8 @@ Journal.before.insert(function (userId, doc) {
 
 });
 Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
+    console.log(modifier.$set);
+    console.log(modifier.$set.transaction);
     var depType = ConfigDep.findOne();
     modifier.$set = modifier.$set || {};
     var transaction = [];
