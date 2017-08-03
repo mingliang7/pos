@@ -70,6 +70,10 @@ Tracker.autorun(function () {
 
 indexTmpl.onCreated(function () {
     // Create new  alertify
+    $(document).on("keydown", "input", function(e) {
+        if (e.which == 13)
+            e.preventDefault();
+    });
     createNewAlertify('enterBill', {size: 'lg'});
     createNewAlertify('enterBillShow', {size: 'lg'});
     createNewAlertify('vendor');

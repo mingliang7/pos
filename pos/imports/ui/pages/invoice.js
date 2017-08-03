@@ -73,6 +73,10 @@ let dateState = new ReactiveVar();
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
+    $(document).on("keydown", "input", function(e) {
+        if (e.which == 13)
+            e.preventDefault();
+    });
     createNewAlertify('invoice', {size: 'lg'});
     createNewAlertify('invoiceShow',);
     createNewAlertify('listSaleOrder', {size: 'lg'});
