@@ -91,6 +91,10 @@ import {itemsCollection} from '../../../api/collections/tmpCollection';
 
 indexTmpl.onCreated(function () {
     // Create new  alertify
+    $(document).on("keydown", "input", function(e) {
+        if (e.which == 13)
+            e.preventDefault();
+    });
     createNewAlertify('receiveItem', {size: 'lg'});
     createNewAlertify('receiveItemShow');
     createNewAlertify('listPrepaidOrder', {size: 'lg'});

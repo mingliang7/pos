@@ -59,6 +59,10 @@ let itemsCollection = new Mongo.Collection(null);
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
+    $(document).on("keydown", "input", function(e) {
+        if (e.which == 13)
+            e.preventDefault();
+    });
     createNewAlertify('prepaidOrder', {size: 'lg'});
     createNewAlertify('prepaidOrderShow', {size: 'lg'});
 });

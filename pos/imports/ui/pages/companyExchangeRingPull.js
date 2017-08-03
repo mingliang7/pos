@@ -61,6 +61,10 @@ let itemsCollection = nullCollection;
 
 // Index
 indexTmpl.onCreated(function () {
+    $(document).on("keydown", "input", function(e) {
+        if (e.which == 13)
+            e.preventDefault();
+    });
     // Create new  alertify
     createNewAlertify('companyExchangeRingPull', {size: 'lg'});
     createNewAlertify('companyExchangeRingPullShow', {size: 'lg'});

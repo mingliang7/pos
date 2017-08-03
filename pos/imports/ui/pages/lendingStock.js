@@ -57,6 +57,10 @@ let indexTmpl = Template.Pos_lendingStock,
 let itemsCollection = new Mongo.Collection(null);
 
 indexTmpl.onCreated(function () {
+    $(document).on("keydown", "input", function(e) {
+        if (e.which == 13)
+            e.preventDefault();
+    });
     // Create new  alertify
     createNewAlertify('lendingStock', {size: 'lg'});
     createNewAlertify('lendingStockShow', {size: 'lg'});
