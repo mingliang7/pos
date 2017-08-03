@@ -80,7 +80,7 @@ exchangeGratisTmpl.events({
                         this.name = result.name;
                         this.lostQty = 0;
                         this.exactQty = parseFloat(remainQty);
-                        this.amount = math.round(this.exactQty * this.price, 3);
+                        this.amount = math.round(this.exactQty * this.price, 6);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -124,7 +124,7 @@ exchangeGratisTmpl.events({
                         this.exactQty = parseFloat(remainQty);
                         this.lostQty = 0;
                         this.name = result.name;
-                        this.amount = math.round(this.exactQty * this.price, 3);
+                        this.amount = math.round(this.exactQty * this.price, 6);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -145,14 +145,14 @@ let insertExchangeGratisItem = ({self, remainQty, exchangeGratisItem, exchangeGr
         self.qty = remainQty;
         self.name = result.name;
         self.lostQty = 0;
-        self.amount = math.round(self.qty * self.price, 3);
+        self.amount = math.round(self.qty * self.price, 6);
         let getItem = itemsCollection.findOne({itemId: self.itemId});
         if (getItem) {
             if (getItem.qty + remainQty <= self.remainQty) {
                 itemsCollection.update(getItem._id, {
                     $inc: {
                         qty: self.qty,
-                        amount: math.round(self.qty * getItem.price, 3)
+                        amount: math.round(self.qty * getItem.price, 6)
                     }
                 });
                 displaySuccess('Added!')

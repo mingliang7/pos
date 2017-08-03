@@ -5,6 +5,6 @@ import {idGenerator} from 'meteor/theara:id-generator';
 import {Penalty} from '../../imports/api/collections/penalty.js';
 
 Penalty.before.insert(function (userId, doc) {
-    doc._id = idGenerator.gen(Penalty, 3);
+    doc._id = idGenerator.gen(Penalty, 6);
 });
 

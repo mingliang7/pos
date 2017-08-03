@@ -297,7 +297,7 @@ let hooksObject = {
                 doc.paidAmount = 0;
                 doc.dueAmount = doc.total;
             } else if (btnType == "pay") {
-                doc.dueAmount = (math.round(doc.total - doc.paidAmount, 3));
+                doc.dueAmount = (math.round(doc.total - doc.paidAmount, 6));
                 if (doc.dueAmount <= 0) {
                     doc.status = "close";
                 } else {
@@ -321,7 +321,7 @@ let hooksObject = {
                 doc.$set.paidAmount = 0;
                 doc.$set.dueAmount = doc.total;
             } else if (btnType == "pay") {
-                doc.$set.dueAmount = (math.round(doc.$set.total - doc.$set.paidAmount, 3));
+                doc.$set.dueAmount = (math.round(doc.$set.total - doc.$set.paidAmount, 6));
                 if (doc.$set.dueAmount <= 0) {
                     doc.$set.status = "close";
                 } else {

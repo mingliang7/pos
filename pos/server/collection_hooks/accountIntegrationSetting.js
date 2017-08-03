@@ -6,7 +6,7 @@ import {AccountIntegrationSetting} from '../../imports/api/collections/accountIn
 import {AccountMapping} from '../../imports/api/collections/accountMapping.js';
 
 AccountIntegrationSetting.before.insert(function (userId, doc) {
-    doc._id = idGenerator.gen(AccountIntegrationSetting, 3);
+    doc._id = idGenerator.gen(AccountIntegrationSetting, 6);
 });
 
 AccountIntegrationSetting.before.update(function (userId, doc, fieldNames, modifier, options) {

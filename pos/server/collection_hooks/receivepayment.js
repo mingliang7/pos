@@ -57,8 +57,8 @@ ReceivePayment.after.update(function (userId, doc) {
             let arChartAccount = AccountMapping.findOne({name: 'A/R'});
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let saleDiscountChartAccount = AccountMapping.findOne({name: 'Sale Discount'});
-            let discountAmount = math.round(doc.dueAmount * doc.discount / 100, 3);
-            data.total = math.round(doc.paidAmount + discountAmount, 3);
+            let discountAmount = math.round(doc.dueAmount * doc.discount / 100, 6);
+            data.total = math.round(doc.paidAmount + discountAmount, 6);
             transaction.push({
                 account: cashChartAccount.account,
                 dr: doc.paidAmount,
@@ -76,8 +76,8 @@ ReceivePayment.after.update(function (userId, doc) {
             transaction.push({
                 account: arChartAccount.account,
                 dr: 0,
-                cr: math.round(doc.paidAmount + discountAmount, 3),
-                drcr: -(math.round(doc.paidAmount + discountAmount, 3))
+                cr: math.round(doc.paidAmount + discountAmount, 6),
+                drcr: -(math.round(doc.paidAmount + discountAmount, 6))
             });
             data.transaction = transaction;
 
@@ -129,8 +129,8 @@ Meteor.methods({
                 let arChartAccount = AccountMapping.findOne({name: 'A/R'});
                 let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
                 let saleDiscountChartAccount = AccountMapping.findOne({name: 'Sale Discount'});
-                let discountAmount = math.round(obj.dueAmount * obj.discount / 100, 3);
-                data.total = math.round(obj.paidAmount + discountAmount, 3);
+                let discountAmount = math.round(obj.dueAmount * obj.discount / 100, 6);
+                data.total = math.round(obj.paidAmount + discountAmount, 6);
                 transaction.push({
                     account: cashChartAccount.account,
                     dr: obj.paidAmount,
@@ -148,8 +148,8 @@ Meteor.methods({
                 transaction.push({
                     account: arChartAccount.account,
                     dr: 0,
-                    cr: math.round(obj.paidAmount + discountAmount, 3),
-                    drcr: -(math.round(obj.paidAmount + discountAmount, 3))
+                    cr: math.round(obj.paidAmount + discountAmount, 6),
+                    drcr: -(math.round(obj.paidAmount + discountAmount, 6))
                 });
                 data.transaction = transaction;
                 let customerDoc = Customers.findOne({_id: obj.customerId});

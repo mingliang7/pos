@@ -180,7 +180,7 @@ itemsTmpl.helpers({
                         });
                     }
                 }
-                Session.set('creditLimitAmount', math.round(total - deletedItemsTotal, 3));
+                Session.set('creditLimitAmount', math.round(total - deletedItemsTotal, 6));
             }
             return total;
         } catch (error) {
@@ -190,7 +190,7 @@ itemsTmpl.helpers({
     totalAmount() {
         let instance = Template.instance();
         try {
-            return math.round(instance.defaultPrice.get() * instance.defaultQty.get(), 3);
+            return math.round(instance.defaultPrice.get() * instance.defaultQty.get(), 6);
         } catch (error) {
             console.log(error.message)
         }
@@ -246,7 +246,7 @@ itemsTmpl.events({
         let qty = instance.$('[name="qty"]').val();
         qty = qty == '' ? 1 : parseFloat(qty);
         let price = parseFloat(instance.$('[name="price"]').val());
-        let amount = math.round(qty * price, 3);
+        let amount = math.round(qty * price, 6);
         let stockLocationId = $('[name="stockLocationId"]').val();
         if (stockLocationId == "") {
             alertify.warning("Please choose stock location.");
@@ -295,18 +295,18 @@ itemsTmpl.events({
                                 itemOfCollectionNull.forEach(function (itemNull) {
                                     addedQty += itemNull.qty;
                                 });
-                                checkQty = math.round((item.quantity * qty) + addedQty, 3);
+                                checkQty = math.round((item.quantity * qty) + addedQty, 6);
                             } else {
-                                checkQty = math.round(item.quantity * qty, 3);
+                                checkQty = math.round(item.quantity * qty, 6);
                             }
                             let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
                             inventoryQty += soldQty;
                             if (checkQty <= inventoryQty) {
                                 itemsCollection.insert({
                                     itemId: item.itemId,
-                                    qty: math.round(item.quantity * qty, 3),
+                                    qty: math.round(item.quantity * qty, 6),
                                     price: item.price,
-                                    amount: math.round((item.price * item.quantity) * qty, 3),
+                                    amount: math.round((item.price * item.quantity) * qty, 6),
                                     name: item.itemName
                                 });
                             }
@@ -328,7 +328,7 @@ itemsTmpl.events({
                             itemOfCollectionNull.forEach(function (itemNull) {
                                 addedQty += itemNull.qty;
                             });
-                            checkQty = math.round(qty + addedQty, 3);
+                            checkQty = math.round(qty + addedQty, 6);
                         } else {
                             checkQty = qty;
                         }
@@ -387,17 +387,17 @@ itemsTmpl.events({
                                 itemOfCollectionNull.forEach(function (itemNull) {
                                     addedQty += itemNull.qty;
                                 });
-                                checkQty = math.round((item.quantity * qty) + addedQty, 3);
+                                checkQty = math.round((item.quantity * qty) + addedQty, 6);
                             } else {
-                                checkQty = math.round(item.quantity * qty, 3);
+                                checkQty = math.round(item.quantity * qty, 6);
                             }
                             let inventoryQty = !itemResult.qtyOnHand || (itemResult && itemResult.qtyOnHand[stockLocationId]) == null ? 0 : itemResult.qtyOnHand[stockLocationId];
                             if (checkQty <= inventoryQty) {
                                 itemsCollection.insert({
                                     itemId: item.itemId,
-                                    qty: math.round(item.quantity * qty, 3),
+                                    qty: math.round(item.quantity * qty, 6),
                                     price: item.price,
-                                    amount: math.round((item.price * item.quantity) * qty, 3),
+                                    amount: math.round((item.price * item.quantity) * qty, 6),
                                     name: item.itemName
                                 });
                             }
@@ -418,7 +418,7 @@ itemsTmpl.events({
                             itemOfCollectionNull.forEach(function (itemNull) {
                                 addedQty += itemNull.qty;
                             });
-                            checkQty = math.round(qty + addedQty, 3);
+                            checkQty = math.round(qty + addedQty, 6);
                         } else {
                             checkQty = qty;
                         }
@@ -510,7 +510,7 @@ itemsTmpl.events({
             itemOfCollectionNull.forEach(function (itemNull) {
                 addedQty += itemNull.qty;
             });
-            checkQty = math.round(addedQty - currentItem.qty + currentQty, 3);
+            checkQty = math.round(addedQty - currentItem.qty + currentQty, 6);
         } else {
             checkQty = currentQty;
         }
@@ -518,12 +518,12 @@ itemsTmpl.events({
         let selector = {};
         if (currentQty != '' || currentQty != 0) {
             selector.$set = {
-                amount: math.round(currentQty * currentItem.price, 3),
+                amount: math.round(currentQty * currentItem.price, 6),
                 qty: currentQty
             }
         } else {
             selector.$set = {
-                amount: math.round(currentItem.qty * currentItem.price, 3),
+                amount: math.round(currentItem.qty * currentItem.price, 6),
                 qty: currentItem.qty
             };
             currentQty = currentItem.qty;
@@ -563,7 +563,7 @@ itemsTmpl.events({
                 }
                 else {
                     selector.$set = {
-                        amount: math.round(currentItem.qty * currentItem.price, 3),
+                        amount: math.round(currentItem.qty * currentItem.price, 6),
                         qty: currentItem.qty
                     };
                     itemsCollection.update({itemId: itemId, price: price, amount: amount}, selector);
@@ -581,7 +581,7 @@ itemsTmpl.events({
                 }
                 else {
                     selector.$set = {
-                        amount: math.round(currentItem.qty * currentItem.price, 3),
+                        amount: math.round(currentItem.qty * currentItem.price, 6),
                         qty: currentItem.qty
                     };
                     itemsCollection.update({itemId: itemId, price: price, amount: amount}, selector);
@@ -623,9 +623,9 @@ let hooksObject = {
                 _id: insertDoc._id
             });
             if (exist) {
-                let newQty = math.round(exist.qty + insertDoc.qty, 3);
+                let newQty = math.round(exist.qty + insertDoc.qty, 6);
                 let newPrice = insertDoc.price;
-                let newAmount = math.round(newQty * newPrice, 3);
+                let newAmount = math.round(newQty * newPrice, 6);
 
                 itemsCollection.update({
                     _id: insertDoc._id

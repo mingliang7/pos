@@ -18,9 +18,9 @@ export  default class StockFunction {
         if (inventory) {
             let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
             inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
-            let totalQty = math.round(inventory.remainQty + item.qty, 3);
-            let lastAmount = math.round(inventory.lastAmount + math.round((item.qty * item.price), 3), 3);
-            let averagePrice = math.round(lastAmount / totalQty, 3);
+            let totalQty = math.round(inventory.remainQty + item.qty, 6);
+            let lastAmount = math.round(inventory.lastAmount + math.round((item.qty * item.price), 6), 6);
+            let averagePrice = math.round(lastAmount / totalQty, 6);
             let nextInventory = {};
             //nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
             nextInventory.branchId = branchId;
@@ -28,7 +28,7 @@ export  default class StockFunction {
             nextInventory.itemId = item.itemId;
             nextInventory.qty = item.qty;
             nextInventory.price = item.price;
-            nextInventory.amount = math.round(item.qty * item.price, 3);
+            nextInventory.amount = math.round(item.qty * item.price, 6);
             nextInventory.lastAmount = lastAmount;
             nextInventory.remainQty = totalQty;
             nextInventory.averagePrice = averagePrice;
@@ -46,8 +46,8 @@ export  default class StockFunction {
         }
         else {
             let totalQty = item.qty;
-            let lastAmount = math.round(item.qty * item.price, 3);
-            let averagePrice = math.round(lastAmount / totalQty, 3);
+            let lastAmount = math.round(item.qty * item.price, 6);
+            let averagePrice = math.round(lastAmount / totalQty, 6);
             let inventoryObj = {};
             //inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
             inventoryObj.branchId = branchId;
@@ -55,8 +55,8 @@ export  default class StockFunction {
             inventoryObj.itemId = item.itemId;
             inventoryObj.qty = item.qty;
             inventoryObj.price = item.price;
-            inventoryObj.amount = math.round(item.price * item.qty, 3);
-            inventoryObj.lastAmount = math.round(item.price * item.qty, 3);
+            inventoryObj.amount = math.round(item.price * item.qty, 6);
+            inventoryObj.lastAmount = math.round(item.price * item.qty, 6);
             inventoryObj.remainQty = item.qty;
             inventoryObj.averagePrice = averagePrice;
             inventoryObj.type = type;
@@ -93,8 +93,8 @@ export  default class StockFunction {
             let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
             inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
             let totalQty = inventory.remainQty + item.qty;
-            let lastAmount = math.round(inventory.lastAmount + math.round((item.qty * item.price), 3), 3);
-            let averagePrice = math.round(lastAmount / totalQty, 3);
+            let lastAmount = math.round(inventory.lastAmount + math.round((item.qty * item.price), 6), 6);
+            let averagePrice = math.round(lastAmount / totalQty, 6);
             let nextInventory = {};
             // nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
             nextInventory.branchId = branchId;
@@ -104,7 +104,7 @@ export  default class StockFunction {
             nextInventory.price = item.price;
             nextInventory.remainQty = totalQty;
             nextInventory.type = type;
-            nextInventory.amount = math.round(item.qty * item.price, 3);
+            nextInventory.amount = math.round(item.qty * item.price, 6);
             nextInventory.coefficient = 1;
             nextInventory.refId = refId;
             nextInventory.lastAmount = lastAmount;
@@ -121,8 +121,8 @@ export  default class StockFunction {
         else {
             //let thisItem = Item.findOne(item.itemId);
             let totalQty = item.qty;
-            let lastAmount = math.round(item.qty * item.price, 3);
-            let averagePrice = math.round(lastAmount / totalQty, 3);
+            let lastAmount = math.round(item.qty * item.price, 6);
+            let averagePrice = math.round(lastAmount / totalQty, 6);
             let inventoryObj = {};
             //inventoryObj._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
             inventoryObj.branchId = branchId;
@@ -164,12 +164,12 @@ export  default class StockFunction {
         if (inventory) {
             let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
             inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
-            let totalQty = math.round(inventory.remainQty - item.qty, 3);
+            let totalQty = math.round(inventory.remainQty - item.qty, 6);
             let lastAmount = 0;
             let averagePrice = 0;
             if (totalQty != 0) {
-                lastAmount = math.round(inventory.lastAmount - math.round((item.qty * item.price), 3), 3);
-                averagePrice = math.round(lastAmount / totalQty, 3);
+                lastAmount = math.round(inventory.lastAmount - math.round((item.qty * item.price), 6), 6);
+                averagePrice = math.round(lastAmount / totalQty, 6);
             }
             let newInventory = {
                 // _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
@@ -178,7 +178,7 @@ export  default class StockFunction {
                 itemId: item.itemId,
                 qty: -item.qty,
                 price: item.price,
-                amount: math.round(-item.qty * item.price, 3),
+                amount: math.round(-item.qty * item.price, 6),
                 remainQty: totalQty,
                 lastAmount: lastAmount,
                 averagePrice: averagePrice,
@@ -214,12 +214,12 @@ export  default class StockFunction {
         if (inventory) {
             let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
             inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
-            let remainQty = math.round(inventory.remainQty - item.qty, 3);
+            let remainQty = math.round(inventory.remainQty - item.qty, 6);
             let lastAmount = 0;
             let averagePrice = 0;
             if (remainQty != 0) {
-                lastAmount = math.round(inventory.lastAmount - math.round((item.price * item.qty), 3), 3);
-                averagePrice = math.round(lastAmount / remainQty, 3);
+                lastAmount = math.round(inventory.lastAmount - math.round((item.price * item.qty), 6), 6);
+                averagePrice = math.round(lastAmount / remainQty, 6);
             }
             let newInventory = {
                 //  _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
@@ -228,7 +228,7 @@ export  default class StockFunction {
                 itemId: item.itemId,
                 qty: -item.qty,
                 price: item.price,
-                amount: math.round(-item.qty * item.price, 3),
+                amount: math.round(-item.qty * item.price, 6),
                 lastAmount: lastAmount,
                 remainQty: remainQty,
                 averagePrice: averagePrice,

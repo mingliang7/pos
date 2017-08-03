@@ -182,7 +182,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         inventoryObj.itemId = item.itemId;
         inventoryObj.qty = item.qty;
         inventoryObj.price = item.price;
-        inventoryObj.remainQty = math.round(item.qty + inventory.remainQty, 3);
+        inventoryObj.remainQty = math.round(item.qty + inventory.remainQty, 6);
         inventoryObj.type = type;
         inventoryObj.coefficient = 1;
         inventoryObj.refId = refId;
@@ -198,7 +198,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
          */
     }
     else {
-        let totalQty = math.round(inventory.remainQty + item.qty, 3);
+        let totalQty = math.round(inventory.remainQty + item.qty, 6);
         let price = 0;
         //should check totalQty or inventory.remainQty
         if (totalQty <= 0) {
@@ -206,7 +206,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         } else if (inventory.remainQty <= 0) {
             price = item.price;
         } else {
-            price = math.round(((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty, 3);
+            price = math.round(((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty, 6);
         }
         let nextInventory = {};
         nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);

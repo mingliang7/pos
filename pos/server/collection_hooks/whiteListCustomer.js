@@ -7,7 +7,7 @@ import {Customers} from '../../imports/api/collections/customer.js';
 WhiteListCustomer.before.insert(function (userId, doc) {
     let currentCustomer = Customers.findOne(doc.customerId);
     doc.customerName = currentCustomer.name;
-    doc._id = idGenerator.gen(WhiteListCustomer, 3);
+    doc._id = idGenerator.gen(WhiteListCustomer, 6);
 });
 
 

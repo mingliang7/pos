@@ -30,9 +30,9 @@ Meteor.methods({
                 count += 1;
                 if (invoice.status == 'partial') {
                     let lastReceivePayment = ReceivePayment.findOne({invoiceId: invoice._id}, {sort: {_id: -1}});
-                    calculatePenalty[invoice._id] = math.round((lastReceivePayment.balanceAmount * (penalty.rate / 100) * numberOfDayLate), 3);
+                    calculatePenalty[invoice._id] = math.round((lastReceivePayment.balanceAmount * (penalty.rate / 100) * numberOfDayLate), 6);
                 } else {
-                    calculatePenalty[invoice._id] = math.round((invoice.total * (penalty.rate / 100) * numberOfDayLate), 3);
+                    calculatePenalty[invoice._id] = math.round((invoice.total * (penalty.rate / 100) * numberOfDayLate), 6);
                 }
                 lateInvoices.push(invoice._id);
             }

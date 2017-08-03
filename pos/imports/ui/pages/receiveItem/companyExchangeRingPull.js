@@ -84,7 +84,7 @@ companyExchangeRingPullTmpl.events({
                         this.name = result.name;
                         this.lostQty = 0;
                         this.exactQty = parseFloat(remainQty);
-                        this.amount = math.round(this.exactQty * this.price, 3);
+                        this.amount = math.round(this.exactQty * this.price, 6);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -129,7 +129,7 @@ companyExchangeRingPullTmpl.events({
                         this.exactQty = parseFloat(remainQty);
                         this.lostQty = 0;
                         this.name = result.name;
-                        this.amount = math.round(this.exactQty * this.price, 3);
+                        this.amount = math.round(this.exactQty * this.price, 6);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -152,7 +152,7 @@ let insertCompanyExchangeRingPullItem = ({self, remainQty, companyExchagneRingPu
         self.name = result.name;
         self.exchange = remainQty;
         self.lostQty = 0;
-        self.amount = math.round(self.qty * self.price, 3);
+        self.amount = math.round(self.qty * self.price, 6);
         let getItem = itemsCollection.findOne({itemId: self.itemId});
         if (getItem) {
             if (getItem.qty + remainQty <= self.qty) {
@@ -161,7 +161,7 @@ let insertCompanyExchangeRingPullItem = ({self, remainQty, companyExchagneRingPu
                     {
                         $inc: {
                             qty: self.qty,
-                            amount: math.round(self.qty * getItem.price, 3)
+                            amount: math.round(self.qty * getItem.price, 6)
                         }
                     });
                 displaySuccess('Added!')

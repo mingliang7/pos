@@ -65,7 +65,7 @@ ExchangeRingPulls.after.insert(function (userId, doc) {
             }, {sort: {createdAt: -1}});
             if (inventoryObj) {
                 item.price = inventoryObj.averagePrice;
-                item.amount = math.round(item.qty * inventoryObj.averagePrice, 3);
+                item.amount = math.round(item.qty * inventoryObj.averagePrice, 6);
                 total += item.amount;
             } else {
                 throw new Meteor.Error("Not Found Inventory. @ExchangeRingPull-after-insert.");
@@ -147,7 +147,7 @@ ExchangeRingPulls.after.update(function (userId, doc) {
             }, {sort: {createdAt: -1}});
             if (inventoryObj) {
                 item.price = inventoryObj.averagePrice;
-                item.amount = math.round(item.qty * inventoryObj.averagePrice, 3);
+                item.amount = math.round(item.qty * inventoryObj.averagePrice, 6);
                 total += item.amount;
             } else {
                 throw new Meteor.Error("Not Found Inventory. @ExchangeRingPull-after-insert.");
@@ -282,7 +282,7 @@ function returnToInventory(exchangeRingPull, type, inventoryDate) {
             RingPullInventories.insert({
                 itemId: item.itemId,
                 branchId: exchangeRingPull.branchId,
-                qty: math.round(0 - item.qty, 3)
+                qty: math.round(0 - item.qty, 6)
             })
         }
     });

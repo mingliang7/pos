@@ -156,7 +156,7 @@ indexTmpl.helpers({
                     count: 0
                 };
                 saleInvoices.count += 1;
-                let valueAfterDiscount = math.round(this.total * (1 - (discount / 100)), 3);
+                let valueAfterDiscount = math.round(this.total * (1 - (discount / 100)), 6);
                 this.receivedPay = valueAfterDiscount;
                 this.discount = discount;
                 saleInvoices[this._id] = this;
@@ -271,7 +271,7 @@ indexTmpl.helpers({
                     let lastPayment = _.last(receivePayments.fetch());
                     totalAmountDue += lastPayment.balanceAmount;
                 } else {
-                    totalAmountDue += math.round(invoice.total * (1 - (discount / 100)), 3);
+                    totalAmountDue += math.round(invoice.total * (1 - (discount / 100)), 6);
                 }
             });
         }
@@ -292,7 +292,7 @@ indexTmpl.helpers({
     },
     total(){
         let discount = this.status == 'active' ? checkTerm(this) : 0;
-        let valueAfterDiscount = math.round(this.total * (1 - (discount / 100)), 3);
+        let valueAfterDiscount = math.round(this.total * (1 - (discount / 100)), 6);
         let lastPayment = getLastPayment(this._id);
         return lastPayment == 0 ? numeral(valueAfterDiscount).format('0,0.000') : numeral(lastPayment).format('0,0.000');
     },
@@ -408,7 +408,7 @@ indexTmpl.events({
 
         } else {
             //trigger change on total
-            let valueAfterDiscount = math.round(total * (1 - (parseFloat(event.currentTarget.value) / 100)), 3);
+            let valueAfterDiscount = math.round(total * (1 - (parseFloat(event.currentTarget.value) / 100)), 6);
             $(event.currentTarget).parents('.invoice-parents').find('.total').val(valueAfterDiscount).change();
             $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(valueAfterDiscount).format('0,0.000')).change();
         }
@@ -441,7 +441,7 @@ indexTmpl.events({
             selectedInvoices[this._id] = this;
             selectedInvoices[this._id].discount = parseFloat(discount);
             selectedInvoices[this._id].receivedPay = parseFloat(event.currentTarget.value);
-            selectedInvoices[this._id].dueAmount = lastPayment == 0 ? math.round(this.total * (1 - parseFloat(discount / 100)), 3) : lastPayment;
+            selectedInvoices[this._id].dueAmount = lastPayment == 0 ? math.round(this.total * (1 - parseFloat(discount / 100)), 6) : lastPayment;
             $(event.currentTarget).parents('.invoice-parents').find('.select-invoice').prop('checked', true);
             if (parseFloat(event.currentTarget.value) > selectedInvoices[this._id].dueAmount) { //check if entering payment greater than dueamount
                 selectedInvoices[this._id].receivedPay = selectedInvoices[this._id].dueAmount;

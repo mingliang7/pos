@@ -69,11 +69,11 @@ ReceiveItems.after.insert(function (userId, doc) {
         let totalBonusAmount = 0;
         let totalForAccount = 0;
         doc.items.forEach(function (item) {
-            total += math.round(item.qty * item.price, 3);
+            total += math.round(item.qty * item.price, 6);
             if (item.lostQty > 0) {
-                totalBonusAmount += math.round(item.lostQty * item.price, 3);
+                totalBonusAmount += math.round(item.lostQty * item.price, 6);
             } else if (item.lostQty < 0) {
-                totalLostAmount += math.round(item.lostQty * item.price, 3);
+                totalLostAmount += math.round(item.lostQty * item.price, 6);
             }
         });
 
@@ -110,7 +110,7 @@ ReceiveItems.after.insert(function (userId, doc) {
                 });
             }
         }
-        let ownInventory = math.round((total - totalBonusAmount) - totalLostAmount, 3);
+        let ownInventory = math.round((total - totalBonusAmount) - totalLostAmount, 6);
 
         if (doc.type == 'PrepaidOrder') {
             //Account Integration
@@ -215,11 +215,11 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
         let totalBonusAmount = 0;
         let totalForAccount = 0;
         doc.items.forEach(function (item) {
-            total += math.round(item.qty * item.price, 3);
+            total += math.round(item.qty * item.price, 6);
             if (item.lostQty > 0) {
-                totalBonusAmount += math.round(item.lostQty * item.price, 3);
+                totalBonusAmount += math.round(item.lostQty * item.price, 6);
             } else if (item.lostQty < 0) {
-                totalLostAmount += math.round(item.lostQty * item.price, 3);
+                totalLostAmount += math.round(item.lostQty * item.price, 6);
             }
         });
         doc.total = total;
@@ -256,7 +256,7 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
                 });
             }
         }
-        let ownInventory = math.round((total - totalBonusAmount) - totalLostAmount, 3);
+        let ownInventory = math.round((total - totalBonusAmount) - totalLostAmount, 6);
 
         if (doc.type == 'PrepaidOrder') {
             //Account Integration
@@ -426,8 +426,8 @@ function reducePrepaidOrder(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -(math.round(item.qty - item.lostQty, 3)),
-                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 3))
+                    sumRemainQty: -(math.round(item.qty - item.lostQty, 6)),
+                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 6))
                 }
             });
     });
@@ -447,8 +447,8 @@ function increasePrepaidOrder(preDoc) {
             {_id: preDoc.prepaidOrderId, 'items.itemId': item.itemId},
             {
                 $inc: {
-                    'items.$.remainQty': math.round(item.qty - item.lostQty, 3),
-                    sumRemainQty: math.round(item.qty - item.lostQty, 3)
+                    'items.$.remainQty': math.round(item.qty - item.lostQty, 6),
+                    sumRemainQty: math.round(item.qty - item.lostQty, 6)
                 }
             }
         ); //re sum remain qty
@@ -464,8 +464,8 @@ function reduceLendingStock(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -(math.round(item.qty - item.lostQty, 3)),
-                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 3))
+                    sumRemainQty: -(math.round(item.qty - item.lostQty, 6)),
+                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 6))
                 }
             });
     });
@@ -485,8 +485,8 @@ function increaseLendingStock(preDoc) {
             {_id: preDoc.lendingStockId, 'items.itemId': item.itemId},
             {
                 $inc: {
-                    'items.$.remainQty': math.round(item.qty - item.lostQty, 3),
-                    sumRemainQty: math.round(item.qty - item.lostQty, 3)
+                    'items.$.remainQty': math.round(item.qty - item.lostQty, 6),
+                    sumRemainQty: math.round(item.qty - item.lostQty, 6)
                 }
             }
         ); //re sum remain qty
@@ -503,8 +503,8 @@ function reduceCompanyExchangeRingPull(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -(math.round(item.qty - item.lostQty, 3)),
-                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 3))
+                    sumRemainQty: -(math.round(item.qty - item.lostQty, 6)),
+                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 6))
                 }
             });
     });
@@ -525,8 +525,8 @@ function increaseCompanyExchangeRingPull(preDoc) {
             {_id: preDoc.companyExchangeRingPullId, 'items.itemId': item.itemId},
             {
                 $inc: {
-                    'items.$.remainQty': math.round(item.qty - item.lostQty, 3),
-                    sumRemainQty: math.round(item.qty - item.lostQty, 3)
+                    'items.$.remainQty': math.round(item.qty - item.lostQty, 6),
+                    sumRemainQty: math.round(item.qty - item.lostQty, 6)
                 }
             }
         ); //re sum remain qty
@@ -543,8 +543,8 @@ function reduceExchangeGratis(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -(math.round(item.qty - item.lostQty, 3)),
-                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 3))
+                    sumRemainQty: -(math.round(item.qty - item.lostQty, 6)),
+                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 6))
                 }
             });
     });
@@ -564,8 +564,8 @@ function increaseExchangeGratis(preDoc) {
             {_id: preDoc.exchangeGratisId, 'items.itemId': item.itemId},
             {
                 $inc: {
-                    'items.$.remainQty': math.round(item.qty - item.lostQty, 3),
-                    sumRemainQty: math.round(item.qty - item.lostQty, 3)
+                    'items.$.remainQty': math.round(item.qty - item.lostQty, 6),
+                    sumRemainQty: math.round(item.qty - item.lostQty, 6)
                 }
             }
         ); //re sum remain qty
@@ -604,8 +604,8 @@ Meteor.methods({
             let total = 0;
             let totalLostAmount = 0;
             doc.items.forEach(function (item) {
-                total += math.round(item.qty * item.price, 3);
-                totalLostAmount += math.round(item.lostQty * item.price, 3);
+                total += math.round(item.qty * item.price, 6);
+                totalLostAmount += math.round(item.lostQty * item.price, 6);
             });
             doc.total = total;
             //Account Integration
@@ -629,7 +629,7 @@ Meteor.methods({
                     });
                 }
             }
-            doc.total = math.round(doc.total + totalLostAmount, 3);
+            doc.total = math.round(doc.total + totalLostAmount, 6);
             if (doc.type == 'PrepaidOrder') {
                 //Account Integration
                 if (setting && setting.integrate) {

@@ -187,7 +187,7 @@ itemsTmpl.events({
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 1 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = math.round(qty * price, 3);
+        let amount = math.round(qty * price, 6);
         instance.state('amount', amount);
     },
     'click .js-add-item': function (event, instance) {
@@ -258,7 +258,7 @@ itemsTmpl.events({
         let qty = instance.$('[name="qty"]').val();
         qty = qty == '' ? 1 : parseFloat(qty);
         let price = parseFloat(instance.$('[name="price"]').val());
-        let amount = math.round(qty * price, 3);
+        let amount = math.round(qty * price, 6);
         let stockLocationId = $('[name="stockLocationId"]').val();
         if (stockLocationId == "") {
             alertify.warning("Please choose stock location.");
@@ -277,7 +277,7 @@ itemsTmpl.events({
                 });
                 let checkQty = 0;
                 if (itemOfCollectionNull) {
-                    checkQty = math.round(qty + parseFloat(itemOfCollectionNull.qty), 3);
+                    checkQty = math.round(qty + parseFloat(itemOfCollectionNull.qty), 6);
                 } else {
                     checkQty = qty;
                 }
@@ -296,9 +296,9 @@ itemsTmpl.events({
 
                                 itemsCollection.insert({
                                     itemId: item.itemId,
-                                    qty: math.round(item.quantity * qty, 3),
+                                    qty: math.round(item.quantity * qty, 6),
                                     price: item.price,
-                                    amount: math.round((item.price * item.quantity) * qty, 3),
+                                    amount: math.round((item.price * item.quantity) * qty, 6),
                                     name: item.itemName
                                 });
                                 // }
@@ -309,7 +309,7 @@ itemsTmpl.events({
                             });
                             if (exist) {
                                 qty += parseFloat(exist.qty);
-                                amount = math.round(qty * price, 3);
+                                amount = math.round(qty * price, 6);
 
                                 itemsCollection.update({
                                     _id: exist._id
@@ -344,7 +344,7 @@ itemsTmpl.events({
                 });
                 let checkQty = 0;
                 if (itemOfCollectionNull) {
-                    checkQty = math.round(qty + parseFloat(itemOfCollectionNull.qty), 3);
+                    checkQty = math.round(qty + parseFloat(itemOfCollectionNull.qty), 6);
                 } else {
                     checkQty = qty;
                 }
@@ -362,9 +362,9 @@ itemsTmpl.events({
 
                                 itemsCollection.insert({
                                     itemId: item.itemId,
-                                    qty: math.round(item.quantity * qty, 3),
+                                    qty: math.round(item.quantity * qty, 6),
                                     price: item.price,
-                                    amount: math.round((item.price * item.quantity) * qty, 3),
+                                    amount: math.round((item.price * item.quantity) * qty, 6),
                                     name: item.itemName
                                 });
                                 // }
@@ -375,7 +375,7 @@ itemsTmpl.events({
                             });
                             if (exist) {
                                 qty += parseFloat(exist.qty);
-                                amount = math.round(qty * price, 3);
+                                amount = math.round(qty * price, 6);
 
                                 itemsCollection.update({
                                     _id: exist._id
@@ -464,12 +464,12 @@ itemsTmpl.events({
         let selector = {};
         if (currentQty != '' || currentQty != 0) {
             selector.$set = {
-                amount: math.round(currentQty * currentItem.price, 3),
+                amount: math.round(currentQty * currentItem.price, 6),
                 qty: currentQty
             }
         } else {
             selector.$set = {
-                amount: math.round(currentItem.qty * currentItem.price, 3),
+                amount: math.round(currentItem.qty * currentItem.price, 6),
                 qty: currentItem.qty
             };
             currentQty = currentItem.qty;
@@ -492,7 +492,7 @@ itemsTmpl.events({
                 }
                 else {
                     selector.$set = {
-                        amount: math.round(currentItem.qty * currentItem.price, 3),
+                        amount: math.round(currentItem.qty * currentItem.price, 6),
                         qty: currentItem.qty
                     };
                     itemsCollection.update({itemId: itemId}, selector);
@@ -510,7 +510,7 @@ itemsTmpl.events({
                 }
                 else {
                     selector.$set = {
-                        amount: math.round(currentItem.qty * currentItem.price, 3),
+                        amount: math.round(currentItem.qty * currentItem.price, 6),
                         qty: currentItem.qty
                     };
                     itemsCollection.update({itemId: itemId}, selector);
@@ -562,7 +562,7 @@ editItemsTmpl.events({
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = math.round(qty * price, 3);
+        let amount = math.round(qty * price, 6);
 
         instance.state('amount', amount);
     }
@@ -585,9 +585,9 @@ let hooksObject = {
                 _id: insertDoc._id
             });
             if (exist) {
-                let newQty = math.round(exist.qty + insertDoc.qty, 3);
+                let newQty = math.round(exist.qty + insertDoc.qty, 6);
                 let newPrice = insertDoc.price;
-                let newAmount = math.round(newQty * newPrice, 3);
+                let newAmount = math.round(newQty * newPrice, 6);
 
                 itemsCollection.update({
                     _id: insertDoc._id

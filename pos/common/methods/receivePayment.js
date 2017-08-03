@@ -56,8 +56,8 @@ export const receivePayment = new ValidatedMethod({
                             let arChartAccount = AccountMapping.findOne({name: 'A/R'});
                             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
                             let saleDiscountChartAccount = AccountMapping.findOne({name: 'Sale Discount'});
-                            let discountAmount = math.round(obj.dueAmount * obj.discount / 100, 3);
-                            data.total = math.round(obj.paidAmount + discountAmount, 3);
+                            let discountAmount = math.round(obj.dueAmount * obj.discount / 100, 6);
+                            data.total = math.round(obj.paidAmount + discountAmount, 6);
                             transaction.push({
                                 account: cashChartAccount.account,
                                 dr: obj.paidAmount,
@@ -75,8 +75,8 @@ export const receivePayment = new ValidatedMethod({
                             transaction.push({
                                 account: arChartAccount.account,
                                 dr: 0,
-                                cr: math.round(obj.paidAmount + discountAmount, 3),
-                                drcr: -(math.round(obj.paidAmount + discountAmount, 3))
+                                cr: math.round(obj.paidAmount + discountAmount, 6),
+                                drcr: -(math.round(obj.paidAmount + discountAmount, 6))
                             });
                             data.transaction = transaction;
                             let customerDoc = Customers.findOne({_id: obj.customerId});

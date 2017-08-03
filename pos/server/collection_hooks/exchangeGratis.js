@@ -40,7 +40,7 @@ ExchangeGratis.after.insert(function (userId, doc) {
                 thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
             }
             item.price = thisItemPrice;
-            item.amount = math.round(item.qty * thisItemPrice, 3);
+            item.amount = math.round(item.qty * thisItemPrice, 6);
             total += item.amount;
         });
         doc.total = total;
@@ -105,7 +105,7 @@ ExchangeGratis.after.update(function (userId, doc) {
                 thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
             }
             item.price = thisItemPrice;
-            item.amount = math.round(item.qty * thisItemPrice, 3);
+            item.amount = math.round(item.qty * thisItemPrice, 6);
             total += item.amount;
         });
         doc.total = total;

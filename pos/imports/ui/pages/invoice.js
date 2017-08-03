@@ -943,7 +943,7 @@ listSaleOrder.events({
                         this.saleId = saleId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
-                        this.amount = math.round(this.qty * this.price, 3);
+                        this.amount = math.round(this.qty * this.price, 6);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -965,14 +965,14 @@ let insertSaleOrderItem = ({self, remainQty, saleItem, saleId}) => {
         self.saleId = saleId;
         self.qty = remainQty;
         self.name = result.name;
-        self.amount = math.round(self.qty * self.price, 3);
+        self.amount = math.round(self.qty * self.price, 6);
         let getItem = itemsCollection.findOne({itemId: self.itemId});
         if (getItem) {
             if (getItem.qty + remainQty <= self.remainQty) {
                 itemsCollection.update(getItem._id, {
                     $inc: {
                         qty: self.qty,
-                        amount: math.round(self.qty * getItem.price, 3)
+                        amount: math.round(self.qty * getItem.price, 6)
                     }
                 });
                 displaySuccess('Added!')

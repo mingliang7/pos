@@ -157,7 +157,7 @@ itemsTmpl.events({
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = math.round(qty * price, 3);
+        let amount = math.round(qty * price, 6);
 
         instance.state('amount', amount);
     },
@@ -170,14 +170,14 @@ itemsTmpl.events({
         let qty = instance.$('[name="qty"]').val();
         qty = qty == "" ? 1 : parseFloat(qty);
         let price = parseFloat(instance.$('[name="price"]').val());
-        let amount = math.round(qty * price, 3);
+        let amount = math.round(qty * price, 6);
         // Check exist
         let exist = itemsCollection.findOne({
             itemId: itemId
         });
         if (exist) {
             qty += parseFloat(exist.qty);
-            amount = math.round(qty * price, 3);
+            amount = math.round(qty * price, 6);
 
             itemsCollection.update({
                 _id: exist._id
@@ -247,12 +247,12 @@ itemsTmpl.events({
         let selector = {};
         if (currentQty != '') {
             selector.$set = {
-                amount: math.round(currentQty * currentItem.price, 3),
+                amount: math.round(currentQty * currentItem.price, 6),
                 qty: currentQty
             }
         } else {
             selector.$set = {
-                amount: math.round(1 * currentItem.price, 3),
+                amount: math.round(1 * currentItem.price, 6),
                 qty: 1
             }
         }
@@ -295,7 +295,7 @@ editItemsTmpl.events({
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = math.round(qty * price, 3);
+        let amount = math.round(qty * price, 6);
 
         instance.state('amount', amount);
     }
@@ -318,9 +318,9 @@ let hooksObject = {
                 _id: insertDoc._id
             });
             if (exist) {
-                let newQty = math.round(exist.qty + insertDoc.qty, 3);
+                let newQty = math.round(exist.qty + insertDoc.qty, 6);
                 let newPrice = insertDoc.price;
-                let newAmount = math.round(newQty * newPrice, 3);
+                let newAmount = math.round(newQty * newPrice, 6);
 
                 itemsCollection.update({
                     _id: insertDoc._id
@@ -361,7 +361,7 @@ var calculateTotal = function () {
     });
     var discount = $('#discount').val();
     discount = discount == "" ? 0 : parseFloat(discount);
-    var total = math.round(subTotal * (1 - discount / 100), 3);
+    var total = math.round(subTotal * (1 - discount / 100), 6);
     Session.set('total', total);
     // Session.set('subTotal',subTotal);
 

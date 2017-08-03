@@ -294,7 +294,7 @@ function reduceFromInventory(enterBill) {
                 itemId: item.itemId,
                 qty: item.qty,
                 price: inventory.price,
-                remainQty: math.round(inventory.remainQty - item.qty, 3),
+                remainQty: math.round(inventory.remainQty - item.qty, 6),
                 coefficient: -1,
                 type: 'enter-return',
                 refId: enterBill._id
@@ -310,7 +310,7 @@ function reduceFromInventory(enterBill) {
                 itemId: item.itemId,
                 qty: item.qty,
                 price: thisItem.purchasePrice,
-                remainQty: math.round(0 - item.qty, 3),
+                remainQty: math.round(0 - item.qty, 6),
                 coefficient: -1,
                 type: 'enter-return',
                 refId: enterBill._id
@@ -358,7 +358,7 @@ function pushBillFromGroup(doc) {
 }
 //update payment
 function recalculatePayment({doc, preDoc}) {
-    let totalChanged = math.round(doc.total - preDoc.total, 3);
+    let totalChanged = math.round(doc.total - preDoc.total, 6);
     if (totalChanged != 0) {
         let billId = doc.paymentGroupId || doc._id;
         let receivePayment = PayBills.find({billId: billId});

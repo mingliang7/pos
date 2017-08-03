@@ -11,7 +11,7 @@ inputmaskOptions = {
             autoGroup: true,
             groupSeparator: ",",
             groupSize: 3,
-            digits: 3,
+            digits: 4,
             prefix: "$ ",
             placeholder: "0"
         });

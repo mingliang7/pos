@@ -188,7 +188,7 @@ itemsTmpl.events({
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = math.round(qty * price, 3);
+        let amount = math.round(qty * price, 6);
 
         instance.state('amount', amount);
     },
@@ -199,14 +199,14 @@ itemsTmpl.events({
         //let price = 0;
         //let amount = 0;
         let price = parseFloat(instance.$('[name="price"]').val());
-        let amount = math.round(qty * price, 3);
+        let amount = math.round(qty * price, 6);
         // Check exist
         Meteor.call('addScheme', {itemId}, function (err, result) {
             if (!_.isEmpty(result[0])) {
                 result.forEach(function (item) {
                     let schemeItem = itemsCollection.findOne({itemId: item.itemId});
                     if (schemeItem) {
-                        let amount = math.round(item.price * item.quantity, 3);
+                        let amount = math.round(item.price * item.quantity, 6);
                         itemsCollection.update({itemId: schemeItem.itemId}, {
                             $inc: {
                                 qty: item.quantity,
@@ -216,9 +216,9 @@ itemsTmpl.events({
                     } else {
                         itemsCollection.insert({
                             itemId: item.itemId,
-                            qty: math.round(item.quantity * qty, 3),
+                            qty: math.round(item.quantity * qty, 6),
                             price: item.price,
-                            amount: math.round((item.price * item.quantity) * qty, 3),
+                            amount: math.round((item.price * item.quantity) * qty, 6),
                             name: item.itemName
                         });
                     }
@@ -229,7 +229,7 @@ itemsTmpl.events({
                 });
                 if (exist) {
                     qty += parseFloat(exist.qty);
-                    amount = math.round(qty * price, 3);
+                    amount = math.round(qty * price, 6);
 
                     itemsCollection.update({
                         _id: exist._id
@@ -294,12 +294,12 @@ itemsTmpl.events({
         let selector = {};
         if (currentQty != '') {
             selector.$set = {
-                amount: math.round(currentQty * currentItem.price, 3),
+                amount: math.round(currentQty * currentItem.price, 6),
                 qty: currentQty
             }
         } else {
             selector.$set = {
-                amount: math.round(1 * currentItem.price, 3),
+                amount: math.round(1 * currentItem.price, 6),
                 qty: 1
             }
         }
@@ -346,7 +346,7 @@ editItemsTmpl.events({
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = math.round(qty * price, 3);
+        let amount = math.round(qty * price, 6);
 
         instance.state('amount', amount);
     }
@@ -369,9 +369,9 @@ let hooksObject = {
                 _id: insertDoc._id
             });
             if (exist) {
-                let newQty = math.round(exist.qty + insertDoc.qty, 3);
+                let newQty = math.round(exist.qty + insertDoc.qty, 6);
                 let newPrice = insertDoc.price;
-                let newAmount = math.round(newQty * newPrice, 3);
+                let newAmount = math.round(newQty * newPrice, 6);
 
                 itemsCollection.update({
                     _id: insertDoc._id

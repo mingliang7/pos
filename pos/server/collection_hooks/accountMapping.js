@@ -12,7 +12,7 @@ AccountMapping.before.insert(function (userId, doc) {
             throw new Meteor.Error('Used chart account, you have to choice one chart account.');
         }
     }
-    doc._id = idGenerator.gen(AccountMapping, 3);
+    doc._id = idGenerator.gen(AccountMapping, 6);
 });
 
 AccountMapping.before.update(function (userId, doc, fieldNames, modifier, options) {

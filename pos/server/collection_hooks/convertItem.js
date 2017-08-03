@@ -66,7 +66,7 @@ ConvertItems.after.insert(function (userId, doc) {
             }, {sort: {createdAt: -1}});
             if (fromItemInventoryObj) {
                 item.fromItemPrice = fromItemInventoryObj.averagePrice;
-                item.fromItemAmount = math.round(item.qty * fromItemInventoryObj.averagePrice, 3);
+                item.fromItemAmount = math.round(item.qty * fromItemInventoryObj.averagePrice, 6);
                 fromItemTotal += item.fromItemAmount;
             } else {
                 throw new Meteor.Error("Not Found Inventory. @ConvertItem-after-insert.");
@@ -77,12 +77,12 @@ ConvertItems.after.insert(function (userId, doc) {
             });
             if (toInventoryObj) {
                 item.toItemPrice = toInventoryObj.averagePrice;
-                item.toItemAmount = math.round(item.getQty * toInventoryObj.averagePrice, 3);
+                item.toItemAmount = math.round(item.getQty * toInventoryObj.averagePrice, 6);
                 toItemTotal += item.toItemAmount;
             } else {
                 let toItem = Item.findOne({_id: item.toItemId});
                 item.toItemPrice = toItem.purchasePrice;
-                item.toItemAmount = math.round(toItem.purchasePrice * item.getQty, 3);
+                item.toItemAmount = math.round(toItem.purchasePrice * item.getQty, 6);
                 toItemTotal += item.toItemAmount;
             }
         });
@@ -123,8 +123,8 @@ ConvertItems.after.insert(function (userId, doc) {
 
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
-            let totalAllItemConverted = math.round(fromItemTotal - toItemTotal, 3);
-            let totalForAccount = math.round(doc.cash - totalAllItemConverted, 3);
+            let totalAllItemConverted = math.round(fromItemTotal - toItemTotal, 6);
+            let totalForAccount = math.round(doc.cash - totalAllItemConverted, 6);
             let data = doc;
             data.type = "ConvertItem";
             data.des = "ប្តូរទំនិញ";
@@ -377,7 +377,7 @@ function returnToInventory(convertItem, type, inventoryDate) {
             RingPullInventories.insert({
                 itemId: item.itemId,
                 branchId: convertItem.branchId,
-                qty: math.round(0 - item.qty, 3)
+                qty: math.round(0 - item.qty, 6)
             })
         }
     });
