@@ -94,7 +94,7 @@ itemsTmpl.helpers({
             key: 'amount',
             label: __(`${i18nPrefix}.amount.label`),
             fn(value, object, key) {
-                return numeral(value).format('0,0.0000');
+                return numeral(value).format('0,0.000');
             }
         }, {
             key: '_id',
@@ -157,7 +157,7 @@ itemsTmpl.events({
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = qty * price;
+        let amount = math.round(qty * price, 3);
 
         instance.state('amount', amount);
     },
@@ -170,14 +170,14 @@ itemsTmpl.events({
         let qty = instance.$('[name="qty"]').val();
         qty = qty == "" ? 1 : parseFloat(qty);
         let price = parseFloat(instance.$('[name="price"]').val());
-        let amount = qty * price;
+        let amount = math.round(qty * price, 3);
         // Check exist
         let exist = itemsCollection.findOne({
             itemId: itemId
         });
         if (exist) {
             qty += parseFloat(exist.qty);
-            amount = qty * price;
+            amount = math.round(qty * price, 3);
 
             itemsCollection.update({
                 _id: exist._id
@@ -217,13 +217,13 @@ itemsTmpl.events({
         let itemDoc = this;
         if (AutoForm.getFormId() == "Pos_invoiceUpdate") { //check if update form
             swal({
-                    title: "Are you sure?",
-                    text: "លុបទំនិញមួយនេះ?",
-                    type: "warning", showCancelButton: true,
-                    confirmButtonColor: "#DD6B55",
-                    confirmButtonText: "Yes, delete it!",
-                    closeOnConfirm: false
-                }).then(
+                title: "Are you sure?",
+                text: "លុបទំនិញមួយនេះ?",
+                type: "warning", showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            }).then(
                 function () {
                     itemsCollection.remove({itemId: itemDoc.itemId});
                     swal.close();
@@ -247,12 +247,12 @@ itemsTmpl.events({
         let selector = {};
         if (currentQty != '') {
             selector.$set = {
-                amount: currentQty * currentItem.price,
+                amount: math.round(currentQty * currentItem.price, 3),
                 qty: currentQty
             }
         } else {
             selector.$set = {
-                amount: 1 * currentItem.price,
+                amount: math.round(1 * currentItem.price, 3),
                 qty: 1
             }
         }
@@ -295,7 +295,7 @@ editItemsTmpl.events({
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = qty * price;
+        let amount = math.round(qty * price, 3);
 
         instance.state('amount', amount);
     }
@@ -318,9 +318,9 @@ let hooksObject = {
                 _id: insertDoc._id
             });
             if (exist) {
-                let newQty = exist.qty + insertDoc.qty;
+                let newQty = math.round(exist.qty + insertDoc.qty, 3);
                 let newPrice = insertDoc.price;
-                let newAmount = newQty * newPrice;
+                let newAmount = math.round(newQty * newPrice, 3);
 
                 itemsCollection.update({
                     _id: insertDoc._id
@@ -361,7 +361,7 @@ var calculateTotal = function () {
     });
     var discount = $('#discount').val();
     discount = discount == "" ? 0 : parseFloat(discount);
-    var total = subTotal * (1 - discount / 100);
+    var total = math.round(subTotal * (1 - discount / 100), 3);
     Session.set('total', total);
     // Session.set('subTotal',subTotal);
 

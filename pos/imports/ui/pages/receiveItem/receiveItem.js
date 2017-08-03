@@ -120,7 +120,7 @@ indexTmpl.events({
         if (inventoryDate && (receiveItemDate < inventoryDate.inventoryDate)) {
             alertify.warning("Can't Update. ReceiveItem's Date: " + moment(receiveItemDate).format("DD-MM-YYYY")
                 + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
-        }else{
+        } else {
             itemsCollection.remove({});
             alertify.receiveItem(fa('pencil', TAPi18n.__('pos.receiveItem.title')), renderTemplate(editTmpl, data));
         }
@@ -133,24 +133,24 @@ indexTmpl.events({
             alertify.warning("Can't Remove. ReceiveItem's Date: " + moment(receiveItemDate).format("DD-MM-YYYY")
                 + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
             /*swal({
-                title: "Date is less then current Transaction Date!",
-                text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
-                type: "warning", showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, Do it!",
-                closeOnConfirm: false
-            }).then(function () {
-                swal.close();
-                destroyAction(
-                    ReceiveItems,
-                    {_id: data._id},
-                    {title: TAPi18n.__('pos.receiveItem.title'), itemTitle: data._id}
-                );
-            }, function (dismiss) {
-                if (dismiss === 'cancel') {
-                    return false;
-                }
-            });*/
+             title: "Date is less then current Transaction Date!",
+             text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
+             type: "warning", showCancelButton: true,
+             confirmButtonColor: "#DD6B55",
+             confirmButtonText: "Yes, Do it!",
+             closeOnConfirm: false
+             }).then(function () {
+             swal.close();
+             destroyAction(
+             ReceiveItems,
+             {_id: data._id},
+             {title: TAPi18n.__('pos.receiveItem.title'), itemTitle: data._id}
+             );
+             }, function (dismiss) {
+             if (dismiss === 'cancel') {
+             return false;
+             }
+             });*/
         }
         else {
             destroyAction(
@@ -203,7 +203,7 @@ newTmpl.events({
             swal({
                 title: "Date is greater then current Transaction Date!",
                 text: "Do You want to continue to process to " + moment(receiveItemDate).format('DD-MM-YYYY') +
-                "?\n"+ "Current Transaction Date is: '"+moment(inventoryDate.inventoryDate).format("DD-MM-YYYY")+"'" ,
+                "?\n" + "Current Transaction Date is: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
                 type: "warning", showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, Do it!",
@@ -719,7 +719,7 @@ listPrepaidOrder.events({
                         this.name = result.name;
                         this.exactQty = parseFloat(remainQty);
                         this.lostQty = 0;
-                        this.amount = this.exactQty * this.price;
+                        this.amount = math.round(this.exactQty * this.price, 3);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -763,7 +763,7 @@ listPrepaidOrder.events({
                         this.exactQty = parseFloat(remainQty);
                         this.lostQty = 0;
                         this.name = result.name;
-                        this.amount = this.exactQty * this.price;
+                        this.amount = math.round(this.exactQty * this.price, 3);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -787,11 +787,16 @@ let insertPrepaidOrderItem = ({self, remainQty, prepaidOrderItem, prepaidOrderId
         self.lostQty = 0;
         self.exactQty = remainQty;
         self.name = result.name;
-        self.amount = self.qty * self.price;
+        self.amount = math.round(self.qty * self.price, 3);
         let getItem = itemsCollection.findOne({itemId: self.itemId});
         if (getItem) {
             if (getItem.qty + remainQty <= self.remainQty) {
-                itemsCollection.update(getItem._id, {$inc: {qty: self.qty, amount: self.qty * getItem.price}});
+                itemsCollection.update(getItem._id, {
+                    $inc: {
+                        qty: self.qty,
+                        amount: math.round(self.qty * getItem.price, 3)
+                    }
+                });
                 displaySuccess('Added!')
             } else {
                 swal("Retry!", `ចំនួនបញ្ចូលចាស់(${getItem.qty}) នឹងបញ្ចូលថ្មី(${remainQty}) លើសពីចំនួនកម្ម៉ង់ទិញចំនួន ${(self.remainQty)}`, "error");

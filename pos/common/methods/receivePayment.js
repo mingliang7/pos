@@ -23,8 +23,8 @@ export const receivePayment = new ValidatedMethod({
         voucherId: {type: String}
     }).validator(),
     run({
-        invoicesObj, paymentDate, branch, voucherId
-    }) {
+            invoicesObj, paymentDate, branch, voucherId
+        }) {
         if (!this.isSimulation) {
             for (let k in invoicesObj) {
                 let selector = {}
@@ -44,7 +44,7 @@ export const receivePayment = new ValidatedMethod({
                 };
                 let customer = Customers.findOne(obj.customerId);
                 obj.paymentType = customer.termId ? 'term' : 'group';
-                ReceivePayment.insert(obj, function (err,res) {
+                ReceivePayment.insert(obj, function (err, res) {
                     if (!err) {
                         //Account Integration
                         obj._id = res;
@@ -56,8 +56,8 @@ export const receivePayment = new ValidatedMethod({
                             let arChartAccount = AccountMapping.findOne({name: 'A/R'});
                             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
                             let saleDiscountChartAccount = AccountMapping.findOne({name: 'Sale Discount'});
-                            let discountAmount = obj.dueAmount * obj.discount / 100;
-                            data.total = obj.paidAmount + discountAmount;
+                            let discountAmount = math.round(obj.dueAmount * obj.discount / 100, 3);
+                            data.total = math.round(obj.paidAmount + discountAmount, 3);
                             transaction.push({
                                 account: cashChartAccount.account,
                                 dr: obj.paidAmount,
@@ -75,8 +75,8 @@ export const receivePayment = new ValidatedMethod({
                             transaction.push({
                                 account: arChartAccount.account,
                                 dr: 0,
-                                cr: obj.paidAmount + discountAmount,
-                                drcr: -obj.paidAmount + discountAmount
+                                cr: math.round(obj.paidAmount + discountAmount, 3),
+                                drcr: -(math.round(obj.paidAmount + discountAmount, 3))
                             });
                             data.transaction = transaction;
                             let customerDoc = Customers.findOne({_id: obj.customerId});

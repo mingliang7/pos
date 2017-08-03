@@ -13,7 +13,10 @@ var exchangeGratisTmpl = Template.listExchangeGratis;
 exchangeGratisTmpl.helpers({
     exchangeGratises(){
         let item = [];
-        let exchangeGratises = ExchangeGratis.find({status: 'active', vendorId: FlowRouter.query.get('vendorId')}).fetch();
+        let exchangeGratises = ExchangeGratis.find({
+            status: 'active',
+            vendorId: FlowRouter.query.get('vendorId')
+        }).fetch();
         if (ReceiveDeletedItem.find().count() > 0) {
             ReceiveDeletedItem.find().forEach(function (item) {
                 exchangeGratises.forEach(function (exchangeGratis) {
@@ -71,13 +74,13 @@ exchangeGratisTmpl.events({
                         swal("Retry!", "Item Must be in the same exchangeGratisId", "warning")
                     }
                 } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                    Meteor.call('getItem', this.itemId, (err, result) => {
                         this.exchangeGratisId = exchangeGratisId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
                         this.lostQty = 0;
                         this.exactQty = parseFloat(remainQty);
-                        this.amount = this.exactQty * this.price;
+                        this.amount = math.round(this.exactQty * this.price, 3);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -115,13 +118,13 @@ exchangeGratisTmpl.events({
                         swal("Retry!", "Item Must be in the same exchangeGratisId", "warning")
                     }
                 } else {
-                    Meteor.call('getItem', this.itemId, (err, result)=> {
+                    Meteor.call('getItem', this.itemId, (err, result) => {
                         this.exchangeGratisId = exchangeGratisId;
                         this.qty = parseFloat(remainQty);
                         this.exactQty = parseFloat(remainQty);
                         this.lostQty = 0;
                         this.name = result.name;
-                        this.amount = this.exactQty * this.price;
+                        this.amount = math.round(this.exactQty * this.price, 3);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -137,16 +140,21 @@ exchangeGratisTmpl.events({
 });
 //insert exchangeGratis order item to itemsCollection
 let insertExchangeGratisItem = ({self, remainQty, exchangeGratisItem, exchangeGratisId}) => {
-    Meteor.call('getItem', self.itemId, (err, result)=> {
+    Meteor.call('getItem', self.itemId, (err, result) => {
         self.exchangeGratisId = exchangeGratisId;
         self.qty = remainQty;
         self.name = result.name;
-        self.lostQty=0;
-        self.amount = self.qty * self.price;
+        self.lostQty = 0;
+        self.amount = math.round(self.qty * self.price, 3);
         let getItem = itemsCollection.findOne({itemId: self.itemId});
         if (getItem) {
             if (getItem.qty + remainQty <= self.remainQty) {
-                itemsCollection.update(getItem._id, {$inc: {qty: self.qty, amount: self.qty * getItem.price}});
+                itemsCollection.update(getItem._id, {
+                    $inc: {
+                        qty: self.qty,
+                        amount: math.round(self.qty * getItem.price, 3)
+                    }
+                });
                 displaySuccess('Added!')
             } else {
                 swal("Retry!", `ចំនួនបញ្ចូលចាស់(${getItem.qty}) នឹងបញ្ចូលថ្មី(${remainQty}) លើសពីចំនួនកម្ម៉ង់ទិញចំនួន ${(self.remainQty)}`, "error");

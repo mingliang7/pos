@@ -25,7 +25,7 @@ PayBills.after.update(function (userId, doc) {
             let apChartAccount = AccountMapping.findOne({name: 'A/P'});
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let purchaseDiscountChartAccount = AccountMapping.findOne({name: 'Purchase Discount'});
-            let discountAmount = doc.dueAmount * doc.discount / 100;
+            let discountAmount = math.round(doc.dueAmount * doc.discount / 100, 3);
 
             let vendorDoc = Vendors.findOne({_id: doc.vendorId});
             if (vendorDoc) {
@@ -33,12 +33,12 @@ PayBills.after.update(function (userId, doc) {
                 data.des = data.des == "" || data.des == null ? ('បង់ប្រាក់ឱ្យក្រុមហ៊ុនៈ ' + data.name) : data.des;
             }
 
-            data.total = doc.paidAmount + discountAmount;
+            data.total = math.round(doc.paidAmount + discountAmount, 3);
             transaction.push({
                 account: apChartAccount.account,
-                dr: doc.paidAmount + discountAmount,
+                dr: math.round(doc.paidAmount + discountAmount, 3),
                 cr: 0,
-                drcr: doc.paidAmount + discountAmount
+                drcr: math.round(doc.paidAmount + discountAmount, 3)
             }, {
                 account: cashChartAccount.account,
                 dr: 0,
@@ -96,9 +96,9 @@ Meteor.methods({
         if (!Meteor.userId()) {
             throw new Meteor.Error("not-authorized");
         }
-        let i=1;
+        let i = 1;
 
-        let payBills=PayBills.find({});
+        let payBills = PayBills.find({});
         payBills.forEach(function (obj) {
             console.log(i);
             i++;
@@ -110,8 +110,8 @@ Meteor.methods({
                 let apChartAccount = AccountMapping.findOne({name: 'A/P'});
                 let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
                 let purchaseDiscountChartAccount = AccountMapping.findOne({name: 'Purchase Discount'});
-                let discountAmount = obj.dueAmount * obj.discount / 100;
-                data.total = obj.paidAmount + discountAmount;
+                let discountAmount = math.round(obj.dueAmount * obj.discount / 100, 3);
+                data.total = math.round(obj.paidAmount + discountAmount, 3);
 
                 let vendorDoc = Vendors.findOne({_id: obj.vendorId});
                 if (vendorDoc) {
@@ -121,9 +121,9 @@ Meteor.methods({
 
                 transaction.push({
                     account: apChartAccount.account,
-                    dr: obj.paidAmount + discountAmount,
+                    dr: math.round(obj.paidAmount + discountAmount, 3),
                     cr: 0,
-                    drcr: obj.paidAmount + discountAmount
+                    drcr: math.round(obj.paidAmount + discountAmount, 3)
                 }, {
                     account: cashChartAccount.account,
                     dr: 0,

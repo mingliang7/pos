@@ -99,7 +99,7 @@ Invoices.after.insert(function (userId, doc) {
                             'items.$.remainQty': -item.qty
                         }
                     });
-                total += item.qty * item.price
+                total += math.round(item.qty * item.price, 3);
             });
             let saleOrder = Order.findOne(doc.saleId);
             if (saleOrder.sumRemainQty == 0) {
@@ -142,7 +142,7 @@ Invoices.after.insert(function (userId, doc) {
                         stockLocationId: doc.stockLocationId
                     }, {sort: {createdAt: -1}});
                     if (inventoryObj) {
-                        totalGratis += item.qty * inventoryObj.averagePrice;
+                        totalGratis += math.round(item.qty * inventoryObj.averagePrice, 3);
                     } else {
                         throw new Meteor.Error('Not Found Inventory. @Invoices-after-insert. refId:' + doc._id);
                     }
@@ -154,14 +154,14 @@ Invoices.after.insert(function (userId, doc) {
                         stockLocationId: doc.stockLocationId
                     }, {sort: {createdAt: -1}});
                     if (inventoryObj) {
-                        totalCOGS += item.qty * inventoryObj.averagePrice;
+                        totalCOGS += math.round(item.qty * inventoryObj.averagePrice, 3);
                     } else {
                         throw new Meteor.Error('Not Found Inventory. @Invoices-after-insert. refId:' + doc._id);
                     }
                 }
             });
             invoiceManageStock(doc);
-            let totalInventory = totalCOGS + totalGratis;
+            let totalInventory = math.round(totalCOGS + totalGratis, 3);
             // Account Integration
             if (setting && setting.integrate) {
                 let arChartAccount = AccountMapping.findOne({name: 'A/R'});
@@ -209,7 +209,7 @@ Invoices.after.insert(function (userId, doc) {
                 })
             }
             // End Account Integration
-            doc.total = doc.total + totalInventory
+            doc.total = math.round(doc.total + totalInventory, 3);
         }
         else {
             Meteor.call('pos.generateInvoiceGroup', {doc});
@@ -225,7 +225,7 @@ Invoices.after.insert(function (userId, doc) {
                         stockLocationId: doc.stockLocationId
                     }, {sort: {createdAt: -1}});
                     if (inventoryObj) {
-                        totalGratis += item.qty * inventoryObj.averagePrice;
+                        totalGratis += math.round(item.qty * inventoryObj.averagePrice, 3);
                     } else {
                         throw new Meteor.Error('Not Found Inventory. @Invoices-after-insert. refId:' + doc._id);
                     }
@@ -236,14 +236,14 @@ Invoices.after.insert(function (userId, doc) {
                         stockLocationId: doc.stockLocationId
                     }, {sort: {createdAt: -1}});
                     if (inventoryObj) {
-                        totalCOGS += item.qty * inventoryObj.averagePrice;
+                        totalCOGS += math.round(item.qty * inventoryObj.averagePrice, 3);
                     } else {
                         throw new Meteor.Error('Not Found Inventory. @Invoices-after-insert. refId:' + doc._id);
                     }
                 }
             });
             invoiceManageStock(doc);
-            let totalInventory = totalCOGS + totalGratis;
+            let totalInventory = math.round(totalCOGS + totalGratis, 3);
             // Account Integration
             if (setting && setting.integrate) {
                 let arChartAccount = AccountMapping.findOne({name: 'A/R'});
@@ -292,7 +292,7 @@ Invoices.after.insert(function (userId, doc) {
                 })
             }
             // End Account Integration
-            doc.total = doc.total + totalInventory
+            doc.total = math.round(doc.total + totalInventory, 3)
         }
         // Account Integration
         if (setting && setting.integrate) {
@@ -402,16 +402,16 @@ Invoices.after.update(function (userId, doc) {
                 if (inventoryObj) {
                     if (item.price == 0) {
                         increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
-                        totalGratis += item.qty * inventoryObj.averagePrice;
+                        totalGratis += math.round(item.qty * inventoryObj.averagePrice, 3);
                     } else {
-                        totalCOGS += item.qty * inventoryObj.averagePrice;
+                        totalCOGS += math.round(item.qty * inventoryObj.averagePrice, 3);
                     }
                 } else {
                     throw new Meteor.Error('Not Found Inventory. @Invoices-after-update. refId:' + doc._id);
                 }
             });
             invoiceManageStock(doc);
-            let totalInventory = totalCOGS + totalGratis;
+            let totalInventory = math.round(totalCOGS + totalGratis, 3);
             if (setting && setting.integrate) {
                 let arChartAccount = AccountMapping.findOne({name: 'A/R'});
                 let saleIncomeChartAccount = AccountMapping.findOne({name: 'Sale Income'});
@@ -459,7 +459,7 @@ Invoices.after.update(function (userId, doc) {
                 })
             }
             // End Account Integration
-            doc.total = doc.total + totalInventory;
+            doc.total = math.round(doc.total + totalInventory, 3);
         }
         else {
             accountRefType = 'Invoice';
@@ -481,17 +481,17 @@ Invoices.after.update(function (userId, doc) {
                 }, {sort: {createdAt: -1}});
                 if (inventoryObj) {
                     if (item.price == 0) {
-                        increaseGratisInventory(item, doc.branchId, doc.stockLocationId)
-                        totalGratis += item.qty * inventoryObj.averagePrice;
+                        increaseGratisInventory(item, doc.branchId, doc.stockLocationId);
+                        totalGratis += math.round(item.qty * inventoryObj.averagePrice, 3);
                     } else {
-                        totalCOGS += item.qty * inventoryObj.averagePrice;
+                        totalCOGS += math.round(item.qty * inventoryObj.averagePrice, 3);
                     }
                 } else {
                     throw new Meteor.Error('Not Found Inventory. @Invoices-after-update. refId:' + doc._id);
                 }
             });
             invoiceManageStock(doc);
-            let totalInventory = totalCOGS + totalGratis;
+            let totalInventory = math.round(totalCOGS + totalGratis, 3);
             if (setting && setting.integrate) {
                 let arChartAccount = AccountMapping.findOne({name: 'A/R'});
                 let saleIncomeChartAccount = AccountMapping.findOne({name: 'Sale Income'});
@@ -539,7 +539,7 @@ Invoices.after.update(function (userId, doc) {
                 })
             }
             // End Account Integration
-            doc.total = doc.total + totalInventory;
+            doc.total = math.round(doc.total + totalInventory, 3);
         }
         // Account Integration
         if (setting && setting.integrate) {
@@ -680,27 +680,27 @@ function invoiceManageStock(invoice) {
             let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
             inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
             item.cost = inventory.averagePrice;
-            item.amountCost = inventory.averagePrice * item.qty;
-            item.profit = item.amount - item.amountCost;
+            item.amountCost = math.round(inventory.averagePrice * item.qty, 3);
+            item.profit = math.round(item.amount - item.amountCost, 3);
             totalCost += item.amountCost;
             newItems.push(item);
 
-            let remainQty = inventory.remainQty - item.qty;
+            let remainQty = math.round(inventory.remainQty - item.qty, 3);
             let lastAmount = 0;
             let averagePrice = 0;
             if (remainQty != 0) {
-                lastAmount = inventory.lastAmount - (inventory.averagePrice * item.qty);
-                averagePrice = lastAmount / remainQty;
+                lastAmount = math.round(inventory.lastAmount - (inventory.averagePrice * item.qty), 3);
+                averagePrice = math.round(lastAmount / remainQty, 3);
             }
             let newInventory = {
 
-              //  _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                //  _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
                 branchId: invoice.branchId,
                 stockLocationId: invoice.stockLocationId,
                 itemId: item.itemId,
                 qty: -item.qty,
                 price: inventory.averagePrice,
-                amount: -item.qty * inventory.averagePrice,
+                amount: math.round(-item.qty * inventory.averagePrice, 3),
                 lastAmount: lastAmount,
                 remainQty: remainQty,
                 averagePrice: averagePrice,
@@ -722,7 +722,7 @@ function invoiceManageStock(invoice) {
             throw new Meteor.Error('Not Found Inventory. @invoiceManageStock. refId:' + invoice._id);
         }
     });
-    let totalProfit = invoice.total - totalCost;
+    let totalProfit = math.round(invoice.total - totalCost, 3);
     Invoices.direct.update(
         invoice._id,
         {$set: {items: newItems, totalCost: totalCost, profit: totalProfit}}
@@ -762,7 +762,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         inventoryObj.itemId = item.itemId;
         inventoryObj.qty = item.qty;
         inventoryObj.price = item.price;
-        inventoryObj.remainQty = item.qty + inventory.remainQty;
+        inventoryObj.remainQty = math.round(item.qty + inventory.remainQty, 3);
         inventoryObj.type = type;
         inventoryObj.coefficient = 1;
         inventoryObj.refId = refId;
@@ -777,7 +777,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
          AverageInventories.update(inventory._id, {$set: inventorySet})
          */
     } else {
-        let totalQty = inventory.remainQty + item.qty;
+        let totalQty = math.round(inventory.remainQty + item.qty, 3);
         let price = 0;
         // should check totalQty or inventory.remainQty
         if (totalQty <= 0) {
@@ -785,7 +785,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         } else if (inventory.remainQty <= 0) {
             price = item.price
         } else {
-            price = ((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty
+            price = math.round(((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty, 3)
         }
         let nextInventory = {};
         nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
@@ -809,7 +809,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
 }
 // update payment
 function recalculatePayment({doc, preDoc}) {
-    let totalChanged = doc.total - preDoc.total;
+    let totalChanged = math.round(doc.total - preDoc.total, 3);
     if (totalChanged != 0) {
         let invoiceId = doc.paymentGroupId || doc._id;
         let receivePayment = ReceivePayment.find({invoiceId: invoiceId});
@@ -910,7 +910,7 @@ Meteor.methods({
                 accountRefType = 'Invoice-SaleOrder';
                 let total = 0;
                 doc.items.forEach(function (item) {
-                    total += item.qty * item.price
+                    total += math.round(item.qty * item.price, 3);
                 });
                 // Account Integration
                 if (setting && setting.integrate) {
@@ -985,7 +985,7 @@ Meteor.methods({
                     })
                 }
                 // End Account Integration
-                doc.total = doc.total + doc.totalCost
+                doc.total = math.round(doc.total + doc.totalCost, 3)
             }
             else {
                 accountRefType = 'Invoice';
@@ -1037,7 +1037,7 @@ Meteor.methods({
                     })
                 }
                 // End Account Integration
-                doc.total = doc.total + doc.totalCost
+                doc.total = math.round(doc.total + doc.totalCost, 3)
             }
             // Account Integration
             if (setting && setting.integrate) {

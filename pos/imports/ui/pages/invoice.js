@@ -25,7 +25,7 @@ import '../../../../core/client/components/form-footer.js';
 
 // Collection
 import {InventoryDates} from '../../api/collections/inventoryDate.js';
-import {Invoices,InvoiceUpdateInfo_schema} from '../../api/collections/invoice.js';
+import {Invoices, InvoiceUpdateInfo_schema} from '../../api/collections/invoice.js';
 import {Order} from '../../api/collections/order';
 import {Item} from '../../api/collections/item';
 import {deletedItem} from './invoice-items';
@@ -733,7 +733,7 @@ editInfoTmpl.onCreated(function () {
         this.repOptions.set(result);
     });
     Meteor.call('giveMeAllCustomerInSelectedBranch', Session.get('currentBranch'), (err, result) => {
-        if(!err) {
+        if (!err) {
             this.customerOptions.set(result);
         }
     });
@@ -939,7 +939,7 @@ listSaleOrder.events({
                         this.saleId = saleId;
                         this.qty = parseFloat(remainQty);
                         this.name = result.name;
-                        this.amount = this.qty * this.price;
+                        this.amount = math.round(this.qty * this.price, 3);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -961,11 +961,16 @@ let insertSaleOrderItem = ({self, remainQty, saleItem, saleId}) => {
         self.saleId = saleId;
         self.qty = remainQty;
         self.name = result.name;
-        self.amount = self.qty * self.price;
+        self.amount = math.round(self.qty * self.price, 3);
         let getItem = itemsCollection.findOne({itemId: self.itemId});
         if (getItem) {
             if (getItem.qty + remainQty <= self.remainQty) {
-                itemsCollection.update(getItem._id, {$inc: {qty: self.qty, amount: self.qty * getItem.price}});
+                itemsCollection.update(getItem._id, {
+                    $inc: {
+                        qty: self.qty,
+                        amount: math.round(self.qty * getItem.price, 3)
+                    }
+                });
                 displaySuccess('Added!')
             } else {
                 swal("Retry!", `ចំនួនបញ្ចូលចាស់(${getItem.qty}) នឹងបញ្ចូលថ្មី(${remainQty}) លើសពីចំនួនកម្ម៉ង់ទិញចំនួន ${(self.remainQty)}`, "error");
@@ -1047,7 +1052,6 @@ AutoForm.addHooks([
     'Pos_invoiceNew',
     'Pos_invoiceUpdate'
 ], hooksObject);
-
 
 
 let hooksObjectInfo = {

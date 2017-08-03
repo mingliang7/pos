@@ -156,7 +156,7 @@ indexTmpl.helpers({
                     count: 0
                 };
                 saleInvoices.count += 1;
-                let valueAfterDiscount = this.total * (1 - (discount / 100));
+                let valueAfterDiscount = math.round(this.total * (1 - (discount / 100)), 3);
                 this.receivedPay = valueAfterDiscount;
                 this.discount = discount;
                 saleInvoices[this._id] = this;
@@ -231,7 +231,7 @@ indexTmpl.helpers({
         let totalPaid = 0;
         let enterBillsObjObj = Session.get('enterBillsObj');
         delete enterBillsObjObj.count;
-        
+
         if (_.isEmpty(enterBillsObjObj)) {
             return 0;
         } else {
@@ -271,7 +271,7 @@ indexTmpl.helpers({
                     let lastPayment = _.last(receivePayments.fetch());
                     totalAmountDue += lastPayment.balanceAmount;
                 } else {
-                    totalAmountDue += invoice.total * (1 - (discount / 100));
+                    totalAmountDue += math.round(invoice.total * (1 - (discount / 100)), 3);
                 }
             });
         }
@@ -292,7 +292,7 @@ indexTmpl.helpers({
     },
     total(){
         let discount = this.status == 'active' ? checkTerm(this) : 0;
-        let valueAfterDiscount = this.total * (1 - (discount / 100));
+        let valueAfterDiscount = math.round(this.total * (1 - (discount / 100)), 3);
         let lastPayment = getLastPayment(this._id);
         return lastPayment == 0 ? numeral(valueAfterDiscount).format('0,0.000') : numeral(lastPayment).format('0,0.000');
     },
@@ -310,7 +310,7 @@ indexTmpl.helpers({
     },
     lastPaymentDate(){
         var lastPaymentDate = getLastPaymentDate(this._id);
-        if(lastPaymentDate) {
+        if (lastPaymentDate) {
             return `<br><span class="label label-success"><i class="fa fa-money"></i> Last Paid: ${moment(lastPaymentDate).format('YYYY-MM-DD HH:mm:ss')}</span>`;
         }
         return '';
@@ -408,7 +408,7 @@ indexTmpl.events({
 
         } else {
             //trigger change on total
-            let valueAfterDiscount = total * (1 - (parseFloat(event.currentTarget.value) / 100));
+            let valueAfterDiscount = math.round(total * (1 - (parseFloat(event.currentTarget.value) / 100)), 3);
             $(event.currentTarget).parents('.invoice-parents').find('.total').val(valueAfterDiscount).change();
             $(event.currentTarget).parents('.invoice-parents').find('.actual-pay').val(numeral(valueAfterDiscount).format('0,0.000')).change();
         }
@@ -441,7 +441,7 @@ indexTmpl.events({
             selectedInvoices[this._id] = this;
             selectedInvoices[this._id].discount = parseFloat(discount);
             selectedInvoices[this._id].receivedPay = parseFloat(event.currentTarget.value);
-            selectedInvoices[this._id].dueAmount = lastPayment == 0 ? this.total * (1 - parseFloat(discount / 100)) : lastPayment;
+            selectedInvoices[this._id].dueAmount = lastPayment == 0 ? math.round(this.total * (1 - parseFloat(discount / 100)), 3) : lastPayment;
             $(event.currentTarget).parents('.invoice-parents').find('.select-invoice').prop('checked', true);
             if (parseFloat(event.currentTarget.value) > selectedInvoices[this._id].dueAmount) { //check if entering payment greater than dueamount
                 selectedInvoices[this._id].receivedPay = selectedInvoices[this._id].dueAmount;
@@ -588,7 +588,7 @@ let hooksObject = {
     },
 };
 function paymentDate(element) {
-    element.on("dp.change", (e)=> {
+    element.on("dp.change", (e) => {
         clearChecbox();
         currentPaymentDate.set(e.date.toDate());
     });

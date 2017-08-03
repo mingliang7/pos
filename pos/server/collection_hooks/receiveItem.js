@@ -69,11 +69,11 @@ ReceiveItems.after.insert(function (userId, doc) {
         let totalBonusAmount = 0;
         let totalForAccount = 0;
         doc.items.forEach(function (item) {
-            total += item.qty * item.price;
+            total += math.round(item.qty * item.price, 3);
             if (item.lostQty > 0) {
-                totalBonusAmount += item.lostQty * item.price;
+                totalBonusAmount += math.round(item.lostQty * item.price, 3);
             } else if (item.lostQty < 0) {
-                totalLostAmount += item.lostQty * item.price;
+                totalLostAmount += math.round(item.lostQty * item.price, 3);
             }
         });
 
@@ -110,7 +110,7 @@ ReceiveItems.after.insert(function (userId, doc) {
                 });
             }
         }
-        let ownInventory = (total - totalBonusAmount) - totalLostAmount;
+        let ownInventory = math.round((total - totalBonusAmount) - totalLostAmount, 3);
 
         if (doc.type == 'PrepaidOrder') {
             //Account Integration
@@ -215,11 +215,11 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
         let totalBonusAmount = 0;
         let totalForAccount = 0;
         doc.items.forEach(function (item) {
-            total += item.qty * item.price;
+            total += math.round(item.qty * item.price, 3);
             if (item.lostQty > 0) {
-                totalBonusAmount += item.lostQty * item.price;
+                totalBonusAmount += math.round(item.lostQty * item.price, 3);
             } else if (item.lostQty < 0) {
-                totalLostAmount += item.lostQty * item.price;
+                totalLostAmount += math.round(item.lostQty * item.price, 3);
             }
         });
         doc.total = total;
@@ -256,7 +256,7 @@ ReceiveItems.after.update(function (userId, doc, fieldNames, modifier, options) 
                 });
             }
         }
-        let ownInventory = (total - totalBonusAmount) - totalLostAmount;
+        let ownInventory = math.round((total - totalBonusAmount) - totalLostAmount, 3);
 
         if (doc.type == 'PrepaidOrder') {
             //Account Integration
@@ -426,14 +426,14 @@ function reducePrepaidOrder(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -(item.qty - item.lostQty),
-                    "items.$.remainQty": -(item.qty - item.lostQty)
+                    sumRemainQty: -(math.round(item.qty - item.lostQty, 3)),
+                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 3))
                 }
             });
     });
     let prepaidOrder = PrepaidOrders.findOne(doc.prepaidOrderId);
-    let sumRemainQty=math.round(prepaidOrder.sumRemainQty,2);
-    if (sumRemainQty== 0) {
+    let sumRemainQty = math.round(prepaidOrder.sumRemainQty, 2);
+    if (sumRemainQty == 0) {
         PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'closed'}});
     } else {
         PrepaidOrders.direct.update(prepaidOrder._id, {$set: {status: 'active'}});
@@ -445,7 +445,12 @@ function increasePrepaidOrder(preDoc) {
     preDoc.items.forEach(function (item) {
         PrepaidOrders.direct.update(
             {_id: preDoc.prepaidOrderId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+            {
+                $inc: {
+                    'items.$.remainQty': math.round(item.qty - item.lostQty, 3),
+                    sumRemainQty: math.round(item.qty - item.lostQty, 3)
+                }
+            }
         ); //re sum remain qty
     });
 }
@@ -459,14 +464,14 @@ function reduceLendingStock(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -(item.qty - item.lostQty),
-                    "items.$.remainQty": -(item.qty - item.lostQty)
+                    sumRemainQty: -(math.round(item.qty - item.lostQty, 3)),
+                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 3))
                 }
             });
     });
     let lendingStock = LendingStocks.findOne(doc.lendingStockId);
-    let sumRemainQty=math.round(lendingStock.sumRemainQty,2);
-    if (sumRemainQty== 0) {
+    let sumRemainQty = math.round(lendingStock.sumRemainQty, 2);
+    if (sumRemainQty == 0) {
         LendingStocks.direct.update(lendingStock._id, {$set: {status: 'closed'}});
     } else {
         LendingStocks.direct.update(lendingStock._id, {$set: {status: 'active'}});
@@ -478,7 +483,12 @@ function increaseLendingStock(preDoc) {
     preDoc.items.forEach(function (item) {
         LendingStocks.direct.update(
             {_id: preDoc.lendingStockId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+            {
+                $inc: {
+                    'items.$.remainQty': math.round(item.qty - item.lostQty, 3),
+                    sumRemainQty: math.round(item.qty - item.lostQty, 3)
+                }
+            }
         ); //re sum remain qty
     });
 }
@@ -493,15 +503,15 @@ function reduceCompanyExchangeRingPull(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -(item.qty - item.lostQty),
-                    "items.$.remainQty": -(item.qty - item.lostQty)
+                    sumRemainQty: -(math.round(item.qty - item.lostQty, 3)),
+                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 3))
                 }
             });
     });
     let companyExchangeRingPull = CompanyExchangeRingPulls.findOne(doc.companyExchangeRingPullId);
 
-    let sumRemainQty=math.round(companyExchangeRingPull.sumRemainQty,2);
-    if (sumRemainQty== 0) {
+    let sumRemainQty = math.round(companyExchangeRingPull.sumRemainQty, 2);
+    if (sumRemainQty == 0) {
         CompanyExchangeRingPulls.direct.update(companyExchangeRingPull._id, {$set: {status: 'closed'}});
     } else {
         CompanyExchangeRingPulls.direct.update(companyExchangeRingPull._id, {$set: {status: 'active'}});
@@ -513,7 +523,12 @@ function increaseCompanyExchangeRingPull(preDoc) {
     preDoc.items.forEach(function (item) {
         CompanyExchangeRingPulls.direct.update(
             {_id: preDoc.companyExchangeRingPullId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+            {
+                $inc: {
+                    'items.$.remainQty': math.round(item.qty - item.lostQty, 3),
+                    sumRemainQty: math.round(item.qty - item.lostQty, 3)
+                }
+            }
         ); //re sum remain qty
     });
 }
@@ -528,14 +543,14 @@ function reduceExchangeGratis(doc) {
             },
             {
                 $inc: {
-                    sumRemainQty: -(item.qty - item.lostQty),
-                    "items.$.remainQty": -(item.qty - item.lostQty)
+                    sumRemainQty: -(math.round(item.qty - item.lostQty, 3)),
+                    "items.$.remainQty": -(math.round(item.qty - item.lostQty, 3))
                 }
             });
     });
     let exchangeGratis = ExchangeGratis.findOne(doc.exchangeGratisId);
-    let sumRemainQty=math.round(exchangeGratis.sumRemainQty,2);
-    if (sumRemainQty== 0) {
+    let sumRemainQty = math.round(exchangeGratis.sumRemainQty, 2);
+    if (sumRemainQty == 0) {
         ExchangeGratis.direct.update(exchangeGratis._id, {$set: {status: 'closed'}});
     } else {
         ExchangeGratis.direct.update(exchangeGratis._id, {$set: {status: 'active'}});
@@ -547,7 +562,12 @@ function increaseExchangeGratis(preDoc) {
     preDoc.items.forEach(function (item) {
         ExchangeGratis.direct.update(
             {_id: preDoc.exchangeGratisId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+            {
+                $inc: {
+                    'items.$.remainQty': math.round(item.qty - item.lostQty, 3),
+                    sumRemainQty: math.round(item.qty - item.lostQty, 3)
+                }
+            }
         ); //re sum remain qty
     });
 }
@@ -584,8 +604,8 @@ Meteor.methods({
             let total = 0;
             let totalLostAmount = 0;
             doc.items.forEach(function (item) {
-                total += item.qty * item.price;
-                totalLostAmount += item.lostQty * item.price;
+                total += math.round(item.qty * item.price, 3);
+                totalLostAmount += math.round(item.lostQty * item.price, 3);
             });
             doc.total = total;
             //Account Integration
@@ -609,7 +629,7 @@ Meteor.methods({
                     });
                 }
             }
-            doc.total = doc.total + totalLostAmount;
+            doc.total = math.round(doc.total + totalLostAmount, 3);
             if (doc.type == 'PrepaidOrder') {
                 //Account Integration
                 if (setting && setting.integrate) {

@@ -78,7 +78,7 @@ lendingStockTmpl.events({
                         this.name = result.name;
                         this.lostQty = 0;
                         this.exactQty = parseFloat(remainQty);
-                        this.amount = this.exactQty * this.price;
+                        this.amount = math.round(this.exactQty * this.price, 3);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -122,7 +122,7 @@ lendingStockTmpl.events({
                         this.name = result.name;
                         this.exactQty = parseFloat(remainQty);
                         this.lostQty = 0;
-                        this.amount = this.exactQty * this.price;
+                        this.amount = math.round(this.exactQty * this.price, 3);
                         itemsCollection.insert(this);
                     });
                     displaySuccess('Added!')
@@ -141,14 +141,19 @@ let insertLendingStockItem = ({self, remainQty, lendingStockItem, lendingStockId
     Meteor.call('getItem', self.itemId, (err, result) => {
         self.lendingStockId = lendingStockId;
         self.qty = remainQty;
-        self.exactQty = remainQty
+        self.exactQty = remainQty;
         self.name = result.name;
         self.lostQty = 0;
-        self.amount = self.qty * self.price;
+        self.amount = math.round(self.qty * self.price, 3);
         let getItem = itemsCollection.findOne({itemId: self.itemId});
         if (getItem) {
             if (getItem.qty + remainQty <= self.remainQty) {
-                itemsCollection.update(getItem._id, {$inc: {qty: self.qty, amount: self.qty * getItem.price}});
+                itemsCollection.update(getItem._id, {
+                    $inc: {
+                        qty: self.qty,
+                        amount: math.round(self.qty * getItem.price, 3)
+                    }
+                });
                 displaySuccess('Added!')
             } else {
                 swal("Retry!", `ចំនួនបញ្ចូលចាស់(${getItem.qty}) នឹងបញ្ចូលថ្មី(${remainQty}) លើសពីចំនួនកម្ម៉ង់ទិញចំនួន ${(self.remainQty)}`, "error");

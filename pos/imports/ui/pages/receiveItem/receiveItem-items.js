@@ -167,7 +167,7 @@ itemsTmpl.events({
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = qty * price;
+        let amount = math.round(qty * price, 3);
 
         instance.state('amount', amount);
     },
@@ -180,13 +180,13 @@ itemsTmpl.events({
         let qty = instance.$('[name="qty"]').val();
         qty = qty == "" ? 1 : parseFloat(qty);
         let price = parseFloat(instance.$('[name="price"]').val());
-        let amount = qty * price;
+        let amount = math.round(qty * price, 3);
         // Check exist
         let exist = itemsCollection.findOne({
             itemId: itemId
         });
         if (exist) {
-            amount = qty * price;
+            amount = math.round(qty * price, 3);
             itemsCollection.update({
                 _id: exist._id
             }, {
@@ -260,12 +260,12 @@ itemsTmpl.events({
         let selector = {};
         if (currentQty != '') {
             selector.$set = {
-                amount: currentQty * currentItem.price,
+                amount: math.round(currentQty * currentItem.price, 3),
                 qty: currentQty
             }
         } else {
             selector.$set = {
-                amount: 1 * currentItem.price,
+                amount: math.round(1 * currentItem.price, 3),
                 qty: 1
             }
         }
@@ -278,12 +278,12 @@ itemsTmpl.events({
         let selector = {};
         let lostQty = 0;
         let curentQty = currentItem.exactQty;
-        if(currentLostQty != '') {
+        if (currentLostQty != '') {
             lostQty = parseFloat(currentLostQty);
             curentQty += lostQty;
         }
         selector.$set = {
-            amount: curentQty * currentItem.price,
+            amount: math.round(curentQty * currentItem.price, 3),
             qty: curentQty,
             lostQty: lostQty
         }
@@ -329,7 +329,7 @@ editItemsTmpl.events({
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseFloat(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = qty * price;
+        let amount = math.round(qty * price, 3);
 
         instance.state('amount', amount);
     }
@@ -352,9 +352,9 @@ let hooksObject = {
                 _id: insertDoc._id
             });
             if (exist) {
-                let newQty = exist.qty + insertDoc.qty;
+                let newQty = math.round(exist.qty + insertDoc.qty, 3);
                 let newPrice = insertDoc.price;
-                let newAmount = newQty * newPrice;
+                let newAmount = math.round(newQty * newPrice, 3);
 
                 itemsCollection.update({
                     _id: insertDoc._id
@@ -394,7 +394,7 @@ var calculateTotal = function () {
     });
     var discount = $('#discount').val();
     discount = discount == "" ? 0 : parseFloat(discount);
-    var total = subTotal * (1 - discount / 100);
+    var total = math.round(subTotal * (1 - discount / 100), 3);
     Session.set('total', total);
     // Session.set('subTotal',subTotal);
 

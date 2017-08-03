@@ -326,14 +326,14 @@ Template.schemeItem.events({
         let price = instance.$('[name="price"]').val();
         qty = _.isEmpty(qty) ? 0 : parseInt(qty);
         price = _.isEmpty(price) ? 0 : parseFloat(price);
-        let amount = qty * price;
+        let amount = math.round(qty * price, 3);
         instance.state('amount', amount);
     },
     'click .js-add-item': function (event, instance) {
         let itemId = instance.$('[name="itemId"]').val();
         let qty = parseInt(instance.$('[name="qty"]').val() == '' ? 1 : instance.$('[name="qty"]').val());
         let price = parseFloat(instance.$('[name="price"]').val());
-        let amount = qty * price;
+        let amount = math.round(qty * price, 3);
         // Check exist
         // let exist = tmpCollection.findOne({itemId: itemId});
         // if (exist) {

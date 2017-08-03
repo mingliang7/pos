@@ -35,7 +35,7 @@ Order.after.insert(function (userId, doc) {
                 let thisItem = Item.findOne(item.itemId);
                 thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
             }
-            totalCOGS += item.qty * thisItemPrice;
+            totalCOGS += math.round(item.qty * thisItemPrice, 3);
 
             /// let inventory=
         });
@@ -88,10 +88,10 @@ Order.after.insert(function (userId, doc) {
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
             let transaction = [];
-            let totalSaleOrder=doc.total;
+            let totalSaleOrder = doc.total;
             let data = doc;
             data.type = "SaleOrder";
-            data.total = totalSaleOrder + totalCOGS;
+            data.total = math.round(totalSaleOrder + totalCOGS, 3);
             let oweInventoryChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
             let saleIncomeChartAccount = AccountMapping.findOne({name: 'Sale Income'});
@@ -155,7 +155,7 @@ Order.after.update(function (userId, doc) {
                 let thisItem = Item.findOne(item.itemId);
                 thisItemPrice = thisItem && thisItem.purchasePrice ? thisItem.purchasePrice : 0;
             }
-            totalCOGS += item.qty * thisItemPrice;
+            totalCOGS += math.round(item.qty * thisItemPrice, 3);
         });
         Order.direct.update(doc._id, {
             $set: {
@@ -166,9 +166,9 @@ Order.after.update(function (userId, doc) {
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
             let transaction = [];
-            let totalSaleOrder=doc.total;
+            let totalSaleOrder = doc.total;
             let data = doc;
-            data.total = totalSaleOrder + totalCOGS;
+            data.total = math.round(totalSaleOrder + totalCOGS, 3);
             data.type = "SaleOrder";
             let oweInventoryChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});

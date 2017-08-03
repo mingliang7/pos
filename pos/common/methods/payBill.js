@@ -35,7 +35,7 @@ export const payBill = new ValidatedMethod({
                     paidAmount: enterBillsObj[k].receivedPay,
                     dueAmount: enterBillsObj[k].dueAmount,
                     discount: enterBillsObj[k].discount || 0,
-                    balanceAmount: enterBillsObj[k].dueAmount - enterBillsObj[k].receivedPay,
+                    balanceAmount: math.round(enterBillsObj[k].dueAmount - enterBillsObj[k].receivedPay,3),
                     vendorId: enterBillsObj[k].vendorId || enterBillsObj[k].vendorOrCustomerId,
                     status: enterBillsObj[k].dueAmount - enterBillsObj[k].receivedPay == 0 ? 'closed' : 'partial',
                     staffId: Meteor.userId(),
@@ -55,8 +55,8 @@ export const payBill = new ValidatedMethod({
                             let apChartAccount = AccountMapping.findOne({name: 'A/P'});
                             let cashChartAccount = AccountMapping.findOne({name: 'Cash on Hand'});
                             let purchaseDiscountChartAccount = AccountMapping.findOne({name: 'Purchase Discount'});
-                            let discountAmount = obj.dueAmount * obj.discount / 100;
-                            data.total = obj.paidAmount + discountAmount;
+                            let discountAmount = math.round(obj.dueAmount * obj.discount / 100, 3);
+                            data.total = math.round(obj.paidAmount + discountAmount, 3);
 
                             let vendorDoc = Vendors.findOne({_id: obj.vendorId});
                             if (vendorDoc) {
@@ -66,9 +66,9 @@ export const payBill = new ValidatedMethod({
 
                             transaction.push({
                                 account: apChartAccount.account,
-                                dr: obj.paidAmount + discountAmount,
+                                dr: math.round(obj.paidAmount + discountAmount, 3),
                                 cr: 0,
-                                drcr: obj.paidAmount + discountAmount
+                                drcr: math.round(obj.paidAmount + discountAmount, 3)
                             }, {
                                 account: cashChartAccount.account,
                                 dr: 0,

@@ -76,22 +76,22 @@ indexTmpl.events({
         alertify.locationTransfer(fa('plus', TAPi18n.__('pos.locationTransfer.title')), renderTemplate(newTmpl)).maximize();
     },
     'click .js-update' (event, instance) {
-        if(this.status=='active'){
+        if (this.status == 'active') {
             alertify.locationTransfer(fa('pencil', TAPi18n.__('pos.locationTransfer.title')), renderTemplate(editTmpl, this));
-        }else{
-            alertify.warning('Transaction is: '+this.status+' can not be update.');
+        } else {
+            alertify.warning('Transaction is: ' + this.status + ' can not be update.');
         }
     },
     'click .js-destroy' (event, instance) {
         let data = this;
-        if(data.status=='active') {
+        if (data.status == 'active') {
             destroyAction(
                 LocationTransfers,
                 {_id: data._id},
                 {title: TAPi18n.__('pos.locationTransfer.title'), itemTitle: data._id}
             );
-        }else{
-            alertify.warning('Transaction is: '+data.status+' can not be remove.');
+        } else {
+            alertify.warning('Transaction is: ' + data.status + ' can not be remove.');
         }
     },
     'click .js-display' (event, instance) {
@@ -117,10 +117,10 @@ indexTmpl.events({
 // New
 newTmpl.onCreated(function () {
     this.branch = new ReactiveVar();
-    Meteor.call('getBranch', Session.get('currentBranch'),(err,result)=> {
-        if(result) {
+    Meteor.call('getBranch', Session.get('currentBranch'), (err, result) => {
+        if (result) {
             this.branch.set(result);
-        }else{
+        } else {
             console.log(err);
         }
 
@@ -145,7 +145,7 @@ newTmpl.events({
 newTmpl.helpers({
     fromBranchId(){
         let instance = Template.instance();
-        if(instance.branch.get()) {
+        if (instance.branch.get()) {
             return instance.branch.get().enShortName;
         }
         return '';
@@ -195,7 +195,7 @@ newTmpl.onDestroyed(function () {
 });
 // Edit
 editTmpl.onCreated(function () {
-    this.autorun(()=> {
+    this.autorun(() => {
         this.subscribe('pos.locationTransfer', {_id: this.data._id});
     });
 });
@@ -218,7 +218,7 @@ editTmpl.helpers({
         let data = LocationTransfers.findOne(this._id);
 
         // Add items to local collection
-        _.forEach(data.items, (value)=> {
+        _.forEach(data.items, (value) => {
             Meteor.call('getItem', value.itemId, function (err, result) {
                 value.name = result.name;
                 itemsCollection.insert(value);
@@ -249,9 +249,9 @@ editTmpl.onDestroyed(function () {
 // Show
 
 showTmpl.events({
-   'click .print'(){
-       $('#to-print').printThis();
-   }
+    'click .print'(){
+        $('#to-print').printThis();
+    }
 });
 showTmpl.helpers({
     i18nLabel(label){
@@ -282,7 +282,7 @@ let hooksObject = {
     before: {
         insert: function (doc) {
             let items = [];
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
             });
@@ -293,7 +293,7 @@ let hooksObject = {
                 doc.paidAmount = 0;
                 doc.dueAmount = doc.total;
             } else if (btnType == "pay") {
-                doc.dueAmount = (doc.total - doc.paidAmount);
+                doc.dueAmount = (math.round(doc.total - doc.paidAmount, 3));
                 if (doc.dueAmount <= 0) {
                     doc.status = "close";
                 } else {
@@ -306,7 +306,7 @@ let hooksObject = {
         },
         update: function (doc) {
             let items = [];
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
             });
@@ -317,7 +317,7 @@ let hooksObject = {
                 doc.$set.paidAmount = 0;
                 doc.$set.dueAmount = doc.total;
             } else if (btnType == "pay") {
-                doc.$set.dueAmount = (doc.$set.total - doc.$set.paidAmount);
+                doc.$set.dueAmount = (math.round(doc.$set.total - doc.$set.paidAmount, 3));
                 if (doc.$set.dueAmount <= 0) {
                     doc.$set.status = "close";
                 } else {

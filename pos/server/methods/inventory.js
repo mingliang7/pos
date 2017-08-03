@@ -58,8 +58,8 @@ Meteor.methods({
                 }, {sort: {createdAt: -1}});
                 if (inventory) {
                     item.cost = inventory.price;
-                    item.amountCost = inventory.price * item.qty;
-                    item.profit = item.amount - item.amountCost;
+                    item.amountCost = math.round(inventory.price * item.qty, 3);
+                    item.profit = math.round(item.amount - item.amountCost, 3);
                     totalCost += item.amountCost;
                     newItems.push(item);
                     let newInventory = {
@@ -69,7 +69,7 @@ Meteor.methods({
                         itemId: item.itemId,
                         qty: item.qty,
                         price: inventory.price,
-                        remainQty: inventory.remainQty - item.qty,
+                        remainQty: math.round(inventory.remainQty - item.qty, 3),
                         coefficient: -1,
                         type: 'invoice',
                         refId: invoice._id
@@ -79,8 +79,8 @@ Meteor.methods({
                 else {
                     var thisItem = Item.findOne(item.itemId);
                     item.cost = thisItem.purchasePrice;
-                    item.amountCost = thisItem.purchasePrice * item.qty;
-                    item.profit = item.amount - item.amountCost;
+                    item.amountCost = math.round(thisItem.purchasePrice * item.qty, 3);
+                    item.profit = math.round(item.amount - item.amountCost, 3);
                     totalCost += item.amountCost;
                     newItems.push(item);
                     let newInventory = {
@@ -90,7 +90,7 @@ Meteor.methods({
                         itemId: item.itemId,
                         qty: item.qty,
                         price: thisItem.purchasePrice,
-                        remainQty: 0 - item.qty,
+                        remainQty: math.round(0 - item.qty, 3),
                         coefficient: -1,
                         type: 'invoice',
                         refId: invoice._id
@@ -98,7 +98,7 @@ Meteor.methods({
                     AverageInventories.insert(newInventory);
                 }
             });
-            let totalProfit = invoice.total - totalCost;
+            let totalProfit = math.round(invoice.total - totalCost, 3);
             Invoices.direct.update(
                 invoice._id,
                 {$set: {items: newItems, totalCost: totalCost, profit: totalProfit}}
@@ -150,7 +150,7 @@ Meteor.methods({
 
                 if (inventory) {
                     item.price = inventory.averagePrice;
-                    item.amount = inventory.averagePrice * item.qty;
+                    item.amount = math.round(inventory.averagePrice * item.qty, 3);
                     total += item.amount;
                     newItems.push(item);
                     StockFunction.minusAverageInventoryInsert(
@@ -290,7 +290,7 @@ Meteor.methods({
                         itemId: item.itemId,
                         qty: item.qty,
                         price: inventory.price,
-                        remainQty: inventory.remainQty - item.qty,
+                        remainQty: math.round(inventory.remainQty - item.qty, 3),
                         coefficient: -1,
                         type: 'enter-return',
                         refId: enterBill._id
@@ -305,7 +305,7 @@ Meteor.methods({
                         itemId: item.itemId,
                         qty: item.qty,
                         price: thisItem.purchasePrice,
-                        remainQty: 0 - item.qty,
+                        remainQty: math.round(0 - item.qty, 3),
                         coefficient: -1,
                         type: 'enter-return',
                         refId: enterBill._id
@@ -415,7 +415,7 @@ Meteor.methods({
                     RingPullInventories.insert({
                         itemId: item.itemId,
                         branchId: ringPullTransfer.fromBranchId,
-                        qty: 0 - item.qty
+                        qty: math.round(0 - item.qty, 3)
                     })
                 }
                 //3. increase RingPullInventory to toBranch
@@ -951,13 +951,12 @@ Meteor.methods({
                         RingPullInventories.insert({
                             itemId: item.itemId,
                             branchId: obj.branchId,
-                            qty: 0 - item.qty
+                            qty: math.round(0 - item.qty, 3)
                         })
                     }
                 });
             });
         }
-
 
 
         CompanyExchangeRingPulls.remove({companyExchangeRingPullDate: {$gte: date}, branchId: {$in: branchIds}});
@@ -1131,7 +1130,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         inventoryObj.itemId = item.itemId;
         inventoryObj.qty = item.qty;
         inventoryObj.price = item.price;
-        inventoryObj.remainQty = item.qty + inventory.remainQty;
+        inventoryObj.remainQty = math.round(item.qty + inventory.remainQty, 3);
         inventoryObj.type = type;
         inventoryObj.coefficient = 1;
         inventoryObj.refId = refId;
@@ -1147,7 +1146,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
          */
     }
     else {
-        let totalQty = inventory.remainQty + item.qty;
+        let totalQty = math.round(inventory.remainQty + item.qty, 3);
         let price = 0;
         //should check totalQty or inventory.remainQty
         if (totalQty <= 0) {
@@ -1155,7 +1154,7 @@ function averageInventoryInsert(branchId, item, stockLocationId, type, refId) {
         } else if (inventory.remainQty <= 0) {
             price = item.price;
         } else {
-            price = ((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty;
+            price = math.round(((inventory.remainQty * inventory.price) + (item.qty * item.price)) / totalQty, 3);
         }
         let nextInventory = {};
         nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
@@ -1222,7 +1221,12 @@ function increasePrepaidOrder(preDoc) {
     preDoc.items.forEach(function (item) {
         PrepaidOrders.direct.update(
             {_id: preDoc.prepaidOrderId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+            {
+                $inc: {
+                    'items.$.remainQty': math.round((item.qty - item.lostQty), 3),
+                    sumRemainQty: math.round((item.qty - item.lostQty), 3)
+                }
+            }
         ); //re sum remain qty
     });
 }
@@ -1231,7 +1235,12 @@ function increaseLendingStock(preDoc) {
     preDoc.items.forEach(function (item) {
         LendingStocks.direct.update(
             {_id: preDoc.lendingStockId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+            {
+                $inc: {
+                    'items.$.remainQty': math.round((item.qty - item.lostQty), 3),
+                    sumRemainQty: math.round((item.qty - item.lostQty), 3)
+                }
+            }
         ); //re sum remain qty
     });
 }
@@ -1240,7 +1249,12 @@ function increaseCompanyExchangeRingPull(preDoc) {
     preDoc.items.forEach(function (item) {
         CompanyExchangeRingPulls.direct.update(
             {_id: preDoc.companyExchangeRingPullId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+            {
+                $inc: {
+                    'items.$.remainQty': math.round((item.qty - item.lostQty), 3),
+                    sumRemainQty: math.round((item.qty - item.lostQty), 3)
+                }
+            }
         ); //re sum remain qty
     });
 }
@@ -1249,7 +1263,12 @@ function increaseExchangeGratis(preDoc) {
     preDoc.items.forEach(function (item) {
         ExchangeGratis.direct.update(
             {_id: preDoc.exchangeGratisId, 'items.itemId': item.itemId},
-            {$inc: {'items.$.remainQty': (item.qty - item.lostQty), sumRemainQty: (item.qty - item.lostQty)}}
+            {
+                $inc: {
+                    'items.$.remainQty': math.round((item.qty - item.lostQty), 3),
+                    sumRemainQty: math.round((item.qty - item.lostQty), 3)
+                }
+            }
         ); //re sum remain qty
     });
 }
