@@ -576,7 +576,7 @@ Invoices.after.remove(function (userId, doc) {
             accountRefType = 'Invoice';
             doc.items.forEach(function (item) {
                 if (item.price == 0) {
-                    accountRefType = 'Invoice-Gratis';
+                   // accountRefType = 'Invoice-Gratis';
                     reduceGratisInventory(item, doc.branchId, doc.stockLocationId)
                 }
             });
@@ -594,7 +594,7 @@ Invoices.after.remove(function (userId, doc) {
             doc.items.forEach(function (item) {
                 if (item.price == 0) {
                     reduceGratisInventory(item, doc.branchId, doc.stockLocationId);
-                    accountRefType = 'Invoice-Gratis'
+                   // accountRefType = 'Invoice-Gratis'
                 }
             });
             // average inventory calculation
