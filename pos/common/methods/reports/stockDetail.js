@@ -145,7 +145,7 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             },
                             {
                                 $lookup: {
-                                    from: "pos_reps",
+                                    from: "pos_rep",
                                     localField: "invoiceDoc.repId",
                                     foreignField: "_id",
                                     as: "invoiceDoc._rep"
@@ -228,7 +228,18 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
-
+                            {
+                              $lookup: lookupRef('pos_vendors','receiveItemDoc.vendorId','_id','receiveItemDoc._vendor')
+                            },
+                            {
+                              $lookup: lookupRef('pos_rep','receiveItemDoc.repId','_id','receiveItemDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$receiveItemDoc._vendor',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $unwind: {path: '$receiveItemDoc._rep',preserveNullAndEmptyArrays: true}
+                            },
                             {
                                 $project: projectionField({
                                     description: {$ifNull: ["$invoiceDescription", 'Receive Item Out']},
@@ -290,7 +301,18 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
-
+                            {
+                                $lookup: lookupRef('pos_vendors','enterBillDoc.vendorId','_id','enterBillDoc._vendor')
+                            },
+                            {
+                                $lookup: lookupRef('pos_rep','enterBillDoc.repId','_id','enterBillDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$enterBillDoc._vendor',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $unwind: {path: '$enterBillDoc._rep',preserveNullAndEmptyArrays: true}
+                            },
                             {
                                 $project: projectionField({
                                     description: {$ifNull: ["$enterBillDoc.description", {$concat: ["Reduce From Bill #", "$enterBillDoc._id"]}]},
@@ -352,7 +374,18 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
-
+                            {
+                                $lookup: lookupRef('pos_customers','invoiceDoc.customerId','_id','invoiceDoc._customer')
+                            },
+                            {
+                                $lookup: lookupRef('pos_rep','invoiceDoc.repId','_id','invoiceDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$invoiceDoc.pos_customers',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $unwind: {path: '$invoiceDoc._rep',preserveNullAndEmptyArrays: true}
+                            },
                             {
                                 $project: projectionField({
                                     description: {$ifNull: ["$fk", 'INVOICE RETURN']},
@@ -414,7 +447,18 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
-
+                            {
+                                $lookup: lookupRef('pos_customers','exchangeRingPullDoc.customerId','_id','exchangeRingPullDoc._customer')
+                            },
+                            {
+                                $lookup: lookupRef('pos_rep','exchangeRingPullDoc.repId','_id','exchangeRingPullDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$invoiceDoc._customer',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $unwind: {path: '$invoiceDoc._rep',preserveNullAndEmptyArrays: true}
+                            },
                             {
                                 $project: projectionField({
                                     description: {$ifNull: ["$fk", 'Exchange Ringpull Return']},
@@ -476,7 +520,18 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
-
+                            {
+                                $lookup: lookupRef('pos_vendors','lendingStockDoc.vendorId','_id','lendingStockDoc._vendor')
+                            },
+                            {
+                                $lookup: lookupRef('pos_rep','lendingStockDoc.repId','_id','lendingStockDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$lendingStockDoc._vendor',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $unwind: {path: '$invoiceDoc._rep',preserveNullAndEmptyArrays: true}
+                            },
                             {
                                 $project: projectionField({
                                     description: {$ifNull: ["$fk", 'Lending Stock Return']},
@@ -538,7 +593,21 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             {
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
-
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('pos_customers','invoiceDoc.customerId','_id','invoiceDoc._customer')
+                            },
+                            {
+                                $lookup: lookupRef('pos_rep','invoiceDoc.repId','_id','invoiceDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$invoiceDoc._customer',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $unwind: {path: '$invoiceDoc._rep',preserveNullAndEmptyArrays: true}
+                            },
                             {
                                 $project: projectionField({
                                     description: {$ifNull: ["$invoiceDescription", 'Free Item(Invoice)']},
@@ -599,6 +668,18 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             },
                             {
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('pos_vendors','billDoc.vendorId','_id','billDoc._vendor')
+                            },
+                            {
+                                $lookup: lookupRef('pos_rep','billDoc.repId','_id','billDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$billDoc._vendor',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $unwind: {path: '$billDoc._rep',preserveNullAndEmptyArrays: true}
                             },
                             {
                                 $project: projectionField({
@@ -663,6 +744,18 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
                             {
+                                $lookup: lookupRef('pos_vendors','billDoc.vendorId','_id','billDoc._vendor')
+                            },
+                            {
+                                $lookup: lookupRef('pos_rep','billDoc.repId','_id','billDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$billDoc._vendor',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $unwind: {path: '$billDoc._rep',preserveNullAndEmptyArrays: true}
+                            },
+                            {
                                 $project: projectionField({
                                     description: {$ifNull: ["$billDescription", {$concat: ["Update EnterBill #", "$billDoc._id"]}]},
                                     number: {$ifNull: ['$billDoc.voucherId', '$billDoc._id']},
@@ -725,6 +818,18 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
                             {
+                                $lookup: lookupRef('pos_vendors','lendingStockDoc.vendorId','_id','lendingStockDoc._vendor')
+                            },
+                            {
+                                $lookup: lookupRef('pos_rep','lendingStockDoc.repId','_id','lendingStockDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$lendingStockDoc._vendor',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $unwind: {path: '$lendingStockDoc._rep',preserveNullAndEmptyArrays: true}
+                            },
+                            {
                                 $project: projectionField({
                                     description: {$ifNull: ["$lendingStockDescription", 'ខ្ចីស្តុក(Lending Stock)']},
                                     number: {$ifNull: ['$lendingStockDoc.voucherId', '$lendingStockDoc._id']},
@@ -784,6 +889,18 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             },
                             {
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('pos_customers','exchangeRingPullDoc.customerId','_id','exchangeRingPullDoc._customer')
+                            },
+                            {
+                                $lookup: lookupRef('pos_rep','exchangeRingPullDoc.repId','_id','exchangeRingPullDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$exchangeRingPullDoc._customer',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $unwind: {path: '$exchangeRingPullDoc._rep',preserveNullAndEmptyArrays: true}
                             },
                             {
                                 $project: projectionField({
@@ -849,6 +966,19 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
                             {
+                                $lookup: lookupRef('pos_vendors','receiveItemDoc.vendorId','_id','receiveItemDoc._vendor')
+                            },
+                            {
+                                $lookup: lookupRef('pos_rep','receiveItemDoc.repId','_id','receiveItemDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$receiveItemDoc._vendor',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $unwind: {path: '$receiveItemDoc._rep',preserveNullAndEmptyArrays: true}
+                            },
+
+                            {
                                 $project: projectionField({
                                     description: {$ifNull: ["$receiveBeerDescription", 'ទទួលស្រាបៀរ(Receive Beer)']},
                                     number: {$ifNull: ['$receiveItemDoc.voucherId', '$receiveItemDoc._id']},
@@ -910,6 +1040,18 @@ export const stockDetailReportMethod = new ValidatedMethod({
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
                             },
                             {
+                                $lookup: lookupRef('pos_rep','transferToDoc.repId','_id','transferToDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$transferToDoc._rep',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('core_branch','transferToDoc.fromBranchId','_id','transferToDoc._fromBranch')
+                            },
+                            {
+                                $unwind: {path: '$transferToDoc._fromBranch',preserveNullAndEmptyArrays: true}
+                            },
+                            {
                                 $project: projectionField({
                                     description: {$ifNull: ["$transferDescription", '']},
                                     number: {$ifNull: ['$transferToDoc.voucherId', '$transferToDoc._id']},
@@ -969,6 +1111,18 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             },
                             {
                                 $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('pos_rep','transferFromDoc.repId','_id','transferFromDoc._rep')
+                            },
+                            {
+                                $unwind: {path: '$transferFromDoc._rep',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('core_branch','transferFromDoc.toBranchId','_id','transferFromDoc._toBranch')
+                            },
+                            {
+                                $unwind: {path: '$transferFromDoc._toBranch',preserveNullAndEmptyArrays: true}
                             },
                             {
                                 $project: projectionField({
@@ -1160,4 +1314,13 @@ function compareCreated(a, b) {
     if (a.createdAt > b.createdAt)
         return 1;
     return 0;
+}
+
+function lookupRef(from,localField,foreignField,as){
+    return {
+        from: from,
+        localField: localField,
+        foreignField: foreignField,
+        as: as
+    }
 }
