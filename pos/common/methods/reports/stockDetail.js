@@ -133,6 +133,30 @@ export const stockDetailReportMethod = new ValidatedMethod({
                             },
                             {
                                 $lookup: {
+                                    from: "pos_customers",
+                                    localField: "invoiceDoc.customerId",
+                                    foreignField: "_id",
+                                    as: "invoiceDoc._customer"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$invoiceDoc._customer', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_reps",
+                                    localField: "invoiceDoc.repId",
+                                    foreignField: "_id",
+                                    as: "invoiceDoc._rep"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$invoiceDoc._rep', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
                                     from: 'core_branch',
                                     localField: 'branchId',
                                     foreignField: '_id',
