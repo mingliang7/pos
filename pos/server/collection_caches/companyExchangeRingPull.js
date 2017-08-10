@@ -5,4 +5,4 @@ import {CompanyExchangeRingPulls} from '../../imports/api/collections/companyExc
 import {Vendors} from '../../imports/api/collections/vendor.js';
 
 CompanyExchangeRingPulls.cacheTimestamp();
-CompanyExchangeRingPulls.cacheDoc('vendor', Vendors, ['name']);
+// CompanyExchangeRingPulls.cacheDoc('vendor', Vendors, ['name']);

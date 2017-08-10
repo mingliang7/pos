@@ -36,24 +36,6 @@ tabularOpts.columns = [
         }
     },
     {data: "des", title: "Description"},
-    {
-        data: "vendorId",
-        title: "Vendor ID",
-        render: function (val) {
-            Meteor.call('getVendor', {vendorId: val}, function (err, result) {
-                let vendor = VendorNullCollection.findOne(result._id);
-                if (!vendor) {
-                    VendorNullCollection.insert(result);
-                }
-            });
-            try {
-                return VendorNullCollection.findOne(val).name;
-
-            } catch (e) {
-
-            }
-        }
-    },
     {data: "status", title: "Status"},
     //{
     //    data: "_vendor",

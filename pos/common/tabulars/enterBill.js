@@ -37,10 +37,6 @@ tabularOpts.columns = [
     },
     {data: "des", title: "Description"},
     {
-        data: "_vendor.name",
-        title: "Vendor",
-    },
-    {
         data: "billType",
         title: "Type",
         render: function (val) {

@@ -1,6 +1,7 @@
 import {PayBills} from '../../imports/api/collections/payBill';
 import {RemoveEnterBill} from '../../imports/api/collections/removedCollection';
 import {Item} from '../../imports/api/collections/item';
+import {Vendors} from '../../imports/api/collections/vendor';
 Meteor.methods({
     insertRemovedBill(doc){
         if (doc.billType == 'term' && (doc.status == 'partial' || doc.status == 'closed')) {
@@ -13,6 +14,7 @@ Meteor.methods({
     },
     billShowItems({doc}){
         doc.staff = Meteor.users.findOne(doc.staffId).username || '';
+        doc.vendor = Vendors.findOne({_id: doc.vendorId});
         doc.items.forEach(function (item) {
             item.name = Item.findOne(item.itemId).name;
         });

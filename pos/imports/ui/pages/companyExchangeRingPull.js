@@ -61,7 +61,7 @@ let itemsCollection = nullCollection;
 
 // Index
 indexTmpl.onCreated(function () {
-    $(document).on("keydown", "input", function(e) {
+    $(document).on("keydown", "input", function (e) {
         if (e.which == 13)
             e.preventDefault();
     });
@@ -76,8 +76,26 @@ indexTmpl.helpers({
         return CompanyExchangeRingPullTabular;
     },
     selector() {
-        return {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
-    }
+        let selector = {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
+        let vendorId = FlowRouter.query.get('vid');
+        if (vendorId) {
+            selector.vendorId = vendorId;
+        }
+        return selector;
+    },
+    vendorId(){
+        let vendorId = FlowRouter.query.get('vid');
+        return !!vendorId;
+    },
+    displayVendorObj() {
+        let vendorObj = Session.get('vendor::vendorObj');
+        if (vendorObj) {
+            return `<blockquote style="background: teal;color: white;">
+                    Vendor &nbsp;&emsp;&emsp;: ${vendorObj.name}<br>
+                </blockquote>`
+        }
+        return ''
+    },
 });
 indexTmpl.onDestroyed(function () {
     VendorNullCollection.remove({});
@@ -264,8 +282,8 @@ editTmpl.helpers({
     data () {
         let data = this;
         // Add items to local collection
-        _.forEach(data.items, (value)=> {
-            Meteor.call('getItem', value.itemId, (err, result)=> {
+        _.forEach(data.items, (value) => {
+            Meteor.call('getItem', value.itemId, (err, result) => {
                 value.name = result.name;
                 value.saleId = this.saleId;
                 itemsCollection.insert(value);
@@ -390,7 +408,7 @@ let hooksObject = {
         insert: function (doc) {
             let items = [];
             let sumRemainQty = 0;
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 obj.remainQty = obj.qty;
                 sumRemainQty += obj.qty;
@@ -404,7 +422,7 @@ let hooksObject = {
         update: function (doc) {
             let items = [];
             let sumRemainQty = 0;
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 obj.remainQty = obj.qty;
                 sumRemainQty += obj.qty;

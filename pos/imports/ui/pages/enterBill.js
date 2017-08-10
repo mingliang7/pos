@@ -84,8 +84,27 @@ indexTmpl.helpers({
         return EnterBillTabular;
     },
     selector() {
-        return {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
-    }
+        let selector ={status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
+        let vendorId = FlowRouter.query.get('vid');
+        if(vendorId) {
+            selector.vendorId = vendorId;
+        }
+        return selector;
+    },
+    vendorId(){
+        let vendorId = FlowRouter.query.get('vid');
+        return !!vendorId;
+    },
+    displayVendorObj() {
+        let vendorObj = Session.get('vendor::vendorObj');
+        if (vendorObj) {
+            return `<blockquote style="background: teal;color: white;">
+                    Vendor &nbsp;&emsp;&emsp;: ${vendorObj.name}<br>
+                    Balance &emsp;&emsp; ${numeral(vendorObj.balance).format('0,0.00')}
+                </blockquote>`
+        }
+        return ''
+    },
 });
 
 indexTmpl.events({

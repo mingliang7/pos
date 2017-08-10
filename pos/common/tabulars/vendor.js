@@ -26,24 +26,6 @@ tabularOpts.columns = [
     {data: "gender", title: "Gender"},
     {data: "telephone", title: "Telephone"},
     {data: "email", title: "Email"},
-    {
-        data: "_id",
-        title: "Amount Due",
-        render: function (val) {
-            try {
-                Meteor.call('getVendorBalance', {vendorId: val, branchId: Session.get('currentBranch')}, function (err, result) {
-                    let vendorBalance = balanceTmpCollection.findOne(val);
-                    if (!vendorBalance) {
-                        balanceTmpCollection.insert({_id: val, balanceAmount: result});
-                    }
-                });
-                let balanceAmount = balanceTmpCollection.findOne(val).balanceAmount;
-                return numeral(balanceAmount).format('0,0.000');
-            }catch(e){
-
-            }
-        }
-    },
     {title: '', tmpl: Meteor.isClient && Template.Pos_vendorButtonAction}
 ];
 tabularOpts.extraFields = ['termId', '_term', 'paymentType', 'repId', 'paymentGroupId', 'address'];

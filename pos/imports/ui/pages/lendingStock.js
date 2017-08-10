@@ -57,7 +57,7 @@ let indexTmpl = Template.Pos_lendingStock,
 let itemsCollection = new Mongo.Collection(null);
 
 indexTmpl.onCreated(function () {
-    $(document).on("keydown", "input", function(e) {
+    $(document).on("keydown", "input", function (e) {
         if (e.which == 13)
             e.preventDefault();
     });
@@ -72,8 +72,26 @@ indexTmpl.helpers({
         return LendingStockTabular;
     },
     selector() {
-        return {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
-    }
+        let selector = {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
+        let vendorId = FlowRouter.query.get('vid');
+        if (vendorId) {
+            selector.vendorId = vendorId;
+        }
+        return selector;
+    },
+    vendorId(){
+        let vendorId = FlowRouter.query.get('vid');
+        return !!vendorId;
+    },
+    displayVendorObj() {
+        let vendorObj = Session.get('vendor::vendorObj');
+        if (vendorObj) {
+            return `<blockquote style="background: teal;color: white;">
+                    Vendor &nbsp;&emsp;&emsp;: ${vendorObj.name}<br>
+                </blockquote>`
+        }
+        return ''
+    },
 });
 
 indexTmpl.events({
@@ -88,7 +106,7 @@ indexTmpl.events({
         if (inventoryDate && (lendingStockDate < inventoryDate.inventoryDate)) {
             alertify.warning("Can't Update. LendingStock's Date: " + moment(lendingStockDate).format("DD-MM-YYYY")
                 + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
-        }else{
+        } else {
             Meteor.call('isLendingStockHasRelation', data._id, function (error, result) {
                 if (error) {
                     alertify.error(error.message);
@@ -113,7 +131,7 @@ indexTmpl.events({
         if (inventoryDate && (lendingStockDate < inventoryDate.inventoryDate)) {
             alertify.warning("Can't Remove. LendingStock's Date: " + moment(lendingStockDate).format("DD-MM-YYYY")
                 + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
-        }else {
+        } else {
             Meteor.call('isLendingStockHasRelation', id, function (error, result) {
                 if (error) {
                     alertify.error(error.message);
@@ -164,7 +182,7 @@ newTmpl.events({
             swal({
                 title: "Date is greater then current Transaction Date!",
                 text: "Do You want to continue to process to " + moment(lendingStockDate).format('DD-MM-YYYY') +
-                "?\n"+ "Current Transaction Date is: '"+moment(inventoryDate.inventoryDate).format("DD-MM-YYYY")+"'" ,
+                "?\n" + "Current Transaction Date is: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
                 type: "warning", showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, Do it!",
@@ -353,7 +371,7 @@ editTmpl.events({
 });
 editTmpl.helpers({
     lendingStockDate(){
-      return this.lendingStockDate;
+        return this.lendingStockDate;
     },
     closeSwal(){
         setTimeout(function () {
@@ -369,7 +387,7 @@ editTmpl.helpers({
     data () {
         let data = this;
         // Add items to local collection
-        _.forEach(data.items, (value)=> {
+        _.forEach(data.items, (value) => {
             Meteor.call('getItem', value.itemId, function (err, result) {
                 value.name = result.name;
                 itemsCollection.insert(value);
@@ -484,7 +502,7 @@ let hooksObject = {
         insert: function (doc) {
             let items = [];
             let sumRemainQty = 0;
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 obj.remainQty = obj.qty;
                 sumRemainQty += obj.qty;
@@ -498,7 +516,7 @@ let hooksObject = {
         update: function (doc) {
             let items = [];
             let sumRemainQty = 0;
-            itemsCollection.find().forEach((obj)=> {
+            itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 obj.remainQty = obj.qty;
                 sumRemainQty += obj.qty;

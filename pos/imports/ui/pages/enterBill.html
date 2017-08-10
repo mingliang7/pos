@@ -1,9 +1,16 @@
 <!--Index-->
 <template name="Pos_enterBill">
     <div class="box-header with-border">
-        <h3 class="box-title">
-            {{> addNewButton}}
-        </h3>
+        <div class="col-md-12">
+            <h3 class="box-title">
+                {{> addNewButton}}
+            </h3>
+        </div>
+        <div class="col-md-3">
+            {{#if vendorId}}
+                {{{displayVendorObj}}}
+            {{/if}}
+        </div>
     </div>
     <div class="box-body">
         {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
@@ -90,7 +97,8 @@
                         <!--{{> formFooterWithButton}}-->
 
                         {{#formFooter}}
-                            <button type="submit" class="btn btn-primary save-bill" id="save-bill" {{disabledSubmitBtn}}>
+                            <button type="submit" class="btn btn-primary save-bill"
+                                    id="save-bill" {{disabledSubmitBtn}}>
                                 <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
                             </button>
                             <button type="reset" class="btn btn-default">
@@ -219,7 +227,7 @@
 
                     <div class="row">
                         <div class="col-md-4" style="padding: 10px;">
-                            <strong>Vendor: </strong> {{_vendor.name}}<br>
+                            <strong>Vendor: </strong> {{vendor.name}}<br>
                             <strong>Staff: </strong> {{staff}}<br>
                             <span><strong>Bill Date: </strong>{{moFormat enterBillDate 'YYYY-MM-DD HH:mm:ss'}}</span>,
                             <span><strong>Due Date: </strong>{{moFormat dueDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>
@@ -276,53 +284,53 @@
 </template>
 
 <!--<template name="listPrepaidOrder">-->
-    <!--<table class="table table-stripe table-responsive">-->
-        <!--<thead>-->
-        <!--<tr>-->
-            <!--<th>#</th>-->
-            <!--<th>Date</th>-->
-            <!--<th>Customer</th>-->
-            <!--<th>Total</th>-->
-            <!--<th>Remain Qty</th>-->
-            <!--<th>Status</th>-->
-        <!--</tr>-->
-        <!--</thead>-->
-        <!--<tbody>-->
+<!--<table class="table table-stripe table-responsive">-->
+<!--<thead>-->
+<!--<tr>-->
+<!--<th>#</th>-->
+<!--<th>Date</th>-->
+<!--<th>Customer</th>-->
+<!--<th>Total</th>-->
+<!--<th>Remain Qty</th>-->
+<!--<th>Status</th>-->
+<!--</tr>-->
+<!--</thead>-->
+<!--<tbody>-->
         <!--{{#if hasPrepaidOrders}}-->
-            <!--{{#each prepaidOrder in prepaidOrders}}-->
-                <!--<tr class="prepaid-order-doc">-->
-                    <!--<td><a href="">{{prepaidOrder._id}}</a></td>-->
-                    <!--<td>{{moFormat prepaidOrder.orderDate 'YYYY-MM-DD HH:mm'}}</td>-->
-                    <!--<td>{{prepaidOrder._vendor.name}}</td>-->
-                    <!--<td>{{numFormat prepaidOrder.total '0,0.000'}}</td>-->
-                    <!--<td>{{prepaidOrder.sumRemainQty}}</td>-->
-                    <!--<td>{{prepaidOrder.status}}</td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<th></th>-->
-                    <!--<th style="background: teal; color: #fff;">Item</th>-->
-                    <!--<th style="background: teal; color: #fff;">Qty</th>-->
-                    <!--<th style="background: teal; color: #fff;">Price</th>-->
-                    <!--<th style="background: teal; color: #fff;">Amount</th>-->
-                    <!--<th style="background: teal; color: #fff;">Remain QTY</th>-->
-                <!--</tr>-->
-                <!--{{#each prepaidOrder.items}}-->
-                    <!--<tr class="prepaid-order-item-parents">-->
-                        <!--<td><span class="hidden prepaidOrderId">{{prepaidOrder._id}}</span></td>-->
-                        <!--<td>{{getItemName itemId}}</td>-->
-                        <!--<td>{{qty}}</td>-->
-                        <!--<td>{{price}}</td>-->
-                        <!--<td>{{amount}}</td>-->
-                        <!--<td><input type="text" class="remain-qty" value="{{remainQty}}"></td>-->
-                        <!--<td><a href="" class="add-item"><i class="fa fa-plus-circle"></i>Add</a></td>-->
-                    <!--</tr>-->
-                <!--{{/each}}-->
-            <!--{{/each}}-->
+        <!--{{#each prepaidOrder in prepaidOrders}}-->
+<!--<tr class="prepaid-order-doc">-->
+<!--<td><a href="">{{prepaidOrder._id}}</a></td>-->
+<!--<td>{{moFormat prepaidOrder.orderDate 'YYYY-MM-DD HH:mm'}}</td>-->
+<!--<td>{{prepaidOrder._vendor.name}}</td>-->
+<!--<td>{{numFormat prepaidOrder.total '0,0.000'}}</td>-->
+<!--<td>{{prepaidOrder.sumRemainQty}}</td>-->
+<!--<td>{{prepaidOrder.status}}</td>-->
+<!--</tr>-->
+<!--<tr>-->
+<!--<th></th>-->
+<!--<th style="background: teal; color: #fff;">Item</th>-->
+<!--<th style="background: teal; color: #fff;">Qty</th>-->
+<!--<th style="background: teal; color: #fff;">Price</th>-->
+<!--<th style="background: teal; color: #fff;">Amount</th>-->
+<!--<th style="background: teal; color: #fff;">Remain QTY</th>-->
+<!--</tr>-->
+        <!--{{#each prepaidOrder.items}}-->
+<!--<tr class="prepaid-order-item-parents">-->
+<!--<td><span class="hidden prepaidOrderId">{{prepaidOrder._id}}</span></td>-->
+<!--<td>{{getItemName itemId}}</td>-->
+<!--<td>{{qty}}</td>-->
+<!--<td>{{price}}</td>-->
+<!--<td>{{amount}}</td>-->
+<!--<td><input type="text" class="remain-qty" value="{{remainQty}}"></td>-->
+<!--<td><a href="" class="add-item"><i class="fa fa-plus-circle"></i>Add</a></td>-->
+<!--</tr>-->
+        <!--{{/each}}-->
+        <!--{{/each}}-->
         <!--{{else}}-->
-            <!--<h4>-->
-                <!--<bold>No prepaid orders available..</bold>-->
-            <!--</h4>-->
+<!--<h4>-->
+<!--<bold>No prepaid orders available..</bold>-->
+<!--</h4>-->
         <!--{{/if}}-->
-        <!--</tbody>-->
-    <!--</table>-->
+<!--</tbody>-->
+<!--</table>-->
 <!--</template>-->

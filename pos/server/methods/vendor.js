@@ -26,6 +26,7 @@ Meteor.methods({
                 }
             });
         }
-        return totalAmountDue;
+        vendor.balance = totalAmountDue;
+        return vendor;
     }
 });

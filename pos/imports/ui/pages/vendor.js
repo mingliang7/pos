@@ -116,6 +116,18 @@ indexTmpl.events({
     'click .js-update' (event, instance) {
         alertify.vendor(fa('pencil', TAPi18n.__('pos.vendor.title')), renderTemplate(editTmpl, this));
     },
+    'click .display-bill'(event,instance){
+        let path = FlowRouter.path('pos.enterBill') + `?vid=${this._id}`;
+        FlowRouter.go(path);
+    },
+    'click .display-companyExchangeRingPull'(event,instance){
+        let path = FlowRouter.path('pos.companyExchangeRingPull') + `?vid=${this._id}`;
+        FlowRouter.go(path);
+    },
+    'click .display-lendingStock'(event,instance){
+        let path = FlowRouter.path('pos.lendingStock') + `?vid=${this._id}`;
+        FlowRouter.go(path);
+    },
     'click .js-destroy' (event, instance) {
         var id = this._id;
         Meteor.call('isVendorHasRelation', id, function (error, result) {
