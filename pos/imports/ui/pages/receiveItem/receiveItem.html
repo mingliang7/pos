@@ -1,9 +1,16 @@
 <!--Index-->
 <template name="Pos_receiveItem">
     <div class="box-header with-border">
-        <h3 class="box-title">
-            {{> addNewButton}}
-        </h3>
+        <div class="col-md-12">
+            <h3 class="box-title">
+                {{> addNewButton}}
+            </h3>
+        </div>
+        <div class="col-md-3">
+            {{#if vendorId}}
+                {{{displayVendorObj}}}
+            {{/if}}
+        </div>
     </div>
     <div class="box-body">
         {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
@@ -97,7 +104,8 @@
                         <!--{{> formFooterWithButton}}-->
 
                         {{#formFooter}}
-                            <button type="submit" class="btn btn-primary save-receive-item" id="save-receive-item" {{disabledSubmitBtn}}>
+                            <button type="submit" class="btn btn-primary save-receive-item"
+                                    id="save-receive-item" {{disabledSubmitBtn}}>
                                 <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
                             </button>
                             <button type="reset" class="btn btn-default">
@@ -154,7 +162,7 @@
                 <div class="col-md-2">
                     {{> afQuickField name="voucherId"}}
                 </div>
-              <!--  {{#if isTerm}}
+                <!--  {{#if isTerm}}
                     <div class="col-md-2">
                         {{> afQuickField name="termId" options=termOption value=termId}}
                     </div>
@@ -241,7 +249,7 @@
 
                     <div class="row">
                         <div class="col-md-4" style="padding: 10px;">
-                            <strong>Vendor: </strong> {{_vendor.name}}<br>
+                            <strong>Vendor: </strong> {{vendor.name}}<br>
                             <strong>Staff: </strong> {{staff}}<br>
                             <span><strong>Bill Date: </strong>{{moFormat receiveItemDate 'YYYY-MM-DD HH:mm:ss'}}</span>,
                             <span><strong>Due Date: </strong>{{moFormat dueDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>

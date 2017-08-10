@@ -40,7 +40,7 @@ let indexTmpl = Template.Pos_payBillTransaction,
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    createNewAlertify('payBillTransaction', {size: 'lg'});
+    createNewAlertify('payBillTransaction');
     // Reactive table filter
 
 });
@@ -50,7 +50,26 @@ indexTmpl.helpers({
         return PayBillTransactionListTabular;
     },
     selector() {
-        return {branchId: Session.get('currentBranch'), status: {$in: ['closed', 'partial']}};
+        let selector = {branchId: Session.get('currentBranch'), status: {$in: ['closed', 'partial']}};
+        let vendorId = FlowRouter.query.get('vid');
+        if(vendorId) {
+            selector.vendorId = vendorId;
+        }
+        return selector;
+    },
+    vendorId(){
+        let vendorId = FlowRouter.query.get('vid');
+        return !!vendorId;
+    },
+    displayVendorObj() {
+        let vendorObj = Session.get('vendor::vendorObj');
+        if (vendorObj) {
+            return `<blockquote style="background: teal;color: white;">
+                    Vendor &nbsp;&emsp;&emsp;: ${vendorObj.name}<br>
+                    Balance &emsp;&emsp; ${numeral(vendorObj.balance).format('0,0.00')}
+                </blockquote>`
+        }
+        return ''
     }
 
 });
@@ -79,6 +98,9 @@ indexTmpl.events({
         });
     },
     'click .js-display' (event, instance) {
+        Meteor.call('lookupBillObj', this._id, (err, result) => {
+            alertify.payBillTransaction(fa('eyes', 'Show Bill'), renderTemplate(showTmpl, result));
+        })
     }
 });
 

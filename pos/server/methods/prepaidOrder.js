@@ -12,7 +12,16 @@ Meteor.methods({
                     as: "itemDoc"
                 }
             },
+            {
+                $lookup: {
+                    from: "pos_vendors",
+                    localField: "vendorId",
+                    foreignField: "_id",
+                    as: "_vendor"
+                }
+            },
             {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
+            {$unwind: {path: '$_vendor', preserveNullAndEmptyArrays: true}},
             {
                 $group: {
                     _id: '$_id',

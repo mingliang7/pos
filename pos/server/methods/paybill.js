@@ -32,5 +32,25 @@ Meteor.methods({
             collections.direct.update(doc.billId, selector);
         }
         PayBills.remove({_id: doc._id});
+    },
+    lookupBillObj(id) {
+        let vendor = PayBills.aggregate([
+            { $match: { _id: id } },
+            {
+                $lookup: {
+                    from: 'pos_vendors',
+                    localField: 'vendorId',
+                    foreignField: '_id',
+                    as: 'vendorDoc'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$vendorDoc',
+                    preserveNullAndEmptyArrays: true
+                }
+            }
+        ]);
+        return vendor[0];
     }
 });

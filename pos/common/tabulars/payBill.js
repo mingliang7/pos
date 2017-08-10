@@ -31,14 +31,6 @@ tabularOpts.columns = [
         }
     },
     {
-        data: "_vendor.name",
-        title: "Vendor",
-    },
-    {
-        data: "_staff.username",
-        title: "Staff",
-    },
-    {
         data: "dueAmount",
         title: "Actual Due Amount",
         render: function (val, type, doc) {

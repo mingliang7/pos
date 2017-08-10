@@ -91,7 +91,7 @@ import {itemsCollection} from '../../../api/collections/tmpCollection';
 
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    $(document).on("keydown", "input", function(e) {
+    $(document).on("keydown", "input", function (e) {
         if (e.which == 13)
             e.preventDefault();
     });
@@ -109,8 +109,26 @@ indexTmpl.helpers({
         return ReceiveItemTabular;
     },
     selector() {
-        return {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
-    }
+        let selector = {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
+        let vendorId = FlowRouter.query.get('cid');
+        if (vendorId) {
+            selector.vendorId = vendorId;
+        }
+        return selector;
+    },
+    vendorId(){
+        let vendorId = FlowRouter.query.get('vid');
+        return !!vendorId;
+    },
+    displayVendorObj() {
+        let vendorObj = Session.get('vendor::vendorObj');
+        if (vendorObj) {
+            return `<blockquote style="background: teal;color: white;">
+                    Vendor &nbsp;&emsp;&emsp;: ${vendorObj.name}<br>
+                </blockquote>`
+        }
+        return ''
+    },
 });
 
 indexTmpl.events({

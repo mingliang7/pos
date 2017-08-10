@@ -49,12 +49,12 @@ indexTmpl.onCreated(function () {
 
     // Reactive table filter
     this.filter = new ReactiveTable.Filter('pos.vendorByBranchFilter', ['branchId']);
-    this.autorun(()=> {
+    this.autorun(() => {
         this.filter.set(Session.get('currentBranch'));
     });
 });
 
-indexTmpl.onDestroyed(()=> {
+indexTmpl.onDestroyed(() => {
     ReactiveTable.clearFilters(['pos.vendorByBranchFilter']);
 })
 
@@ -116,16 +116,24 @@ indexTmpl.events({
     'click .js-update' (event, instance) {
         alertify.vendor(fa('pencil', TAPi18n.__('pos.vendor.title')), renderTemplate(editTmpl, this));
     },
-    'click .display-bill'(event,instance){
+    'click .display-bill'(event, instance){
         let path = FlowRouter.path('pos.enterBill') + `?vid=${this._id}`;
         FlowRouter.go(path);
     },
-    'click .display-companyExchangeRingPull'(event,instance){
+    'click .display-pay-bill'(event, instance){
+        let path = FlowRouter.path('pos.payBillTransactionList') + `?vid=${this._id}`;
+        FlowRouter.go(path);
+    },
+    'click .display-companyExchangeRingPull'(event, instance){
         let path = FlowRouter.path('pos.companyExchangeRingPull') + `?vid=${this._id}`;
         FlowRouter.go(path);
     },
-    'click .display-lendingStock'(event,instance){
+    'click .display-lendingStock'(event, instance){
         let path = FlowRouter.path('pos.lendingStock') + `?vid=${this._id}`;
+        FlowRouter.go(path);
+    },
+    'click .display-receive-item'(event, instance){
+        let path = FlowRouter.path('pos.receiveItem') + `?vid=${this._id}`;
         FlowRouter.go(path);
     },
     'click .js-destroy' (event, instance) {
@@ -203,7 +211,7 @@ newTmplDropDown.events({
 // Edit
 editTmpl.onCreated(function () {
     this.paymentType = new ReactiveVar(this.data.paymentType);
-    this.autorun(()=> {
+    this.autorun(() => {
         this.subscribe('pos.vendor', {_id: this.data._id});
     });
 });
@@ -231,7 +239,7 @@ editTmpl.helpers({
 
 // Show
 showTmpl.onCreated(function () {
-    this.autorun(()=> {
+    this.autorun(() => {
         this.subscribe('pos.vendor', {_id: this.data._id});
     });
 });
