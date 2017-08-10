@@ -65,11 +65,11 @@ Meteor.methods({
         if (doc.customerId) {
             let customer = Customers.findOne({_id: doc.customerId});
             if (customer) {
-                doc._customer = {name: customer.name};
-                ReceivePayment.direct.update(
+               // doc._customer = {name: customer.name};
+               /* ReceivePayment.direct.update(
                     {invoiceId: doc._id},
                     {$set: {customerId: doc.customerId, '_customer.name': customer.name}},
-                    {multi: true});
+                    {multi: true});*/
                 description = doc.des == "" || doc.des == null ? ("វិក្កយបត្រ អតិថិជនៈ " + customer.name) : doc.des;
                 invoiceJournalSetObj.cusAndVenname = customer.name;
                 invoiceJournalSetObj.memo = description;
