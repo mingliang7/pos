@@ -44,10 +44,10 @@ tabularOpts.columns = [
         }
     },
     {data: "des", title: "Description"},
-    {
-        data: "_customer.name",
-        title: "Customer"
-    },
+    // {
+    //     data: "_customer.name",
+    //     title: "Customer"
+    // },
     // {
     //     data: "_staff.username",
     //     title: "Staff"

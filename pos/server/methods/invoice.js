@@ -41,6 +41,8 @@ Meteor.methods({
     },
     invoiceShowItems({doc}){
         doc.staff = Meteor.users.findOne(doc.staffId).username || '';
+        let customer = Customers.findOne({_id: doc.customerId});
+        doc.customer = customer && customer.name || '';
         doc.items.forEach(function (item) {
             item.name = Item.findOne(item.itemId).name;
         });
@@ -88,7 +90,27 @@ Meteor.methods({
             }
         }
         Invoices.direct.update(doc._id, {$set: doc});
-
-
+    },
+    getCustomerBalanceForInvoice(customerId){
+        let customer = Customers.findOne(customerId);
+        let totalAmountDue = 0;
+        let selector = {customerId: customerId, status: {$in: ['active', 'partial']}};
+        let invoices = (customer && customer.termId) ? Invoices.find(selector) : GroupInvoice.find({
+            vendorOrCustomerId: customerId,
+            status: {$in: ['active', 'partial']}
+        });
+        if (invoices.count() > 0) {
+            invoices.forEach(function (invoice) {
+                let receivePayments = ReceivePayment.find({invoiceId: invoice._id}, {sort: {_id: 1, paymentDate: 1}});
+                if (receivePayments.count() > 0) {
+                    let lastPayment = _.last(receivePayments.fetch());
+                    totalAmountDue += lastPayment.balanceAmount;
+                } else {
+                    totalAmountDue += invoice.total;
+                }
+            });
+        }
+        customer.balance = totalAmountDue;
+        return customer;
     }
 });

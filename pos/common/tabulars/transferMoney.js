@@ -37,20 +37,6 @@ tabularOpts.columns = [
         }
     },
     {
-        data: "_fromBranch",
-        title: "From Branch",
-        render: function(val){
-            return `${val.khName}(${val.enName})`;
-        }
-    },
-    {
-        data: "_toBranch",
-        title: "From Branch",
-        render: function(val){
-            return `${val.khName}(${val.enName})`;
-        }
-    },
-    {
         data: "status",
         title: "Status",
         render: function(val) {

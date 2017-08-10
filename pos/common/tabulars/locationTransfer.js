@@ -36,26 +36,26 @@ tabularOpts.columns = [
         }
     },
     {data: "des", title: "Description"},
-    {
-        data: "_fromBranch",
-        title: "From Branch",
-        render: function(val) {
-            return `${val.khName}(${_.capitalize(val.enName)})`;
-        }
-    },{
-        data: "_toBranch",
-        title: "To Branch",
-        render: function(val) {
-            return `${val.khName}(${_.capitalize(val.enName)})`;
-        }
-    },
-    {
-        data: "_fromStockLocation.name",
-        title: "From Stock",
-    },{
-        data: "_toStockLocation.name",
-        title: "To Stock",
-    },
+    // {
+    //     data: "_fromBranch",
+    //     title: "From Branch",
+    //     render: function(val) {
+    //         return `${val.khName}(${_.capitalize(val.enName)})`;
+    //     }
+    // },{
+    //     data: "_toBranch",
+    //     title: "To Branch",
+    //     render: function(val) {
+    //         return `${val.khName}(${_.capitalize(val.enName)})`;
+    //     }
+    // },
+    // {
+    //     data: "_fromStockLocation.name",
+    //     title: "From Stock",
+    // },{
+    //     data: "_toStockLocation.name",
+    //     title: "To Stock",
+    // },
     {
         data: "status",
         title: "Status",

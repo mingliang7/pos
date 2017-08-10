@@ -1,9 +1,20 @@
 <!--Index-->
 <template name="Pos_exchangeRingPull">
     <div class="box-header with-border">
-        <h3 class="box-title">
-            {{> addNewButton}}
-        </h3>
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="box-title">
+                    {{> addNewButton}}
+                </h3>
+            </div>
+        </div>
+        <div class="row">
+             {{#if customerId}}
+                <div class="col-md-3">
+                    {{{displayCustomerObj}}}
+                </div>
+            {{/if}}
+        </div>
     </div>
     <div class="box-body">
         {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
@@ -148,8 +159,8 @@
                         <div class="col-md-4" style="padding: 10px;">
                             <strong>Customer: </strong> {{customer.name}}<br>
                             <span><strong>ExchangeRingPull Date: </strong>{{moFormat exchangeRingPullDate 'YYYY-MM-DD HH:mm:ss'}}</span><br>
-                            <span><strong>Status: </strong>{{{colorizeStatus status}}}
-                                </span><br>
+                            <!-- <span><strong>Status: </strong>{{{colorizeStatus status}}}
+                                </span><br> -->
                         </div>
                     </div>
                 </div>

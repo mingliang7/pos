@@ -25,8 +25,26 @@ Meteor.methods({
                     as: '_fromUser'
                 }
             },
+            {
+                $lookup: {
+                    from: 'core_branch',
+                    localField: 'fromBranchId',
+                    foreignField: '_id',
+                    as: '_fromBranch',
+                }
+            },
+            {
+                $lookup: {
+                    from: 'core_branch',
+                    localField: 'toBranchId',
+                    foreignField: '_id',
+                    as: '_toBranch',
+                }
+            },
             {$unwind: {path: '$_toUser', preserveNullAndEmptyArrays: true}},
-            {$unwind: {path: '$_fromUser', preserveNullAndEmptyArrays: true}}
+            {$unwind: {path: '$_fromUser', preserveNullAndEmptyArrays: true}},
+            {$unwind: {path: '$_toBranch', preserveNullAndEmptyArrays: true}},
+            {$unwind: {path: '$_fromBranch', preserveNullAndEmptyArrays: true}}
         ]);
         return transferMoney[0];
     }

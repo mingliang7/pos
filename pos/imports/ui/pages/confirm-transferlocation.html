@@ -14,7 +14,7 @@
               UK
             </span>
                                 <span class="survey-name">
-              Transfered From {{_fromBranch.enName}}({{_fromBranch.khName}})
+              Transfered From {{fromBranchId}}
             </span>
                                 <span class="survey-country grid-only">
              <a class="text-gray cursor-pointer show-detail"><i class="fa fa-eye"></i> Show</a>
@@ -37,7 +37,7 @@
                                     <small>
                                         Total: {{numFormat total '0,0.000'}}<br>
                                         Request on: {{moFormat locationTransferDate 'YYYY-MM-DD HH:mm'}} <br>
-                                        by: {{_fromUser.username}}
+                                        <!--by: {{_fromUser.username}}-->
                                     </small>
                                     <span class="survey-stage">
                 {{#if pending}}
@@ -214,8 +214,10 @@
                 </div>
             </div>
             <div class="form-footer">
-                <button type="submit" class="btn btn-primary accept-transfer"><i class="fa fa-paper-plane-o"></i> {{_ "form.btnSubmit"}}</button>
-                <button type="reset" class="btn btn-default"><i class="fa fa-refresh"></i> {{_ "form.btnReset"}}</button>
+                <button type="submit" class="btn btn-primary accept-transfer"><i class="fa fa-paper-plane-o"></i> {{_
+                        "form.btnSubmit"}}</button>
+                <button type="reset" class="btn btn-default"><i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
+                </button>
             </div>
         {{/autoForm}}
     </div>

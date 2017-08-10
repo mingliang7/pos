@@ -1,22 +1,22 @@
-import {Template} from 'meteor/templating';
-import {AutoForm} from 'meteor/aldeed:autoform';
-import {Roles} from  'meteor/alanning:roles';
-import {alertify} from 'meteor/ovcharik:alertifyjs';
-import {sAlert} from 'meteor/juliancwirko:s-alert';
-import {fa} from 'meteor/theara:fa-helpers';
-import {lightbox} from 'meteor/theara:lightbox-helpers';
-import {_} from 'meteor/erasaur:meteor-lodash';
+import { Template } from 'meteor/templating';
+import { AutoForm } from 'meteor/aldeed:autoform';
+import { Roles } from 'meteor/alanning:roles';
+import { alertify } from 'meteor/ovcharik:alertifyjs';
+import { sAlert } from 'meteor/juliancwirko:s-alert';
+import { fa } from 'meteor/theara:fa-helpers';
+import { lightbox } from 'meteor/theara:lightbox-helpers';
+import { _ } from 'meteor/erasaur:meteor-lodash';
 import 'meteor/theara:jsonview';
-import {TAPi18n} from 'meteor/tap:i18n';
+import { TAPi18n } from 'meteor/tap:i18n';
 import 'meteor/tap:i18n-ui';
 
 
 // Lib
-import {createNewAlertify} from '../../../../core/client/libs/create-new-alertify.js';
-import {renderTemplate} from '../../../../core/client/libs/render-template.js';
-import {destroyAction} from '../../../../core/client/libs/destroy-action.js';
-import {displaySuccess, displayError} from '../../../../core/client/libs/display-alert.js';
-import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
+import { createNewAlertify } from '../../../../core/client/libs/create-new-alertify.js';
+import { renderTemplate } from '../../../../core/client/libs/render-template.js';
+import { destroyAction } from '../../../../core/client/libs/destroy-action.js';
+import { displaySuccess, displayError } from '../../../../core/client/libs/display-alert.js';
+import { __ } from '../../../../core/common/libs/tapi18n-callback-helper.js';
 
 // Component
 import '../../../../core/client/components/loading.js';
@@ -24,14 +24,14 @@ import '../../../../core/client/components/column-action.js';
 import '../../../../core/client/components/form-footer.js';
 
 // Collection
-import {InventoryDates} from '../../api/collections/inventoryDate.js';
-import {ExchangeRingPulls} from '../../api/collections/exchangeRingPull.js';
-import {Order} from '../../api/collections/order';
-import {Item} from '../../api/collections/item';
-import {deletedItem} from './exchangeRingPull-items';
-import {CustomerNullCollection, nullCollection} from '../../api/collections/tmpCollection';
+import { InventoryDates } from '../../api/collections/inventoryDate.js';
+import { ExchangeRingPulls } from '../../api/collections/exchangeRingPull.js';
+import { Order } from '../../api/collections/order';
+import { Item } from '../../api/collections/item';
+import { deletedItem } from './exchangeRingPull-items';
+import { CustomerNullCollection, nullCollection } from '../../api/collections/tmpCollection';
 // Tabular
-import {ExchangeRingPullTabular} from '../../../common/tabulars/exchangeRingPull.js';
+import { ExchangeRingPullTabular } from '../../../common/tabulars/exchangeRingPull.js';
 
 // Page
 import './exchangeRingPull.html';
@@ -39,12 +39,12 @@ import './exchangeRingPull-items.js';
 import './info-tab.html';
 import './customer.html';
 //methods
-import {exchangeRingPullInfo} from '../../../common/methods/exchangeRingPull.js'
-import {customerInfo} from '../../../common/methods/customer.js';
+import { exchangeRingPullInfo } from '../../../common/methods/exchangeRingPull.js'
+import { customerInfo } from '../../../common/methods/customer.js';
 
 Tracker.autorun(function () {
     if (Session.get("getCustomerId")) {
-        customerInfo.callPromise({_id: Session.get("getCustomerId")})
+        customerInfo.callPromise({ _id: Session.get("getCustomerId") })
             .then(function (result) {
                 Session.set('customerInfo', result);
             });
@@ -63,31 +63,49 @@ let itemsCollection = nullCollection;
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    $(document).on("keydown", "input", function(e) {
+    $(document).on("keydown", "input", function (e) {
         if (e.which == 13)
             e.preventDefault();
     });
-    createNewAlertify('exchangeRingPull', {size: 'lg'});
-    createNewAlertify('exchangeRingPullShow', {size: 'lg'});
+    createNewAlertify('exchangeRingPull', { size: 'lg' });
+    createNewAlertify('exchangeRingPullShow', { size: 'lg' });
     createNewAlertify('customer');
 });
 
 indexTmpl.helpers({
-    tabularTable(){
+    tabularTable() {
         return ExchangeRingPullTabular;
     },
     selector() {
-        return {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
-    }
+        let selector = { status: { $ne: 'removed' }, branchId: Session.get('currentBranch') };
+        let customerId = FlowRouter.query.get('cid');
+        if(customerId){
+            selector.customerId = customerId
+        }
+        return selector;
+    },
+    customerId(){
+        let customerId = FlowRouter.query.get('cid');
+        return !!customerId;
+    },
+    displayCustomerObj() {
+        let customerObj = Session.get('customer::customerObj');
+        if (customerObj) {
+            return `<blockquote style="background: teal;color: white;">
+                    Customer &emsp;&emsp;: ${customerObj.name}<br>
+                </blockquote>`
+        }
+        return ''
+    },
 });
 indexTmpl.onDestroyed(function () {
     CustomerNullCollection.remove({});
 });
 indexTmpl.events({
-    'click .js-create' (event, instance) {
+    'click .js-create'(event, instance) {
         alertify.exchangeRingPull(fa('cart-arrow-down', TAPi18n.__('pos.exchangeRingPull.title')), renderTemplate(newTmpl)).maximize();
     },
-    'click .js-update' (event, instance) {
+    'click .js-update'(event, instance) {
         // if (this.saleId || (this.exchangeRingPullType == 'term' && this.status != 'closed')) {
         //     excuteEditForm(this);
         // }
@@ -106,65 +124,65 @@ indexTmpl.events({
         //     });
         // }
         let data = this;
-        let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
+        let inventoryDate = InventoryDates.findOne({ branchId: data.branchId, stockLocationId: data.stockLocationId });
         let exchangeRingPullDate = moment(data.exchangeRingPullDate).startOf('days').toDate();
         if (inventoryDate && (exchangeRingPullDate < inventoryDate.inventoryDate)) {
             alertify.warning("Can't Remove. ExchangeRingPull's Date: " + moment(exchangeRingPullDate).format("DD-MM-YYYY")
                 + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
-        }else{
+        } else {
             excuteEditForm(data);
         }
     },
-    'click .js-destroy' (event, instance) {
+    'click .js-destroy'(event, instance) {
         let data = this;
-        let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
+        let inventoryDate = InventoryDates.findOne({ branchId: data.branchId, stockLocationId: data.stockLocationId });
         let exchangeRingPullDate = moment(data.exchangeRingPullDate).startOf('days').toDate();
         if (inventoryDate && (exchangeRingPullDate < inventoryDate.inventoryDate)) {
             alertify.warning("Can't Remove. ExchangeRingPull's Date: " + moment(exchangeRingPullDate).format("DD-MM-YYYY")
                 + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
-           /* swal({
-                title: "Date is less then current Transaction Date!",
-                text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
-                type: "warning", showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, Do it!",
-                closeOnConfirm: false
-            }).then(function () {
-                swal.close();
-                destroyAction(
-                    ExchangeRingPulls,
-                    {_id: data._id},
-                    {title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: data._id}
-                );
-            }, function (dismiss) {
-                if (dismiss === 'cancel') {
-                    return false;
-                }
-            });*/
+            /* swal({
+                 title: "Date is less then current Transaction Date!",
+                 text: "Stock will recalculate on: '" + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY") + "'",
+                 type: "warning", showCancelButton: true,
+                 confirmButtonColor: "#DD6B55",
+                 confirmButtonText: "Yes, Do it!",
+                 closeOnConfirm: false
+             }).then(function () {
+                 swal.close();
+                 destroyAction(
+                     ExchangeRingPulls,
+                     {_id: data._id},
+                     {title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: data._id}
+                 );
+             }, function (dismiss) {
+                 if (dismiss === 'cancel') {
+                     return false;
+                 }
+             });*/
         }
         else {
             destroyAction(
                 ExchangeRingPulls,
-                {_id: data._id},
-                {title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: data._id}
+                { _id: data._id },
+                { title: TAPi18n.__('pos.exchangeRingPull.title'), itemTitle: data._id }
             );
         }
 
     },
-    'click .js-display' (event, instance) {
+    'click .js-display'(event, instance) {
         swal({
             title: "Pleas Wait",
             text: "Getting ExchangeRingPulls....", showConfirmButton: false
         });
-        this.customer = CustomerNullCollection.findOne(this.customerId).name;
-        Meteor.call('exchangeRingPullShow', {_id: this._id}, function (err, result) {
+        Meteor.call('exchangeRingPullShow', { _id: this._id }, function (err, result) {
+            console.log(result)
             swal.close();
             alertify.exchangeRingPullShow(fa('eye', TAPi18n.__('pos.exchangeRingPull.title')), renderTemplate(showTmpl, result)).maximize();
         });
     },
-    'click .js-exchangeRingPull' (event, instance) {
+    'click .js-exchangeRingPull'(event, instance) {
         let params = {};
-        let queryParams = {exchangeRingPullId: this._id};
+        let queryParams = { exchangeRingPullId: this._id };
         let path = FlowRouter.path("pos.exchangeRingPullReportGen", params, queryParams);
 
         window.open(path, '_blank');
@@ -179,10 +197,10 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
-    'click .save-exchange-ring-pull'(){
+    'click .save-exchange-ring-pull'() {
         let branchId = Session.get('currentBranch');
         let stockLocationId = $('[name="stockLocationId"]').val();
-        let inventoryDate = InventoryDates.findOne({branchId: branchId, stockLocationId: stockLocationId});
+        let inventoryDate = InventoryDates.findOne({ branchId: branchId, stockLocationId: stockLocationId });
         let exchangeRingPullDate = AutoForm.getFieldValue('exchangeRingPullDate', 'Pos_exchangeRingPullNew');
         exchangeRingPullDate = moment(exchangeRingPullDate).startOf('days').toDate();
         if (inventoryDate && (exchangeRingPullDate > inventoryDate.inventoryDate)) {
@@ -210,7 +228,7 @@ newTmpl.events({
         }
         return false;
     },
-    'change [name="stockLocationId"]'(event, instance){
+    'change [name="stockLocationId"]'(event, instance) {
         debugger;
         let stockLocationId = $(event.currentTarget).val();
         let items = itemsCollection.find().fetch();
@@ -224,13 +242,13 @@ newTmpl.events({
         }
 
     },
-    'click .add-new-customer'(event, instance){
+    'click .add-new-customer'(event, instance) {
         alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
     },
-    'click .go-to-receive-payment'(event, instance){
+    'click .go-to-receive-payment'(event, instance) {
         alertify.exchangeRingPull().close();
     },
-    'change [name=customerId]'(event, instance){
+    'change [name=customerId]'(event, instance) {
         if (event.currentTarget.value != '') {
             Session.set('getCustomerId', event.currentTarget.value);
             if (FlowRouter.query.get('customerId')) {
@@ -241,7 +259,7 @@ newTmpl.events({
     },
 });
 newTmpl.helpers({
-    repId(){
+    repId() {
         if (Session.get('customerInfo')) {
             try {
                 return Session.get('customerInfo').repId;
@@ -250,14 +268,14 @@ newTmpl.helpers({
             }
         }
     },
-    options(){
+    options() {
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().repList) {
             return instance.repOptions.get().repList
         }
         return [];
     },
-    totalOrder(){
+    totalOrder() {
         let total = 0;
         if (!FlowRouter.query.get('customerId')) {
             itemsCollection.find().forEach(function (item) {
@@ -268,12 +286,12 @@ newTmpl.helpers({
             let totalOrder = Session.get('totalOrder');
             return totalOrder;
         }
-        return {total};
+        return { total };
     },
     customerInfo() {
         let customerInfo = Session.get('customerInfo');
         if (!customerInfo) {
-            return {empty: true, message: 'No data available'}
+            return { empty: true, message: 'No data available' }
         }
 
         return {
@@ -283,16 +301,16 @@ newTmpl.helpers({
               <li>Sale Order to be exchangeRingPull: <span class="label label-primary">0</span>`
         };
     },
-    collection(){
+    collection() {
         return ExchangeRingPulls;
     },
-    itemsCollection(){
+    itemsCollection() {
         return itemsCollection;
     },
     disabledSubmitBtn: function () {
         let cont = itemsCollection.find().count();
         if (cont == 0) {
-            return {disabled: true};
+            return { disabled: true };
         }
 
         return {};
@@ -319,7 +337,7 @@ editTmpl.onCreated(function () {
 
 
 editTmpl.events({
-    'change [name="stockLocationId"]'(event, instance){
+    'change [name="stockLocationId"]'(event, instance) {
         let invoice = instance.data;
         let stockLocationId = $(event.currentTarget).val();
         let items = itemsCollection.find().fetch();
@@ -343,23 +361,23 @@ editTmpl.events({
             });
         }
     },
-    'click .add-new-customer'(event, instance){
+    'click .add-new-customer'(event, instance) {
         alertify.customer(fa('plus', 'New Customer'), renderTemplate(Template.Pos_customerNew));
     },
-    'click .go-to-receive-payment'(event, instance){
+    'click .go-to-receive-payment'(event, instance) {
         alertify.exchangeRingPull().close();
     }
 });
 editTmpl.helpers({
-    closeSwal(){
+    closeSwal() {
         setTimeout(function () {
             swal.close();
         }, 500);
     },
-    collection(){
+    collection() {
         return ExchangeRingPulls;
     },
-    data () {
+    data() {
         let data = this;
         // Add items to local collection
         _.forEach(data.items, (value) => {
@@ -371,16 +389,16 @@ editTmpl.helpers({
         });
         return data;
     },
-    exchangeRingPullDate(){
+    exchangeRingPullDate() {
         return this.exchangeRingPullDate;
     },
-    itemsCollection(){
+    itemsCollection() {
         return itemsCollection;
     },
     disabledSubmitBtn: function () {
         let cont = itemsCollection.find().count();
         if (cont == 0) {
-            return {disabled: true};
+            return { disabled: true };
         }
 
         return {};
@@ -395,14 +413,14 @@ editTmpl.helpers({
      }
      return '';
      },*/
-    options(){
+    options() {
         let instance = Template.instance();
         if (instance.repOptions.get() && instance.repOptions.get().repList) {
             return instance.repOptions.get().repList
         }
         return '';
     },
-    totalOrder(){
+    totalOrder() {
         let total = 0;
         if (!FlowRouter.query.get('customerId')) {
             itemsCollection.find().forEach(function (item) {
@@ -413,12 +431,12 @@ editTmpl.helpers({
             let totalOrder = Session.get('totalOrder');
             return totalOrder;
         }
-        return {total};
+        return { total };
     },
     customerInfo() {
         let customerInfo = Session.get('customerInfo');
         if (!customerInfo) {
-            return {empty: true, message: 'No data available'}
+            return { empty: true, message: 'No data available' }
         }
 
         return {
@@ -428,10 +446,10 @@ editTmpl.helpers({
               <li>Sale Order to be exchangeRingPull: <span class="label label-primary">0</span>`
         };
     },
-    collection(){
+    collection() {
         return ExchangeRingPulls;
     },
-    itemsCollection(){
+    itemsCollection() {
         return itemsCollection;
     },
 });
@@ -460,11 +478,11 @@ showTmpl.onCreated(function () {
 });
 
 showTmpl.helpers({
-    company(){
+    company() {
         let doc = Session.get('currentUserStockAndAccountMappingDoc');
         return doc.company;
     },
-    i18nLabel(label){
+    i18nLabel(label) {
         let key = `pos.exchangeRingPull.schema.${label}.label`;
         return TAPi18n.__(key);
     },
@@ -474,7 +492,7 @@ showTmpl.helpers({
         }
         return `<label class="label label-success">G</label>`
     },
-    colorizeStatus(status){
+    colorizeStatus(status) {
         if (status == 'active') {
             return `<label class="label label-info">A</label>`
         } else if (status == 'partial') {
@@ -484,7 +502,7 @@ showTmpl.helpers({
     }
 });
 showTmpl.events({
-    'click .print-exchangeRingPull-show'(event, instance){
+    'click .print-exchangeRingPull-show'(event, instance) {
         $('#to-print').printThis();
     }
 });
@@ -522,7 +540,7 @@ let hooksObject = {
             return doc;
         }
     },
-    onSuccess (formType, id) {
+    onSuccess(formType, id) {
         //get exchangeRingPullId, total, customerId
         if (formType != 'update') {
             if (!FlowRouter.query.get('customerId')) {
@@ -544,7 +562,7 @@ let hooksObject = {
         // }
         displaySuccess();
     },
-    onError (formType, error) {
+    onError(formType, error) {
         displayError(error.message);
     }
 };

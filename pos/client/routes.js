@@ -5,7 +5,8 @@ import {FlowRouterTitle} from 'meteor/ostrio:flow-router-title';
 import 'meteor/arillo:flow-router-helpers';
 import 'meteor/zimme:active-route';
 import 'meteor/theara:flow-router-breadcrumb';
-
+//Tracker
+import '../imports/api/tracker/customer';
 // Lib
 import {__} from '../../core/common/libs/tapi18n-callback-helper.js';
 

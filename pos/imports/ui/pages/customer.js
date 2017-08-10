@@ -118,6 +118,18 @@ indexTmpl.events({
     'click .js-update' (event, instance) {
         alertify.customer(fa('pencil', TAPi18n.__('pos.customer.title')), renderTemplate(editTmpl, this));
     },
+    'click .display-invoice'(event,instance){
+        let path = FlowRouter.path('pos.invoice') + `?cid=${this._id}`;
+        FlowRouter.go(path)
+    },
+    'click .display-receivePayment'(event,instance){
+        let path = FlowRouter.path('pos.paymentTransactionList') + `?cid=${this._id}`;
+        FlowRouter.go(path)
+    },
+    'click .display-exchangeRingPull'(event,instance){
+        let path = FlowRouter.path('pos.exchangeRingPull')+ `?cid=${this._id}`;
+        FlowRouter.go(path)
+    },
     'click .js-destroy' (event, instance) {
         var id = this._id;
         Meteor.call('isCustomerHasRelation', id, function (error, result) {
@@ -238,7 +250,7 @@ showTmpl.helpers({
 //receive payment
 Template.Pos_customerButtonAction.helpers({
     checkIfInvoiced(){
-        debugger
+        // debugger
     }
 });
 // Hook

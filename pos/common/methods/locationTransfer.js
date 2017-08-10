@@ -16,8 +16,8 @@ export const LocationTransferInfo = new ValidatedMethod({
         }
     }).validator(),
     run({
-        _id
-    }) {
+            _id
+        }) {
         if (!this.isSimulation) {
             let locationTransfer = LocationTransfers.aggregate([{$match: {_id: _id}}, {
                 $unwind: '$items'
@@ -47,6 +47,42 @@ export const LocationTransferInfo = new ValidatedMethod({
                         as: '_fromUser'
                     }
                 },
+                {
+                    $lookup: {
+                        from: 'pos_stockLocations',
+                        localField: 'fromStockLocationId',
+                        foreignField: '_id',
+                        as: '_fromStockLocation'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'pos_stockLocations',
+                        localField: 'toStockLocationId',
+                        foreignField: '_id',
+                        as: '_toStockLocation'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'core_branch',
+                        localField: 'toBranchId',
+                        foreignField: '_id',
+                        as: '_toBranch'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'core_branch',
+                        localField: 'fromBranchId',
+                        foreignField: '_id',
+                        as: '_fromBranch'
+                    }
+                },
+                {$unwind: {path: '$_fromStockLocation', preserveNullAndEmptyArrays: true}},
+                {$unwind: {path: '$_toStockLocation', preserveNullAndEmptyArrays: true}},
+                {$unwind: {path: '$_fromBranch', preserveNullAndEmptyArrays: true}},
+                {$unwind: {path: '$_toBranch', preserveNullAndEmptyArrays: true}},
                 {$unwind: {path: '$_toUser', preserveNullAndEmptyArrays: true}},
                 {$unwind: {path: '$_fromUser', preserveNullAndEmptyArrays: true}},
                 {

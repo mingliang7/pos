@@ -12,6 +12,15 @@ Meteor.methods({
                     as: "itemDoc"
                 }
             },
+            {
+                $lookup: {
+                    from: 'pos_customers',
+                    localField: 'customerId',
+                    foreignField: '_id',
+                    as: 'customerDoc'
+                }
+            },
+            {$unwind: {path: '$customerDoc',preserveNullAndEmptyArrays: true}},
             {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
             {
                 $group: {
@@ -24,7 +33,7 @@ Meteor.methods({
                             amount: '$items.amount',
                         }
                     },
-                    customer: {$last: '$_customer'},
+                    customer: {$last: '$customerDoc'},
                     branchId: {$last: '$branchId'},
                     exchangeRingPullDate: {$last: '$exchangeRingPullDate'},
                     status: {$last: '$status'},

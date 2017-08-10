@@ -121,11 +121,11 @@
                         <i class="fa fa-file-text"></i> <span>{{_ "pos.sidebarMenu.invoice"}}</span>
                     </a>
                 </li>
-                <li class="{{isActiveRoute name='pos.groupInvoiceList'}}">
+                <!-- <li class="{{isActiveRoute name='pos.groupInvoiceList'}}">
                     <a href="{{pathFor 'pos.groupInvoiceList'}}">
                         <i class="fa fa-list-alt"></i> <span>Group Invoice List</span>
                     </a>
-                </li>
+                </li> -->
                 <li class="{{isActiveRoute name='pos.receivePayment'}}">
                     <a href="{{pathFor 'pos.receivePayment'}}">
                         <i class="fa fa-money"></i> <span>Receive Payment</span>
@@ -379,22 +379,22 @@
                                 </a>
                             </li>
                         {{/if}}
-                        {{#if isInRole 'group-total-sale-report' 'Pos'}}
+                        <!-- {{#if isInRole 'group-total-sale-report' 'Pos'}}
                             <li>
                                 <a href="{{groupInvoice}}">
                                     <i class="fa fa-file-o"></i>
                                     <span>Group Total Sale</span>
                                 </a>
                             </li>
-                        {{/if}}
-                        {{#if isInRole 'group-balance-report' 'Pos'}}
+                        {{/if}} -->
+                        <!-- {{#if isInRole 'group-balance-report' 'Pos'}}
                             <li>
                                 <a href="{{groupBalance}}">
                                     <i class="fa fa-file-o"></i>
                                     <span>Group Balance Report</span>
                                 </a>
                             </li>
-                        {{/if}}
+                        {{/if}} -->
                         {{#if isInRole 'total-credit-report' 'Pos'}}
                             <li>
                                 <a href="{{customerTotalCredit}}">
@@ -403,22 +403,22 @@
                                 </a>
                             </li>
                         {{/if}}
-                        {{#if isInRole 'unpaid-invoice-over-due-report' 'Pos'}}
-                            <li>
-                                <a href="{{unpaidInvoiceOverdue}}">
-                                    <i class="fa fa-file-o"></i>
-                                    <span>Unpaid Invoice Overdue</span>
-                                </a>
-                            </li>
-                        {{/if}}
-                        {{#if isInRole 'unpaid-group-invoice-report' 'Pos'}}
-                            <li>
-                                <a href="{{unpaidGroupInvoiceOverdue}}">
-                                    <i class="fa fa-file-o"></i>
-                                    <span>Unpaid Group Invoice <br>&nbsp;Overdue</span>
-                                </a>
-                            </li>
-                        {{/if}}
+                        <!--{{#if isInRole 'unpaid-invoice-over-due-report' 'Pos'}}-->
+                            <!--<li>-->
+                                <!--<a href="{{unpaidInvoiceOverdue}}">-->
+                                    <!--<i class="fa fa-file-o"></i>-->
+                                    <!--<span>Unpaid Invoice Overdue</span>-->
+                                <!--</a>-->
+                            <!--</li>-->
+                        <!--{{/if}}-->
+                        <!--{{#if isInRole 'unpaid-group-invoice-report' 'Pos'}}-->
+                            <!--<li>-->
+                                <!--<a href="{{unpaidGroupInvoiceOverdue}}">-->
+                                    <!--<i class="fa fa-file-o"></i>-->
+                                    <!--<span>Unpaid Group Invoice <br>&nbsp;Overdue</span>-->
+                                <!--</a>-->
+                            <!--</li>-->
+                        <!--{{/if}}-->
                         {{#if isInRole 'receive-payment-report' 'Pos'}}
                             <li>
                                 <a href="{{receivePayment}}">

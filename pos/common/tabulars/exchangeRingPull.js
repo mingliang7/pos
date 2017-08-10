@@ -35,25 +35,6 @@ tabularOpts.columns = [
         }
     },
     {data: "des", title: "Description"},
-    {
-        data: "customerId",
-        title: "Customer ID",
-        render: function (val) {
-            Meteor.call('getCustomer', {customerId: val}, function (err, result) {
-                let customer = CustomerNullCollection.findOne(result._id);
-                if (!customer) {
-                    CustomerNullCollection.insert(result);
-                }
-            });
-            try {
-                return CustomerNullCollection.findOne(val).name;
-
-            } catch (e) {
-
-            }
-        }
-    },
-    {data: "status", title: "Status"},
     //{
     //    data: "_customer",
     //    title: "Customer Info",

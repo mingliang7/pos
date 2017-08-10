@@ -31,10 +31,10 @@ tabularOpts.columns = [
             return moment(val).format('YYYY-MM-DD HH:mm')
         }
     },
-    {
-        data: "_customer.name",
-        title: "Customer"
-    },
+    // {
+    //     data: "_customer.name",
+    //     title: "Customer"
+    // },
     {
         data: "dueAmount",
         title: "Actual Due Amount",

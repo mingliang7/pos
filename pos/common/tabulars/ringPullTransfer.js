@@ -35,20 +35,6 @@ tabularOpts.columns = [
             return numeral(val).format('0,0.000');
         }
     },
-    {
-        data: "_fromBranch",
-        title: "From Branch",
-        render: function (val) {
-            return `${val.khName}(${_.capitalize(val.enName)})`;
-        }
-    },
-    {
-        data: "_toBranch",
-        title: "To Branch",
-        render: function (val) {
-            return `${val.khName}(${_.capitalize(val.enName)})`;
-        }
-    },
     {data: "des", title: "Description"},
     {
         data: "status",

@@ -73,22 +73,53 @@ let dateState = new ReactiveVar();
 // Index
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    $(document).on("keydown", "input", function(e) {
+    $(document).on("keydown", "input", function (e) {
         if (e.which == 13)
             e.preventDefault();
     });
+    this.customerObj = new ReactiveVar();
     createNewAlertify('invoice', {size: 'lg'});
     createNewAlertify('invoiceShow',);
     createNewAlertify('listSaleOrder', {size: 'lg'});
     createNewAlertify('customer');
+    this.autorun(() => {
+        let customerId = FlowRouter.query.get('cid');
+        if (customerId) {
+            Meteor.call("getCustomerBalanceForInvoice", customerId, (err, result) => {
+                if (!err) {
+                    this.customerObj.set(result);
+                }
+            });
+        }
+    });
 });
 
 indexTmpl.helpers({
     tabularTable() {
         return InvoiceTabular;
     },
+    customerId(){
+        let customerId = FlowRouter.query.get('cid');
+        return !!customerId;
+    },
+    displayCustomerObj(){
+        let instance = Template.instance();
+        let customerObj = instance.customerObj.get();
+        if (customerObj) {
+            return `<blockquote style="background: teal;color: white;">
+                    Customer &emsp;&emsp;: ${customerObj.name}<br>
+                    Balance &emsp;&emsp;&nbsp;&nbsp;&nbsp;: ${numeral(customerObj.balance).format('0,0.00')}
+                </blockquote>`
+        }
+        return ''
+    },
     selector() {
-        return {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
+        let selector = {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
+        let customerId = FlowRouter.query.get('cid');
+        if (customerId) {
+            selector.customerId = customerId;
+        }
+        return selector;
     }
 });
 indexTmpl.onDestroyed(function () {
@@ -236,7 +267,6 @@ indexTmpl.events({
             title: "Pleas Wait",
             text: "Getting Invoices....", showConfirmButton: false
         });
-        this.customer = _.capitalize(this._customer.name);
         Meteor.call('invoiceShowItems', {doc: this}, function (err, result) {
             swal.close();
             alertify.invoiceShow(fa('eye', TAPi18n.__('pos.invoice.title')), renderTemplate(showTmpl, result)).maximize();
