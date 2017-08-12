@@ -110,7 +110,7 @@ indexTmpl.helpers({
     },
     selector() {
         let selector = {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
-        let vendorId = FlowRouter.query.get('cid');
+        let vendorId = FlowRouter.query.get('vid');
         if (vendorId) {
             selector.vendorId = vendorId;
         }
