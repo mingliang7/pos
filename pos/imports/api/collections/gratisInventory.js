@@ -19,7 +19,8 @@ GratisInventories.schema = new SimpleSchema({
         type: String
     },
     qty: {
-        type: Number
+        type: Number,
+        decimal: true
     },
     branchId: {
         type: String

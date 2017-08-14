@@ -17,7 +17,7 @@ ExchangeGratis.itemsSchema = new SimpleSchema({
     },
     qty: {
         type: Number,
-        min: 1
+        decimal:true
     },
     price: {
         type: Number,
