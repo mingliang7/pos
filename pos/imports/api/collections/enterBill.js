@@ -6,7 +6,7 @@ import {moment} from 'meteor/momentjs:moment';
 
 // Lib
 import {__} from '../../../../core/common/libs/tapi18n-callback-helper.js';
-import {SelectOpts} from '../../ui/libs/select-opts.js';
+import  {SelectOpts} from '../../../../acc/imports/ui/libs/select-opts';
 
 export const EnterBills = new Mongo.Collection("pos_enterBills");
 
@@ -197,6 +197,16 @@ EnterBills.schema = new SimpleSchema({
     closedAt: {
         type: Date,
         optional: true
+    },
+    accountId: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: 'select2',
+            options(){
+                return SelectOpts.chartAccount();
+            }
+        }
     }
 });
 
