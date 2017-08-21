@@ -1027,7 +1027,11 @@ let hooksObject = {
     before: {
         insert: function (doc) {
             let items = [];
-
+            let dateStr = moment(doc.invoiceDate).format('YYYY-MM-DD 07:07');
+            let currentDate = moment(doc.invoiceDate).format('YYYY-MM-DD HH:mm');
+            if(moment(dateStr).isAfter(currentDate)) {
+                doc.invoiceDate = moment(dateStr).toDate();
+            }
             itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 if (obj.saleId) {
