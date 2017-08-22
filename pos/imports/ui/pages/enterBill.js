@@ -39,6 +39,7 @@ import './vendor.html'
 //methods
 import {EnterBillInfo} from '../../../common/methods/enterBill.js'
 import {vendorInfo} from '../../../common/methods/vendor.js';
+import  {SelectOpts} from '../../../../acc/imports/ui/libs/select-opts';
 
 //Tracker for vendor infomation
 Tracker.autorun(function () {
@@ -244,6 +245,7 @@ indexTmpl.onDestroyed(function () {
 });
 newTmpl.onCreated(function () {
     this.repOptions = new ReactiveVar();
+    this.chartAccount = new ReactiveVar();
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
     });
@@ -295,6 +297,10 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
+    chartAccount(){
+      let instance = Template.instance();
+      return instance.chartAccount.get();
+    },
     totalOrder(){
         let total = 0;
         if (!FlowRouter.query.get('vendorId')) {

@@ -35,7 +35,9 @@
              </span>
 
                                     <small>
-                                        Total: {{numFormat total '0,0.000'}}<br>
+                                        {{#if isInRole 'show-stock-transfer-total' 'Pos'}}
+                                            Total: {{numFormat total '0,0.000'}}<br>
+                                        {{/if}}
                                         Request on: {{moFormat locationTransferDate 'YYYY-MM-DD HH:mm'}} <br>
                                         <!--by: {{_fromUser.username}}-->
                                     </small>
@@ -177,16 +179,24 @@
                                 {{#each item in items}}
                                     <tr>
                                         <td>{{item.name}}</td>
-                                        <td class="text-center">${{numFormat item.price '0,0.000'}}</td>
+                                        {{#if isInRole 'show-stock-transfer-total' 'Pos'}}
+                                            <td class="text-center">${{numFormat item.price '0,0.000'}}</td>
+                                        {{else}}
+                                            <td></td>
+                                        {{/if}}
                                         <td class="text-center">{{item.qty}}</td>
-                                        <td class="text-right">${{numFormat item.amount '0,0.000'}}</td>
+                                        {{#if isInRole 'show-stock-transfer-total' 'Pos'}}
+                                            <td class="text-right">${{numFormat item.amount '0,0.000'}}</td>
+                                        {{/if}}
                                     </tr>
                                 {{/each}}
                                 <tr>
                                     <td class="no-line"></td>
                                     <td class="no-line"></td>
-                                    <td class="no-line text-center"><strong>Total</strong></td>
-                                    <td class="no-line text-right">${{numFormat data.total '0,0.000'}}</td>
+                                    {{#if isInRole 'show-stock-transfer-total' 'Pos'}}
+                                        <td class="no-line text-center"><strong>Total</strong></td>
+                                        <td class="no-line text-right">${{numFormat data.total '0,0.000'}}</td>
+                                    {{/if}}
                                 </tr>
                                 </tbody>
                             </table>

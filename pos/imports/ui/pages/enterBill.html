@@ -111,6 +111,9 @@
             <div class="col-md-3">
                 {{> afQuickField name="des"}}
             </div>
+            <div class="col-md-3">
+                {{> afQuickField name="accountId" label="Chart Account"}}
+            </div>
         {{/autoForm}}
     </div>
 </template>
@@ -186,7 +189,9 @@
                 <div class="col-md-3">
                     {{> afQuickField name="des"}}
                 </div>
-
+                <div class="col-md-3">
+                    {{> afQuickField name="accountId" label="Chart Account"}}
+                </div>
             {{/autoForm}}
         {{else}}
             {{> loading}}

@@ -1,6 +1,5 @@
 Tracker.autorun(() => {
     let customerId = FlowRouter.query.get('cid');
-    console.log('inside customer auto run', customerId);
     if (customerId) {
         Meteor.call('getCustomerBalanceForInvoice', customerId, (err, result) => {
             if (!err) {
@@ -12,7 +11,6 @@ Tracker.autorun(() => {
 
 Tracker.autorun(() => {
     let vendorId = FlowRouter.query.get('vid');
-    console.log('inside vendor auto run', vendorId);
     if (vendorId) {
         Meteor.call('getVendorBalance', {vendorId,branchId: Session.get('currentBranch')}, (err, result) => {
             if (!err) {

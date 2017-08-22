@@ -55,6 +55,10 @@ invoiceDataTmpl.onDestroyed(function () {
     $('.sub-header').removeClass('rpt rpt-header');
 });
 invoiceDataTmpl.events({
+    'click .goto-unpaid'(event,instace){
+        let path = `/pos/report/termCustomerBalance?branchId=${Session.get('currentBranch')}&customer=${this.customerDoc._id}`;
+        FlowRouter.go(path);
+    }
 
 });
 invoiceDataTmpl.helpers({
