@@ -198,6 +198,12 @@
                 <i class="fa fa-angle-left pull-right"></i>
             </a>
             <ul class="treeview-menu" style="display: none;">
+                <li class="{{isActiveRoute name='pos.adjustment'}}">
+                    <a href="{{pathFor 'pos.adjustment'}}">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                        <span>Adjustment</span>
+                    </a>
+                </li>
                 <li class="{{isActiveRoute name='pos.convertItem'}}">
                     <a href="{{pathFor 'pos.convertItem'}}">
                         <i class="fa fa-money" aria-hidden="true"></i>
@@ -403,22 +409,22 @@
                                 </a>
                             </li>
                         {{/if}}
-                        <!--{{#if isInRole 'unpaid-invoice-over-due-report' 'Pos'}}-->
-                            <!--<li>-->
-                                <!--<a href="{{unpaidInvoiceOverdue}}">-->
-                                    <!--<i class="fa fa-file-o"></i>-->
-                                    <!--<span>Unpaid Invoice Overdue</span>-->
-                                <!--</a>-->
-                            <!--</li>-->
-                        <!--{{/if}}-->
-                        <!--{{#if isInRole 'unpaid-group-invoice-report' 'Pos'}}-->
-                            <!--<li>-->
-                                <!--<a href="{{unpaidGroupInvoiceOverdue}}">-->
-                                    <!--<i class="fa fa-file-o"></i>-->
-                                    <!--<span>Unpaid Group Invoice <br>&nbsp;Overdue</span>-->
-                                <!--</a>-->
-                            <!--</li>-->
-                        <!--{{/if}}-->
+                            <!--{{#if isInRole 'unpaid-invoice-over-due-report' 'Pos'}}-->
+                        <!--<li>-->
+                        <!--<a href="{{unpaidInvoiceOverdue}}">-->
+                        <!--<i class="fa fa-file-o"></i>-->
+                        <!--<span>Unpaid Invoice Overdue</span>-->
+                        <!--</a>-->
+                        <!--</li>-->
+                            <!--{{/if}}-->
+                            <!--{{#if isInRole 'unpaid-group-invoice-report' 'Pos'}}-->
+                        <!--<li>-->
+                        <!--<a href="{{unpaidGroupInvoiceOverdue}}">-->
+                        <!--<i class="fa fa-file-o"></i>-->
+                        <!--<span>Unpaid Group Invoice <br>&nbsp;Overdue</span>-->
+                        <!--</a>-->
+                        <!--</li>-->
+                            <!--{{/if}}-->
                         {{#if isInRole 'receive-payment-report' 'Pos'}}
                             <li>
                                 <a href="{{receivePayment}}">
@@ -623,14 +629,14 @@
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu" style="display: none;">
-                        <!--{{#if isInRole 'exchange-gratis-report' 'Pos'}}-->
-                            <!--<li>-->
-                                <!--<a href="{{exchangeGratis}}">-->
-                                    <!--<i class="fa fa-file-o"></i>-->
-                                    <!--<span>Exchange Gratis</span>-->
-                                <!--</a>-->
-                            <!--</li>-->
-                        <!--{{/if}}-->
+                    <!--{{#if isInRole 'exchange-gratis-report' 'Pos'}}-->
+                        <!--<li>-->
+                        <!--<a href="{{exchangeGratis}}">-->
+                        <!--<i class="fa fa-file-o"></i>-->
+                        <!--<span>Exchange Gratis</span>-->
+                        <!--</a>-->
+                        <!--</li>-->
+                            <!--{{/if}}-->
                         {{#if isInRole 'receive-item-summary-report' 'Pos'}}
                             <li>
                                 <a href="{{receiveItemSummary}}">

@@ -52,7 +52,7 @@ export const ItemsSchema = new SimpleSchema({
         autoform: {
             type: 'inputmask',
             inputmaskOptions: function () {
-                return inputmaskOptions.decimal({digits:4});
+                return inputmaskOptions.decimal({digits: 4});
             }
         }
     },
@@ -432,4 +432,98 @@ export const ConvertItemItemsSchema = new SimpleSchema({
      }
      }
      */
+});
+
+export const AdjustmentItemsSchema = new SimpleSchema({
+    itemId: {
+        type: String,
+        label: 'Item',
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                create: true,
+                uniPlaceholder: 'Select One',
+                optionsMethod: 'pos.selectOptMethods.item',
+                optionsMethodParams: function () {
+                    return {scheme: {$exists: false}, itemType: 'stock'};
+                }
+            }
+        }
+    },
+    qty: {
+        type: Number,
+        label: 'Qty',
+        optional: true,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.decimal();
+            }
+        }
+    },
+    qtyOnHand: {
+        type: Number,
+        label: 'Qty',
+        optional: true,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.decimal();
+            }
+        }
+    },
+    remainQty: {
+        type: Number,
+        label: 'Qty',
+        optional: true,
+        decimal: true,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.decimal();
+            }
+        }
+    },
+    /*price: {
+     type: Number,
+     label: 'Price',
+     decimal: true,
+     optional: true,
+     defaultValue: function () {
+     let id = AutoForm.getFieldValue('itemId');
+     if (id) {
+     itemInfo.callPromise({
+     _id: id
+     }).then(function (result) {
+     defaultPrice.set(result.purchasePrice);
+     }).catch(function (err) {
+     console.log(err.message);
+     });
+     } else {
+     defaultPrice.set(0);
+     }
+     return defaultPrice.get();
+     },
+     autoform: {
+     type: 'inputmask',
+     optional: true,
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     },
+     amount: {
+     type: Number,
+     label: 'Amount',
+     optional: true,
+     decimal: true,
+     autoform: {
+     type: 'inputmask',
+     inputmaskOptions: function () {
+     return inputmaskOptions.currency();
+     }
+     }
+     }*/
 });

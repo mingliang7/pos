@@ -766,3 +766,17 @@ PosRoutes.route('/closing-stock-list', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/adjustment'
+PosRoutes.route('/adjustment', {
+    name: 'pos.adjustment',
+    title: 'Adjustment',
+    action: function (params,queryParams) {
+        Layout.main('Pos_adjustment');
+    },
+    breadcrumb: {
+        title: 'Adjustment',
+        icon: '',
+        parent: 'pos.home'
+    }
+});

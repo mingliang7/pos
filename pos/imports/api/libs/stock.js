@@ -531,4 +531,120 @@ export  default class StockFunction {
 
     }
 
+    static checkStockByLocationForAdjustment(stockLocationId, items) {
+        let result = {isEnoughStock: true, message: ''};
+        let i = 1;
+        items.forEach(function (item) {
+            let thisItem = Item.findOne(item.itemId);
+            let inventoryQty = !thisItem.qtyOnHand || (thisItem && thisItem.qtyOnHand[stockLocationId]) == null ? 0 : thisItem.qtyOnHand[stockLocationId];
+            if (item.qty > inventoryQty) {
+                result.isEnoughStock = false;
+                result.message = thisItem.name + " is not enough in stock. Qty on hand: " + inventoryQty;
+                return false;
+            }
+        });
+        return result;
+
+    }
+
+    static minusAverageInventoryInsertAdjustment(branchId, item, stockLocationId, type, refId, inventoryDate) {
+        inventoryDate = moment(inventoryDate).startOf('days').toDate();
+        let id = '';
+        let prefix = stockLocationId + '-';
+        let inventory = AverageInventories.findOne({
+            branchId: branchId,
+            itemId: item.itemId,
+            stockLocationId: stockLocationId
+        }, {sort: {createdAt: -1}});
+        if (inventory) {
+            let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
+            let remainQty = math.round(inventory.remainQty + item.qty, 6);
+            let lastAmount = 0;
+            let averagePrice = 0;
+            if (remainQty != 0) {
+                lastAmount = math.round(inventory.lastAmount + math.round((inventory.averagePrice * item.qty), 6), 6);
+                averagePrice = math.round(lastAmount / remainQty, 6);
+            }
+            let newInventory = {
+                //  _id: idGenerator.genWithPrefix(AverageInventories, prefix, 13),
+                branchId: branchId,
+                stockLocationId: stockLocationId,
+                itemId: item.itemId,
+                qty: item.qty,
+                price: inventory.averagePrice,
+                amount: math.round(item.qty * inventory.averagePrice, 6),
+                lastAmount: lastAmount,
+                remainQty: remainQty,
+                averagePrice: averagePrice,
+                coefficient: -1,
+                type: type,
+                refId: refId,
+                inventoryDate: inventoryDate
+            };
+            AverageInventories.insert(newInventory);
+            let setModifier = {$set: {}};
+            setModifier.$set['qtyOnHand.' + stockLocationId] = remainQty;
+            Item.direct.update(item.itemId, setModifier);
+            InventoryDates.direct.update(
+                {branchId: branchId, stockLocationId: stockLocationId},
+                {$set: {inventoryDate: inventoryDate}},
+                {upsert: true});
+            return inventory.averagePrice;
+        }
+        else {
+            throw new Meteor.Error('Not Found Inventory. @' + type + " refId:" + refId);
+        }
+
+    }
+
+    static averageInventoryInsertAdjustment(branchId, item, stockLocationId, type, refId, inventoryDate) {
+        inventoryDate = moment(inventoryDate).startOf('days').toDate();
+        let lastPurchasePrice = 0;
+        let remainQuantity = 0;
+        let averagePriceForAdjustment = 0;
+        let prefix = stockLocationId + '-';
+        let inventory = AverageInventories.findOne({
+            branchId: branchId,
+            itemId: item.itemId,
+            stockLocationId: stockLocationId
+        }, {sort: {createdAt: -1}});
+        if (inventory) {
+            let lastInventoryDate = moment(inventory.inventoryDate).startOf('days').toDate();
+            inventoryDate = inventoryDate >= lastInventoryDate ? inventoryDate : lastInventoryDate;
+            let totalQty = math.round(inventory.remainQty + item.qty, 6);
+            let lastAmount = math.round(inventory.lastAmount + math.round((item.qty * inventory.averagePrice), 6), 6);
+            let averagePrice = math.round(lastAmount / totalQty, 6);
+            let nextInventory = {};
+            //nextInventory._id = idGenerator.genWithPrefix(AverageInventories, prefix, 13);
+            nextInventory.branchId = branchId;
+            nextInventory.stockLocationId = stockLocationId;
+            nextInventory.itemId = item.itemId;
+            nextInventory.qty = item.qty;
+            nextInventory.price = inventory.averagePrice;
+            nextInventory.amount = math.round(item.qty * inventory.averagePrice, 6);
+            nextInventory.lastAmount = lastAmount;
+            nextInventory.remainQty = totalQty;
+            nextInventory.averagePrice = averagePrice;
+            nextInventory.type = type;
+            nextInventory.coefficient = 1;
+            nextInventory.refId = refId;
+            nextInventory.inventoryDate = inventoryDate;
+            //lastPurchasePrice = price;
+            remainQuantity = totalQty;
+            InventoryDates.direct.update(
+                {branchId: branchId, stockLocationId: stockLocationId},
+                {$set: {inventoryDate: inventoryDate}},
+                {upsert: true});
+            AverageInventories.insert(nextInventory);
+            let setModifier = {$set: {}};
+            setModifier.$set['qtyOnHand.' + stockLocationId] = remainQuantity;
+            Item.direct.update(item.itemId, setModifier);
+            return inventory.averagePrice;
+        } else {
+            throw new Meteor.Error('Not Found Inventory. @' + type + " refId:" + refId);
+        }
+
+    }
+
 }
