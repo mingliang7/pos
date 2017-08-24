@@ -50,6 +50,9 @@ indexTmpl.events({
         window.print();
     }
 });
+invoiceDataTmpl.onCreated(function () {
+    createNewAlertify('customerTotalCreditShow');
+});
 invoiceDataTmpl.onDestroyed(function () {
     $('.sub-body').removeClass('rpt rpt-body');
     $('.sub-header').removeClass('rpt rpt-header');
