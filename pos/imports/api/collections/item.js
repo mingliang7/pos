@@ -148,7 +148,7 @@ Item.schema = new SimpleSchema({
                 }
                 let units = Units.find() || 0;
                 if (units.count() > 0) {
-                    units.forEach((unit)=> {
+                    units.forEach((unit) => {
                         list.push({label: `${unit._id}: ${unit.name}`, value: unit._id})
                     })
                 }
@@ -171,7 +171,7 @@ Item.schema = new SimpleSchema({
                 let list = [];
                 let units = Units.find() || 0;
                 if (units.count() > 0) {
-                    units.forEach((unit)=> {
+                    units.forEach((unit) => {
                         list.push({label: `${unit._id}: ${unit.name}`, value: unit._id})
                     })
                 }
@@ -241,18 +241,67 @@ Item.schema = new SimpleSchema({
         type: accountMapping,
         optional: true
     },
-    mappingEnable:{
+    mappingEnable: {
         type: Boolean,
         optional: true
     },
-    qtyOnHand:{
-        type:Object,
-        optional:true,
-        blackbox:true
+    qtyOnHand: {
+        type: Object,
+        optional: true,
+        blackbox: true
     }
 });
 
 Meteor.startup(function () {
     Item.schema.i18n("pos.item.schema");
     Item.attachSchema(Item.schema);
+});
+
+
+export const UpdateItemCost_schema = new SimpleSchema({
+    _id: {
+        type: String,
+        label: 'ID'
+    },
+    name: {
+        type: String,
+        max: 200
+    },
+    stockLocationId: {
+        type: String,
+        autoform: {
+            type: 'universe-select',
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+                optionsMethod: 'pos.selectOptMethods.stockLocationMapping',
+                optionsMethodParams: function () {
+                    if (Meteor.isClient) {
+                        let currentUserStockAndAccountMappingDoc = Session.get('currentUserStockAndAccountMappingDoc');
+                        let stockLocations = [];
+                        if (currentUserStockAndAccountMappingDoc && currentUserStockAndAccountMappingDoc.stockLocations) {
+                            stockLocations = currentUserStockAndAccountMappingDoc.stockLocations;
+                        }
+                        let currentBranch = Session.get('currentBranch');
+                        return {
+                            branchId: currentBranch,
+                            stockLocations: {
+                                $in: stockLocations
+                            }
+                        };
+                    }
+                }
+            }
+        }
+    },
+    cost: {
+        type: Number,
+        decimal: true,
+    },
+    newCost: {
+        type: Number,
+        decimal: true
+    },
+    branchId: {
+        type: String,
+    }
 });

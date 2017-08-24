@@ -25,7 +25,7 @@ import '../../../../core/client/components/form-footer.js';
 import {getUnitName} from '../../../common/methods/item-info.js';
 import {itemInfo} from '../../../common/methods/item-info';
 // Collection
-import {Item} from '../../api/collections/item.js';
+import {Item, UpdateItemCost_schema} from '../../api/collections/item.js';
 
 
 import {Units} from '../../api/collections/units.js'
@@ -48,6 +48,7 @@ let indexTmpl = Template.Pos_item,
     newTmpl = Template.Pos_itemNew,
     editTmpl = Template.Pos_itemEdit,
     showTmpl = Template.Pos_itemShow,
+    updateItemCost = Template.Pos_updateItemCost,
     newChartAccount = Template.acc_chartAccountInsert;
 
 // Index
@@ -94,6 +95,10 @@ indexTmpl.events({
     'click .js-display' (event, instance) {
         alertify.item(fa('eye', TAPi18n.__('pos.item.title')), renderTemplate(showTmpl, this));
     },
+    'click .js-update-item-cost'(event, instance){
+        alertify.item(fa('pencil', "Update Item Cost"), renderTemplate(updateItemCost, this));
+
+    }
 });
 
 // New
@@ -366,7 +371,29 @@ Template.schemeItem.events({
 });
 //edit custom object
 // Edit
-
+updateItemCost.helpers({
+    schemaName(){
+        return UpdateItemCost_schema;
+    }
+});
+updateItemCost.events({
+    'change [name="stockLocationId"]'(event, instance){
+        let stockLocationId = $(event.currentTarget).val();
+        if (stockLocationId == "") {
+            return;
+        }
+        let branchId = Session.get('currentBranch');
+        //  let itemId=AutoForm.getFieldValue("_id","Pos_updateItemCost");
+        let itemId = $('[name="_id"]').val();
+        Meteor.call('getInventory', branchId, stockLocationId, itemId, function (error, result) {
+            if (result) {
+                $('[name="cost"]').val(result.averagePrice);
+            } else {
+                alertify.warning("Don't have previous inventory");
+            }
+        });
+    },
+});
 
 // Hook
 let hooksObject = {

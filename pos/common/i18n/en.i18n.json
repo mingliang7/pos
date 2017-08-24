@@ -635,6 +635,48 @@
         }
       }
     },
+    "adjustment": {
+      "title": "Adjustment",
+      "invoiceAction": "Adjustment",
+      "schema": {
+        "_id": {
+          "label": "ID"
+        },
+        "itemId": {
+          "label": "Item"
+        },
+        "qtyOnHand":{
+          "label":"Qty on Hand"
+        },
+        "qty": {
+          "label": "Qty"
+        },
+        "price": {
+          "label": "Price"
+        },
+        "amount": {
+          "label": "Amount"
+        },
+        "remainQty": {
+          "label": "Remain Qty"
+        },
+        "adjustmentDate": {
+          "label": "Date"
+        },
+        "customerId": {
+          "label": "Customer"
+        },
+        "des": {
+          "label": "Description"
+        },
+        "total": {
+          "label": "Total"
+        },
+        "branchId": {
+          "label": "Branch"
+        }
+      }
+    },
     "companyExchangeRingPull": {
       "title": "Company Exchange Ring Pull",
       "invoiceAction": "Company Exchange Ring Pull",

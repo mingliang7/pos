@@ -1016,7 +1016,99 @@ Meteor.methods({
         });
         return getTransactionsAfterRemove(branchId, doc);
         //});
+    },
+    getInventory(branchId, stockLocationId, itemId){
+        return AverageInventories.findOne({
+            branchId: branchId,
+            itemId: itemId,
+            stockLocationId: stockLocationId
+        }, {sort: {createdAt: -1}});
+    },
+    updateItemCost(doc){
+        let inventory = AverageInventories.findOne({
+            branchId: doc.branchId,
+            itemId: doc._id,
+            stockLocationId: doc.stockLocationId
+        }, {sort: {createdAt: -1}});
+        let totalDifferent = 0;
+
+        //more to update...
+        if (inventory) {
+            totalDifferent = (inventory.remainQty * doc.newCost) - inventory.lastAmount;
+            let oldAveragePrice = inventory.averagePrice;
+            let oldLastAmount = inventory.lastAmount;
+            let lastAmount = inventory.remainQty * doc.newCost;
+
+            let newInventory = {
+                //branchId: doc.branchId,
+                // stockLocationId: doc.stockLocationId,
+                // itemId: doc._id,
+                // qty: inventory.qty,
+                // price: inventory.price,
+                // amount: inventory.amount,
+                // remainQty: inventory.remainQty,
+                lastAmount: lastAmount,
+                averagePrice: doc.newCost,
+                // coefficient: inventory.coefficient,
+                // type: inventory.type,
+                //refId: inventory.refId,
+                //inventoryDate: inventory.inventoryDate
+                oldAveragePrice: oldAveragePrice,
+                oldLastAmount: oldLastAmount
+
+            };
+            AverageInventories.update({_id: inventory._id}, {$set: newInventory});
+            let setting = AccountIntegrationSetting.findOne();
+            if (setting && setting.integrate) {
+                let transaction = [];
+                let data = {};
+                data._id = inventory._id;
+                data.type = "Adjustment Cost";
+                data.des = "កែតម្រូវថ្លៃដើម";
+                data.voucherId = "";
+                data.branchId = doc.branchId;
+                let increaseInventoryAccount = AccountMapping.findOne({name: 'Inventory Increase'});
+                let decreaseInventoryAccount = AccountMapping.findOne({name: 'Inventory Decrease'});
+                let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
+
+                if (totalDifferent < 0) {
+                    transaction.push({
+                        account: decreaseInventoryAccount.account,
+                        dr: -totalDifferent,
+                        cr: 0,
+                        drcr: -totalDifferent
+                    }, {
+                        account: inventoryChartAccount.account,
+                        dr: 0,
+                        cr: -totalDifferent,
+                        drcr: totalDifferent
+                    });
+                } else if (totalDifferent > 0) {
+                    transaction.push({
+                        account: inventoryChartAccount.account,
+                        dr: totalDifferent,
+                        cr: 0,
+                        drcr: totalDifferent
+                    }, {
+                        account: increaseInventoryAccount.account,
+                        dr: 0,
+                        cr: totalDifferent,
+                        drcr: -totalDifferent
+                    });
+                }
+                data.total = Math.abs(totalDifferent);
+                data.transaction = transaction;
+                data.journalDate = moment().toDate();
+                Meteor.call('insertAccountJournal', data);
+            }
+        }
+        else {
+            throw new Meteor.Error('Not Found Inventory. @' + type + " refId:" + refId);
+        }
+
+
     }
+
 
 });
 

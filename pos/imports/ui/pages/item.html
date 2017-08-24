@@ -14,6 +14,7 @@
 <template name="Pos_itemAction">
     {{#columnAction}}
         <li><a href="#" class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
+        <li><a href="#" class="js-update-item-cost"><i class="fa fa-pencil"></i> Update Item Cost</a></li>
         <li><a href="#" class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
         <li><a href="#" class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
     {{/columnAction}}
@@ -32,7 +33,7 @@
                 </div>
 
             </div>
-         <!--   <div class="row">
+            <!--   <div class="row">
                 <div class="col-md-3 checkbox"><label for=""><input type="checkbox" class="toggle-selling-unit"><span
                         class="label label-primary"> Add Selling-Unit </span></label></div>
             </div>
@@ -213,7 +214,8 @@
                         {{> UI.dynamic template=../atts.subtemplate}}
 
                         <div class="col-sm-1">
-                            {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount maxCount=../atts.maxCount}}
+                            {{#if afArrayFieldHasMoreThanMinimum name=../atts.name minCount=../atts.minCount
+                                  maxCount=../atts.maxCount}}
                                 <button type="button" class="btn btn-sm btn-danger autoform-remove-item btnRemove">
                                     <span class="glyphicon glyphicon-minus"></span>
                                 </button>
@@ -222,7 +224,8 @@
                     </div>
                 {{/afEachArrayItem}}
 
-                {{#if afArrayFieldHasLessThanMaximum name=this.atts.name minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+                {{#if afArrayFieldHasLessThanMaximum name=this.atts.name minCount=this.atts.minCount
+                      maxCount=this.atts.maxCount}}
                     <div class="row">
                         <div class="col-sm-11"></div>
                         <!--Add more-->
@@ -306,5 +309,31 @@
                    aria-expanded="false"><span class="text-blue">+</span></a>
             </div>
         </div>
+    </div>
+</template>
+
+<template name="Pos_updateItemCost">
+    <div class="box-body">
+        {{#autoForm schema=schemaName id="Pos_updateItemCost" doc=this type="method"
+                    meteormethod="updateItemCost"}}
+            <div class="row">
+                <div class="col-md-6">
+                    {{> afQuickField type="hidden" name='_id' readonly=true}}
+                    {{> afQuickField name='name'}}
+                    {{> afQuickField name='cost' readonly="true"}}
+                </div>
+                <div class="col-md-6">
+                    {{> afQuickField type="hidden" name='branchId' value=currentBranch}}
+                    {{> afQuickField name='stockLocationId'}}
+                    {{> afQuickField name='newCost'}}
+                </div>
+            </div>
+            <div class="form-footer">
+                <button type="submit" class="btn btn-primary accept-transfer"><i class="fa fa-paper-plane-o"></i> {{_
+                        "form.btnSubmit"}}</button>
+                <button type="reset" class="btn btn-default"><i class="fa fa-refresh"></i> {{_ "form.btnReset"}}
+                </button>
+            </div>
+        {{/autoForm}}
     </div>
 </template>
