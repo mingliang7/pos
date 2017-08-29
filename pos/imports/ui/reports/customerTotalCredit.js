@@ -16,7 +16,8 @@ let paramsState = new ReactiveVar();
 let invoiceData = new ReactiveVar();
 //declare template
 let indexTmpl = Template.Pos_customerTotalCredit,
-    invoiceDataTmpl = Template.customerTotalCreditData;
+    invoiceDataTmpl = Template.customerTotalCreditData,
+    unpaidCustomerShow = Template.customerTotalCreditShow;
 Tracker.autorun(function () {
     if (paramsState.get()) {
         swal({
@@ -51,7 +52,7 @@ indexTmpl.events({
     }
 });
 invoiceDataTmpl.onCreated(function () {
-    createNewAlertify('customerTotalCreditShow');
+    createNewAlertify('customerTotalCreditShow', {size: 'lg'});
 });
 invoiceDataTmpl.onDestroyed(function () {
     $('.sub-body').removeClass('rpt rpt-body');
@@ -59,8 +60,13 @@ invoiceDataTmpl.onDestroyed(function () {
 });
 invoiceDataTmpl.events({
     'click .goto-unpaid'(event,instace){
-        let path = `/pos/report/termCustomerBalance?branchId=${Session.get('currentBranch')}&customer=${this.customerDoc._id}`;
-        FlowRouter.go(path);
+        // let path = `/pos/report/termCustomerBalance?branchId=${Session.get('currentBranch')}&customer=${this.customerDoc._id}`;
+        // FlowRouter.go(path);
+        Meteor.call('showCustomerUnpaid', this.customerDoc._id, (err, result) => {
+            if(!err && result) {
+                alertify.customerTotalCreditShow(fa('eye', 'Unpaid Invoices'), renderTemplate(unpaidCustomerShow, result));
+            }
+        });
     }
 
 });
@@ -109,7 +115,11 @@ invoiceDataTmpl.helpers({
     }
 });
 
-
+unpaidCustomerShow.helpers({
+    unpaidInvoices(){
+        return this;
+    },
+});
 AutoForm.hooks({
     customerTotalCreditReport: {
         onSubmit(doc){
