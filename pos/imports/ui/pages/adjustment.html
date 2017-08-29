@@ -146,7 +146,7 @@
                 <div class="col-xs-12">
                     <div class="row">
                         <div class="col-xs-6 pull-left">
-                            <h2>EXCHANGE RING PULL</h2>
+                            <h2>ADJUSTMENT</h2>
                         </div>
                         <div class="col-xs-6 pull-left">
                             <h3 class="pull-right">#{{_id}}</h3>
@@ -156,7 +156,7 @@
 
                     <div class="row">
                         <div class="col-md-4" style="padding: 10px;">
-                            <strong>Customer: </strong> {{customer.name}}<br>
+                            <!--<strong>Customer: </strong> {{customer.name}}<br>-->
                             <span><strong>Adjustment Date: </strong>{{moFormat adjustmentDate
                                                                                'YYYY-MM-DD HH:mm:ss'}}</span><br>
                             <!-- <span><strong>Status: </strong>{{{colorizeStatus status}}}
@@ -179,7 +179,9 @@
                                     <thead>
                                     <tr>
                                         <td><strong>Item</strong></td>
-                                        <td class="text-center"><strong>Qty</strong></td>
+                                        <td class="text-right"><strong>Qty On Hand</strong></td>
+                                        <td class="text-right"><strong>Adjustment Qty </strong></td>
+                                        <td class="text-right"><strong>RemainQty</strong></td>
                                         <td class="text-right"><strong>Price</strong></td>
                                         <td class="text-right"><strong>Amount</strong></td>
                                     </tr>
@@ -189,7 +191,9 @@
                                     {{#each item in items}}
                                         <tr>
                                             <td><a href="#">{{item.itemName}}</a></td>
-                                            <td class="text-center">{{item.qty}}</td>
+                                            <td class="text-right">{{item.qtyOnHand}}</td>
+                                            <td class="text-right">{{item.qty}}</td>
+                                            <td class="text-right">{{item.remainQty}}</td>
                                             <td class="text-right">${{numFormat item.price '0,0.000'}}</td>
                                             <td class="text-right">${{numFormat item.amount '0,0.000'}}</td>
                                         </tr>
