@@ -56,6 +56,7 @@ EnterBills.after.insert(function (userId, doc) {
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
+
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             let apChartAccount = AccountMapping.findOne({name: 'A/P'});
 
@@ -73,18 +74,42 @@ EnterBills.after.insert(function (userId, doc) {
              let itemDoc = Item.findOne(item.itemId);
              if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
              */
+
+
+
             transaction.push({
                 account: inventoryChartAccount.account,
                 dr: doc.total,
                 cr: 0,
                 drcr: doc.total,
 
-            }, {
-                account: apChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total,
             });
+
+            if (doc.isOtherChartAccount) {
+                let apAmount = doc.total - doc.otherAccountAmount;
+                if (apAmount == 0) {
+                    transaction.push({
+                        account: doc.accountId,
+                        dr: 0,
+                        cr: doc.otherAccountAmount,
+                        drcr: -doc.otherAccountAmount,
+                    });
+                } else {
+                    transaction.push({
+                            account: doc.accountId,
+                            dr: 0,
+                            cr: doc.otherAccountAmount,
+                            drcr: -doc.otherAccountAmount,
+                        },
+                        {
+                            account: apChartAccount.account,
+                            dr: 0,
+                            cr: apAmount,
+                            drcr: -apAmount
+                        });
+                }
+            }
+
             /* }
              });*/
             data.transaction = transaction;
@@ -204,7 +229,7 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
             }
 
 
-            transaction.push({
+          /*  transaction.push({
                 account: inventoryChartAccount.account,
                 dr: doc.total,
                 cr: 0,
@@ -215,7 +240,39 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
                 dr: 0,
                 cr: doc.total,
                 drcr: -doc.total,
+            });*/
+            transaction.push({
+                account: inventoryChartAccount.account,
+                dr: doc.total,
+                cr: 0,
+                drcr: doc.total,
+
             });
+
+            if (doc.isOtherChartAccount) {
+                let apAmount = doc.total - doc.otherAccountAmount;
+                if (apAmount == 0) {
+                    transaction.push({
+                        account: doc.accountId,
+                        dr: 0,
+                        cr: doc.otherAccountAmount,
+                        drcr: -doc.otherAccountAmount,
+                    });
+                } else {
+                    transaction.push({
+                            account: doc.accountId,
+                            dr: 0,
+                            cr: doc.otherAccountAmount,
+                            drcr: -doc.otherAccountAmount,
+                        },
+                        {
+                            account: apChartAccount.account,
+                            dr: 0,
+                            cr: apAmount,
+                            drcr: -apAmount
+                        });
+                }
+            }
             data.transaction = transaction;
             data.journalDate = data.enterBillDate;
             Meteor.call('updateAccountJournal', data);
