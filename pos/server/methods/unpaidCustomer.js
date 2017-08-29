@@ -2,7 +2,8 @@ import {Invoices} from '../../imports/api/collections/invoice';
 
 
 Meteor.methods({
-    showCustomerUnpaid(customerId){
+    showCustomerUnpaid(customerId,queryDate){
+        let date = moment(queryDate).endOf('days').toDate();
         let invoices = Invoices.aggregate([
             {
                 $match: {customerId: customerId}
@@ -25,7 +26,13 @@ Meteor.methods({
                     invoiceDate: 1,
                     dueDate: 1,
                     total: 1,
-                    paymentDoc: 1
+                    paymentDoc: {
+                        $filter: {
+                            input: '$paymentDoc',
+                            as: 'payment',
+                            cond: {$lte: ['$$payment.paymentDate', date]}
+                        }
+                    }
                 }
             },
             {

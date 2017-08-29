@@ -59,11 +59,12 @@ invoiceDataTmpl.onDestroyed(function () {
     $('.sub-header').removeClass('rpt rpt-header');
 });
 invoiceDataTmpl.events({
-    'click .goto-unpaid'(event,instace){
+    'click .goto-unpaid'(event, instace){
         // let path = `/pos/report/termCustomerBalance?branchId=${Session.get('currentBranch')}&customer=${this.customerDoc._id}`;
         // FlowRouter.go(path);
-        Meteor.call('showCustomerUnpaid', this.customerDoc._id, (err, result) => {
-            if(!err && result) {
+        let date = FlowRouter.query.get('date');
+        Meteor.call('showCustomerUnpaid', this.customerDoc._id, date, (err, result) => {
+            if (!err && result) {
                 alertify.customerTotalCreditShow(fa('eye', 'Unpaid Invoices'), renderTemplate(unpaidCustomerShow, result));
             }
         });
@@ -84,9 +85,9 @@ invoiceDataTmpl.helpers({
     displayField(col){
         let data = '';
         this.displayFields.forEach(function (obj) {
-            if(obj.field == 'amountDue') {
+            if (obj.field == 'amountDue') {
                 data += `<td class="text-right">${numeral(col[obj.field]).format('0,0.000')}</td>`;
-            }else{
+            } else {
                 data += `<td>${col[obj.field]}</td>`;
             }
         });
@@ -137,10 +138,10 @@ AutoForm.hooks({
             if (doc.filter) {
                 params.filter = doc.filter.join(',');
             }
-            if(doc.sortBy && doc.sortBy != '') {
+            if (doc.sortBy && doc.sortBy != '') {
                 params.sortBy = doc.sortBy;
             }
-            if(doc.branchId) {
+            if (doc.branchId) {
                 params.branchId = doc.branchId.join(',');
             }
             FlowRouter.query.set(params);
