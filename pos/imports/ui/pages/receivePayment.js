@@ -613,9 +613,31 @@ let hooksObject = {
                 closeOnConfirm: false,
                 showLoaderOnConfirm: true,
             }).then(function () {
-                receivePayment.callPromise({paymentDate, invoicesObj, branch, voucherId})
-                    .then(function (result) {
-                        clearChecbox();
+                // receivePayment.callPromise({paymentDate, invoicesObj, branch, voucherId})
+                //     .then(function (result) {
+                //         clearChecbox();
+                //         swal({
+                //             title: "Receive Payment",
+                //             text: "Successfully paid!",
+                //             type: "success",
+                //             confirmButtonClass: "btn-success",
+                //             showConfirmButton: true,
+                //             timer: 3000
+                //         });
+                //     })
+                //     .catch(function (err) {
+                //         Session.set('invoicesObj', {count: 0});
+                //         swal({
+                //             title: "[Error]",
+                //             text: err.message,
+                //             type: "danger",
+                //             confirmButtonClass: "btn-danger",
+                //             showConfirmButton: true,
+                //             timer: 3000
+                //         });
+                //     })
+                Meteor.call('insertReceivePayment', {paymentDate, invoicesObj, branch, voucherId}, (err, result) => {
+                    if (!err) {
                         swal({
                             title: "Receive Payment",
                             text: "Successfully paid!",
@@ -624,9 +646,7 @@ let hooksObject = {
                             showConfirmButton: true,
                             timer: 3000
                         });
-                    })
-                    .catch(function (err) {
-                        Session.set('invoicesObj', {count: 0});
+                    } else {
                         swal({
                             title: "[Error]",
                             text: err.message,
@@ -635,7 +655,8 @@ let hooksObject = {
                             showConfirmButton: true,
                             timer: 3000
                         });
-                    })
+                    }
+                });
             });
 
         }
