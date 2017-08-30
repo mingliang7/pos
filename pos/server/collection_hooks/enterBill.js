@@ -31,7 +31,7 @@ EnterBills.before.insert(function (userId, doc) {
     let prefix = doc.branchId + "-" + todayDate;
     let tmpBillId = doc._id;
     doc._id = idGenerator.genWithPrefix(EnterBills, prefix, 4);
-    billState.set(tmpBillId, {vendorId: doc.vendorId, billId: doc._id, total: doc.total});
+    billState.set(tmpBillId, {vendorId: doc.vendorId, billId: doc._id, total: doc.subTotal});
 
 });
 
@@ -76,17 +76,16 @@ EnterBills.after.insert(function (userId, doc) {
              */
 
 
-
             transaction.push({
                 account: inventoryChartAccount.account,
-                dr: doc.total,
+                dr: doc.subTotal,
                 cr: 0,
-                drcr: doc.total,
+                drcr: doc.subTotal,
 
             });
 
             if (doc.isOtherChartAccount) {
-                let apAmount = doc.total - doc.otherAccountAmount;
+                let apAmount = doc.total;
                 if (apAmount == 0) {
                     transaction.push({
                         account: doc.accountId,
@@ -112,6 +111,7 @@ EnterBills.after.insert(function (userId, doc) {
 
             /* }
              });*/
+            data.total = doc.subTotal;
             data.transaction = transaction;
             data.journalDate = data.enterBillDate;
             Meteor.call('insertAccountJournal', data);
@@ -229,28 +229,28 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
             }
 
 
-          /*  transaction.push({
-                account: inventoryChartAccount.account,
-                dr: doc.total,
-                cr: 0,
-                drcr: doc.total,
+            /*  transaction.push({
+             account: inventoryChartAccount.account,
+             dr: doc.total,
+             cr: 0,
+             drcr: doc.total,
 
-            }, {
-                account: apChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total,
-            });*/
+             }, {
+             account: apChartAccount.account,
+             dr: 0,
+             cr: doc.total,
+             drcr: -doc.total,
+             });*/
             transaction.push({
                 account: inventoryChartAccount.account,
-                dr: doc.total,
+                dr: doc.subTotal,
                 cr: 0,
-                drcr: doc.total,
+                drcr: doc.subTotal,
 
             });
 
             if (doc.isOtherChartAccount) {
-                let apAmount = doc.total - doc.otherAccountAmount;
+                let apAmount = doc.total;
                 if (apAmount == 0) {
                     transaction.push({
                         account: doc.accountId,
@@ -273,6 +273,7 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
                         });
                 }
             }
+            data.total = doc.subTotal;
             data.transaction = transaction;
             data.journalDate = data.enterBillDate;
             Meteor.call('updateAccountJournal', data);

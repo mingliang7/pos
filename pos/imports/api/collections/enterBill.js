@@ -177,6 +177,17 @@ EnterBills.schema = new SimpleSchema({
     items: {
         type: [EnterBills.itemsSchema],
     },
+    subTotal: {
+        type: Number,
+        decimal: true,
+        label: "Total",
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
     total: {
         type: Number,
         decimal: true,

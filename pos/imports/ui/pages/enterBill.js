@@ -639,23 +639,41 @@ showTmpl.events({
 let hooksObject = {
     before: {
         insert: function (doc) {
-            if (doc.otherAccountAmount > doc.total) {
-                alertify.warning("Other Account Amount cannot be greater than total");
-                return false;
+            doc.status = 'active';
+            if (doc.isOtherChartAccount) {
+                doc.total = doc.subTotal - doc.otherAccountAmount;
+                if (doc.total < 0) {
+                    alertify.warning("Other Account Amount cannot be greater than total");
+                    return false;
+                } else if (doc.total == 0) {
+                    doc.status = "closed";
+                }
+            } else {
+                doc.total = doc.subTotal;
             }
             let items = [];
             itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
             });
-            doc.status = 'active';
+
             doc.items = items;
             return doc;
         },
         update: function (doc) {
-            if (doc.$set.otherAccountAmount > doc.$set.total) {
-                alertify.warning("Other Account Amount cannot be greater than total");
-                return false;
+            doc.$set.status = 'active';
+            if (doc.$set.isOtherChartAccount) {
+                doc.$set.total = doc.$set.subTotal - doc.$set.otherAccountAmount;
+                if (doc.$set.total < 0) {
+                    alertify.warning("Other Account Amount cannot be greater than total");
+                    return false;
+                } else if (doc.$set.total == 0) {
+                    doc.$set.status = "closed";
+                }
+            } else {
+                doc.$set.total = doc.$set.subTotal;
+              /*  doc.$unset.otherAccountAmount = "";
+                 doc.$unset.accountId = "";*/
             }
             let items = [];
             itemsCollection.find().forEach((obj) => {
