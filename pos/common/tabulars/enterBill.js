@@ -29,12 +29,20 @@ tabularOpts.columns = [
         }
     },
     {
-        data: "total",
+        data: "subTotal",
         title: "Total",
         render: function (val) {
             return numeral(val).format('0,0.000');
         }
     },
+    {
+        data: "total",
+        title: "Grand Total",
+        render: function (val) {
+            return numeral(val).format('0,0.000');
+        }
+    },
+
     {data: "des", title: "Description"},
     {
         data: "billType",

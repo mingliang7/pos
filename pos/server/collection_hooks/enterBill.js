@@ -21,10 +21,8 @@ EnterBills.before.insert(function (userId, doc) {
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     if (doc.termId) {
-        doc.status = 'active';
         doc.billType = 'term';
     } else {
-        doc.status = 'active';
         doc.billType = 'group';
     }
     let todayDate = moment().format('YYYYMMDD');
@@ -107,6 +105,13 @@ EnterBills.after.insert(function (userId, doc) {
                             drcr: -apAmount
                         });
                 }
+            } else {
+                transaction.push({
+                    account: apChartAccount.account,
+                    dr: 0,
+                    cr: doc.subTotal,
+                    drcr: -doc.subTotal
+                });
             }
 
             /* }
@@ -272,6 +277,13 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
                             drcr: -apAmount
                         });
                 }
+            } else {
+                transaction.push({
+                    account: apChartAccount.account,
+                    dr: 0,
+                    cr: doc.subTotal,
+                    drcr: -doc.subTotal
+                });
             }
             data.total = doc.subTotal;
             data.transaction = transaction;
