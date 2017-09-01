@@ -338,40 +338,136 @@ Meteor.methods({
             let space = 0;
             result.sort(compare);
             result.forEach(function (o) {
+                if (((self.showNonActive == "false" || self.showNonActive == false  || self.showNonActive == undefined) && math.round(o.result, 3) != 0) || self.showNonActive == "true" || self.showNonActive == true) {
+                    if (o.accountTypeId == "10") {
+                        totalOtherCurrentAsset += o.result;
+                        totalOtherCurrentAssetUSD += o.amountUsd;
+                        totalOtherCurrentAssetRiel += o.amountRiel;
+                        totalOtherCurrentAssetBath += o.amountThb;
 
-                if (o.accountTypeId == "10") {
-                    totalOtherCurrentAsset += o.result;
-                    totalOtherCurrentAssetUSD += o.amountUsd;
-                    totalOtherCurrentAssetRiel += o.amountRiel;
-                    totalOtherCurrentAssetBath += o.amountThb;
+                        // Push Total of Header when have Sub Account
 
-                    // Push Total of Header when have Sub Account
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
 
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-                    space = 15;
-                    if (temporary !== o.parent && isPush == false) {
-                        if (dataOld != null) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: subTotal,
-                                amountUsd: subTotalUSD,
-                                amountRiel: subTotalRiel,
-                                amountThb: subTotalTHB
-                            });
-                            isPush = true;
+                        space = 15;
+                        if (temporary !== o.parent && isPush == false) {
+                            if (dataOld != null) {
+                                variable.push({
+                                    name: dataOld.name,
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                    'Total : ' + dataOld.code,
+                                    amount: subTotal,
+                                    amountUsd: subTotalUSD,
+                                    amountRiel: subTotalRiel,
+                                    amountThb: subTotalTHB
+                                });
+                                isPush = true;
+                            }
                         }
-                    }
 
 
-                    // Push Header when have Sub Account
+                        // Push Header when have Sub Account
 
-                    if (o.level > 0) {
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
+
+                                if (dataOld != null && isPush == false) {
+                                    variable.push({
+                                        name: dataOld.name,
+                                        account: dataOld.account,
+                                        code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                        'Total : ' + dataOld.code,
+                                        amount: subTotal,
+                                        amountUsd: subTotalUSD,
+                                        amountRiel: subTotalRiel,
+                                        amountThb: subTotalTHB
+                                    });
+                                    isPush = true;
+                                }
+
+
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                otherCurrentAsset.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title",
+                                    amountUsd: "title",
+                                    amountRiel: "title",
+                                    amountThb: "title"
+                                });
+
+                                subTotal = o.result;
+                                subTotalUSD = o.amountUsd;
+                                subTotalRiel = o.amountRiel;
+                                subTotalTHB = o.amountThb;
+
+                                isPush = false;
+                                variable = otherCurrentAsset;
+                            } else {
+                                subTotal += o.result;
+                                subTotalUSD += o.amountUsd;
+                                subTotalRiel += o.amountRiel;
+                                subTotalTHB += o.amountThb;
+                            }
+                        }
+
+                        temporary = o.parent;
+
+
+                        otherCurrentAsset.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: o.amountUsd,
+                            amountRiel: o.amountRiel,
+                            amountThb: o.amountThb
+                        });
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+
+
+                    } else if (o.accountTypeId == "11") {
+                        totalFixAsset += o.result;
+                        totalFixAssetUSD += o.amountUsd;
+                        totalFixAssetRiel += o.amountRiel;
+                        totalFixAssetBath += o.amountThb;
+
+
+                        // pull total header other account type
+                        if (isPush === false && i == 0) {
+                            if (temporary !== o.parent) {
+                                if (dataOld != null) {
+                                    variable.push({
+                                        name: dataOld.name,
+                                        account: dataOld.account,
+                                        code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                        'Total : ' + dataOld.code,
+                                        amount: subTotal,
+                                        amountUsd: subTotalUSD,
+                                        amountRiel: subTotalRiel,
+                                        amountThb: subTotalTHB
+                                    });
+                                    isPush = true;
+
+                                }
+                            }
+                        }
+                        i = 1;
+
+                        space = 15;
+
                         if (temporary !== o.parent) {
 
                             if (dataOld != null && isPush == false) {
@@ -387,71 +483,198 @@ Meteor.methods({
                                 });
                                 isPush = true;
                             }
-
-
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            otherCurrentAsset.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title",
-                                amountUsd: "title",
-                                amountRiel: "title",
-                                amountThb: "title"
-                            });
-
-                            subTotal = o.result;
-                            subTotalUSD = o.amountUsd;
-                            subTotalRiel = o.amountRiel;
-                            subTotalTHB = o.amountThb;
-
-                            isPush = false;
-                            variable = otherCurrentAsset;
-                        } else {
-                            subTotal += o.result;
-                            subTotalUSD += o.amountUsd;
-                            subTotalRiel += o.amountRiel;
-                            subTotalTHB += o.amountThb;
                         }
-                    }
+                        // Push Header when have Sub Account
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
 
-                    temporary = o.parent;
-
-
-                    otherCurrentAsset.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: o.amountUsd,
-                        amountRiel: o.amountRiel,
-                        amountThb: o.amountThb
-                    });
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
+                                /*if (dataOld != null && isPush == false) {
+                                 variable.push({
+                                 name: dataOld.name,
+                                 code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                 'Total : ' + dataOld.code,
+                                 amount: subTotal,
+                                 amountUsd: subTotalUSD,
+                                 amountRiel: subTotalRiel,
+                                 amountThb: subTotalTHB
+                                 });
+                                 isPush = true;
+                                 }*/
 
 
-                } else if (o.accountTypeId == "11") {
-                    totalFixAsset += o.result;
-                    totalFixAssetUSD += o.amountUsd;
-                    totalFixAssetRiel += o.amountRiel;
-                    totalFixAssetBath += o.amountThb;
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                fixAsset.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title",
+                                    amountUsd: "title",
+                                    amountRiel: "title",
+                                    amountThb: "title"
+                                });
+
+                                subTotal = o.result;
+                                subTotalUSD = o.amountUsd;
+                                subTotalRiel = o.amountRiel;
+                                subTotalTHB = o.amountThb;
+                                isPush = false;
+                                variable = fixAsset;
+                            } else {
+                                subTotal += o.result;
+                                subTotalUSD += o.amountUsd;
+                                subTotalRiel += o.amountRiel;
+                                subTotalTHB += o.amountThb;
+                            }
+                        }
 
 
-                    // pull total header other account type
-                    if (isPush === false && i == 0) {
+                        // Push Total of Header when have Sub Account
+
+                        temporary = o.parent;
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+
+
+                        fixAsset.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: o.amountUsd,
+                            amountRiel: o.amountRiel,
+                            amountThb: o.amountThb
+
+                        });
+
+
+                    } else if (o.accountTypeId == "12") {
+                        totalOtherFixAsset += o.result;
+                        totalOtherFixAssetUSD += o.amountUsd;
+                        totalOtherFixAssetRiel += o.amountRiel;
+                        totalOtherFixAssetBath += o.amountThb;
+
+
+                        if (isPush === false && j == 0) {
+                            if (temporary !== o.parent) {
+                                if (dataOld != null && isPush == false) {
+                                    variable.push({
+                                        name: dataOld.name,
+                                        account: dataOld.account,
+                                        code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                        'Total : ' + dataOld.code,
+                                        amount: subTotal,
+                                        amountUsd: subTotalUSD,
+                                        amountRiel: subTotalRiel,
+                                        amountThb: subTotalTHB
+
+                                    });
+                                    isPush = true;
+
+                                }
+                            }
+                        }
+                        j = 1;
+
+                        space = 15;
+
                         if (temporary !== o.parent) {
+
                             if (dataOld != null) {
                                 variable.push({
                                     name: dataOld.name,
                                     account: dataOld.account,
+                                    code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                    'Total : ' + dataOld.code,
+                                    amount: subTotal,
+                                    amountUsd: subTotalUSD,
+                                    amountRiel: subTotalRiel,
+                                    amountThb: subTotalTHB
+                                });
+                                isPush = true;
+                            }
+                        }
+                        // Push Header when have Sub Account
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
+
+                                /*if (dataOld != null) {
+                                 variable.push({
+                                 name: dataOld.name,
+                                 code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                 'Total : ' + dataOld.code,
+                                 amount: subTotal,
+                                 amountUsd: subTotalUSD,
+                                 amountRiel: subTotalRiel,
+                                 amountThb: subTotalTHB
+                                 });
+                                 isPush = true;
+                                 }*/
+
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                otherFixAsset.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title",
+                                    amountUsd: "title",
+                                    amountRiel: "title",
+                                    amountThb: "title"
+                                });
+
+                                subTotal = o.result;
+                                subTotalUSD = o.amountUsd;
+                                subTotalRiel = o.amountRiel;
+                                subTotalTHB = o.amountThb;
+                                isPush = false;
+                                variable = otherFixAsset;
+                            } else {
+                                subTotal += o.result;
+                                subTotalUSD += o.amountUsd;
+                                subTotalRiel += o.amountRiel;
+                                subTotalTHB += o.amountThb;
+                            }
+                        }
+
+
+                        // Push Total of Header when have Sub Account
+                        temporary = o.parent;
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+
+                        otherFixAsset.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: o.amountUsd,
+                            amountRiel: o.amountRiel,
+                            amountThb: o.amountThb
+                        });
+
+                    } else if (o.accountTypeId == "20") {
+                        totalOtherCurrentLiability += o.result;
+                        totalOtherCurrentLiabilityUSD += o.amountUsd;
+                        totalOtherCurrentLiabilityRiel += o.amountRiel;
+                        totalOtherCurrentLiabilityBath += o.amountThb;
+
+                        if (isPush === false && k == 0) {
+                            if (dataOld != null) {
+                                variable.push({
+                                    name: dataOld.name,
                                     code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
                                     amount: subTotal,
@@ -460,433 +683,231 @@ Meteor.methods({
                                     amountThb: subTotalTHB
                                 });
                                 isPush = true;
-
                             }
                         }
-                    }
-                    i = 1;
+                        k = 1;
+                        x = -1;
 
-                    space = 15;
-
-                    if (temporary !== o.parent) {
-
-                        if (dataOld != null && isPush == false) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: subTotal,
-                                amountUsd: subTotalUSD,
-                                amountRiel: subTotalRiel,
-                                amountThb: subTotalTHB
-                            });
-                            isPush = true;
-                        }
-                    }
-                    // Push Header when have Sub Account
-                    if (o.level > 0) {
+                        space = 22;
                         if (temporary !== o.parent) {
 
-                            /*if (dataOld != null && isPush == false) {
-                             variable.push({
-                             name: dataOld.name,
-                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                             'Total : ' + dataOld.code,
-                             amount: subTotal,
-                             amountUsd: subTotalUSD,
-                             amountRiel: subTotalRiel,
-                             amountThb: subTotalTHB
-                             });
-                             isPush = true;
-                             }*/
-
-
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            fixAsset.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title",
-                                amountUsd: "title",
-                                amountRiel: "title",
-                                amountThb: "title"
-                            });
-
-                            subTotal = o.result;
-                            subTotalUSD = o.amountUsd;
-                            subTotalRiel = o.amountRiel;
-                            subTotalTHB = o.amountThb;
-                            isPush = false;
-                            variable = fixAsset;
-                        } else {
-                            subTotal += o.result;
-                            subTotalUSD += o.amountUsd;
-                            subTotalRiel += o.amountRiel;
-                            subTotalTHB += o.amountThb;
+                            if (dataOld != null && isPush == false) {
+                                variable.push({
+                                    name: dataOld.name,
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                                    'Total : ' + dataOld.code,
+                                    amount: x * subTotal,
+                                    amountUsd: x * subTotalUSD,
+                                    amountRiel: x * subTotalRiel,
+                                    amountThb: x * subTotalTHB
+                                });
+                                isPush = true;
+                            }
                         }
-                    }
+                        // Push Header when have Sub Account
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
+
+                                /*if (dataOld != null && isPush == false) {
+                                 variable.push({
+                                 name: dataOld.name,
+                                 code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                                 'Total : ' + dataOld.code,
+                                 amount: x * subTotal,
+                                 amountUsd: subTotalUSD,
+                                 amountRiel: subTotalRiel,
+                                 amountThb: subTotalTHB
+                                 });
+                                 isPush = true;
+                                 }*/
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                otherCurrentLiability.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title",
+                                    amountUsd: "title",
+                                    amountRiel: "title",
+                                    amountThb: "title"
+                                });
+
+                                subTotal = o.result;
+                                subTotalUSD = o.amountUsd;
+                                subTotalRiel = o.amountRiel;
+                                subTotalTHB = o.amountThb;
+                                isPush = false;
+                                variable = otherCurrentLiability;
+                            } else {
+                                subTotal += o.result;
+                                subTotalUSD += o.amountUsd;
+                                subTotalRiel += o.amountRiel;
+                                subTotalTHB += o.amountThb;
+                            }
+                        }
 
 
-                    // Push Total of Header when have Sub Account
-
-                    temporary = o.parent;
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-
-                    fixAsset.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: o.amountUsd,
-                        amountRiel: o.amountRiel,
-                        amountThb: o.amountThb
-
-                    });
+                        // Push Total of Header when have Sub Account
+                        temporary = o.parent;
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
 
 
-                } else if (o.accountTypeId == "12") {
-                    totalOtherFixAsset += o.result;
-                    totalOtherFixAssetUSD += o.amountUsd;
-                    totalOtherFixAssetRiel += o.amountRiel;
-                    totalOtherFixAssetBath += o.amountThb;
+                        otherCurrentLiability.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: x * o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: x * o.amountUsd,
+                            amountRiel: x * o.amountRiel,
+                            amountThb: x * o.amountThb
+                        });
 
+                    } else if (o.accountTypeId == "21") {
+                        totalLongTermLiability += o.result;
+                        totalLongTermLiabilityUSD += o.amountUsd;
+                        totalLongTermLiabilityRiel += o.amountRiel;
+                        totalLongTermLiabilityBath += o.amountThb;
 
-                    if (isPush === false && j == 0) {
+                        if (isPush === false && l == 0) {
+                            if (temporary !== o.parent) {
+                                if (dataOld != null) {
+                                    variable.push({
+                                        name: dataOld.name,
+                                        account: dataOld.account,
+                                        code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                        'Total : ' + dataOld.code,
+                                        amount: x * subTotal,
+                                        amountUsd: x * subTotalUSD,
+                                        amountRiel: x * subTotalRiel,
+                                        amountThb: x * subTotalTHB
+                                    });
+                                    isPush = true;
+
+                                }
+                            }
+                        }
+                        l = 1;
+                        x = -1;
+                        space = 22;
                         if (temporary !== o.parent) {
+
                             if (dataOld != null && isPush == false) {
                                 variable.push({
                                     name: dataOld.name,
                                     account: dataOld.account,
                                     code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
-                                    amount: subTotal,
-                                    amountUsd: subTotalUSD,
-                                    amountRiel: subTotalRiel,
-                                    amountThb: subTotalTHB
-
-                                });
-                                isPush = true;
-
-                            }
-                        }
-                    }
-                    j = 1;
-
-                    space = 15;
-
-                    if (temporary !== o.parent) {
-
-                        if (dataOld != null) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: subTotal,
-                                amountUsd: subTotalUSD,
-                                amountRiel: subTotalRiel,
-                                amountThb: subTotalTHB
-                            });
-                            isPush = true;
-                        }
-                    }
-                    // Push Header when have Sub Account
-                    if (o.level > 0) {
-                        if (temporary !== o.parent) {
-
-                            /*if (dataOld != null) {
-                             variable.push({
-                             name: dataOld.name,
-                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                             'Total : ' + dataOld.code,
-                             amount: subTotal,
-                             amountUsd: subTotalUSD,
-                             amountRiel: subTotalRiel,
-                             amountThb: subTotalTHB
-                             });
-                             isPush = true;
-                             }*/
-
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            otherFixAsset.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title",
-                                amountUsd: "title",
-                                amountRiel: "title",
-                                amountThb: "title"
-                            });
-
-                            subTotal = o.result;
-                            subTotalUSD = o.amountUsd;
-                            subTotalRiel = o.amountRiel;
-                            subTotalTHB = o.amountThb;
-                            isPush = false;
-                            variable = otherFixAsset;
-                        } else {
-                            subTotal += o.result;
-                            subTotalUSD += o.amountUsd;
-                            subTotalRiel += o.amountRiel;
-                            subTotalTHB += o.amountThb;
-                        }
-                    }
-
-
-                    // Push Total of Header when have Sub Account
-                    temporary = o.parent;
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-                    otherFixAsset.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: o.amountUsd,
-                        amountRiel: o.amountRiel,
-                        amountThb: o.amountThb
-                    });
-
-                } else if (o.accountTypeId == "20") {
-                    totalOtherCurrentLiability += o.result;
-                    totalOtherCurrentLiabilityUSD += o.amountUsd;
-                    totalOtherCurrentLiabilityRiel += o.amountRiel;
-                    totalOtherCurrentLiabilityBath += o.amountThb;
-
-                    if (isPush === false && k == 0) {
-                        if (dataOld != null) {
-                            variable.push({
-                                name: dataOld.name,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: subTotal,
-                                amountUsd: subTotalUSD,
-                                amountRiel: subTotalRiel,
-                                amountThb: subTotalTHB
-                            });
-                            isPush = true;
-                        }
-                    }
-                    k = 1;
-                    x = -1;
-
-                    space = 22;
-                    if (temporary !== o.parent) {
-
-                        if (dataOld != null && isPush == false) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(22 + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: x * subTotal,
-                                amountUsd: x * subTotalUSD,
-                                amountRiel: x * subTotalRiel,
-                                amountThb: x * subTotalTHB
-                            });
-                            isPush = true;
-                        }
-                    }
-                    // Push Header when have Sub Account
-                    if (o.level > 0) {
-                        if (temporary !== o.parent) {
-
-                            /*if (dataOld != null && isPush == false) {
-                             variable.push({
-                             name: dataOld.name,
-                             code: SpaceChar.space(22 + (6 * dataOld.level)) +
-                             'Total : ' + dataOld.code,
-                             amount: x * subTotal,
-                             amountUsd: subTotalUSD,
-                             amountRiel: subTotalRiel,
-                             amountThb: subTotalTHB
-                             });
-                             isPush = true;
-                             }*/
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            otherCurrentLiability.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title",
-                                amountUsd: "title",
-                                amountRiel: "title",
-                                amountThb: "title"
-                            });
-
-                            subTotal = o.result;
-                            subTotalUSD = o.amountUsd;
-                            subTotalRiel = o.amountRiel;
-                            subTotalTHB = o.amountThb;
-                            isPush = false;
-                            variable = otherCurrentLiability;
-                        } else {
-                            subTotal += o.result;
-                            subTotalUSD += o.amountUsd;
-                            subTotalRiel += o.amountRiel;
-                            subTotalTHB += o.amountThb;
-                        }
-                    }
-
-
-                    // Push Total of Header when have Sub Account
-                    temporary = o.parent;
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-
-                    otherCurrentLiability.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: x * o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: x * o.amountUsd,
-                        amountRiel: x * o.amountRiel,
-                        amountThb: x * o.amountThb
-                    });
-
-                } else if (o.accountTypeId == "21") {
-                    totalLongTermLiability += o.result;
-                    totalLongTermLiabilityUSD += o.amountUsd;
-                    totalLongTermLiabilityRiel += o.amountRiel;
-                    totalLongTermLiabilityBath += o.amountThb;
-
-                    if (isPush === false && l == 0) {
-                        if (temporary !== o.parent) {
-                            if (dataOld != null) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    account: dataOld.account,
-                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
                                     amount: x * subTotal,
                                     amountUsd: x * subTotalUSD,
                                     amountRiel: x * subTotalRiel,
                                     amountThb: x * subTotalTHB
                                 });
                                 isPush = true;
-
                             }
                         }
-                    }
-                    l = 1;
-                    x = -1;
-                    space = 22;
-                    if (temporary !== o.parent) {
+                        // Push Header when have Sub Account
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
 
-                        if (dataOld != null && isPush == false) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: x * subTotal,
-                                amountUsd: x * subTotalUSD,
-                                amountRiel: x * subTotalRiel,
-                                amountThb: x * subTotalTHB
-                            });
-                            isPush = true;
+                                /*if (dataOld != null && isPush == false) {
+                                 variable.push({
+                                 name: dataOld.name,
+                                 code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                                 'Total : ' + dataOld.code,
+                                 amount: x * subTotal,
+                                 amountUsd: subTotalUSD,
+                                 amountRiel: subTotalRiel,
+                                 amountThb: subTotalTHB
+                                 });
+                                 isPush = true;
+                                 }*/
+
+
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                longTermLiability.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title",
+                                    amountUsd: "title",
+                                    amountRiel: "title",
+                                    amountThb: "title"
+                                });
+
+                                subTotal = o.result;
+                                subTotalUSD = o.amountUsd;
+                                subTotalRiel = o.amountRiel;
+                                subTotalTHB = o.amountThb;
+                                isPush = false;
+                                variable = longTermLiability;
+                            } else {
+                                subTotal += o.result;
+                                subTotalUSD += o.amountUsd;
+                                subTotalRiel += o.amountRiel;
+                                subTotalTHB += o.amountThb;
+                            }
                         }
-                    }
-                    // Push Header when have Sub Account
-                    if (o.level > 0) {
+                        // Push Total of Header when have Sub Account
+                        temporary = o.parent;
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+
+
+                        longTermLiability.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: x * o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: x * o.amountUsd,
+                            amountRiel: x * o.amountRiel,
+                            amountThb: x * o.amountThb
+                        });
+
+                    } else if (o.accountTypeId == "30") {
+                        totalEquity += o.result;
+                        totalEquityUSD += o.amountUsd;
+                        totalEquityRiel += o.amountRiel;
+                        totalEquityBath += o.amountThb;
+
+                        if (isPush === false && m == 0) {
+                            if (temporary !== o.parent) {
+                                if (dataOld != null) {
+                                    variable.push({
+                                        name: dataOld.name,
+                                        account: dataOld.account,
+                                        code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                        'Total : ' + dataOld.code,
+                                        amount: x * subTotal,
+                                        amountUsd: x * subTotalUSD,
+                                        amountRiel: x * subTotalRiel,
+                                        amountThb: x * subTotalTHB
+                                    });
+                                    isPush = true;
+                                }
+                            }
+                        }
+                        m = 1;
+                        x = -1;
+
+                        space = 15;
                         if (temporary !== o.parent) {
 
-                            /*if (dataOld != null && isPush == false) {
-                             variable.push({
-                             name: dataOld.name,
-                             code: SpaceChar.space(22 + (6 * dataOld.level)) +
-                             'Total : ' + dataOld.code,
-                             amount: x * subTotal,
-                             amountUsd: subTotalUSD,
-                             amountRiel: subTotalRiel,
-                             amountThb: subTotalTHB
-                             });
-                             isPush = true;
-                             }*/
-
-
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            longTermLiability.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title",
-                                amountUsd: "title",
-                                amountRiel: "title",
-                                amountThb: "title"
-                            });
-
-                            subTotal = o.result;
-                            subTotalUSD = o.amountUsd;
-                            subTotalRiel = o.amountRiel;
-                            subTotalTHB = o.amountThb;
-                            isPush = false;
-                            variable = longTermLiability;
-                        } else {
-                            subTotal += o.result;
-                            subTotalUSD += o.amountUsd;
-                            subTotalRiel += o.amountRiel;
-                            subTotalTHB += o.amountThb;
-                        }
-                    }
-                    // Push Total of Header when have Sub Account
-                    temporary = o.parent;
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-
-                    longTermLiability.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: x * o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: x * o.amountUsd,
-                        amountRiel: x * o.amountRiel,
-                        amountThb: x * o.amountThb
-                    });
-
-                } else if (o.accountTypeId == "30") {
-                    totalEquity += o.result;
-                    totalEquityUSD += o.amountUsd;
-                    totalEquityRiel += o.amountRiel;
-                    totalEquityBath += o.amountThb;
-
-                    if (isPush === false && m == 0) {
-                        if (temporary !== o.parent) {
-                            if (dataOld != null) {
+                            if (dataOld != null && isPush == false) {
                                 variable.push({
                                     name: dataOld.name,
                                     account: dataOld.account,
@@ -900,93 +921,72 @@ Meteor.methods({
                                 isPush = true;
                             }
                         }
-                    }
-                    m = 1;
-                    x = -1;
+                        // Push Header when have Sub Account
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
 
-                    space = 15;
-                    if (temporary !== o.parent) {
+                                /*if (dataOld != null && isPush == false) {
+                                 variable.push({
+                                 name: dataOld.name,
+                                 code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                 'Total : ' + dataOld.code,
+                                 amount: x * subTotal,
+                                 amountUsd: subTotalUSD,
+                                 amountRiel: subTotalRiel,
+                                 amountThb: subTotalTHB
+                                 });
+                                 isPush = true;
+                                 }*/
 
-                        if (dataOld != null && isPush == false) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: x * subTotal,
-                                amountUsd: x * subTotalUSD,
-                                amountRiel: x * subTotalRiel,
-                                amountThb: x * subTotalTHB
-                            });
-                            isPush = true;
+
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                equity.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title",
+                                    amountUsd: "title",
+                                    amountRiel: "title",
+                                    amountThb: "title"
+                                });
+
+                                subTotal = o.result;
+                                subTotalUSD = o.amountUsd;
+                                subTotalRiel = o.amountRiel;
+                                subTotalTHB = o.amountThb;
+                                isPush = false;
+                                variable = equity;
+                            } else {
+                                subTotal += o.result;
+                                subTotalUSD += o.amountUsd;
+                                subTotalRiel += o.amountRiel;
+                                subTotalTHB += o.amountThb;
+                            }
                         }
+
+                        // Push Total of Header when have Sub Account
+                        temporary = o.parent;
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+
+                        equity.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: x * o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: x * o.amountUsd,
+                            amountRiel: x * o.amountRiel,
+                            amountThb: x * o.amountThb
+                        });
+
                     }
-                    // Push Header when have Sub Account
-                    if (o.level > 0) {
-                        if (temporary !== o.parent) {
-
-                            /*if (dataOld != null && isPush == false) {
-                             variable.push({
-                             name: dataOld.name,
-                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                             'Total : ' + dataOld.code,
-                             amount: x * subTotal,
-                             amountUsd: subTotalUSD,
-                             amountRiel: subTotalRiel,
-                             amountThb: subTotalTHB
-                             });
-                             isPush = true;
-                             }*/
-
-
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            equity.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title",
-                                amountUsd: "title",
-                                amountRiel: "title",
-                                amountThb: "title"
-                            });
-
-                            subTotal = o.result;
-                            subTotalUSD = o.amountUsd;
-                            subTotalRiel = o.amountRiel;
-                            subTotalTHB = o.amountThb;
-                            isPush = false;
-                            variable = equity;
-                        } else {
-                            subTotal += o.result;
-                            subTotalUSD += o.amountUsd;
-                            subTotalRiel += o.amountRiel;
-                            subTotalTHB += o.amountThb;
-                        }
-                    }
-
-                    // Push Total of Header when have Sub Account
-                    temporary = o.parent;
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-
-                    equity.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: x * o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: x * o.amountUsd,
-                        amountRiel: x * o.amountRiel,
-                        amountThb: x * o.amountThb
-                    });
-
                 }
             });
 
@@ -1382,451 +1382,288 @@ Meteor.methods({
             let space = 0;
             result.sort(compare);
             result.forEach(function (o) {
+                if (((self.showNonActive == "false" || self.showNonActive == false  || self.showNonActive == undefined) && math.round(o.result, 3) != 0) || self.showNonActive == "true" || self.showNonActive == true) {
+                    if (o.accountTypeId == "10") {
+                        totalOtherCurrentAsset += o.result;
 
-                if (o.accountTypeId == "10") {
-                    totalOtherCurrentAsset += o.result;
+                        // Push Total of Header when have Sub Account
 
-                    // Push Total of Header when have Sub Account
-
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-                    space=15;
-                    if (temporary !== o.parent && isPush == false) {
-                        if (dataOld != null) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: subTotal
-                            });
-                            isPush = true;
-                        }
-                    }
-
-
-                    // Push Header when have Sub Account
-
-                    if (o.level > 0) {
-                        if (temporary !== o.parent) {
-
-                            if (dataOld != null && isPush == false) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    account: dataOld.account,
-                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: subTotal
-                                });
-                                isPush = true;
-                            }
-
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            otherCurrentAsset.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title"
-                            });
-
-                            subTotal = o.result;
-                            isPush = false;
-                            variable = otherCurrentAsset;
-                        } else {
-                            subTotal += o.result;
-                        }
-                    }
-
-                    temporary = o.parent;
-
-
-                    otherCurrentAsset.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: o.amountUsd,
-                        amountRiel: o.amountRiel,
-                        amountThb: o.amountThb
-                    });
-
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-
-                } else if (o.accountTypeId == "11") {
-                    totalFixAsset += o.result;
-                    if (isPush === false && i == 0) {
-                        if (temporary !== o.parent) {
-                            if (dataOld != null && isPush == false) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    account: dataOld.account,
-                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: subTotal
-                                });
-                                isPush = true;
-
-                            }
-                        }
-                    }
-                    i = 1;
-                    space=15;
-                    if (temporary !== o.parent) {
-
-                        if (dataOld != null) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: subTotal
-                            });
-                            isPush = true;
-
-                        }
-                    }
-                    // Push Header when have Sub Account
-                    if (o.level > 0) {
-                        if (temporary !== o.parent) {
-
-                            /*if (dataOld != null) {
-                             variable.push({
-                             name: dataOld.name,
-                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                             'Total : ' + dataOld.code,
-                             amount: subTotal
-                             });
-                             isPush = true;
-
-                             }*/
-
-
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            fixAsset.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title"
-                            });
-
-                            subTotal = o.result;
-                            isPush = false;
-                            variable = fixAsset;
-                        } else {
-                            subTotal += o.result;
-                        }
-                    }
-
-
-                    // Push Total of Header when have Sub Account
-                    temporary = o.parent;
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-                    fixAsset.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: o.amountUsd,
-                        amountRiel: o.amountRiel,
-                        amountThb: o.amountThb
-
-                    });
-
-                } else if (o.accountTypeId == "12") {
-                    totalOtherFixAsset += o.result;
-                    if (isPush === false && j == 0) {
-                        if (temporary !== o.parent) {
-                            if (dataOld != null && isPush == false) {
-                                variable.push({
-                                    name: dataOld.name,
-                                    account: dataOld.account,
-                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                    'Total : ' + dataOld.code,
-                                    amount: subTotal
-
-                                });
-                                isPush = true;
-
-                            }
-                        }
-                    }
-                    j = 1;
-
-                    space=15;
-
-                    if (temporary !== o.parent) {
-
-
-                        if (dataOld != null) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: subTotal
-                            });
-                            isPush = true;
-                        }
-                    }
-                    // Push Header when have Sub Account
-                    if (o.level > 0) {
-                        if (temporary !== o.parent) {
-
-
-                            /*if (dataOld != null) {
-                             variable.push({
-                             name: dataOld.name,
-                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                             'Total : ' + dataOld.code,
-                             amount: subTotal
-                             });
-                             isPush = true;
-                             }*/
-
-
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            otherFixAsset.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title"
-                            });
-
-                            subTotal = o.result;
-                            isPush = false;
-                            variable = otherFixAsset;
-                        } else {
-                            subTotal += o.result;
-                        }
-                    }
-
-
-                    // Push Total of Header when have Sub Account
-                    temporary = o.parent;
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-
-                    otherFixAsset.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: o.amountUsd,
-                        amountRiel: o.amountRiel,
-                        amountThb: o.amountThb
-                    });
-
-                } else if (o.accountTypeId == "20") {
-                    totalOtherCurrentLiability += o.result;
-                    if (isPush === false && k == 0) {
-                        if (dataOld != null) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: subTotal
-                            });
-                            isPush = true;
-                        }
-                    }
-                    k = 1;
-                    x = -1;
-                    space=22;
-                    if (temporary !== o.parent) {
-
-
-                        if (dataOld != null && isPush == false) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: x * subTotal
-                            });
-                            isPush = true;
-                        }
-                    }
-                    // Push Header when have Sub Account
-                    if (o.level > 0) {
-                        if (temporary !== o.parent) {
-
-
-                            /*if (dataOld != null && isPush == false) {
-                             variable.push({
-                             name: dataOld.name,
-                             code: SpaceChar.space(22 + (6 * dataOld.level)) +
-                             'Total : ' + dataOld.code,
-                             amount: x * subTotal
-                             });
-                             isPush = true;
-                             }*/
-
-
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            otherCurrentLiability.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title"
-                            });
-
-                            subTotal = o.result;
-                            isPush = false;
-                            variable = otherCurrentLiability;
-                        } else {
-                            subTotal += o.result;
-                        }
-                    }
-
-
-                    // Push Total of Header when have Sub Account
-                    temporary = o.parent;
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-
-                    otherCurrentLiability.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: x * o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: x * o.amountUsd,
-                        amountRiel: x * o.amountRiel,
-                        amountThb: x * o.amountThb
-                    });
-
-                } else if (o.accountTypeId == "21") {
-                    totalLongTermLiability += o.result;
-                    if (isPush === false && l == 0) {
-                        if (temporary !== o.parent) {
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+                        space = 15;
+                        if (temporary !== o.parent && isPush == false) {
                             if (dataOld != null) {
                                 variable.push({
                                     name: dataOld.name,
                                     account: dataOld.account,
                                     code: SpaceChar.space(space + (6 * dataOld.level)) +
                                     'Total : ' + dataOld.code,
-                                    amount: x * subTotal
+                                    amount: subTotal
+                                });
+                                isPush = true;
+                            }
+                        }
+
+
+                        // Push Header when have Sub Account
+
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
+
+                                if (dataOld != null && isPush == false) {
+                                    variable.push({
+                                        name: dataOld.name,
+                                        account: dataOld.account,
+                                        code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                        'Total : ' + dataOld.code,
+                                        amount: subTotal
+                                    });
+                                    isPush = true;
+                                }
+
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                otherCurrentAsset.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title"
+                                });
+
+                                subTotal = o.result;
+                                isPush = false;
+                                variable = otherCurrentAsset;
+                            } else {
+                                subTotal += o.result;
+                            }
+                        }
+
+                        temporary = o.parent;
+
+
+                        otherCurrentAsset.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: o.amountUsd,
+                            amountRiel: o.amountRiel,
+                            amountThb: o.amountThb
+                        });
+
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+
+
+                    } else if (o.accountTypeId == "11") {
+                        totalFixAsset += o.result;
+                        if (isPush === false && i == 0) {
+                            if (temporary !== o.parent) {
+                                if (dataOld != null && isPush == false) {
+                                    variable.push({
+                                        name: dataOld.name,
+                                        account: dataOld.account,
+                                        code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                        'Total : ' + dataOld.code,
+                                        amount: subTotal
+                                    });
+                                    isPush = true;
+
+                                }
+                            }
+                        }
+                        i = 1;
+                        space = 15;
+                        if (temporary !== o.parent) {
+
+                            if (dataOld != null) {
+                                variable.push({
+                                    name: dataOld.name,
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                    'Total : ' + dataOld.code,
+                                    amount: subTotal
                                 });
                                 isPush = true;
 
                             }
                         }
-                    }
-                    l = 1;
-                    x = -1;
+                        // Push Header when have Sub Account
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
 
-                    space=22;
-                    if (temporary !== o.parent) {
+                                /*if (dataOld != null) {
+                                 variable.push({
+                                 name: dataOld.name,
+                                 code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                 'Total : ' + dataOld.code,
+                                 amount: subTotal
+                                 });
+                                 isPush = true;
+
+                                 }*/
 
 
-                        if (dataOld != null && isPush == false) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: x * subTotal
-                            });
-                            isPush = true;
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                fixAsset.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title"
+                                });
+
+                                subTotal = o.result;
+                                isPush = false;
+                                variable = fixAsset;
+                            } else {
+                                subTotal += o.result;
+                            }
                         }
-                    }
-                    // Push Header when have Sub Account
-                    if (o.level > 0) {
+
+
+                        // Push Total of Header when have Sub Account
+                        temporary = o.parent;
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+
+                        fixAsset.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: o.amountUsd,
+                            amountRiel: o.amountRiel,
+                            amountThb: o.amountThb
+
+                        });
+
+                    } else if (o.accountTypeId == "12") {
+                        totalOtherFixAsset += o.result;
+                        if (isPush === false && j == 0) {
+                            if (temporary !== o.parent) {
+                                if (dataOld != null && isPush == false) {
+                                    variable.push({
+                                        name: dataOld.name,
+                                        account: dataOld.account,
+                                        code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                        'Total : ' + dataOld.code,
+                                        amount: subTotal
+
+                                    });
+                                    isPush = true;
+
+                                }
+                            }
+                        }
+                        j = 1;
+
+                        space = 15;
+
                         if (temporary !== o.parent) {
 
 
-                            /*if (dataOld != null && isPush == false) {
-                             variable.push({
-                             name: dataOld.name,
-                             code: SpaceChar.space(22 + (6 * dataOld.level)) +
-                             'Total : ' + dataOld.code,
-                             amount: x * subTotal
-                             });
-                             isPush = true;
-                             }*/
-
-
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            longTermLiability.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title"
-                            });
-
-                            subTotal = o.result;
-                            isPush = false;
-                            variable = longTermLiability;
-                        } else {
-                            subTotal += o.result;
-                        }
-                    }
-
-
-                    // Push Total of Header when have Sub Account
-                    temporary = o.parent;
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-
-                    longTermLiability.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: x * o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: x * o.amountUsd,
-                        amountRiel: x * o.amountRiel,
-                        amountThb: x * o.amountThb
-                    });
-
-                } else if (o.accountTypeId == "30") {
-                    totalEquity += o.result;
-
-                    if (isPush === false && m == 0) {
-                        if (temporary !== o.parent) {
                             if (dataOld != null) {
+                                variable.push({
+                                    name: dataOld.name,
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                    'Total : ' + dataOld.code,
+                                    amount: subTotal
+                                });
+                                isPush = true;
+                            }
+                        }
+                        // Push Header when have Sub Account
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
+
+
+                                /*if (dataOld != null) {
+                                 variable.push({
+                                 name: dataOld.name,
+                                 code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                 'Total : ' + dataOld.code,
+                                 amount: subTotal
+                                 });
+                                 isPush = true;
+                                 }*/
+
+
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                otherFixAsset.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title"
+                                });
+
+                                subTotal = o.result;
+                                isPush = false;
+                                variable = otherFixAsset;
+                            } else {
+                                subTotal += o.result;
+                            }
+                        }
+
+
+                        // Push Total of Header when have Sub Account
+                        temporary = o.parent;
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+
+
+                        otherFixAsset.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: o.amountUsd,
+                            amountRiel: o.amountRiel,
+                            amountThb: o.amountThb
+                        });
+
+                    } else if (o.accountTypeId == "20") {
+                        totalOtherCurrentLiability += o.result;
+                        if (isPush === false && k == 0) {
+                            if (dataOld != null) {
+                                variable.push({
+                                    name: dataOld.name,
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                    'Total : ' + dataOld.code,
+                                    amount: subTotal
+                                });
+                                isPush = true;
+                            }
+                        }
+                        k = 1;
+                        x = -1;
+                        space = 22;
+                        if (temporary !== o.parent) {
+
+
+                            if (dataOld != null && isPush == false) {
                                 variable.push({
                                     name: dataOld.name,
                                     account: dataOld.account,
@@ -1837,76 +1674,240 @@ Meteor.methods({
                                 isPush = true;
                             }
                         }
-                    }
-                    m = 1;
-                    x = -1;
-                    space=15;
-                    if (temporary !== o.parent) {
+                        // Push Header when have Sub Account
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
 
-                        if (dataOld != null && isPush == false) {
-                            variable.push({
-                                name: dataOld.name,
-                                account: dataOld.account,
-                                code: SpaceChar.space(space + (6 * dataOld.level)) +
-                                'Total : ' + dataOld.code,
-                                amount: x * subTotal
-                            });
-                            isPush = true;
+
+                                /*if (dataOld != null && isPush == false) {
+                                 variable.push({
+                                 name: dataOld.name,
+                                 code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                                 'Total : ' + dataOld.code,
+                                 amount: x * subTotal
+                                 });
+                                 isPush = true;
+                                 }*/
+
+
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                otherCurrentLiability.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title"
+                                });
+
+                                subTotal = o.result;
+                                isPush = false;
+                                variable = otherCurrentLiability;
+                            } else {
+                                subTotal += o.result;
+                            }
                         }
-                    }
-                    // Push Header when have Sub Account
-                    if (o.level > 0) {
+
+
+                        // Push Total of Header when have Sub Account
+                        temporary = o.parent;
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+
+
+                        otherCurrentLiability.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: x * o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: x * o.amountUsd,
+                            amountRiel: x * o.amountRiel,
+                            amountThb: x * o.amountThb
+                        });
+
+                    } else if (o.accountTypeId == "21") {
+                        totalLongTermLiability += o.result;
+                        if (isPush === false && l == 0) {
+                            if (temporary !== o.parent) {
+                                if (dataOld != null) {
+                                    variable.push({
+                                        name: dataOld.name,
+                                        account: dataOld.account,
+                                        code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                        'Total : ' + dataOld.code,
+                                        amount: x * subTotal
+                                    });
+                                    isPush = true;
+
+                                }
+                            }
+                        }
+                        l = 1;
+                        x = -1;
+
+                        space = 22;
                         if (temporary !== o.parent) {
 
-                            /*if (dataOld != null && isPush == false) {
-                             variable.push({
-                             name: dataOld.name,
-                             code: SpaceChar.space(15 + (6 * dataOld.level)) +
-                             'Total : ' + dataOld.code,
-                             amount: x * subTotal
-                             });
-                             isPush = true;
-                             }*/
 
-                            data = ChartAccount.findOne({
-                                _id: o.parent
-                            });
-                            equity.push({
-                                name: data.name,
-                                account: data.account,
-                                code: SpaceChar.space(space + (6 * data.level)) +
-                                data.code,
-                                amount: "title"
-                            });
-
-                            subTotal = o.result;
-                            isPush = false;
-                            variable = equity;
-                        } else {
-                            subTotal += o.result;
+                            if (dataOld != null && isPush == false) {
+                                variable.push({
+                                    name: dataOld.name,
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                    'Total : ' + dataOld.code,
+                                    amount: x * subTotal
+                                });
+                                isPush = true;
+                            }
                         }
+                        // Push Header when have Sub Account
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
+
+
+                                /*if (dataOld != null && isPush == false) {
+                                 variable.push({
+                                 name: dataOld.name,
+                                 code: SpaceChar.space(22 + (6 * dataOld.level)) +
+                                 'Total : ' + dataOld.code,
+                                 amount: x * subTotal
+                                 });
+                                 isPush = true;
+                                 }*/
+
+
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                longTermLiability.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title"
+                                });
+
+                                subTotal = o.result;
+                                isPush = false;
+                                variable = longTermLiability;
+                            } else {
+                                subTotal += o.result;
+                            }
+                        }
+
+
+                        // Push Total of Header when have Sub Account
+                        temporary = o.parent;
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+
+
+                        longTermLiability.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: x * o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: x * o.amountUsd,
+                            amountRiel: x * o.amountRiel,
+                            amountThb: x * o.amountThb
+                        });
+
+                    } else if (o.accountTypeId == "30") {
+                        totalEquity += o.result;
+
+                        if (isPush === false && m == 0) {
+                            if (temporary !== o.parent) {
+                                if (dataOld != null) {
+                                    variable.push({
+                                        name: dataOld.name,
+                                        account: dataOld.account,
+                                        code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                        'Total : ' + dataOld.code,
+                                        amount: x * subTotal
+                                    });
+                                    isPush = true;
+                                }
+                            }
+                        }
+                        m = 1;
+                        x = -1;
+                        space = 15;
+                        if (temporary !== o.parent) {
+
+                            if (dataOld != null && isPush == false) {
+                                variable.push({
+                                    name: dataOld.name,
+                                    account: dataOld.account,
+                                    code: SpaceChar.space(space + (6 * dataOld.level)) +
+                                    'Total : ' + dataOld.code,
+                                    amount: x * subTotal
+                                });
+                                isPush = true;
+                            }
+                        }
+                        // Push Header when have Sub Account
+                        if (o.level > 0) {
+                            if (temporary !== o.parent) {
+
+                                /*if (dataOld != null && isPush == false) {
+                                 variable.push({
+                                 name: dataOld.name,
+                                 code: SpaceChar.space(15 + (6 * dataOld.level)) +
+                                 'Total : ' + dataOld.code,
+                                 amount: x * subTotal
+                                 });
+                                 isPush = true;
+                                 }*/
+
+                                data = ChartAccount.findOne({
+                                    _id: o.parent
+                                });
+                                equity.push({
+                                    name: data.name,
+                                    account: data.account,
+                                    code: SpaceChar.space(space + (6 * data.level)) +
+                                    data.code,
+                                    amount: "title"
+                                });
+
+                                subTotal = o.result;
+                                isPush = false;
+                                variable = equity;
+                            } else {
+                                subTotal += o.result;
+                            }
+                        }
+
+                        // Push Total of Header when have Sub Account
+                        temporary = o.parent;
+                        dataOld = ChartAccount.findOne({
+                            _id: temporary
+                        });
+
+
+                        equity.push({
+                            name: o.name,
+                            account: o.account,
+                            amount: x * o.result,
+                            currency: baseCurrency,
+                            code: SpaceChar.space(space + (6 * o.level)) + o.code,
+                            level: o.level,
+                            parent: o.parent,
+                            amountUsd: x * o.amountUsd,
+                            amountRiel: x * o.amountRiel,
+                            amountThb: x * o.amountThb
+                        });
+
                     }
-
-                    // Push Total of Header when have Sub Account
-                    temporary = o.parent;
-                    dataOld = ChartAccount.findOne({
-                        _id: temporary
-                    });
-
-
-                    equity.push({
-                        name: o.name,
-                        account: o.account,
-                        amount: x * o.result,
-                        currency: baseCurrency,
-                        code: SpaceChar.space(space + (6 * o.level)) + o.code,
-                        level: o.level,
-                        parent: o.parent,
-                        amountUsd: x * o.amountUsd,
-                        amountRiel: x * o.amountRiel,
-                        amountThb: x * o.amountThb
-                    });
-
                 }
             });
 
