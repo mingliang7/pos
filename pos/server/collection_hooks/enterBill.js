@@ -21,17 +21,15 @@ EnterBills.before.insert(function (userId, doc) {
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
     if (doc.termId) {
-        doc.status = 'active';
         doc.billType = 'term';
     } else {
-        doc.status = 'active';
         doc.billType = 'group';
     }
     let todayDate = moment().format('YYYYMMDD');
     let prefix = doc.branchId + "-" + todayDate;
     let tmpBillId = doc._id;
     doc._id = idGenerator.genWithPrefix(EnterBills, prefix, 4);
-    billState.set(tmpBillId, {vendorId: doc.vendorId, billId: doc._id, total: doc.total});
+    billState.set(tmpBillId, {vendorId: doc.vendorId, billId: doc._id, total: doc.subTotal});
 
 });
 
@@ -56,6 +54,7 @@ EnterBills.after.insert(function (userId, doc) {
         //Account Integration
         let setting = AccountIntegrationSetting.findOne();
         if (setting && setting.integrate) {
+
             let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
             let apChartAccount = AccountMapping.findOne({name: 'A/P'});
 
@@ -73,20 +72,51 @@ EnterBills.after.insert(function (userId, doc) {
              let itemDoc = Item.findOne(item.itemId);
              if (itemDoc.accountMapping.inventoryAsset && itemDoc.accountMapping.accountPayable) {
              */
+
+
             transaction.push({
                 account: inventoryChartAccount.account,
-                dr: doc.total,
+                dr: doc.subTotal,
                 cr: 0,
-                drcr: doc.total,
+                drcr: doc.subTotal,
 
-            }, {
-                account: apChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total,
             });
+
+            if (doc.isOtherChartAccount) {
+                let apAmount = doc.total;
+                if (apAmount == 0) {
+                    transaction.push({
+                        account: doc.accountId,
+                        dr: 0,
+                        cr: doc.otherAccountAmount,
+                        drcr: -doc.otherAccountAmount,
+                    });
+                } else {
+                    transaction.push({
+                            account: doc.accountId,
+                            dr: 0,
+                            cr: doc.otherAccountAmount,
+                            drcr: -doc.otherAccountAmount,
+                        },
+                        {
+                            account: apChartAccount.account,
+                            dr: 0,
+                            cr: apAmount,
+                            drcr: -apAmount
+                        });
+                }
+            } else {
+                transaction.push({
+                    account: apChartAccount.account,
+                    dr: 0,
+                    cr: doc.subTotal,
+                    drcr: -doc.subTotal
+                });
+            }
+
             /* }
              });*/
+            data.total = doc.subTotal;
             data.transaction = transaction;
             data.journalDate = data.enterBillDate;
             Meteor.call('insertAccountJournal', data);
@@ -204,18 +234,58 @@ EnterBills.after.update(function (userId, doc, fieldNames, modifier, options) {
             }
 
 
+            /*  transaction.push({
+             account: inventoryChartAccount.account,
+             dr: doc.total,
+             cr: 0,
+             drcr: doc.total,
+
+             }, {
+             account: apChartAccount.account,
+             dr: 0,
+             cr: doc.total,
+             drcr: -doc.total,
+             });*/
             transaction.push({
                 account: inventoryChartAccount.account,
-                dr: doc.total,
+                dr: doc.subTotal,
                 cr: 0,
-                drcr: doc.total,
+                drcr: doc.subTotal,
 
-            }, {
-                account: apChartAccount.account,
-                dr: 0,
-                cr: doc.total,
-                drcr: -doc.total,
             });
+
+            if (doc.isOtherChartAccount) {
+                let apAmount = doc.total;
+                if (apAmount == 0) {
+                    transaction.push({
+                        account: doc.accountId,
+                        dr: 0,
+                        cr: doc.otherAccountAmount,
+                        drcr: -doc.otherAccountAmount,
+                    });
+                } else {
+                    transaction.push({
+                            account: doc.accountId,
+                            dr: 0,
+                            cr: doc.otherAccountAmount,
+                            drcr: -doc.otherAccountAmount,
+                        },
+                        {
+                            account: apChartAccount.account,
+                            dr: 0,
+                            cr: apAmount,
+                            drcr: -apAmount
+                        });
+                }
+            } else {
+                transaction.push({
+                    account: apChartAccount.account,
+                    dr: 0,
+                    cr: doc.subTotal,
+                    drcr: -doc.subTotal
+                });
+            }
+            data.total = doc.subTotal;
             data.transaction = transaction;
             data.journalDate = data.enterBillDate;
             Meteor.call('updateAccountJournal', data);

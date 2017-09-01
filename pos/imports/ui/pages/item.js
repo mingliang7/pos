@@ -431,3 +431,18 @@ AutoForm.addHooks([
     'Pos_itemNew',
     'Pos_itemEdit'
 ], hooksObject);
+
+
+let hooksObjectUpdateCost = {
+    onSuccess (formType, result) {
+        alertify.item().close();
+        displaySuccess();
+    },
+    onError (formType, error) {
+        alertify.error(error.message);
+    }
+};
+
+AutoForm.addHooks([
+    'Pos_updateItemCost',
+], hooksObjectUpdateCost);

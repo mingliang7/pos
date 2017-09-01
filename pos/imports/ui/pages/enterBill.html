@@ -111,9 +111,14 @@
             <div class="col-md-3">
                 {{> afQuickField name="des"}}
             </div>
-           <!-- <div class="col-md-3">
-                {{> afQuickField name="accountId" label="Chart Account"}}
-            </div>-->
+            <div class="col-md-3">
+                {{> afQuickField name="isOtherChartAccount" label="Map to Account"}}
+                {{#if isOtherChartAccount}}
+                    {{> afQuickField name="accountId" label="Chart Account"}}
+                    {{> afQuickField name="otherAccountAmount" label="Amount"}}
+
+                {{/if}}
+            </div>
         {{/autoForm}}
     </div>
 </template>
@@ -176,7 +181,7 @@
                             <!--{{> formFooterWithButton}}-->
 
                             {{#formFooter}}
-                                <button type="submit" class="btn btn-primary" id="btn-save" {{disabledSubmitBtn}}>
+                                <button type="submit" class="btn btn-primary" id="save-bill" {{disabledSubmitBtn}}>
                                     <i class="fa fa-floppy-o"></i> {{_ "form.btnSave"}}
                                 </button>
                                 <button type="reset" class="btn btn-default">
@@ -190,7 +195,12 @@
                     {{> afQuickField name="des"}}
                 </div>
                 <div class="col-md-3">
-                    {{> afQuickField name="accountId" label="Chart Account"}}
+                    {{> afQuickField name="isOtherChartAccount" label="Map to Account"}}
+                    {{#if isOtherChartAccount}}
+                        {{> afQuickField name="accountId" label="Chart Account"}}
+                        {{> afQuickField name="otherAccountAmount" label="Amount"}}
+
+                    {{/if}}
                 </div>
             {{/autoForm}}
         {{else}}
@@ -275,6 +285,12 @@
                                         <td class="no-line"></td>
                                         <td class="no-line"></td>
                                         <td class="no-line text-right"><strong>Total</strong></td>
+                                        <td class="no-line text-right">${{numFormat subTotal '0,0.000'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="no-line"></td>
+                                        <td class="no-line"></td>
+                                        <td class="no-line text-right"><strong>Grand Total</strong></td>
                                         <td class="no-line text-right">${{numFormat total '0,0.000'}}</td>
                                     </tr>
                                     </tbody>

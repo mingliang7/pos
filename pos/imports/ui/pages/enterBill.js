@@ -71,7 +71,7 @@ Tracker.autorun(function () {
 
 indexTmpl.onCreated(function () {
     // Create new  alertify
-    $(document).on("keydown", "input", function(e) {
+    $(document).on("keydown", "input", function (e) {
         if (e.which == 13)
             e.preventDefault();
     });
@@ -85,9 +85,9 @@ indexTmpl.helpers({
         return EnterBillTabular;
     },
     selector() {
-        let selector ={status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
+        let selector = {status: {$ne: 'removed'}, branchId: Session.get('currentBranch')};
         let vendorId = FlowRouter.query.get('vid');
-        if(vendorId) {
+        if (vendorId) {
             selector.vendorId = vendorId;
         }
         return selector;
@@ -244,6 +244,7 @@ indexTmpl.onDestroyed(function () {
     vendorBillCollection.remove({});
 });
 newTmpl.onCreated(function () {
+    this.isOtherChartAccount = new ReactiveVar();
     this.repOptions = new ReactiveVar();
     this.chartAccount = new ReactiveVar();
     Meteor.call('getRepList', (err, result) => {
@@ -252,6 +253,10 @@ newTmpl.onCreated(function () {
 });
 // New
 newTmpl.events({
+    'change [name="isOtherChartAccount"]'(event, instance){
+        debugger;
+        instance.isOtherChartAccount.set($(event.currentTarget).is(":checked"));
+    },
     'click .save-bill'(){
         let branchId = Session.get('currentBranch');
         let stockLocationId = $('[name="stockLocationId"]').val();
@@ -297,9 +302,12 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
+    isOtherChartAccount() {
+        return Template.instance().isOtherChartAccount.get() == true;
+    },
     chartAccount(){
-      let instance = Template.instance();
-      return instance.chartAccount.get();
+        let instance = Template.instance();
+        return instance.chartAccount.get();
     },
     totalOrder(){
         let total = 0;
@@ -434,13 +442,17 @@ newTmpl.onDestroyed(function () {
 });
 // Edit
 editTmpl.onCreated(function () {
+    this.isOtherChartAccount = new ReactiveVar(this.data.isOtherChartAccount);
     this.repOptions = new ReactiveVar();
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
     });
 });
 editTmpl.events({
-
+    'change [name="isOtherChartAccount"]'(event, instance){
+        debugger;
+        instance.isOtherChartAccount.set($(event.currentTarget).is(":checked"));
+    },
     'click .add-new-vendor'(event, instance){
         alertify.vendor(fa('plus', 'New Vendor'), renderTemplate(Template.Pos_vendorNew));
     },
@@ -465,6 +477,9 @@ editTmpl.events({
     }
 });
 editTmpl.helpers({
+    isOtherChartAccount() {
+        return Template.instance().isOtherChartAccount.get() == true;
+    },
     closeSwal(){
         setTimeout(function () {
             swal.close();
@@ -624,16 +639,42 @@ showTmpl.events({
 let hooksObject = {
     before: {
         insert: function (doc) {
+            doc.status = 'active';
+            if (doc.isOtherChartAccount) {
+                doc.total = doc.subTotal - doc.otherAccountAmount;
+                if (doc.total < 0) {
+                    alertify.warning("Other Account Amount cannot be greater than total");
+                    return false;
+                } else if (doc.total == 0) {
+                    doc.status = "closed";
+                }
+            } else {
+                doc.total = doc.subTotal;
+            }
             let items = [];
             itemsCollection.find().forEach((obj) => {
                 delete obj._id;
                 items.push(obj);
             });
-            doc.status = 'active';
+
             doc.items = items;
             return doc;
         },
         update: function (doc) {
+            doc.$set.status = 'active';
+            if (doc.$set.isOtherChartAccount) {
+                doc.$set.total = doc.$set.subTotal - doc.$set.otherAccountAmount;
+                if (doc.$set.total < 0) {
+                    alertify.warning("Other Account Amount cannot be greater than total");
+                    return false;
+                } else if (doc.$set.total == 0) {
+                    doc.$set.status = "closed";
+                }
+            } else {
+                doc.$set.total = doc.$set.subTotal;
+              /*  doc.$unset.otherAccountAmount = "";
+                 doc.$unset.accountId = "";*/
+            }
             let items = [];
             itemsCollection.find().forEach((obj) => {
                 delete obj._id;

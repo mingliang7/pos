@@ -60,7 +60,7 @@ EnterBills.schema = new SimpleSchema({
                 },
                 value(){
                     let vendorId = AutoForm.getFieldValue('vendorId');
-                    if(vendorId) {
+                    if (vendorId) {
                         return moment().toDate();
                     }
                 }
@@ -138,7 +138,7 @@ EnterBills.schema = new SimpleSchema({
                 optionsMethodParams: function () {
                     if (Meteor.isClient) {
                         let currentUserStockAndAccountMappingDoc = Session.get('currentUserStockAndAccountMappingDoc');
-                        let stockLocations = currentUserStockAndAccountMappingDoc == undefined ? ' ' : currentUserStockAndAccountMappingDoc.stockLocations ;
+                        let stockLocations = currentUserStockAndAccountMappingDoc == undefined ? ' ' : currentUserStockAndAccountMappingDoc.stockLocations;
                         let currentBranch = Session.get('currentBranch');
                         return {
                             branchId: currentBranch,
@@ -177,6 +177,17 @@ EnterBills.schema = new SimpleSchema({
     items: {
         type: [EnterBills.itemsSchema],
     },
+    subTotal: {
+        type: Number,
+        decimal: true,
+        label: "Total",
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency();
+            }
+        }
+    },
     total: {
         type: Number,
         decimal: true,
@@ -198,6 +209,21 @@ EnterBills.schema = new SimpleSchema({
         type: Date,
         optional: true
     },
+    isOtherChartAccount: {
+        type: Boolean,
+        optional: true
+    },
+    otherAccountAmount: {
+        type: Number,
+        decimal: true,
+        optional: true,
+        custom: function () {
+            // let paymentType = AutoForm.getFieldValue('paymentType');
+            if (this.field('isOtherChartAccount').value == true && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                return "required";
+            }
+        },
+    },
     accountId: {
         type: String,
         optional: true,
@@ -206,7 +232,13 @@ EnterBills.schema = new SimpleSchema({
             options(){
                 return SelectOpts.chartAccount();
             }
-        }
+        },
+        custom: function () {
+            // let paymentType = AutoForm.getFieldValue('paymentType');
+            if (this.field('isOtherChartAccount').value == true && !this.isSet && (!this.operator || (this.value === null || this.value === ""))) {
+                return "required";
+            }
+        },
     }
 });
 
