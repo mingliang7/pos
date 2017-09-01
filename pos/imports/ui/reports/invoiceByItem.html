@@ -36,18 +36,27 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        {{> afQuickField name="repId" label="Reps"}}
-                                    </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         {{> afQuickField name="itemId" label="Item"}}
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
+                                        {{> afQuickField name="itemFilter" label="Item Filter"}}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{> afQuickField name="repId" label="Reps"}}
+                                    </div>
+                                    <div class="col-md-3">
                                         {{> afQuickField name="branchId" label="Branch"}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{> afQuickField name="showFields" label="Show Fields" value=showFieldOpts}}
                                     </div>
                                 </div>
                                 <input type="checkbox" class="show-items-summary" checked>SHOW ITEMS SUMMARY
                                 <input type="checkbox" class="show-invoices-summary" checked>SHOW INV SUMMARY
+
                                 <br>
                                 <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
                                 </button>
@@ -90,30 +99,19 @@
                 {{#if showInvoicesSummary}}
                     <thead class="rpt-header">
                     <tr>
-                        {{#each data.fields }}
-                            {{{field}}}
-                        {{/each}}
+                        {{{showFiled}}}
                     </tr>
                     </thead>
                     <tbody class="rpt-body">
                     {{#each col in content}}
                         <tr>
-                            <td>{{moFormat col.invoiceDate 'DD/MM/YYYY'}}</td>
-                            <td>{{col.invoiceId}}</td>
-                            <td>{{col.customerDoc.name}}</td>
-                            <td>{{col.customerDoc.address}}</td>
-                            <td>{{col.customerDoc.telephone}}</td>
-                            <td>{{col.repDoc.name}}</td>
-                            <td>{{col.itemDoc.name}}</td>
-                            <td class="text-right">{{numFormat col.items.qty '0,0.000'}}</td>
-                            <td class="text-right">{{numFormat col.items.price '0,0.000'}}</td>
-                            <td class="text-right">{{numFormat col.items.amount '0,0.000'}}</td>
+                            {{{showFieldInRow col}}}
                         </tr>
                         {{{lastItem @index col.itemDoc._id data.itemObj}}}
                     {{/each}}
                     <hr>
                     <tr>
-                        <td colspan="7"></td>
+                        <td colspan="{{countFieldLength}}"></td>
                         <td colspan="3" class="text-right" style="border-top: 1px solid black;"></td>
                     </tr>
                     <tr>

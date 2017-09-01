@@ -134,4 +134,39 @@ export const invoiceSchema = new SimpleSchema({
             }
         }
     },
+    itemFilter: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: 'select2',
+            options(){
+                return [
+                    {label: 'All', value: ''},
+                    {label: 'Free', value: 0},
+                    {label: 'Not Free', value: 1},
+                ]
+            }
+        }
+    },
+    showFields: {
+        type: [String],
+        autoform: {
+            type: 'select2',
+            multiple: true,
+            options(){
+                return [
+                    {label: 'Date', value: 'Date'},
+                    {label: 'INVN', value: 'INVN'},
+                    {label: 'Name', value: 'Name'},
+                    {label: 'Addr', value: 'Addr'},
+                    {label: 'Tel', value: 'Tel'},
+                    {label: 'Rep', value: 'Rep'},
+                    {label: 'Item', value: 'Item'},
+                    {label: 'Qty', value: 'Qty'},
+                    {label: 'Price', value: 'Price'},
+                    {label: 'Amount', value: 'Amount'},
+                ]
+            }
+        }
+    }
 });

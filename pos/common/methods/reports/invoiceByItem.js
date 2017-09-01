@@ -22,6 +22,7 @@ export const invoiceByItemReport = new ValidatedMethod({
             Meteor._sleepForMs(200);
             let selector = {};
             let project = {};
+            let itemFilterSelector = [{$gte: ['$$item.price', 0]}];
             let itemSelector = {$exists: true};
             let data = {
                 title: {},
@@ -63,6 +64,14 @@ export const invoiceByItemReport = new ValidatedMethod({
             if (params.itemId) {
                 itemSelector = {$in: [params.itemId]}
             }
+            if(params.itemFilter) {
+                let itemFilter = params.itemFilter;
+                if(itemFilter == '0') {
+                    itemFilterSelector = [{$eq: ['$$item.price', 0]}];
+                }else{
+                    itemFilterSelector = [{$gt: ['$$item.price', 0]}];
+                }
+            }
             data.fields = [{field: '<th>Date</th>'}, {field: '<th>INVN</th>'}, {field: '<th>Name</th>'}, {field: '<th>Addr</th>'}, {field: '<th>Tel</th>'},{field: '<th>Rep</th>'}, {field: '<th>Item</th>'}, {field: '<th class="text-right">Qty</th>'}, {field: '<th class="text-right">Price</th>'}, {field: '<th class="text-right">Amount</th>'}];
             data.displayFields = [{field: 'date'}, {field: 'invoiceId'}, {field: 'customer'}, {field: 'address'}, {field: 'tel'},{field: 'rep'}, {field: 'itemName'}, {field: 'qty'}, {field: 'amount'}];
 
@@ -73,6 +82,22 @@ export const invoiceByItemReport = new ValidatedMethod({
             let invoices = Invoices.aggregate([
                 {
                     $match: selector
+                },
+                {
+                    $project: {
+                        invoiceDate: 1,
+                        customerId: 1,
+                        repId: 1,
+                        items: {
+                            $filter: {
+                                input: '$items',
+                                as: 'item',
+                                cond: {
+                                    $or: itemFilterSelector
+                                }
+                            }
+                        }
+                    }
                 },
                 {
                     $lookup: {
@@ -122,7 +147,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                         customerDoc: 1,
                         repDoc: 1,
                         itemDoc: 1,
-                        items: 1
+                        items:1
                     }
                 },
                 {
@@ -143,6 +168,19 @@ export const invoiceByItemReport = new ValidatedMethod({
             let invoiceItemSummary = Invoices.aggregate([
                 {
                     $match: selector
+                },
+                {
+                    $project: {
+                        items: {
+                            $filter: {
+                                input: '$items',
+                                as: 'item',
+                                cond: {
+                                    $or: itemFilterSelector
+                                }
+                            }
+                        }
+                    }
                 },
                 {
                     $unwind: {path: '$items', preserveNullAndEmptyArrays: true}

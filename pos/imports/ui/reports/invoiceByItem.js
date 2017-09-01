@@ -46,6 +46,20 @@ indexTmpl.onCreated(function () {
     paramsState.set(FlowRouter.query.params());
 });
 indexTmpl.helpers({
+    showFieldOpts(){
+        return [
+            'Date',
+            'INVN',
+            'Name',
+            'Addr',
+            'Tel',
+            'Rep',
+            'Item',
+            'Qty',
+            'Price',
+            'Amount'
+        ]
+    },
     schema(){
         return invoiceSchema;
     },
@@ -97,18 +111,44 @@ invoiceDataTmpl.onDestroyed(function () {
     $('.rpt-header').removeClass('rpt');
 });
 invoiceDataTmpl.helpers({
+    showFiled(){
+        let th = '';
+        let fields = AutoForm.getFieldValue('showFields', 'invoiceReport');
+        fields.forEach(function (field) {
+            th += '<th>' + field + '</th>';
+        });
+        return th;
+    },
+    showFieldInRow(col){
+        let td = '';
+        let fields = AutoForm.getFieldValue('showFields', 'invoiceReport');
+        fields.forEach(function (field) {
+            let val = switchField(field, col);
+            if (typeof val == "string") {
+                td += '<td>' + val + '</td>'
+            } else {
+                td += '<td class="text-right">' + numeral(val).format('0,0.00') + '</td>';
+            }
+        });
+        return td;
+    },
     lastItem(index, itemId, itemObj){
+        let fields = AutoForm.getFieldValue('showFields', 'invoiceReport');
         let item = itemObj[itemId];
         if (index == item.itemIndex) {
             return `
                 <tr>
-                    <td colspan="7" class="text-right">Total <b>${item.itemDoc.name}:</b></td>
+                    <td colspan=${fields.length - 3 } class="text-right">Total <b>${item.itemDoc.name}:</b></td>
                     <td class="text-right" style="border-top: 1px solid black;"><b><i>${numeral(item.totalQty).format('0,0.00')}</i></b></td>
                     <td style="border-top: 1px solid black;"></td>
                     <td class="text-right" style="border-top: 1px solid black;"><b><i>${numeral(item.total).format('0,0.00')}</i></b></td>
                 </tr>
             `
         }
+    },
+    countFieldLength(){
+        let fields = AutoForm.getFieldValue('showFields', 'invoiceReport');
+        return fields.length - 3;
     },
     showItemsSummary(){
         return showItemsSummary.get();
@@ -153,9 +193,10 @@ invoiceDataTmpl.helpers({
         return string;
     },
     getTotalFooter(totalQty, total, n){
+        let fields = AutoForm.getFieldValue('showFields', 'invoiceReport');
         let qty = totalQty ? totalQty : '';
         let string = '';
-        let fieldLength = this.displayFields.length - n;
+        let fieldLength = fields.length - 4;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
@@ -183,7 +224,7 @@ AutoForm.hooks({
             if (doc.customer) {
                 params.customer = doc.customer
             }
-            if(doc.repId) {
+            if (doc.repId) {
                 params.repId = doc.repId.join(',');
             }
             if (doc.filter) {
@@ -195,9 +236,51 @@ AutoForm.hooks({
             if (doc.itemId) {
                 params.itemId = doc.itemId;
             }
+            if (doc.itemFilter) {
+                params.itemFilter = doc.itemFilter;
+            }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());
             return false;
         }
     }
 });
+
+
+function switchField(field, col) {
+    let val;
+    switch (field) {
+        case 'Date':
+            val = moment(col['invoiceDate']).format('DD/MM/YYYY');
+            break;
+        case 'INVN':
+            val = col['invoiceId'];
+            break;
+        case 'Name':
+            val = col['customerDoc']['name'];
+            break;
+
+        case 'Addr':
+            val = col['customerDoc']['address'] || '';
+            break;
+        case 'Tel':
+            val = col['customerDoc']['telephone'] || '';
+            break;
+        case 'Rep':
+            val = col['repDoc']['name'];
+            break;
+        case 'Item':
+            val = col['itemDoc']['name'];
+            break;
+        case 'Qty':
+            val = col['items']['qty'];
+            break;
+        case 'Price':
+            val = col['items']['price'];
+            break;
+        case 'Amount':
+            val = col['items']['amount'];
+            break;
+    }
+    return val;
+}
