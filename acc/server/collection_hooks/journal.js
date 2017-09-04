@@ -9,11 +9,7 @@ import {ConfigDep} from '../../imports/api/collections/configDep';
 import {ChartAccount} from '../../imports/api/collections/chartAccount';
 import {DepExpList} from '../../imports/api/collections/depExpList';
 import {FixAssetDep} from '../../imports/api/collections/fixAssetDep';
-
-
 Journal.before.insert(function (userId, doc) {
-    console.log(doc);
-    console.log(doc.transaction);
     var depType = ConfigDep.findOne();
     var transaction = [];
     _.each(doc.transaction, function (obj) {
@@ -37,7 +33,7 @@ Journal.before.insert(function (userId, doc) {
     var date = moment(doc.journalDate, "DD/MM/YYYY").format("YYMM");
     var prefix = doc.branchId + "-" + date;
 
-    doc._id = idGenerator.genWithPrefix(Journal, prefix, 6);
+    // doc._id = idGenerator.genWithPrefix(Journal, prefix, 6);
 
     doc.splitAccount = lenArray > 2 ? doc._id : 0;
 
@@ -229,8 +225,6 @@ Journal.before.insert(function (userId, doc) {
 
 });
 Journal.before.update(function (userId, doc, fieldNames, modifier, options) {
-    console.log(modifier.$set);
-    console.log(modifier.$set.transaction);
     var depType = ConfigDep.findOne();
     modifier.$set = modifier.$set || {};
     var transaction = [];
