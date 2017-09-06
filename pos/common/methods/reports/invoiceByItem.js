@@ -86,6 +86,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                 {
                     $project: {
                         invoiceDate: 1,
+                        voucherId: 1,
                         customerId: 1,
                         repId: 1,
                         items: {
