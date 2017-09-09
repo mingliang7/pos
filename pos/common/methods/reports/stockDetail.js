@@ -1135,7 +1135,303 @@ export const stockDetailReportMethod = new ValidatedMethod({
 
                                 })
                             }
-                        ]
+                        ],
+                        adjustmentUp: [
+                            {
+                                $match: {
+                                    type: "adjustment-up",
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_adjustments",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "adjustmentDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$adjustmentDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('users','adjustment.staffId','_id','adjustmentDoc.staff')
+                            },
+                            {
+                                $unwind: {path: '$adjustmentDoc.staff',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('core_branch','adjustmentDoc.branchId','_id','adjustmentDoc.branchDoc')
+                            },
+                            {
+                                $unwind: {path: '$adjustmentDoc.branchDoc',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$des", '']},
+                                    number: {$ifNull: ['$adjustmentDoc.voucherId', '$adjustmentDoc._id']},
+                                    name: {$concat: ["កែសម្រួលស្តុកឡើង"]},
+                                    rep: {$ifNull: ["$adjustmentDoc.staff.username", ""]},
+                                    item: '$itemDoc',
+                                    opDate: '$adjustmentDoc.adjustmentDate'
+
+                                })
+                            }
+                        ],
+                        adjustmentDown: [
+                            {
+                                $match: {
+                                    type: "adjustment-down",
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_adjustments",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "adjustmentDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$adjustmentDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('users','adjustment.staffId','_id','adjustmentDoc.staff')
+                            },
+                            {
+                                $unwind: {path: '$adjustmentDoc.staff',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('core_branch','adjustmentDoc.branchId','_id','adjustmentDoc.branchDoc')
+                            },
+                            {
+                                $unwind: {path: '$adjustmentDoc.branchDoc',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$des", '']},
+                                    number: {$ifNull: ['$adjustmentDoc.voucherId', '$adjustmentDoc._id']},
+                                    name: {$concat: ["កែសម្រួលស្តុកចុះ"]},
+                                    rep: {$ifNull: ["$adjustmentDoc.staff.username", ""]},
+                                    item: '$itemDoc',
+                                    opDate: '$adjustmentDoc.adjustmentDate'
+
+                                })
+                            }
+                        ],
+                        adjustmentDownReturn: [
+                            {
+                                $match: {
+                                    type: "adjustment-down-return",
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_adjustments",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "adjustmentDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$adjustmentDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('users','adjustment.staffId','_id','adjustmentDoc.staff')
+                            },
+                            {
+                                $unwind: {path: '$adjustmentDoc.staff',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('core_branch','adjustmentDoc.branchId','_id','adjustmentDoc.branchDoc')
+                            },
+                            {
+                                $unwind: {path: '$adjustmentDoc.branchDoc',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$des", '']},
+                                    number: {$ifNull: ['$adjustmentDoc.voucherId', '$adjustmentDoc._id']},
+                                    name: {$concat: ["ដាក់កែសម្រួលស្តុកចុះចូលវិញ"]},
+                                    rep: {$ifNull: ["$adjustmentDoc.staff.username", ""]},
+                                    item: '$itemDoc',
+                                    opDate: '$adjustmentDoc.adjustmentDate'
+
+                                })
+                            }
+                        ],
+                        adjustmentUpReturn: [
+                            {
+                                $match: {
+                                    type: "adjustment-up-return",
+                                    inventoryDate: {
+                                        $gte: selector.inventoryDate.$gte,
+                                        $lte: selector.inventoryDate.$lte
+                                    },
+                                    branchId: handleUndefined(selector.branchId),
+                                    stockLocationId: handleUndefined(selector.stockLocationId),
+                                    itemId: handleUndefined(selector.itemId)
+                                }
+                            },
+                            {
+                                $group: groupLast()
+                            },
+                            {
+                                $lookup: {
+                                    from: "pos_adjustments",
+                                    localField: "refId",
+                                    foreignField: "_id",
+                                    as: "adjustmentDoc"
+                                }
+                            }, {
+                                $unwind: {
+                                    path: '$adjustmentDoc', preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'pos_item',
+                                    localField: 'itemId',
+                                    foreignField: '_id',
+                                    as: 'itemDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: {
+                                    from: 'core_branch',
+                                    localField: 'branchId',
+                                    foreignField: '_id',
+                                    as: 'branchDoc'
+                                }
+                            },
+                            {
+                                $unwind: {path: '$branchDoc', preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('users','adjustment.staffId','_id','adjustmentDoc.staff')
+                            },
+                            {
+                                $unwind: {path: '$adjustmentDoc.staff',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $lookup: lookupRef('core_branch','adjustmentDoc.branchId','_id','adjustmentDoc.branchDoc')
+                            },
+                            {
+                                $unwind: {path: '$adjustmentDoc.branchDoc',preserveNullAndEmptyArrays: true}
+                            },
+                            {
+                                $project: projectionField({
+                                    description: {$ifNull: ["$des", '']},
+                                    number: {$ifNull: ['$adjustmentDoc.voucherId', '$adjustmentDoc._id']},
+                                    name: {$concat: ["ដាក់កែសម្រួលស្តុកឡើងចូលវិញ"]},
+                                    rep: {$ifNull: ["$adjustmentDoc.staff.username", ""]},
+                                    item: '$itemDoc',
+                                    opDate: '$adjustmentDoc.adjustmentDate'
+
+                                })
+                            }
+                        ],
                     },
 
                 }
@@ -1143,6 +1439,26 @@ export const stockDetailReportMethod = new ValidatedMethod({
             if (inventoryDocs[0].stockDate.length > 0) {
                 inventoryDocs[0].stockDate.forEach(function (obj) {
                     var currentStockDate = moment(obj.inventoryDate).format('YYYY-MM-DD');
+                    inventoryDocs[0].adjustmentUp.forEach(function (adjustment) {
+                        if (moment(currentStockDate).isSame(moment(adjustment.inventoryDate).format('YYYY-MM-DD'))) {
+                            obj.items.push(adjustment);
+                        }
+                    });
+                    inventoryDocs[0].adjustmentDown.forEach(function (adjustment) {
+                        if (moment(currentStockDate).isSame(moment(adjustment.inventoryDate).format('YYYY-MM-DD'))) {
+                            obj.items.push(adjustment);
+                        }
+                    });
+                    inventoryDocs[0].adjustmentDownReturn.forEach(function (adjustment) {
+                        if (moment(currentStockDate).isSame(moment(adjustment.inventoryDate).format('YYYY-MM-DD'))) {
+                            obj.items.push(adjustment);
+                        }
+                    });
+                    inventoryDocs[0].adjustmentUpReturn.forEach(function (adjustment) {
+                        if (moment(currentStockDate).isSame(moment(adjustment.inventoryDate).format('YYYY-MM-DD'))) {
+                            obj.items.push(adjustment);
+                        }
+                    });
                     inventoryDocs[0].bills.forEach(function (bill) {
                         if (moment(currentStockDate).isSame(moment(bill.inventoryDate).format('YYYY-MM-DD'))) {
                             obj.items.push(bill);
