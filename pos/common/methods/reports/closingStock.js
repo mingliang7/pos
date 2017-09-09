@@ -25,7 +25,7 @@ export const closingStockReportMethod = new ValidatedMethod({
                 footer: {}
             };
             let date, branchId;
-            if(params.items) {
+            if (params.items) {
                 items = params.items.split(',');
             }
             if (params.date) {
@@ -56,7 +56,9 @@ export const closingStockReportMethod = new ValidatedMethod({
                             lendingStock: 0,
                             invoice: 0,
                             exchangeRingPull: 0,
-                            transferOut: 0
+                            transferOut: 0,
+                            adjustmentUp: 0,
+                            adjustmentDown: 0
                         };
                         itemObj[item.itemId].balance = item.balance;
                         itemObj[item.itemId].qty = item.qty;
@@ -80,7 +82,9 @@ export const closingStockReportMethod = new ValidatedMethod({
                             lendingStock: 0,
                             invoice: 0,
                             exchangeRingPull: 0,
-                            transferOut: 0
+                            transferOut: 0,
+                            adjustmentDown: 0,
+                            adjustmentUp: 0
                         };
                         itemObj[item.itemId].qty = Math.abs(item.qty);
                         itemObj[item.itemId].qtyIn = item.qty > 0 ? item.qty : 0;
@@ -89,9 +93,11 @@ export const closingStockReportMethod = new ValidatedMethod({
                         itemObj[item.itemId].itemId = item.itemId;
                         itemObj[item.itemId].itemDoc = item.itemDoc;
                         itemObj[item.itemId].lastBalance = (itemObj[item.itemId].qtyIn - itemObj[item.itemId].qtyOut) + itemObj[item.itemId].balance;
-                        itemObj[item.itemId][item.transactionType] += Math.abs(item.qty);
+                        //check for adjustment type
+                        itemObj[item.itemId][item.transactionType + `${item.transactionType === 'adjustment' ? item.qty < 0 ? 'Down' : 'Up' : ''}`] += Math.abs(item.qty);
                     } else {
-                        itemObj[item.itemId][item.transactionType] += Math.abs(item.qty);
+                        //check for adjustment type
+                        itemObj[item.itemId][item.transactionType + `${item.transactionType === 'adjustment' ? item.qty < 0 ? 'Down' : 'Up' : ''}`] += Math.abs(item.qty);
                         itemObj[item.itemId].qty += Math.abs(item.qty);
                         itemObj[item.itemId].qtyIn += item.qty > 0 ? item.qty : 0;
                         itemObj[item.itemId].qtyOut += item.qty < 0 ? Math.abs(item.qty) : 0;
@@ -102,11 +108,11 @@ export const closingStockReportMethod = new ValidatedMethod({
             });
             let arr = [];
             for (let k in itemObj) {
-                if(items.length > 0) {
-                    if(_.includes(items, k)){
+                if (items.length > 0) {
+                    if (_.includes(items, k)) {
                         arr.push(itemObj[k]);
                     }
-                }else{
+                } else {
                     arr.push(itemObj[k]);
                 }
             }
@@ -150,7 +156,8 @@ function calcStockClosing(inventoryDate, closingStockDate, branchId) {
         branchId
     });
     let transferOuts = ClosingStock.lookupLocationTransferOut({inventoryDate, closingStockDate, branchId});
-    let transactions = _.union(enterBills, receiveItemLendingStocks, receiveItemPrepaidOrders, receiveItemRingPulls, transferIns, lendingStocks, invoices, exchangeRingPulls, transferOuts)
+    let adjustments = ClosingStock.adjustment({inventoryDate, closingStockDate, branchId});
+    let transactions = _.union(enterBills, receiveItemLendingStocks, receiveItemPrepaidOrders, receiveItemRingPulls, transferIns, lendingStocks, invoices, exchangeRingPulls, transferOuts, adjustments);
     let transactionObj = {};
     let transactionArr = [];
     transactions.forEach(function (transaction) {

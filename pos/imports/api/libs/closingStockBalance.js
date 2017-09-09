@@ -7,10 +7,11 @@ import {ClosingStockBalance} from '../collections/closingStock';
 import {ReceiveItems} from '../collections/receiveItem';
 import {LocationTransfers} from '../collections/locationTransfer';
 import {ExchangeRingPulls} from '../collections/exchangeRingPull';
+import {Adjustments} from '../collections/adjustment';
 export default class ClosingStock {
     static generateClosingStockBalance(branchId) {
         let branchSelector = {};
-        if(branchId) {
+        if (branchId) {
             branchSelector._id = branchId;
         }
         Branch.find(branchSelector).forEach(function (branch) {
@@ -51,7 +52,9 @@ export default class ClosingStock {
                     branchId
                 });
                 let transferOuts = ClosingStock.lookupLocationTransferOut({inventoryDate, closingStockDate, branchId});
-                let transactions = _.union(enterBills, receiveItemLendingStocks, receiveItemPrepaidOrders, receiveItemRingPulls, transferIns, lendingStocks, invoices, exchangeRingPulls, transferOuts)
+                //--------------Stock IN-Out----------------
+                let adjustments = ClosingStock.adjustment({inventoryDate, closingStockDate, branchId});
+                let transactions = _.union(enterBills, receiveItemLendingStocks, receiveItemPrepaidOrders, receiveItemRingPulls, transferIns, lendingStocks, invoices, exchangeRingPulls, transferOuts, adjustments);
                 let transactionObj = {};
                 let transactionArr = [];
                 transactions.forEach(function (transaction) {
@@ -178,7 +181,7 @@ export default class ClosingStock {
         if (closingStockDate) {
             selector.invoiceDate.$gte = closingStockDate;
         }
-        let invoices =  Invoices.aggregate(this.closingStockQuery({
+        let invoices = Invoices.aggregate(this.closingStockQuery({
             selector: selector,
             date: '$invoiceDate',
             qty: 'qty',
@@ -219,6 +222,24 @@ export default class ClosingStock {
             qty: 'qty',
             transactionType: 'transferOut',
             type: 'out'
+        }));
+    }
+
+    //Adjustment
+    static adjustment({branchId, inventoryDate, closingStockDate}) {
+        let selector = {
+            adjustmentDate: {$lte: inventoryDate},
+            branchId: branchId,
+        };
+        if (closingStockDate) {
+            selector.adjustmentDate.$gte = closingStockDate;
+        }
+        return Adjustments.aggregate(this.closingStockQuery({
+            selector: selector,
+            date: '$adjustmentDate',
+            qty: 'qty',
+            transactionType: 'adjustment',
+            type: 'in-out'
         }));
     }
 
@@ -279,7 +300,7 @@ export default class ClosingStock {
                         itemDoc: 1,
                         qty: {
                             $cond: [
-                                {$eq: ['$item.type', 'in']},
+                                {$or: [{$eq: ['$item.type', 'in']}, {$eq: ['$item.type', 'in-out']}]},
                                 {$multiply: ['$item.qty', 1]},
                                 {$multiply: ['$item.qty', -1]}
                             ]

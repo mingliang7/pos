@@ -61,6 +61,9 @@ Template.Pos_sidebarMenu.helpers({
     vendorBalanceSummary() {
         return `/pos/report/vendor-balance-summary?branchId=${Session.get('currentBranch')}`;
     },
+    purchaseByItemSummary(){
+        return `/pos/report/purchaseItem?branchId=${Session.get('currentBranch')}`;
+    },
     bill() {
         return `/pos/report/billReport?date=${moment().startOf('days').format('YYYY-MM-DD HH:mm:ss')},${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}&branch=${Session.get('currentBranch')}`;
     },

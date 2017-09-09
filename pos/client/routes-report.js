@@ -621,3 +621,18 @@ PosRoutes.route('/report/closingStockBalance', {
         parent: 'pos.mainReport'
     }
 });
+
+import '../imports/ui/reports/purchaseItem';
+PosRoutes.route('/report/purchaseItem', {
+    name: 'pos.purchaseByItem',
+    title: 'Purchase By Item',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('pos_purchaseByItem');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Purchase By Item',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
