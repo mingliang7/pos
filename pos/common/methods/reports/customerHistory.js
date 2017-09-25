@@ -194,7 +194,7 @@ export const customerHistoryReport = new ValidatedMethod({
                                 date: moment(payment.paymentDate).toDate(),
                                 data: [{
                                     _id: payment._id,
-                                    invoiceId: payment.invoiceId,
+                                    invoiceId: doc.voucherId,
                                     voucherId: payment.voucherId,
                                     type: 'receive-payment',
                                     rp: true,
@@ -207,7 +207,7 @@ export const customerHistoryReport = new ValidatedMethod({
                         } else {
                             groupDateObj[groupPayDate].data.push({
                                 _id: payment._id,
-                                invoiceId: payment.invoiceId,
+                                invoiceId:  doc.voucherId,
                                 voucherId: payment.voucherId,
                                 type: 'receive-payment',
                                 rp: true,

@@ -82,7 +82,7 @@
             </tbody>
         </table>
         {{#with data}}
-            <table class="table table-responsive fixed-table">
+            <table class="table table-responsive fixed-table table-bordered">
                 <thead>
                 <tr class="bg-aqua" style="border-top: 1px solid black ">
                     <!--<th>អតិថិជន</th>-->
@@ -90,12 +90,12 @@
                     <th>វិក័យប័ត្រ</th>
                     <th>បរិយាយ</th>
                     <th>Name</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Amount</th>
-                    <th>សរុប</th>
-                    <th>ទូរទាត់</th>
-                    <th>សមតុល្យ</th>
+                    <th style="text-align: center;">Qty</th>
+                    <th style="text-align: center;">Price</th>
+                    <th style="text-align: center;">Amount</th>
+                    <th style="text-align: center;">សរុប</th>
+                    <th style="text-align: center;">ទូរទាត់</th>
+                    <th style="text-align: center;">សមតុល្យ</th>
                     <!--<th>សមតុល្យ</th>-->
                 </tr>
                 </thead>
@@ -123,7 +123,7 @@
                                 {{/if}}
                                     {{#if col.inv}}
                                         <td>
-                                            {{concatInvoiceId col._id}}
+                                            {{col.voucherId}}
                                         </td>
                                     {{else}}
                                         {{#if firstIndex @index col.date field.data}}
@@ -205,7 +205,7 @@
         <table class="table striped">
             <thead>
                 <th>ID</th>
-                <th>Invoice ID</th>
+                <th>Voucher #</th>
                 <th>Invoice Number</th>
                 <th>Date</th>
                 <th class="text-center">Paid</th>
