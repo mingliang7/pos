@@ -38,6 +38,7 @@ var itemsTmpl = Template.Pos_invoiceItems,
     editItemsTmpl = Template.Pos_invoiceItemsEdit;
 //methods
 import {removeItemInSaleOrder} from '../../../common/methods/sale-order';
+
 let currentItemsInupdateForm = new Mongo.Collection(null);
 let tmpDeletedItem = new Mongo.Collection(null); // use to check with credit limit 
 // Local collection
@@ -83,7 +84,8 @@ itemsTmpl.onCreated(function () {
                 _id: this.defaultItem.get(),
                 customerId: Session.get('getCustomerId'),
                 qty: this.defaultQty.get(),
-                routeName: FlowRouter.getRouteName()
+                routeName: FlowRouter.getRouteName(),
+                saleType: Session.get('saleType')
             }).then((result) => {
                 this.defaultPrice.set(result.price);
             }).catch((err) => {
@@ -98,6 +100,14 @@ itemsTmpl.onRendered(function () {
 });
 
 itemsTmpl.helpers({
+    isRetail() {
+        let saleType = Session.get('saleType');
+        return saleType === 'retail' ? 'btn-success' : 'btn-default';
+    },
+    isWholeSale() {
+        let saleType = Session.get('saleType');
+        return saleType === 'wholeSale' ? 'btn-success' : 'btn-default';
+    },
     notActivatedSaleOrder() {
         if (FlowRouter.query.get('customerId')) {
             return false;
@@ -206,6 +216,58 @@ itemsTmpl.helpers({
 });
 
 itemsTmpl.events({
+    'click .wholeSale'(event, instance) {
+        if (Session.get('saleType') === 'retail') { //check if current button is not wholesale
+            let itemIds = [];
+            let items = itemsCollection.find({}).fetch();
+            items.forEach(function (item) {
+                itemIds.push(item.itemId);
+            });
+            Meteor.call('checkItemPriceType', {_id: {$in: itemIds}}, function (err, result) {
+                if (!err) {
+                    result.forEach(function (i) {
+                        items.forEach(function (item) {
+                            if (i._id === item.itemId) {
+                                itemsCollection.update({_id: item._id}, {
+                                    $set: {
+                                        price: i.wholeSalePrice,
+                                        amount: item.qty * i.wholeSalePrice
+                                    }
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+            Session.set('saleType', 'wholeSale');
+        }
+    },
+    'click .retail'(event, instance) {
+        if (Session.get('saleType') === 'wholeSale') { //check if current button is not retail
+            let itemIds = [];
+            let items = itemsCollection.find({}).fetch();
+            items.forEach(function (item) {
+                itemIds.push(item.itemId);
+            });
+            Meteor.call('checkItemPriceType', {_id: {$in: itemIds}}, function (err, result) {
+                if (!err) {
+                    result.forEach(function (i) {
+                        items.forEach(function (item) {
+                            if (i._id === item.itemId) {
+                                itemsCollection.update({_id: item._id}, {
+                                    $set: {
+                                        price: i.price,
+                                        amount: item.qty * i.price
+                                    }
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+            Session.set('saleType', 'retail');
+        }
+    },
     'change [name="item-filter"]'(event, instance) {
         //filter item in order-item collection
         let currentValue = event.currentTarget.value;

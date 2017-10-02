@@ -59,7 +59,9 @@
                 </div>
             </div>
             <div class="row price-div">
-                <div class="col-md-3">{{> afQuickField name='price' resetOnSucess=false}}
+                <div class="col-md-3">{{> afQuickField name='price' label="Retail Price" resetOnSucess=false}}
+                </div>
+                <div class="col-md-3">{{> afQuickField name='wholeSalePrice' label="Wholesale Price" resetOnSucess=false}}
                 </div>
                 <div class="col-md-3">{{> afQuickField name='purchasePrice' resetOnSucess=false}}
                 </div>
@@ -140,7 +142,9 @@
             </div>
             <div class="row">
                 <div class="col-md-3">
-                    {{> afQuickField name='price'}}
+                    {{> afQuickField name='price' label="Retail Price"}}
+                </div>
+                <div class="col-md-3">{{> afQuickField name='wholeSalePrice' label="Wholesale Price" resetOnSucess=false}}
                 </div>
                 <div class="col-md-3">
                     {{> afQuickField name='purchasePrice'}}

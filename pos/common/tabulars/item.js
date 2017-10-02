@@ -25,7 +25,13 @@ tabularOpts.columns = [
     {data: "_unit.name", title: "Unit"},
     {
         data: "price",
-        title: "Price",
+        title: "Retail Price",
+        render: function (val, type, doc) {
+            return numeral(val).format('$ 0,0.000');
+        }
+    },{
+        data: "wholeSalePrice",
+        title: "WholeSale Price",
         render: function (val, type, doc) {
             return numeral(val).format('$ 0,0.000');
         }

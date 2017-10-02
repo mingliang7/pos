@@ -218,6 +218,10 @@ Invoices.schema = new SimpleSchema({
     closedAt: {
         type: Date,
         optional: true
+    },
+    saleType: {
+        type: String,
+        optional: true
     }
 });
 

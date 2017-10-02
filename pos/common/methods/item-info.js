@@ -14,15 +14,19 @@ export const itemInfo = new ValidatedMethod({
     name: 'pos.itemInfo',
     mixins: [CallPromiseMixin],
     validate: new SimpleSchema({
+        saleType: {type: String, optional: true},
         _id: {type: String},
         customerId: {type: String, optional: true},
         qty: {decimal: true, type: Number, optional: true},
         routeName: {type: String, optional: true}
     }).validator(),
-    run({_id, customerId, qty, routeName}) {
+    run({_id, customerId, qty, routeName, saleType}) {
         if (!this.isSimulation) {
             let arr = [];
             let data = Item.findOne(_id);
+            if (!!saleType && saleType === 'wholeSale') {
+                data.price = data.wholeSalePrice;
+            }
             if (customerId) {
                 let itemPriceForCustomer = ItemPriceForCustomers.findOne({customerId: customerId});
                 if (itemPriceForCustomer) {
@@ -70,7 +74,7 @@ export const getUnitName = new ValidatedMethod({
     validate: new SimpleSchema({
         sellingUnit: {type: [Object], blackbox: true}
     }).validator(),
-    run(data){
+    run(data) {
         let listUnit = "";
         if (!this.isSimulation) {
             if (data.sellingUnit.length > 0) {

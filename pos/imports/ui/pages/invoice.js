@@ -43,8 +43,11 @@ import './customer.html';
 import {invoiceInfo} from '../../../common/methods/invoice.js'
 import {customerInfo} from '../../../common/methods/customer.js';
 import {isGroupInvoiceClosed} from '../../../common/methods/invoiceGroup';
+//Session set default
+Session.setDefault("saleType", "retail");
 //Tracker for customer infomation
 Tracker.autorun(function () {
+    let saleType = Session.get('saleType');
     if (Session.get("getCustomerId")) {
         customerInfo.callPromise({_id: Session.get("getCustomerId")})
             .then(function (result) {
@@ -512,6 +515,7 @@ newTmpl.onDestroyed(function () {
     Session.set('creditLimitAmount', undefined);
     deletedItem.remove({});
     dateState.set(null);
+    Session.set('saleType', 'retail')
 });
 
 // Edit
@@ -529,6 +533,7 @@ editTmpl.onCreated(function () {
         FlowRouter.query.set('customerId', this.data.customerId);
         this.isSaleOrder.set(true);
     }
+    Session.set('saleType', this.data.saleType);
 });
 
 editTmpl.onRendered(function () {
@@ -754,6 +759,7 @@ editTmpl.onDestroyed(function () {
     Session.set('saleOrderItems', undefined);
     Session.set('totalOrder', undefined);
     deletedItem.remove({});
+    Session.set('saleType', 'retail')
 });
 
 
@@ -1039,6 +1045,7 @@ let hooksObject = {
                 }
                 items.push(obj);
             });
+            doc.saleType = Session.get('saleType');
             doc.items = items;
             return doc;
         },
@@ -1048,6 +1055,7 @@ let hooksObject = {
                 delete obj._id;
                 items.push(obj);
             });
+            doc.$set.saleType = Session.get('saleType');
             doc.$set.items = items;
             delete doc.$unset;
             return doc;

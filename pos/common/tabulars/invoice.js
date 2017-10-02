@@ -61,6 +61,7 @@ tabularOpts.columns = [
             return `<span class="label label-primary">Term</span>`
         }
     },
+    {data: 'saleType', title: 'Sale Type'},
     {data: "status", title: "Status"},
     //{
     //    data: "_customer",

@@ -92,6 +92,17 @@ Item.schema = new SimpleSchema({
         unique: true,
         max: 200
     },
+    wholeSalePrice: {
+        type: Number,
+        decimal: true,
+        min:0,
+        autoform: {
+            type: 'inputmask',
+            inputmaskOptions: function () {
+                return inputmaskOptions.currency({digits: 2});
+            }
+        }
+    },
     price: {
         type: Number,
         decimal: true,
