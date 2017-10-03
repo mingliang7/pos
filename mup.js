@@ -1,10 +1,10 @@
 module.exports = {
   servers: {
     one: {
-      host: '172.104.46.208',
+      host: '172.104.183.152',
       username: 'root',
       // pem: "/home/rabbit/Downloads/phal-pos.pem"
-      password: 'rabbitls$2017'
+      password: 'rabbit$2017$'
       // or leave blank for authenticate from ssh-agent
     }
   },
@@ -19,7 +19,7 @@ module.exports = {
       serverOnly: true,
     },
     env: {
-      ROOT_URL: 'http://172.104.46.208/',
+      ROOT_URL: 'http://172.104.183.152/',
       MONGO_URL: 'mongodb://localhost/pos'
     },
     dockerImage: 'abernix/meteord:base',
