@@ -44,8 +44,8 @@ export const billByVendorReport = new ValidatedMethod({
             }
             if (params.date) {
                 let dateAsArray = params.date.split(',')
-                let fromDate = moment(dateAsArray[0]).toDate();
-                let toDate = moment(dateAsArray[1]).toDate();
+                let fromDate = moment(dateAsArray[0]).startOf('days').toDate();
+                let toDate = moment(dateAsArray[1]).endOf('days').toDate();
                 data.title.date = moment(fromDate).format('YYYY-MMM-DD hh:mm a') + ' - ' + moment(toDate).format('YYYY-MMM-DD hh:mm a');
                 data.title.exchange = `USD = ${coefficient.usd.$multiply[1]} $, KHR = ${coefficient.khr.$multiply[1]}<small> ៛</small>, THB = ${coefficient.thb.$multiply[1]} B`;
                 selector.enterBillDate = {$gte: fromDate, $lte: toDate};

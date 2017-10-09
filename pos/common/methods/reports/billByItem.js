@@ -147,7 +147,7 @@ function aggregateBill({selector, coefficient}) {
                 enterBillDate: {$last: '$enterBillDate'},
                 type: {$last: '$type'},
                 data: {
-                    $addToSet: '$$ROOT'
+                    $push: '$$ROOT'
                 },
                 total: {$sum: '$totalUsd'},
                 totalKhr: {$sum: '$totalKhr'},
@@ -184,10 +184,10 @@ function aggregateBill({selector, coefficient}) {
                     itemId: '$data.items.itemId'
                 },
                 type: {$last: '$type'},
-                billId: {$last: '$billId'},
+                billId: {$last: '$data._id'},
                 vendorId: {$last: '$data.vendorId'},
                 vendorDoc: {$last: '$vendorDoc'},
-                enterBillDate: {$last: '$enterBillDate'},
+                enterBillDate: {$last: '$data.enterBillDate'},
                 itemId: {$addToSet: '$data.items.itemId'},
                 itemName: {$addToSet: '$data.itemDoc.name'},
                 qty: {$sum: '$data.items.qty'},
