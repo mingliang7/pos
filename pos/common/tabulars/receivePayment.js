@@ -21,7 +21,7 @@ tabularOpts.name = 'pos.paymentTransaction';
 tabularOpts.collection = ReceivePayment;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_paymentTransactionAction},
-    {data: "_id", title: '#ID'},
+    // {data: "_id", title: '#ID'},
     {data: "invoiceId", title: "Invoice ID"},
     {data: "voucherId", title: "Voucher"},
     {

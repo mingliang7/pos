@@ -3,7 +3,7 @@ import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 import {_} from 'meteor/erasaur:meteor-lodash';
-import {moment} from  'meteor/momentjs:moment';
+import {moment} from 'meteor/momentjs:moment';
 
 // Collection
 import {Company} from '../../../../core/imports/api/collections/company.js';
@@ -11,6 +11,7 @@ import {ReceivePayment} from '../../../imports/api/collections/receivePayment';
 //lib func
 import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
 import ReportFn from "../../../imports/api/libs/report";
+
 export const receivePaymentReport = new ValidatedMethod({
     name: 'pos.receivePaymentReport',
     mixins: [CallPromiseMixin],
@@ -35,7 +36,7 @@ export const receivePaymentReport = new ValidatedMethod({
                 $in: ['partial', 'closed']
             };
             let branchId = [];
-            if(!params.branchId) {
+            if (!params.branchId) {
                 let user = Meteor.users.findOne(Meteor.userId());
                 selector.branchId = {
                     $in: user.rolesBranch
@@ -87,6 +88,7 @@ export const receivePaymentReport = new ValidatedMethod({
                 project = {
                     '_id': '$_id',
                     'invoiceId': '$invoiceId',
+                    'voucherId': {$ifNull: ['$voucherId', '']},
                     'paymentDate': '$paymentDate',
                     'customerId': '$customerId',
                     '_customer': '$_customer',
@@ -94,8 +96,8 @@ export const receivePaymentReport = new ValidatedMethod({
                     'paidAmount': '$paidAmount',
                     'balanceAmount': '$balanceAmount'
                 };
-                data.fields = [{field: '#ID'}, {field: '#Invoice'}, {field: 'Date'}, {field: 'Customer'}, {field: 'Due Amount'}, {field: 'Paid Amount'}, {field: 'Balance Amount'}];
-                data.displayFields = [{field: '_id'}, {field: 'invoiceId'}, {field: 'paymentDate'}, {field: 'customerId'}, {field: 'dueAmount'}, {field: 'paidAmount'}, {field: 'balanceAmount'}];
+                data.fields = [{field: 'Voucher'}, {field: '#Invoice'}, {field: 'Date'}, {field: 'Customer'}, {field: 'Due Amount'}, {field: 'Paid Amount'}, {field: 'Balance Amount'}];
+                data.displayFields = [{field: 'voucherId'}, {field: 'invoiceId'}, {field: 'paymentDate'}, {field: 'customerId'}, {field: 'dueAmount'}, {field: 'paidAmount'}, {field: 'balanceAmount'}];
             }
             /****** Title *****/
             data.title.company = Company.findOne();
@@ -136,6 +138,7 @@ export const receivePaymentReport = new ValidatedMethod({
                         paymentDate: 1,
                         discount: 1,
                         paymentType: 1,
+                        voucherId: 1,
                         penalty: 1,
                         status: 1,
                         dueAmount: 1,
