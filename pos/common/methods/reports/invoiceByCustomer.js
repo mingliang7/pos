@@ -3,7 +3,7 @@ import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 import {_} from 'meteor/erasaur:meteor-lodash';
-import {moment} from  'meteor/momentjs:moment';
+import {moment} from 'meteor/momentjs:moment';
 
 // Collection
 import {Company} from '../../../../core/imports/api/collections/company.js';
@@ -12,6 +12,7 @@ import {Exchange} from '../../../../core/imports/api/collections/exchange';
 // lib func
 import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
 import {exchangeCoefficient} from '../../../imports/api/libs/exchangeCoefficient';
+
 export const invoiceByCustomerReport = new ValidatedMethod({
     name: 'pos.invoiceByCustomerReport',
     mixins: [CallPromiseMixin],
@@ -33,6 +34,10 @@ export const invoiceByCustomerReport = new ValidatedMethod({
             let exchange = Exchange.findOne({}, {sort: {_id: -1}});
             let coefficient = exchangeCoefficient({exchange, fieldToCalculate: '$total'})
             let filterItems = {'items.itemId': {$ne: ''}};
+            let locationFilter = {'_customer.locationId': {$ne: ''}};
+            if (params.locationId) {
+                locationFilter = {'_customer.locationId': {$in: [params.locationId]}};
+            }
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.invoiceType = {$ne: 'group'};
@@ -199,7 +204,9 @@ export const invoiceByCustomerReport = new ValidatedMethod({
                         path: '$_customer'
                     }
                 },
-
+                {
+                    $match: locationFilter
+                },
                 {
                     $group: {
                         _id: '$customerId',

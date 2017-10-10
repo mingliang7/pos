@@ -168,5 +168,12 @@ export const invoiceSchema = new SimpleSchema({
                 ]
             }
         }
+    },
+    locationId: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: 'select2'
+        }
     }
 });

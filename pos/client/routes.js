@@ -780,3 +780,17 @@ PosRoutes.route('/adjustment', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/location'
+PosRoutes.route('/location', {
+    name: 'pos.location',
+    title: 'Location',
+    action: function (params,queryParams) {
+        Layout.main('Pos_location');
+    },
+    breadcrumb: {
+        title: 'Location',
+        icon: '',
+        parent: 'pos.home'
+    }
+});

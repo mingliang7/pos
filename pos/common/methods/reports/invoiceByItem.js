@@ -41,7 +41,10 @@ export const invoiceByItemReport = new ValidatedMethod({
             }
             let exchange = Exchange.findOne({}, {sort: {_id: -1}});
             let coefficient = exchangeCoefficient({exchange, fieldToCalculate: '$total'})
-
+            let locationFilter = {'customerDoc.locationId': {$ne: ''}};
+            if(params.locationId) {
+                locationFilter = {'customerDoc.locationId': {$in: [params.locationId]}};
+            }
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.invoiceType = {$ne: 'group'};
             selector.status = {$in: ['active', 'partial', 'closed']};
@@ -125,6 +128,7 @@ export const invoiceByItemReport = new ValidatedMethod({
                 {
                     $unwind: {path: '$items', preserveNullAndEmptyArrays: true}
                 },
+                {$match: locationFilter},
                 {$match: {'items.itemId': itemSelector}},
                 {
                     $lookup: {

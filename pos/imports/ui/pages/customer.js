@@ -1,6 +1,6 @@
 import {Template} from 'meteor/templating';
 import {AutoForm} from 'meteor/aldeed:autoform';
-import {Roles} from  'meteor/alanning:roles';
+import {Roles} from 'meteor/alanning:roles';
 import {alertify} from 'meteor/ovcharik:alertifyjs';
 import {sAlert} from 'meteor/juliancwirko:s-alert';
 import {fa} from 'meteor/theara:fa-helpers';
@@ -49,24 +49,24 @@ indexTmpl.onCreated(function () {
 
     // Reactive table filter
     this.filter = new ReactiveTable.Filter('pos.customerByBranchFilter', ['branchId']);
-    this.autorun(()=> {
+    this.autorun(() => {
         this.filter.set(Session.get('currentBranch'));
     });
 });
 
-indexTmpl.onDestroyed(()=> {
+indexTmpl.onDestroyed(() => {
     ReactiveTable.clearFilters(['pos.customerByBranchFilter']);
     balanceTmpCollection.remove({});
 });
 
 indexTmpl.helpers({
-    tabularTable(){
+    tabularTable() {
         return CustomerTabular;
     },
     selector() {
         return {branchId: Session.get('currentBranch')};
     },
-    tableSettings(){
+    tableSettings() {
         let i18nPrefix = 'pos.customer.schema';
 
         reactiveTableSettings.collection = 'pos.reactiveTable.customer';
@@ -85,7 +85,7 @@ indexTmpl.helpers({
             {key: '_paymentGroup.name', label: __(`${i18nPrefix}.paymentGroup.label`)},
             {
                 key: '_id',
-                label(){
+                label() {
                     return ''
                 },
                 headerClass: function () {
@@ -96,7 +96,7 @@ indexTmpl.helpers({
             },
             {
                 key: '_id',
-                label(){
+                label() {
                     return fa('bars', '', true);
                 },
                 headerClass: function () {
@@ -112,25 +112,25 @@ indexTmpl.helpers({
 });
 
 indexTmpl.events({
-    'click .js-create' (event, instance) {
+    'click .js-create'(event, instance) {
         alertify.customer(fa('plus', TAPi18n.__('pos.customer.title')), renderTemplate(newTmpl));
     },
-    'click .js-update' (event, instance) {
+    'click .js-update'(event, instance) {
         alertify.customer(fa('pencil', TAPi18n.__('pos.customer.title')), renderTemplate(editTmpl, this));
     },
-    'click .display-invoice'(event,instance){
+    'click .display-invoice'(event, instance) {
         let path = FlowRouter.path('pos.invoice') + `?cid=${this._id}`;
         FlowRouter.go(path)
     },
-    'click .display-receivePayment'(event,instance){
+    'click .display-receivePayment'(event, instance) {
         let path = FlowRouter.path('pos.paymentTransactionList') + `?cid=${this._id}`;
         FlowRouter.go(path)
     },
-    'click .display-exchangeRingPull'(event,instance){
-        let path = FlowRouter.path('pos.exchangeRingPull')+ `?cid=${this._id}`;
+    'click .display-exchangeRingPull'(event, instance) {
+        let path = FlowRouter.path('pos.exchangeRingPull') + `?cid=${this._id}`;
         FlowRouter.go(path)
     },
-    'click .js-destroy' (event, instance) {
+    'click .js-destroy'(event, instance) {
         var id = this._id;
         Meteor.call('isCustomerHasRelation', id, function (error, result) {
             if (error) {
@@ -149,32 +149,42 @@ indexTmpl.events({
         });
 
     },
-    'click .js-display' (event, instance) {
+    'click .js-display'(event, instance) {
         alertify.customerShow(fa('eye', TAPi18n.__('pos.customer.title')), renderTemplate(showTmpl, this));
     },
-    'click .go-to-receive-payment'(event, instance){
+    'click .go-to-receive-payment'(event, instance) {
         FlowRouter.go('pos.receivePayment', {customerId: this._id});
     }
 });
 
 newTmpl.onCreated(function () {
+    this.locations = new ReactiveVar([]);
     this.paymentType = new ReactiveVar();
+    Meteor.call('fetchLocationList', (err, result) => {
+        if (!err) {
+            this.locations.set(result);
+        }
+    });
 });
 
 // New
 newTmpl.helpers({
-    collection(){
+    locationsOption() {
+        let instance = Template.instance();
+        return instance.locations.get();
+    },
+    collection() {
         return Customers;
     },
-    isTerm(){
+    isTerm() {
         return Template.instance().paymentType.get() == "Term";
     },
-    isGroup(){
+    isGroup() {
         return Template.instance().paymentType.get() == "Group";
     }
 });
 newTmpl.events({
-    'change [name="paymentType"]'(event, instance){
+    'change [name="paymentType"]'(event, instance) {
         instance.paymentType.set($(event.currentTarget).val());
     }
 });
@@ -185,83 +195,94 @@ newTmplDropDownForm.onCreated(function () {
 
 // New
 newTmplDropDownForm.helpers({
-    collection(){
+    collection() {
         return Customers;
     },
-    isTerm(){
+    isTerm() {
         return Template.instance().paymentType.get() == "Term";
     },
-    isGroup(){
+    isGroup() {
         return Template.instance().paymentType.get() == "Group";
     }
 });
 newTmplDropDownForm.events({
-    'change [name="paymentType"]'(event, instance){
+    'change [name="paymentType"]'(event, instance) {
         instance.paymentType.set($(event.currentTarget).val());
     }
 });
 
 // Edit
 editTmpl.onCreated(function () {
+    this.locations = new ReactiveVar([]);
     this.paymentType = new ReactiveVar(this.data.paymentType);
-    this.autorun(()=> {
+    Meteor.call('fetchLocationList', (err, result) => {
+        if (!err) {
+            this.locations.set(result);
+        }
+    });
+    this.autorun(() => {
         this.subscribe('pos.customer', {_id: this.data._id});
+
     });
 });
 editTmpl.events({
-    'change [name="paymentType"]'(event, instance){
+    'change [name="paymentType"]'(event, instance) {
         instance.paymentType.set($(event.currentTarget).val());
     }
 });
 
 editTmpl.helpers({
-    collection(){
+    locationsOption() {
+        let instance = Template.instance();
+        return instance.locations.get();
+    },
+    collection() {
         return Customers;
     },
-    data () {
+    data() {
         let data = Customers.findOne(this._id);
         return data;
     },
-    isTerm(){
+    isTerm() {
         return Template.instance().paymentType.get() == "Term";
     },
-    isGroup(){
+    isGroup() {
         return Template.instance().paymentType.get() == "Group";
     }
 });
 
 // Show
 showTmpl.onCreated(function () {
-    this.autorun(()=> {
+    this.autorun(() => {
         this.subscribe('pos.customer', {_id: this.data._id});
     });
 });
 
 showTmpl.helpers({
-    i18nLabel(label){
+    i18nLabel(label) {
         let i18nLabel = `pos.customer.schema.${label}.label`;
         return i18nLabel;
     },
-    data () {
+    data() {
         let data = Customers.findOne(this._id);
         return data;
     }
 });
 //receive payment
 Template.Pos_customerButtonAction.helpers({
-    checkIfInvoiced(){
+    checkIfInvoiced() {
         // debugger
     }
 });
 // Hook
 let hooksObject = {
-    onSuccess (formType, result) {
+    onSuccess(formType, result) {
         if (formType == 'update') {
             alertify.customer().close();
         }
         displaySuccess();
     },
-    onError (formType, error) {
+    onError(formType, error) {
         displayError(error.message);
     }
 };

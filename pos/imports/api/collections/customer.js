@@ -114,6 +114,14 @@ Customers.schema = new SimpleSchema({
                 }
             }
         }
+    },
+    locationId: {
+        label: 'Location',
+        optional: true,
+        type: String,
+        autoform: {
+            type: 'select2'
+        }
     }
 });
 

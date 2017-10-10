@@ -1,0 +1,64 @@
+<!--Index-->
+<template name="Pos_location">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            {{> addNewButton}}
+        </h3>
+    </div>
+    <div class="box-body">
+        {{> tabular table=tabularTable selector=selector class="table table-striped table-bordered table-condensed"}}
+    </div>
+</template>
+
+<!--  Insert -->
+<template name="Pos_locationNew">
+    <div class="box-body">
+        {{#autoForm collection=collection id="Pos_locationNew" type="insert"}}
+            <div class="row">
+                <div class="col-md-12">
+                    {{> afQuickField name='name'}}
+                    {{> afQuickField name='des'}}
+                </div>
+            </div>
+
+            {{> formFooterWithButton}}
+        {{/autoForm}}
+    </div>
+</template>
+<!-- Update -->
+<template name="Pos_locationEdit">
+    <div class="box-body">
+        {{#autoForm collection=collection doc=this id="Pos_locationEdit" type="update"}}
+            <div class="row">
+                <div class="col-md-12">
+                    {{> afQuickField name='name'}}
+                    {{> afQuickField name='des'}}
+                </div>
+            </div>
+
+            {{> formFooterWithButton}}
+        {{/autoForm}}
+    </div>
+</template>
+<!-- Action -->
+<template name="Pos_locationAction">
+    {{#columnAction align="right"}}
+        <li><a href="#" class="js-update"><i class="fa fa-pencil"></i> {{_ "action.edit"}}</a></li>
+        <li><a href="#" class="js-destroy"><i class="fa fa-remove"></i> {{_ "action.delete"}}</a></li>
+        <li><a href="#" class="js-display"><i class="fa fa-eye"></i> {{_ "action.show"}}</a></li>
+    {{/columnAction}}
+</template>
+<!-- Display -->
+<!--Show-->
+<template name="Pos_locationShow">
+    <div class="box-body">
+        <dl class="dl-horizontal">
+            <dt>ID:</dt>
+            <dd>{{_id}}</dd>
+            <dt>Name:</dt>
+            <dd>{{name}}</dd>
+            <dt>Description</dt>
+            <dd>{{description}}</dd>
+        </dl>
+    </div>
+</template>

@@ -44,8 +44,18 @@ indexTmpl.onCreated(function () {
     this.endDate = new ReactiveVar(moment().endOf('days').toDate());
     createNewAlertify('invoiceByItemReport');
     paramsState.set(FlowRouter.query.params());
+    this.locations = new ReactiveVar([]);
+    Meteor.call('fetchLocationList', true, (err, result) => {
+        if (!err) {
+            this.locations.set(result);
+        }
+    });
 });
 indexTmpl.helpers({
+    locationsOption() {
+        let instance = Template.instance();
+        return instance.locations.get();
+    },
     showFieldOpts(){
         return [
             'Date',
@@ -238,6 +248,9 @@ AutoForm.hooks({
             }
             if (doc.itemFilter) {
                 params.itemFilter = doc.itemFilter;
+            }
+            if(doc.locationId) {
+                params.locationId = doc.locationId;
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());

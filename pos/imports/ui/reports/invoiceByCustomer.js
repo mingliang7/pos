@@ -5,7 +5,7 @@ import {renderTemplate} from '../../../../core/client/libs/render-template.js';
 //page
 import './invoiceByCustomer.html';
 //import DI
-import  'printthis';
+import 'printthis';
 import {JSPanel} from '../../api/libs/jspanel';
 //import collection
 import {invoiceByCustomerSchema} from '../../api/collections/reports/invoiceByCustomer';
@@ -43,23 +43,33 @@ indexTmpl.onCreated(function () {
     paramsState.set(FlowRouter.query.params());
     this.fromDate = new ReactiveVar(moment().startOf('days').toDate());
     this.endDate = new ReactiveVar(moment().endOf('days').toDate());
+    this.locations = new ReactiveVar([]);
+    Meteor.call('fetchLocationList', true, (err, result) => {
+        if (!err) {
+            this.locations.set(result);
+        }
+    });
 });
 indexTmpl.helpers({
-    schema(){
+    locationsOption() {
+        let instance = Template.instance();
+        return instance.locations.get();
+    },
+    schema() {
         return invoiceByCustomerSchema;
     },
-    fromDate(){
+    fromDate() {
         let instance = Template.instance();
         return instance.fromDate.get();
     },
-    endDate(){
+    endDate() {
         let instance = Template.instance();
         return instance.endDate.get();
     }
 });
 
 indexTmpl.events({
-    'click .fullScreen'(event, instance){
+    'click .fullScreen'(event, instance) {
         $('.sub-body').addClass('rpt rpt-body');
         $('.sub-header').addClass('rpt rpt-header');
         // alertify.invoiceByCustomer(fa('', ''), renderTemplate(invoiceDataTmpl)).maximize();
@@ -84,7 +94,7 @@ indexTmpl.events({
             }
         ).maximize();
     },
-    'change #date-range-filter'(event, instance){
+    'change #date-range-filter'(event, instance) {
         let currentRangeDate = RangeDate[event.currentTarget.value]();
         instance.fromDate.set(currentRangeDate.start.toDate());
         instance.endDate.set(currentRangeDate.end.toDate());
@@ -92,7 +102,7 @@ indexTmpl.events({
 });
 
 invoiceDataTmpl.events({
-    'click .print'(event, instance){
+    'click .print'(event, instance) {
         $('#to-print').printThis();
     }
 });
@@ -101,17 +111,17 @@ invoiceDataTmpl.onDestroyed(function () {
     $('.sub-header').removeClass('rpt rpt-header');
 });
 invoiceDataTmpl.helpers({
-    company(){
+    company() {
         let doc = Session.get('currentUserStockAndAccountMappingDoc');
         return doc.company;
     },
-    data(){
+    data() {
         if (invoiceData.get()) {
             return invoiceData.get();
         }
     },
 
-    display(col){
+    display(col) {
         let data = '';
         this.displayFields.forEach(function (obj) {
             if (obj.field == 'invoiceDate') {
@@ -125,7 +135,7 @@ invoiceDataTmpl.helpers({
         });
         return data;
     },
-    getTotal(total, customerName){
+    getTotal(total, customerName) {
         let string = '';
         let fieldLength = this.displayFields.length - 2;
         for (let i = 0; i < fieldLength; i++) {
@@ -134,7 +144,7 @@ invoiceDataTmpl.helpers({
         string += `<td class="text-right"><u>Total ${_.capitalize(customerName)}:</u></td><td style="border-top: 1px solid black;" class="text-right"><u>${numeral(total).format('0,0.000')}</u></td>`;
         return string;
     },
-    getTotalFooter(total, totalKhr, totalThb){
+    getTotalFooter(total, totalKhr, totalThb) {
         let string = '';
         let fieldLength = this.displayFields.length - 2;
         for (let i = 0; i < fieldLength; i++) {
@@ -143,7 +153,7 @@ invoiceDataTmpl.helpers({
         string += `<td><b>Grand Total:</td></b><td style="1px solid black;" class="text-right"><b>${numeral(total).format('0,0.000')}$</b></td>`;
         return string;
     },
-    capitalize(customerName){
+    capitalize(customerName) {
         return _.capitalize(customerName);
     }
 });
@@ -151,7 +161,7 @@ invoiceDataTmpl.helpers({
 
 AutoForm.hooks({
     invoiceByCustomerReport: {
-        onSubmit(doc){
+        onSubmit(doc) {
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
@@ -168,6 +178,9 @@ AutoForm.hooks({
             }
             if (doc.itemId) {
                 params.items = doc.itemId.join(',');
+            }
+            if(doc.locationId) {
+                params.locationId = doc.locationId;
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());
