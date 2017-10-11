@@ -1074,6 +1074,7 @@ let hooksObject = {
         deletedItem.remove({});
         Session.set('customerInfo', undefined);
         Session.set("getCustomerId", undefined);
+        $(".reset-button").trigger('click');
         // }
         displaySuccess();
     },
