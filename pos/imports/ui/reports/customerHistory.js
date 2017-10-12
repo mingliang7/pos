@@ -100,7 +100,7 @@ invoiceDataTmpl.helpers({
     },
     hasFilterDate(date){
         let paramsFilterDate = FlowRouter.query.get('filterDate');
-        let filterDate = paramsFilterDate ? moment(paramsFilterDate).startOf('months').format('DD/MM/YY') : null;
+        let filterDate = paramsFilterDate ? moment(paramsFilterDate).startOf('months').format('YYYY-MM-DD') : null;
         let currentViewDate = moment(date).startOf('months');
         if (paramsFilterDate) {
             if (currentViewDate.isSameOrAfter(filterDate)) {
