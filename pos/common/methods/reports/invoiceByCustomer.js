@@ -35,6 +35,11 @@ export const invoiceByCustomerReport = new ValidatedMethod({
             let coefficient = exchangeCoefficient({exchange, fieldToCalculate: '$total'})
             let filterItems = {'items.itemId': {$ne: ''}};
             let locationFilter = {'_customer.locationId': {$ne: ''}};
+            if(params.branchId) {
+                selector.branchId = params.branchId;
+            }else{
+                return data;
+            }
             if (params.locationId) {
                 locationFilter = {'_customer.locationId': {$in: [params.locationId]}};
             }

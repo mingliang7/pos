@@ -82,8 +82,8 @@ invoiceDataTmpl.helpers({
             }
             else if (obj.field == 'dueDate') {
                 let date = FlowRouter.query.get('date');
-                let currentDate = moment( (date && date) || "");
-                let dueDate = moment(col[obj.field]);
+                let currentDate = moment( (date && date) || "").endOf('days');
+                let dueDate = moment(col[obj.field]).startOf('days');
                 let diffDay = currentDate.diff(dueDate, 'days');
                 if (currentDate.isAfter(dueDate) && diffDay != 0) {
                     data += `<td>${diffDay}</td>`
