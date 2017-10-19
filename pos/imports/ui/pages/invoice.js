@@ -181,7 +181,11 @@ indexTmpl.events({
     },
     'click .js-update-info'(event, instance) {
         let data = this;
-        alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editInfoTmpl, data));
+        if(this.invoiceType === 'saleOrder'){
+            alertify.warning('Can not update sale order info');
+        }else{
+            alertify.invoice(fa('pencil', TAPi18n.__('pos.invoice.title')), renderTemplate(editInfoTmpl, data));
+        }
     },
     'click .js-destroy'(event, instance) {
         let data = this;

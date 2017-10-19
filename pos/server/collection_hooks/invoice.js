@@ -23,7 +23,6 @@ Invoices.before.insert(function (userId, doc) {
         throw new Meteor.Error('Date cannot be less than last Transaction Date: "' +
             moment(inventoryDate).format('YYYY-MM-DD') + '"');
     }
-
     let result = StockFunction.checkStockByLocation(doc.stockLocationId, doc.items);
     if (!result.isEnoughStock) {
         throw new Meteor.Error(result.message);
@@ -86,8 +85,9 @@ Invoices.after.insert(function (userId, doc) {
             des = "វិក្កយបត្រ SO អតិថិជនៈ ";
             accountRefType = 'Invoice-SaleOrder';
             let total = 0;
-            let totalCost = 0;
+            let totalCOGS = 0;
             doc.items.forEach(function (item) {
+                let itemObj = Item.findOne({_id: item.itemId});
                 Order.direct.update(
                     {
                         _id: doc.saleId,
@@ -99,7 +99,24 @@ Invoices.after.insert(function (userId, doc) {
                             'items.$.remainQty': -item.qty
                         }
                     });
-                total += math.round(item.qty * item.price, 6);
+                let inventoryObj = AverageInventories.findOne({
+                    itemId: item.itemId,
+                    branchId: doc.branchId,
+                    stockLocationId: doc.stockLocationId
+                }, {sort: {createdAt: -1}});
+                if (inventoryObj) {
+                    totalCOGS += math.round(item.qty * inventoryObj.averagePrice, 6);
+                } else {
+                    throw new Meteor.Error('Not Found Inventory. @Invoices-after-insert. refId:' + doc._id);
+                }
+                StockFunction.minusAverageInventoryInsert(
+                    doc.branchId,
+                    item,
+                    doc.stockLocationId,
+                    'saleOrder',
+                    doc._id,
+                    doc.invoiceDate
+                );
             });
             let saleOrder = Order.findOne(doc.saleId);
             if (saleOrder.sumRemainQty == 0) {
@@ -110,7 +127,7 @@ Invoices.after.insert(function (userId, doc) {
                 let oweInventoryCustomerChartAccount = AccountMapping.findOne({name: 'Owe Inventory Customer'});
                 let inventoryChartAccount = AccountMapping.findOne({name: 'Inventory'});
 
-                doc.total = total;
+                doc.total = totalCOGS;
                 transaction.push(
                     {
                         account: oweInventoryCustomerChartAccount.account,
@@ -348,15 +365,16 @@ Invoices.after.update(function (userId, doc) {
             accountRefType = 'Invoice-SaleOrder';
             recalculateQty(preDoc);
             updateQtyInSaleOrder(doc);
-            let saleOrder = Order.aggregate([{$match: {_id: doc.saleId}}, {$projection: {sumRemainQty: 1}}]);
-            if (saleOrder.sumRemainQty == 0) {
+            let saleOrder = Order.findOne({_id: doc.saleId});
+            if (saleOrder.sumRemainQty === 0) {
                 Order.direct.update(doc.saleId, {$set: {status: 'closed'}})
             } else {
                 Order.direct.update(doc.saleId, {$set: {status: 'active'}})
             }
             let total = 0;
             doc.items.forEach(function (item) {
-                total += item.amount;
+                let itemObj = Item.findOne({_id: item.itemId});
+                total += item.qty * itemObj.purchasePrice;
             });
             doc.total = total;
             if (setting && setting.integrate) {
@@ -572,6 +590,7 @@ Invoices.after.remove(function (userId, doc) {
             accountRefType = 'Invoice-SaleOrder';
             recalculateQty(doc);
             Order.direct.update(doc.saleId, {$set: {status: 'active'}})
+            returnSaleOrderToInventory(doc, doc.invoiceDate)
         } else if (type.group) {
             accountRefType = 'Invoice';
             doc.items.forEach(function (item) {
@@ -653,6 +672,22 @@ function returnToInventory(invoice, invoiceDate) {
             item,
             invoice.stockLocationId,
             'invoice-return',
+            invoice._id,
+            invoiceDate
+        )
+    });
+// --- End Inventory type block "Average Inventory"---
+}
+function returnSaleOrderToInventory(invoice, invoiceDate) {
+    // ---Open Inventory type block "Average Inventory"---
+    // let invoice = Invoices.findOne(invoiceId)
+    invoice.items.forEach(function (item) {
+        item.price = item.cost;
+        StockFunction.averageInventoryInsert(
+            invoice.branchId,
+            item,
+            invoice.stockLocationId,
+            'saleOrder-return',
             invoice._id,
             invoiceDate
         )

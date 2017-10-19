@@ -57,6 +57,8 @@ tabularOpts.columns = [
         render: function (val) {
             if (val == 'group') {
                 return `<span class="label label-warning">Group</span>`
+            }else if(val === 'saleOrder'){
+                return `<span class="label label-success">Sale Order</span>`
             }
             return `<span class="label label-primary">Term</span>`
         }
