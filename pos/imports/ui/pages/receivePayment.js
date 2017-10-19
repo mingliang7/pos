@@ -533,7 +533,7 @@ function clearChecbox() {
     })
 }
 function getLastPayment(invoiceId) {
-    let receivePayments = ReceivePayment.find({invoiceId: invoiceId}, {sort: {_id: 1, paymentDate: 1}});
+    let receivePayments = ReceivePayment.find({invoiceId: invoiceId}, {sort: {paymentDate: 1}});
     if (receivePayments.count() > 0) {
         let lastPayment = _.last(receivePayments.fetch());
         return lastPayment.balanceAmount;
@@ -541,7 +541,7 @@ function getLastPayment(invoiceId) {
     return 0;
 }
 function getLastPaymentDate(invoiceId) {
-    let receivePayments = ReceivePayment.find({invoiceId: invoiceId}, {sort: {_id: 1, paymentDate: 1}});
+    let receivePayments = ReceivePayment.find({invoiceId: invoiceId}, {sort: {paymentDate: 1}});
     if (receivePayments.count() > 0) {
         let lastPayment = _.last(receivePayments.fetch());
         return lastPayment.paymentDate;
