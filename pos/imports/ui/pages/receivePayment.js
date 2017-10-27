@@ -31,7 +31,7 @@ Tracker.autorun(function () {
             invoiceSub = Meteor.subscribe('pos.activeInvoices', {
                 customerId: Session.get('customerId'),
                 status: {$in: ['active', 'partial']},
-                invoiceType: 'term'
+                invoiceType: {$in: ['term', 'saleOrder']}
             });
         } else {
             invoiceSub = Meteor.subscribe('pos.activeGroupInvoices', {

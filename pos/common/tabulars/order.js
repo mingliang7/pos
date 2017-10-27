@@ -29,10 +29,18 @@ tabularOpts.columns = [
         }
     },
     {data: "_customer.name", title: "Customer"},
+    {
+        data: "deposit",
+        title: "Deposit",
+        render: function(val) {
+            return numeral(val).format('0,0.00');
+        }
+    },
     {data: "total", title: "Total"},
-    {data: "sumRemainQty", title: "Remain QTY"},
+    // {data: "sumRemainQty", title: "Remain QTY"},
     {data: "isPurchased", title: "Purchased"},
-    {data: "des", title: "Description"}
+    {data: "des", title: "Description"},
+    {data: "status", title: "Status"}
     //{
     //    data: "_customer",
     //    title: "Customer Info",

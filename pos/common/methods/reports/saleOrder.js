@@ -3,13 +3,14 @@ import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 import {_} from 'meteor/erasaur:meteor-lodash';
-import {moment} from  'meteor/momentjs:moment';
+import {moment} from 'meteor/momentjs:moment';
 
 // Collection
 import {Company} from '../../../../core/imports/api/collections/company.js';
 import {Order} from '../../../imports/api/collections/order';
 // lib func
 import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
+
 export const saleOrderReport = new ValidatedMethod({
     name: 'pos.saleOrderReport',
     mixins: [CallPromiseMixin],
@@ -63,8 +64,8 @@ export const saleOrderReport = new ValidatedMethod({
                     'sumRemainQty': '$sumRemainQty',
                     'total': '$total'
                 };
-                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Customer'}, {field: 'Status'}, {field: 'Remain Qty'}, {field: 'Total'}];
-                data.displayFields = [{field: '_id'}, {field: 'orderDate'}, {field: 'customer'}, {field: 'status'}, {field: 'sumRemainQty'}, {field: 'total'}];
+                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Customer'}, {field: 'Status'}, {field: 'Total'}];
+                data.displayFields = [{field: '_id'}, {field: 'orderDate'}, {field: 'customer'}, {field: 'status'}, {field: 'total'}];
             }
 
             /****** Title *****/
@@ -77,7 +78,17 @@ export const saleOrderReport = new ValidatedMethod({
                 }, {
                     $unwind: {path: '$items', preserveNullAndEmptyArrays: true},
 
-                }, {
+                },
+                {
+                    $lookup: {
+                        from: 'pos_customers',
+                        localField: 'customerId',
+                        foreignField: '_id',
+                        as: '_customer'
+
+                    }
+                },
+                {
                     $lookup: {
                         from: "pos_item",
                         localField: "items.itemId",
@@ -85,6 +96,7 @@ export const saleOrderReport = new ValidatedMethod({
                         as: "itemDoc"
                     }
                 },
+                {$unwind: {path: '$_customer', preserveNullAndEmptyArrays: true}},
                 {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
                 {
                     $group: {

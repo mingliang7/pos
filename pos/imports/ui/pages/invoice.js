@@ -151,7 +151,10 @@ indexTmpl.events({
         let data = this;
         let inventoryDate = InventoryDates.findOne({branchId: data.branchId, stockLocationId: data.stockLocationId});
         let invoiceDate = moment(data.invoiceDate).startOf('days').toDate();
-        if (inventoryDate && (invoiceDate < inventoryDate.inventoryDate)) {
+        if(this.invoiceType === 'saleOrder'){
+            alertify.warning('Can not update sale order. Please remove instead');
+        }
+        else if (inventoryDate && (invoiceDate < inventoryDate.inventoryDate)) {
             alertify.warning("Can't Update. Invoice's Date: " + moment(invoiceDate).format("DD-MM-YYYY")
                 + ". Current Transaction Date: " + moment(inventoryDate.inventoryDate).format("DD-MM-YYYY"))
         } else {
@@ -430,16 +433,16 @@ newTmpl.helpers({
     },
     totalOrder() {
         let total = 0;
-        if (!FlowRouter.query.get('customerId')) {
+        // if (!FlowRouter.query.get('customerId')) {
             itemsCollection.find().forEach(function (item) {
                 total += item.amount;
             });
-        }
-        if (Session.get('totalOrder')) {
-            let totalOrder = Session.get('totalOrder');
-            return totalOrder;
-        }
-        return {total};
+        // }
+        // if (Session.get('totalOrder')) {
+        //     let totalOrder = Session.get('totalOrder');
+        //     return totalOrder;
+        // }
+        return total;
     },
     customerInfo() {
         try {

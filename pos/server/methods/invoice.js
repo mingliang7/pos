@@ -5,6 +5,7 @@ import {RemovedInvoice} from '../../imports/api/collections/removedCollection';
 import {Reps} from '../../imports/api/collections/rep.js';
 import {Customers} from '../../imports/api/collections/customer.js';
 import {Invoices} from '../../imports/api/collections/invoice.js';
+import {Order} from '../../imports/api/collections/order.js';
 import {AccountIntegrationSetting} from '../../imports/api/collections/accountIntegrationSetting.js';
 import {Journal} from '../../../acc/imports/api/collections/journal.js';
 Meteor.methods({
@@ -43,6 +44,9 @@ Meteor.methods({
         doc.staff = Meteor.users.findOne(doc.staffId).username || '';
         let customer = Customers.findOne({_id: doc.customerId});
         doc.customer = customer && customer.name || '';
+        if(doc.saleId) {
+            doc.saleOrderDoc = Order.findOne({_id: doc.saleId})
+        }
         doc.items.forEach(function (item) {
             item.name = Item.findOne(item.itemId).name;
         });

@@ -3,18 +3,20 @@ import {createNewAlertify} from '../../../../core/client/libs/create-new-alertif
 //page
 import './saleOrderReport.html';
 //import DI
-import  'printthis';
+import 'printthis';
 //import collection
 import {saleOrderReportSchema} from '../../api/collections/reports/saleOrder';
 
 //methods
 import {saleOrderReport} from '../../../common/methods/reports/saleOrder';
+import {renderTemplate} from "../../../../core/client/libs/render-template";
 //state
 let paramsState = new ReactiveVar();
 let invoiceData = new ReactiveVar();
 //declare template
 let indexTmpl = Template.Pos_saleOrderReport,
-    invoiceDataTmpl = Template.saleOrderReportData;
+    invoiceDataTmpl = Template.saleOrderReportData,
+    saleOrderTmpl = Template.saleOrderContentReport;
 Tracker.autorun(function () {
     if (paramsState.get()) {
         swal({
@@ -39,26 +41,40 @@ indexTmpl.onCreated(function () {
     paramsState.set(FlowRouter.query.params());
 });
 indexTmpl.helpers({
-    schema(){
+    schema() {
         return saleOrderReportSchema;
     }
 });
 indexTmpl.events({
-    'click .print'(event, instance){
+    'click .print'(event, instance) {
         $('#to-print').printThis();
+    },
+
+});
+invoiceDataTmpl.onCreated(function () {
+    createNewAlertify('saleOrderDetailContent');
+});
+invoiceDataTmpl.events({
+    'click .invoiceId'(event, instance) {
+        let invoiceId = $(event.currentTarget).attr('data-invoiceId')
+        let {content} = invoiceData.get();
+        if (content && content.length > 0) {
+            let itemDetails = content[0];
+            alertify.saleOrderDetailContent(fa('', 'Show Items'), renderTemplate(saleOrderTmpl,itemDetails));
+        }
     }
 });
 invoiceDataTmpl.helpers({
-    company(){
+    company() {
         let doc = Session.get('currentUserStockAndAccountMappingDoc');
         return doc.company;
     },
-    data(){
+    data() {
         if (invoiceData.get()) {
             return invoiceData.get();
         }
     },
-    reduceField(){
+    reduceField() {
         let td = ''
         let fieldLength = this.displayFields.length - 6;
         for (let i = 0; i < fieldLength; i++) {
@@ -66,12 +82,18 @@ invoiceDataTmpl.helpers({
         }
         return td;
     },
-    display(col){
+    display(col) {
         let data = '';
         this.displayFields.forEach(function (obj) {
             if (obj.field == 'orderDate') {
-                data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
-            } else if (obj.field == 'customerId') {
+                data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD')}</td>`
+            }
+            else if (obj.field === '_id') {
+                data += `<td class="invoiceId" data-invoiceId="${col[obj.field]}">
+                    <a class="cursor-pointer">${col[obj.field]}</a>
+                    </td>`
+            }
+            else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
             } else if (obj.field == 'total') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.000')}</td>`
@@ -83,13 +105,13 @@ invoiceDataTmpl.helpers({
 
         return data;
     },
-    getTotal(totalRemainQty, total){
+    getTotal(totalRemainQty, total) {
         let string = '';
-        let fieldLength = this.displayFields.length - 3;
+        let fieldLength = this.displayFields.length - 2;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td><b>${numeral(totalRemainQty).format("0,0.000")}</b></td></td><td><b>${numeral(total).format('0,0.000')}</b></td>`;
+        string += `<td><b>Total:</td></b></td><td><b>${numeral(total).format('0,0.000')}</b></td>`;
         return string;
     }
 });
@@ -97,13 +119,13 @@ invoiceDataTmpl.helpers({
 
 AutoForm.hooks({
     saleOrderReport: {
-        onSubmit(doc){
+        onSubmit(doc) {
             this.event.preventDefault();
             FlowRouter.query.unset();
             let params = {};
             if (doc.fromDate && doc.toDate) {
-                let fromDate = moment(doc.fromDate).format('YYYY-MM-DD HH:mm:ss');
-                let toDate = moment(doc.toDate).format('YYYY-MM-DD HH:mm:ss');
+                let fromDate = moment(doc.fromDate).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+                let toDate = moment(doc.toDate).endOf('days').format('YYYY-MM-DD HH:mm:ss');
                 params.date = `${fromDate},${toDate}`;
             }
             if (doc.customer) {

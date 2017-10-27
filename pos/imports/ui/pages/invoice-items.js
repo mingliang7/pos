@@ -170,7 +170,7 @@ itemsTmpl.helpers({
             getItems.forEach((obj) => {
                 total += obj.amount;
             });
-            total = FlowRouter.query.get('customerId') ? 0 : total;
+            // total = FlowRouter.query.get('customerId') ? 0 : total;
             if (Session.get('getCustomerId')) {
                 let deletedItemsTotal = 0;
                 if (AutoForm.getFormId() == "Pos_invoiceUpdate") {

@@ -28,7 +28,8 @@
 
                                 </div>
 
-                        <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run</button>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
                             {{/autoForm}}
                         </div>
                     </div>
@@ -97,25 +98,6 @@
                         </tr>
                     {{/each}}
                     <tr>
-                        {{{reduceField}}}
-                        <th>ITEM</th>
-                        <th>PRICE</th>
-                        <th>QTY</th>
-                        <th>AMOUNT</th>
-                        <th>Remain QTY</th>
-                    </tr>
-                    {{#each item in col.items}}
-
-                        <tr>
-                            {{{reduceField}}}
-                            <td>{{item.itemName}}</td>
-                            <td>{{item.price}}</td>
-                            <td>{{item.qty}}</td>
-                            <td>{{item.amount}}</td>
-                            <td>{{item.remainQty}}</td>
-                        </tr>
-                    {{/each}}
-                    <tr>
                         {{{getTotal col.total}}}
                     </tr>
                 {{/each}}
@@ -127,4 +109,27 @@
         </table>
         {{> ReportSignFooter}}
     </div>
+</template>
+
+<template name="saleOrderContentReport">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Amount</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each items}}
+            <tr>
+                <td>{{itemName}}</td>
+                <td>{{qty}}</td>
+                <td>{{price}}</td>
+                <td>{{amount}}</td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
 </template>

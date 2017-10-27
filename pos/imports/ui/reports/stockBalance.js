@@ -83,7 +83,7 @@ invoiceDataTmpl.helpers({
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b><td style="border-top: 1px solid black;" class="text-right"><b>${numeral(totalRemainQty).format("0,0.000")}</b></td><td style="border-top: 1px solid black" class="text-right"><b>${numeral(total).format('0,0.000')}</b></td>`;
+        string += `<td><b>Total:</td></b><td style="border-top: 1px solid black;" class="text-right"><b>${numeral(totalRemainQty).format("0,0.000")}</b></td><td style="border-top: 1px solid black"></td><td style="border-top: 1px solid black" class="text-right"><b>${numeral(total).format('0,0.000')}</b></td>`;
         return string;
     }
 });

@@ -53,7 +53,7 @@
                 <div class="col-md-6">
                     <p class="pull-right ">
                     <h4 class="text-black">BALANCE DUE</h4>
-                    <h2 class="text-blue text-center">${{numFormat  totalOrder.total '0,0.000'}}</h2>
+                    <h2 class="text-blue text-center">${{numFormat  totalOrder '0,0.000'}}</h2>
                     {{#if totalOrder.customerId}}
                         <a class="btn btn-default text-center go-to-receive-payment"
                            href="/pos/customer/{{totalOrder.customerId}}/receive-payment/{{totalOrder.invoiceId}}">
@@ -415,6 +415,12 @@
                                     <tr>
                                         <td class="no-line"></td>
                                         <td class="no-line"></td>
+                                        <td class="no-line text-right"><strong>Deposit</strong></td>
+                                        <td class="no-line text-right" style="color: red;">${{numFormat saleOrderDoc.deposit '0,0.000'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="no-line"></td>
+                                        <td class="no-line"></td>
                                         <td class="no-line text-right"><strong>Total</strong></td>
                                         <td class="no-line text-right">${{numFormat total '0,0.000'}}</td>
                                     </tr>
@@ -468,7 +474,7 @@
                         <td>{{qty}}</td>
                         <td>{{price}}</td>
                         <td>{{amount}}</td>
-                        <td><input type="text" class="remain-qty" value="{{remainQty}}"></td>
+                        <td><input type="text" class="remain-qty" value="{{remainQty}}" readonly></td>
                         <td><a href="" class="add-item"><i class="fa fa-plus-circle"></i>Add</a></td>
                     </tr>
                 {{/each}}

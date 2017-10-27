@@ -55,6 +55,9 @@
                                 {{> afQuickField name="voucherId"}}
                             </div>
                             <div class="col-md-12">
+                                {{> afQuickField name="deposit"}}
+                            </div>
+                            <div class="col-md-12">
                                 {{> afQuickField name="des"}}
                             </div>
                             <div class="col-md-12">
@@ -67,32 +70,32 @@
                 <div class="col-md-8">
                     <!--Item Temporary-->
                     {{> Pos_orderItems itemsCollection=itemsCollection}}<br>
-                    <div class="col-md-12">
-                        <div class="box  collapsed-box">
-                            <div class="box-header with-border cursor-pointer hover-on-select-vendor" data-widget="collapse">
-                                <h3 class="box-title"> Select Vendor</h3>
-                                <!--<div class="box-tools pull-right">-->
-                                    <!--<button type="button" class="btn btn-box-tool" data-widget="collapse"></i>-->
-                                    <!--</button>-->
+                    <!--<div class="col-md-12">-->
+                        <!--<div class="box  collapsed-box">-->
+                            <!--<div class="box-header with-border cursor-pointer hover-on-select-vendor" data-widget="collapse">-->
+                                <!--<h3 class="box-title"> Select Vendor</h3>-->
+                                <!--&lt;!&ndash;<div class="box-tools pull-right">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<button type="button" class="btn btn-box-tool" data-widget="collapse"></i>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</button>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                <!--&lt;!&ndash; /.box-tools &ndash;&gt;-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; /.box-header &ndash;&gt;-->
+                            <!--<div class="box-body" style="display: none;">-->
+                                <!--<div class="row">-->
+                                    <!--<div class="col-md-5">-->
+                                        <!--{{>afQuickField name="vendorId" label=false}}-->
+                                    <!--</div>-->
                                 <!--</div>-->
-                                <!-- /.box-tools -->
-                            </div>
-                            <!-- /.box-header -->
-                            <div class="box-body" style="display: none;">
-                                <div class="row">
-                                    <div class="col-md-5">
-                                        {{>afQuickField name="vendorId" label=false}}
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-success saveNPurchase" {{disabledSubmitBtn}}>
-                                    Save & Purchase
-                                </button>
-                                <label for="" class="warning-msg text-danger"></label>
-                            </div>
-                            <!-- /.box-body -->
-                        </div>
-                        <!-- /.box -->
-                    </div>
+                                <!--<button type="submit" class="btn btn-success saveNPurchase" {{disabledSubmitBtn}}>-->
+                                    <!--Save & Purchase-->
+                                <!--</button>-->
+                                <!--<label for="" class="warning-msg text-danger"></label>-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; /.box-body &ndash;&gt;-->
+                        <!--</div>-->
+                        <!--&lt;!&ndash; /.box &ndash;&gt;-->
+                    <!--</div>-->
                     <div class="row">
                         <div class="col-sm-12 pull-right">
                             <!--{{> formFooterWithButton}}-->
