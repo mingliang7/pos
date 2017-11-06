@@ -388,11 +388,13 @@ export  default class StockFunction {
         let i = 1;
         items.forEach(function (item) {
             let thisItem = Item.findOne(item.itemId);
-            let inventoryQty = !thisItem.qtyOnHand || (thisItem && thisItem.qtyOnHand[stockLocationId]) == null ? 0 : thisItem.qtyOnHand[stockLocationId];
-            if (item.qty > inventoryQty) {
-                result.isEnoughStock = false;
-                result.message = thisItem.name + " is not enough in stock. Qty on hand: " + inventoryQty;
-                return false;
+            if(thisItem && thisItem.itemType !== 'noneStock'){
+                let inventoryQty = !thisItem.qtyOnHand || (thisItem && thisItem.qtyOnHand[stockLocationId]) == null ? 0 : thisItem.qtyOnHand[stockLocationId];
+                if (item.qty > inventoryQty) {
+                    result.isEnoughStock = false;
+                    result.message = thisItem.name + " is not enough in stock. Qty on hand: " + inventoryQty;
+                    return false;
+                }
             }
         });
         return result;

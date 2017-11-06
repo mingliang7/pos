@@ -1,7 +1,7 @@
 import {ReactiveDict} from 'meteor/reactive-dict';
 import {Template} from 'meteor/templating';
 import {AutoForm} from 'meteor/aldeed:autoform';
-import {Roles} from  'meteor/alanning:roles';
+import {Roles} from 'meteor/alanning:roles';
 import {alertify} from 'meteor/ovcharik:alertifyjs';
 import {sAlert} from 'meteor/juliancwirko:s-alert';
 import {fa} from 'meteor/theara:fa-helpers';
@@ -58,7 +58,7 @@ itemsTmpl.onRendered(function () {
 });
 
 itemsTmpl.helpers({
-    notActivatedPrepaidOrder(){
+    notActivatedPrepaidOrder() {
         /// console.log('inside not activated');
         if (FlowRouter.query.get('vendorId')) {
             return false;
@@ -81,7 +81,7 @@ itemsTmpl.helpers({
         }, {
             key: 'qty',
             label: __(`${i18nPrefix}.qty.label`),
-            fn(value, obj, key){
+            fn(value, obj, key) {
                 return FlowRouter.query.get('vendorId') ? value : Spacebars.SafeString(`<input type="text" value=${value} class="item-qty">`);
             }
         }, {
@@ -126,17 +126,17 @@ itemsTmpl.helpers({
     },
     total: function () {
         let total = 0;
-        let getItems = itemsCollection.find();
+        let getItems = itemsCollection.find({});
         getItems.forEach((obj) => {
             total += obj.amount;
         });
-        return FlowRouter.query.get('vendorId') ? 0 : total;
+        return total;
     }
 });
 
 
 itemsTmpl.events({
-    'keyup #discount'(){
+    'keyup #discount'() {
         let subTotal = 0;
         let getItems = itemsCollection.find();
         getItems.forEach((obj) => {
@@ -240,7 +240,7 @@ itemsTmpl.events({
         }
 
     },
-    'change .item-qty'(event, instance){
+    'change .item-qty'(event, instance) {
         let currentQty = event.currentTarget.value;
         let itemId = $(event.currentTarget).parents('tr').find('.itemId').text();
         let currentItem = itemsCollection.findOne({itemId: itemId});
@@ -353,7 +353,6 @@ AutoForm.addHooks(['Pos_enterBillItemsEdit'], hooksObject);
 
 
 var calculateTotal = function () {
-    debugger;
     let subTotal = 0;
     let getItems = itemsCollection.find();
     getItems.forEach((obj) => {
