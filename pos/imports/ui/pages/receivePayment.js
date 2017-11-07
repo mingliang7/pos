@@ -646,6 +646,7 @@ let hooksObject = {
                             showConfirmButton: true,
                             timer: 3000
                         });
+                        clearChecbox();
                     } else {
                         swal({
                             title: "[Error]",
