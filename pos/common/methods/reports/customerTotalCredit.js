@@ -92,7 +92,7 @@ export const customerTotalCreditReport = new ValidatedMethod({
                 {
                     $unwind: { path: '$receivePaymentDoc', preserveNullAndEmptyArrays: true }
                 },
-                { $sort: { 'receivePaymentDoc._id': 1 } },
+                { $sort: { 'receivePaymentDoc.paymentDate': 1 } },
                 {
                     $group: {
                         _id: '$_id',

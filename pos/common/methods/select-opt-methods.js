@@ -178,7 +178,7 @@ SelectOptMethods.vendor = new ValidatedMethod({
                 selector = {_id: {$in: values}};
             }
 
-            let data = Vendors.find(selector, {limit: 10});
+            let data = Vendors.find(selector, {limit: 100});
             data.forEach(function (value) {
                 let termOrGroup = value._term ? ` (Term ${value._term.name})` : ` (Group ${value._paymentGroup.name})`;
                 let label = value.name;
