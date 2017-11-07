@@ -3,7 +3,7 @@ import {Accounts} from 'meteor/accounts-base';
 import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {_} from 'meteor/erasaur:meteor-lodash';
-import {moment} from  'meteor/momentjs:moment';
+import {moment} from 'meteor/momentjs:moment';
 import {Branch} from '../../../core/imports/api/collections/branch.js'
 // Collection
 import {Customers} from '../../imports/api/collections/customer.js';
@@ -14,6 +14,7 @@ import {StockLocations} from '../../imports/api/collections/stockLocation.js';
 import {Vendors} from '../../imports/api/collections/vendor';
 import {PaymentGroups} from '../../imports/api/collections/paymentGroup';
 import {Terms} from '../../imports/api/collections/terms';
+
 export let SelectOptMethods = {};
 
 SelectOptMethods.stockLocation = new ValidatedMethod({
@@ -166,7 +167,6 @@ SelectOptMethods.vendor = new ValidatedMethod({
                 selector.paymentType = params.paymentType;
             }
             if (searchText && params.branchId) {
-
                 selector = {
                     $or: [
                         {_id: {$regex: searchText, $options: 'i'}},
@@ -175,10 +175,9 @@ SelectOptMethods.vendor = new ValidatedMethod({
                     branchId: params.branchId
                 };
             } else if (values.length) {
-                selector = {_id: {$in: values}};
+                selector = {_id: {$in: values}, branchId: params.branchId};
             }
-
-            let data = Vendors.find(selector, {limit: 10});
+            let data = Vendors.find(selector, {limit: 100});
             data.forEach(function (value) {
                 let termOrGroup = value._term ? ` (Term ${value._term.name})` : ` (Group ${value._paymentGroup.name})`;
                 let label = value.name;
@@ -207,7 +206,7 @@ SelectOptMethods.item = new ValidatedMethod({
                 selector.scheme = params.scheme;
 
             }
-            if(params.itemType) {
+            if (params.itemType) {
                 selector.itemType = params.itemType;
             }
             if (searchText) {

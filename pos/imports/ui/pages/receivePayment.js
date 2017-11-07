@@ -252,7 +252,7 @@ indexTmpl.helpers({
         let invoices = (customer && customer.termId) ? Invoices.find({}) : GroupInvoice.find({});
         if (invoices.count() > 0) {
             invoices.forEach(function (invoice) {
-                let receivePayments = ReceivePayment.find({invoiceId: invoice._id}, {sort: {_id: 1, paymentDate: 1}});
+                let receivePayments = ReceivePayment.find({invoiceId: invoice._id}, {sort: {paymentDate: 1}});
                 if (receivePayments.count() > 0) {
                     let lastPayment = _.last(receivePayments.fetch());
                     totalAmountDue += lastPayment.balanceAmount;
@@ -271,7 +271,7 @@ indexTmpl.helpers({
         if (invoices.count() > 0) {
             invoices.forEach(function (invoice) {
                 var discount = invoice.status == 'active' ? checkTerm(invoice) : 0;
-                let receivePayments = ReceivePayment.find({invoiceId: invoice._id}, {sort: {_id: 1, paymentDate: 1}});
+                let receivePayments = ReceivePayment.find({invoiceId: invoice._id}, {sort: {paymentDate: 1}});
                 if (receivePayments.count() > 0) {
                     let lastPayment = _.last(receivePayments.fetch());
                     totalAmountDue += lastPayment.balanceAmount;
