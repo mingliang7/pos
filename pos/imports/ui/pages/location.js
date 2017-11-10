@@ -123,6 +123,7 @@ let hooksObject = {
             alertify.location().close();
         }
         displaySuccess();
+        $('[name="repId"]').val('');
     },
     onError(formType, error) {
         displayError(error.message);

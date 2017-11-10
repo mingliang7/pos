@@ -120,7 +120,10 @@ Customers.schema = new SimpleSchema({
         optional: true,
         type: String,
         autoform: {
-            type: 'select2'
+            afFieldInput: {
+                uniPlaceholder: 'Select One',
+            },
+            type: 'universe-select',
         }
     }
 });
