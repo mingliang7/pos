@@ -247,8 +247,21 @@ newTmpl.onCreated(function () {
     this.isOtherChartAccount = new ReactiveVar();
     this.repOptions = new ReactiveVar();
     this.chartAccount = new ReactiveVar();
+    this.vendorList = new ReactiveVar([]);
+
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
+    });
+    this.autorun(() => {
+        let newVendor = FlowRouter.query.get('newVendor');
+        if(newVendor === '1' || !newVendor){
+            Meteor.call('fetchVendorsAsList', {}, (err, result) => {
+                if(!err){
+                    this.vendorList.set(result);
+                }
+            });
+
+        }
     });
 });
 // New
@@ -302,6 +315,10 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
+    vendorListOption(){
+        let instance = Template.instance();
+        return instance.vendorList.get();
+    },
     isOtherChartAccount() {
         return Template.instance().isOtherChartAccount.get() == true;
     },
@@ -444,13 +461,18 @@ newTmpl.onDestroyed(function () {
 editTmpl.onCreated(function () {
     this.isOtherChartAccount = new ReactiveVar(this.data.isOtherChartAccount);
     this.repOptions = new ReactiveVar();
+    this.vendorList = new ReactiveVar([]);
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
+    });
+    Meteor.call('fetchVendorsAsList', {}, (err, result) => {
+        if(!err){
+            this.vendorList.set(result);
+        }
     });
 });
 editTmpl.events({
     'change [name="isOtherChartAccount"]'(event, instance){
-        debugger;
         instance.isOtherChartAccount.set($(event.currentTarget).is(":checked"));
     },
     'click .add-new-vendor'(event, instance){
@@ -597,7 +619,11 @@ editTmpl.helpers({
             }
             return false;
         }
-    }
+    },
+    vendorListOption(){
+        let instance = Template.instance();
+        return instance.vendorList.get();
+    },
 });
 
 editTmpl.onDestroyed(function () {

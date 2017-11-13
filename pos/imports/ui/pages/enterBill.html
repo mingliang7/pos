@@ -36,7 +36,7 @@
                 <div class="col-md-3">
                     <div class="input-group">
                         <label for="email" class="input-group">Vendor:<span style="color: red;">*</span></label>
-                        {{> afFieldInput name="vendorId" label=false}}
+                        {{> afFieldInput name="vendorId" options=vendorListOption label=false}}
                         <br>
                         {{>vendorNewDropDown}}
                     </div>
@@ -131,7 +131,7 @@
                 <div class="row" style="background: rgb(227, 234, 243); padding: 10px; margin: 0;">
                     <div class="col-md-3 hidden">
                         <label for="email">Vendor:<span style="color: red;">*</span> </label>
-                        {{> afQuickField name="vendorId" label=false}}
+                        {{> afQuickField name="vendorId" options=vendorListOption label=false}}
                     </div>
                     <div class="col-md-3">
                         <label for="">Vendor:</label>

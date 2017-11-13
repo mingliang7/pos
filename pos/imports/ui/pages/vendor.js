@@ -170,7 +170,9 @@ indexTmpl.onDestroyed(function () {
 newTmpl.onCreated(function () {
     this.paymentType = new ReactiveVar();
 });
-
+newTmpl.onDestroyed(function () {
+    FlowRouter.query.unset();
+});
 newTmpl.helpers({
     collection(){
         return Vendors;
@@ -261,6 +263,7 @@ let hooksObject = {
         if (formType == 'update') {
             alertify.vendor().close();
         }
+        FlowRouter.query.set({newVendor: 1});
         displaySuccess();
     },
     onError (formType, error) {

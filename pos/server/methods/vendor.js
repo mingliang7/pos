@@ -28,5 +28,13 @@ Meteor.methods({
         }
         vendor.balance = totalAmountDue;
         return vendor;
+    },
+    fetchVendorsAsList(selector){
+        return Vendors.find(selector).fetch().map((o)=>{
+            return {
+                label: o.name,
+                value: o._id
+            }
+        })
     }
 });
