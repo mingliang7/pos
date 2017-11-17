@@ -36,7 +36,7 @@
                 <div class="col-md-3">
                     <div class="input-group">
                         <label for="email" class="input-group">Vendor:<span style="color: red;">*</span></label>
-                        {{> afFieldInput name="vendorId" label=false}}
+                        {{> afFieldInput name="vendorId" label=false options=vendorList}}
                         <br>
                         {{>vendorNewDropDown}}
                     </div>

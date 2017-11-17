@@ -85,14 +85,7 @@ EnterBills.schema = new SimpleSchema({
         autoform: {
             type: 'universe-select',
             afFieldInput: {
-                uniPlaceholder: 'Select One',
-                optionsMethod: 'pos.selectOptMethods.vendor',
-                optionsMethodParams: function () {
-                    if (Meteor.isClient) {
-                        let currentBranch = Session.get('currentBranch');
-                        return {branchId: currentBranch};
-                    }
-                }
+                uniPlaceholder: 'Select One'
             }
         }
     },

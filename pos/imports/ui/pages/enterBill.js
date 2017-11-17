@@ -247,6 +247,12 @@ newTmpl.onCreated(function () {
     this.isOtherChartAccount = new ReactiveVar();
     this.repOptions = new ReactiveVar();
     this.chartAccount = new ReactiveVar();
+    this.vendorList = new ReactiveVar([]);
+    Meteor.call('fetchCustomerAsList', {}, (err, result) => {
+        if(!err) {
+            this.vendorList.set(result);
+        }
+    });
     Meteor.call('getRepList', (err, result) => {
         this.repOptions.set(result);
     });
@@ -302,6 +308,10 @@ newTmpl.events({
     }
 });
 newTmpl.helpers({
+    vendorList(){
+      let instance = Template.instance();
+      return instance.vendorList.get();
+    },
     isOtherChartAccount() {
         return Template.instance().isOtherChartAccount.get() == true;
     },
