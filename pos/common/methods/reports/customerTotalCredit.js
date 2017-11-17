@@ -3,7 +3,7 @@ import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {CallPromiseMixin} from 'meteor/didericis:callpromise-mixin';
 import {_} from 'meteor/erasaur:meteor-lodash';
-import {moment} from  'meteor/momentjs:moment';
+import {moment} from 'meteor/momentjs:moment';
 
 // Collection
 import {Company} from '../../../../core/imports/api/collections/company.js';
@@ -13,6 +13,7 @@ import {Exchange} from '../../../../core/imports/api/collections/exchange';
 import {correctFieldLabel} from '../../../imports/api/libs/correctFieldLabel';
 import {exchangeCoefficient} from '../../../imports/api/libs/exchangeCoefficient';
 import ReportFn from "../../../imports/api/libs/report";
+
 export const customerTotalCreditReport = new ValidatedMethod({
     name: 'pos.customerTotalCreditReport',
     mixins: [CallPromiseMixin],
@@ -39,8 +40,9 @@ export const customerTotalCreditReport = new ValidatedMethod({
             }
             let user = Meteor.users.findOne(Meteor.userId());
             let exchange = Exchange.findOne({}, {sort: {_id: -1}});
-            let coefficient = exchangeCoefficient({exchange, fieldToCalculate: '$total'})
+            let coefficient = exchangeCoefficient({exchange, fieldToCalculate: '$total'});
             let filterItems = {'items.itemId': {$ne: ''}};
+            let locationSelector = {'customerDoc.locationId': {$ne: ''}};
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.invoiceType = {$eq: 'term'};
@@ -53,6 +55,11 @@ export const customerTotalCreditReport = new ValidatedMethod({
                     {status: {$in: ['active', 'partial']}, invoiceDate: {$lte: toDate}},
                     {invoiceDate: {$lte: toDate}, status: 'closed', closedAt: {$gt: toDate}},
                 ];
+            }
+            if (params.locationId) {
+                locationSelector = {
+                    'customerDoc.locationId': params.locationId
+                };
             }
             if (params.customer && params.customer != '') {
                 selector.customerId = params.customer;
@@ -84,27 +91,27 @@ export const customerTotalCreditReport = new ValidatedMethod({
                             $filter: {
                                 input: '$receivePaymentDoc',
                                 as: 'payment',
-                                cond: { $lte: ['$$payment.paymentDate', toDate] }
+                                cond: {$lte: ['$$payment.paymentDate', toDate]}
                             }
                         },
                     }
                 },
                 {
-                    $unwind: { path: '$receivePaymentDoc', preserveNullAndEmptyArrays: true }
+                    $unwind: {path: '$receivePaymentDoc', preserveNullAndEmptyArrays: true}
                 },
-                { $sort: { 'receivePaymentDoc.paymentDate': 1 } },
+                {$sort: {'receivePaymentDoc.paymentDate': 1}},
                 {
                     $group: {
                         _id: '$_id',
-                        customerId: { $last: '$customerId' },
-                        status: { $last: '$status' },
+                        customerId: {$last: '$customerId'},
+                        status: {$last: '$status'},
                         dueAmount: {
                             $last: '$receivePaymentDoc.dueAmount'
                         },
                         paidAmount: {
                             $last: '$receivePaymentDoc.paidAmount'
                         },
-                        total: { $last: '$total' },
+                        total: {$last: '$total'},
                     }
                 },
                 {
@@ -130,21 +137,21 @@ export const customerTotalCreditReport = new ValidatedMethod({
                     $group: {
                         _id: '$_id',
                         customerId: {$last: '$customerId'},
-                        dueAmount: { $last: '$dueAmount' },
-                        paidAmount: { $last: '$paidAmount' },
-                        balance: { $last: { $subtract: ["$dueAmount", "$paidAmount"] } },
-                        total: { $last: '$total' }
+                        dueAmount: {$last: '$dueAmount'},
+                        paidAmount: {$last: '$paidAmount'},
+                        balance: {$last: {$subtract: ["$dueAmount", "$paidAmount"]}},
+                        total: {$last: '$total'}
                     }
                 },
                 {
                     $group: {
                         _id: '$customerId',
-                        dueDate: { $last: '$dueDate' },
-                        invoiceDate: { $last: '$invoiceDate' },
-                        lastPaymentDate: { $last: '$lastPaymentDate' },
-                        dueAmountSubTotal: { $sum: '$dueAmount' },
-                        paidAmount: { $sum: '$paidAmount' },
-                        total: { $sum: '$balance' }
+                        dueDate: {$last: '$dueDate'},
+                        invoiceDate: {$last: '$invoiceDate'},
+                        lastPaymentDate: {$last: '$lastPaymentDate'},
+                        dueAmountSubTotal: {$sum: '$dueAmount'},
+                        paidAmount: {$sum: '$paidAmount'},
+                        total: {$sum: '$balance'}
                     }
                 },
                 {
@@ -157,6 +164,9 @@ export const customerTotalCreditReport = new ValidatedMethod({
                 },
                 {$unwind: {path: '$customerDoc', preserveNullAndEmptyArrays: true}},
                 {$sort: {'customerDoc.name': 1}},
+                {
+                    $match: locationSelector
+                },
                 {
                     $group: {
                         _id: null,

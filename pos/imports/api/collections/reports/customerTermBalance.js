@@ -128,5 +128,12 @@ export const customerTermBalanceSchema = new SimpleSchema({
                 ]
             }
         }
+    },
+    locationId: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: 'select2'
+        }
     }
 });

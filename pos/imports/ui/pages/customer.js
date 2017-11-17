@@ -282,7 +282,8 @@ let hooksObject = {
         }
         displaySuccess();
     },
-    onError(formType, error) {
+
+onError(formType, error) {
         displayError(error.message);
     }
 };

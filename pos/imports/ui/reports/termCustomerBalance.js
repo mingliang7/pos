@@ -39,11 +39,21 @@ Tracker.autorun(function () {
 indexTmpl.onCreated(function () {
     createNewAlertify('invoiceReport');
     paramsState.set(FlowRouter.query.params());
+    this.locations = new ReactiveVar([]);
+    Meteor.call('fetchLocationList', true, (err, result) => {
+        if (!err) {
+            this.locations.set(result);
+        }
+    });
 });
 indexTmpl.helpers({
     schema(){
         return customerTermBalanceSchema;
-    }
+    },
+    locationsOption() {
+        let instance = Template.instance();
+        return instance.locations.get();
+    },
 });
 indexTmpl.events({
     'click .printReport'(event,instance){
@@ -156,6 +166,9 @@ AutoForm.hooks({
             }
             if(doc.showAging) {
                 params.showAging = doc.showAging;
+            }
+            if(doc.locationId) {
+                params.locationId = doc.locationId;
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());

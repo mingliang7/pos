@@ -40,8 +40,18 @@ Tracker.autorun(function () {
 indexTmpl.onCreated(function () {
     createNewAlertify('customerTotalCredit');
     paramsState.set(FlowRouter.query.params());
+    this.locations = new ReactiveVar([]);
+    Meteor.call('fetchLocationList', true, (err, result) => {
+        if (!err) {
+            this.locations.set(result);
+        }
+    });
 });
 indexTmpl.helpers({
+    locationsOption() {
+        let instance = Template.instance();
+        return instance.locations.get();
+    },
     schema(){
         return customerTermBalanceSchema;
     }
@@ -143,6 +153,9 @@ AutoForm.hooks({
             }
             if (doc.branchId) {
                 params.branchId = doc.branchId.join(',');
+            }
+            if(doc.locationId) {
+                params.locationId = doc.locationId;
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());

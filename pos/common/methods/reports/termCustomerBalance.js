@@ -71,6 +71,12 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                 selector.repId = {$in: params.reps.split(',')};
             }
             let agingSelector = {dueDate: {$ne: ''}}
+            let locationSelector = {'customerDoc.locationId': {$ne: ''}};
+            if(params.locationId) {
+                locationSelector = {
+                    'customerDoc.locationId': params.locationId
+                };
+            }
             if (params.showAging && params.showAging != '') {
                 if (params.showAging == 'overdue') {
                     agingSelector = {dueDate: {$lt: date}}
@@ -239,6 +245,9 @@ export const termCustomerBalanceReport = new ValidatedMethod({
                     },
                     {
                         $unwind: {path: '$customerDoc', preserveNullAndEmptyArrays: true}
+                    },
+                    {
+                        $match: locationSelector
                     },
                     {
                         $lookup: {
