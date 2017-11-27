@@ -15,12 +15,27 @@ import {Invoices} from '../../imports/api/collections/invoice.js';
 import {customerInvoiceCollection} from '../../imports/api/collections/tmpCollection';
 // Page
 Meteor.isClient && require('../../imports/ui/pages/invoice.html');
+let customerNullCollection = new Mongo.Collection(null);
 
 tabularOpts.name = 'pos.invoice';
 tabularOpts.collection = Invoices;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_invoiceAction},
     {data: "_id", title: "ID"},
+    {
+        data: "customerId",
+        title: "Customer",
+        render: function (val) {
+            let customer = customerNullCollection.findOne({customerId: val});
+            if (!customer) {
+                Meteor.call('getCustomer', {customerId: val}, (err, result) => {
+                    customerNullCollection.insert({customerId: result._id, name: result.name});
+                    customer = result;
+                });
+            }
+            return customer && customer.name;
+        }
+    },
     {data: "voucherId", title: "Voucher"},
     {
         data: "invoiceDate",

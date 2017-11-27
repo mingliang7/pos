@@ -19,9 +19,24 @@ Meteor.isClient && require('../../imports/ui/pages/paymentTransactionList.html')
 
 tabularOpts.name = 'pos.paymentTransaction';
 tabularOpts.collection = ReceivePayment;
+let customerNullCollection = new Mongo.Collection(null);
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_paymentTransactionAction},
     // {data: "_id", title: '#ID'},
+    {
+        data: "customerId",
+        title: "Customer",
+        render: function (val) {
+            let customer = customerNullCollection.findOne({customerId: val});
+            if (!customer) {
+                Meteor.call('getCustomer', {customerId: val}, (err, result) => {
+                    customerNullCollection.insert({customerId: result._id, name: result.name});
+                    customer = result;
+                });
+            }
+            return customer && customer.name;
+        }
+    },
     {data: "invoiceId", title: "Invoice ID"},
     {data: "voucherId", title: "Voucher"},
     {

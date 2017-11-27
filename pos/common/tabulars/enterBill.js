@@ -15,12 +15,26 @@ import {EnterBills} from '../../imports/api/collections/enterBill.js';
 import {vendorBillCollection} from '../../imports/api/collections/tmpCollection';
 // Page
 Meteor.isClient && require('../../imports/ui/pages/enterBill.html');
-
+let vendorNullCollection = new Mongo.Collection(null);
 tabularOpts.name = 'pos.enterBill';
 tabularOpts.collection = EnterBills;
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_enterBillAction},
     {data: "_id", title: "ID"},
+    {
+        data: "vendorId",
+        title: "Vendor",
+        render: function (val) {
+            let vendor = vendorNullCollection.findOne({vendorId: val});
+            if (!vendor) {
+                Meteor.call('getVendor', {vendorId: val}, (err, result) => {
+                    vendorNullCollection.insert({vendorId: result._id, name: result.name});
+                    vendor = result;
+                });
+            }
+            return vendor && vendor.name;
+        }
+    },
     {
         data: "enterBillDate",
         title: "Date",

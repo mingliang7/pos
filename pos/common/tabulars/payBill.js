@@ -19,9 +19,24 @@ Meteor.isClient && require('../../imports/ui/pages/payBillTransaction.html');
 
 tabularOpts.name = 'pos.payBillTransaction';
 tabularOpts.collection = PayBills;
+let vendorNullCollection = new Mongo.Collection(null);
 tabularOpts.columns = [
     {title: '<i class="fa fa-bars"></i>', tmpl: Meteor.isClient && Template.Pos_payBillTransactionAction},
     {data: "_id", title: '#ID'},
+    {
+        data: "vendorId",
+        title: "Vendor",
+        render: function (val) {
+            let vendor = vendorNullCollection.findOne({vendorId: val});
+            if (!vendor) {
+                Meteor.call('getVendor', {vendorId: val}, (err, result) => {
+                    vendorNullCollection.insert({vendorId: result._id, name: result.name});
+                    vendor = result;
+                });
+            }
+            return vendor && vendor.name;
+        }
+    },
     {data: "billId", title: "Bill ID"},
     {
         data: "paymentDate",
