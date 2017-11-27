@@ -32,6 +32,9 @@ export const saleOrderReport = new ValidatedMethod({
             // console.log(user);
             // let date = _.trim(_.words(params.date, /[^To]+/g));
             selector.status = {$in: ['active', 'closed']};
+            let locationSelector = {
+                '_customer.locationId': {$ne: ''}
+            };
             if (params.date) {
                 let dateAsArray = params.date.split(',')
                 let fromDate = moment(dateAsArray[0]).toDate();
@@ -41,6 +44,11 @@ export const saleOrderReport = new ValidatedMethod({
             }
             if (params.customer && params.customer != '') {
                 selector.customerId = params.customer;
+            }
+            if (params.locationId) {
+                locationSelector = {
+                    '_customer.locationId': params.locationId
+                };
             }
             if (params.filter && params.filter != '') {
                 let filters = params.filter.split(','); //map specific field
@@ -98,6 +106,9 @@ export const saleOrderReport = new ValidatedMethod({
                 },
                 {$unwind: {path: '$_customer', preserveNullAndEmptyArrays: true}},
                 {$unwind: {path: '$itemDoc', preserveNullAndEmptyArrays: true}},
+                {
+                    $match: locationSelector
+                },
                 {
                     $group: {
                         _id: '$_id',

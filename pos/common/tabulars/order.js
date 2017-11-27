@@ -15,7 +15,7 @@ import {Order} from '../../imports/api/collections/order.js';
 
 // Page
 Meteor.isClient && require('../../imports/ui/pages/order.html');
-
+let customerNullCollection = new Mongo.Collection(null);
 tabularOpts.name = 'pos.order';
 tabularOpts.collection = Order;
 tabularOpts.columns = [
@@ -28,7 +28,20 @@ tabularOpts.columns = [
             return moment(val).format('YYYY-MM-DD');
         }
     },
-    {data: "_customer.name", title: "Customer"},
+    {
+        data: "customerId",
+        title: "Customer",
+        render: function (val) {
+            let customer = customerNullCollection.findOne({customerId: val});
+            if (!customer) {
+                Meteor.call('getCustomer', {customerId: val}, (err, result) => {
+                    customerNullCollection.insert({customerId: result._id, name: result.name});
+                    customer = result;
+                });
+            }
+            return customer && customer.name;
+        }
+    },
     {
         data: "deposit",
         title: "Deposit",
@@ -38,7 +51,6 @@ tabularOpts.columns = [
     },
     {data: "total", title: "Total"},
     // {data: "sumRemainQty", title: "Remain QTY"},
-    {data: "isPurchased", title: "Purchased"},
     {data: "des", title: "Description"},
     {data: "status", title: "Status"}
     //{

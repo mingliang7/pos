@@ -1,8 +1,20 @@
 import {Order} from '../../imports/api/collections/order';
+
 Meteor.methods({
-    saleOrderShow({_id}){
+    saleOrderShow({_id}) {
         let order = Order.aggregate([
             {$match: {_id: _id}},
+            {
+                $lookup: {
+                    from: 'pos_customers',
+                    localField: 'customerId',
+                    foreignField: '_id',
+                    as: '_customer'
+                }
+            },
+            {
+                $unwind: {path: '$_customer', preserveNullAndEmptyArrays: true}
+            },
             {$unwind: {path: '$items', preserveNullAndEmptyArrays: true}},
             {
                 $lookup: {
@@ -35,7 +47,7 @@ Meteor.methods({
                 }
             }
         ]);
-        if(order.length > 0) {
+        if (order.length > 0) {
             return order[0];
         }
         return {};
