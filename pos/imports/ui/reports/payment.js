@@ -43,8 +43,18 @@ indexTmpl.onCreated(function () {
     this.fromDate = new ReactiveVar(moment().startOf('days').toDate());
     this.endDate = new ReactiveVar(moment().endOf('days').toDate());
     paramsState.set(FlowRouter.query.params());
+    this.locations = new ReactiveVar([]);
+    Meteor.call('fetchLocationList', true, (err, result) => {
+        if (!err) {
+            this.locations.set(result);
+        }
+    });
 });
 indexTmpl.helpers({
+    locationsOption() {
+        let instance = Template.instance();
+        return instance.locations.get();
+    },
     schema(){
         return paymentSchema;
     },
@@ -117,7 +127,11 @@ receivePaymentTmpl.helpers({
                 data += `<td>${moment(col[obj.field]).format('YYYY-MM-DD HH:mm:ss')}</td>`
             } else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
-            } else if (obj.field == 'actualDueAmount' || obj.field == 'dueAmount' || obj.field == 'paidAmount' || obj.field == 'balanceAmount') {
+            }else if(obj.field === 'locationId'){
+                let locationName = col._customer.locationDoc && col._customer.locationDoc.name || '';
+                data += `<td>${locationName}</td>`;
+            }
+            else if (obj.field == 'actualDueAmount' || obj.field == 'dueAmount' || obj.field == 'paidAmount' || obj.field == 'balanceAmount') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.000')}</td>`
             }
             else {
@@ -160,6 +174,9 @@ AutoForm.hooks({
             }
             if(doc.branchId) {
                 params.branchId = doc.branchId.join(',');
+            }
+            if(doc.locationId) {
+                params.locationId = doc.locationId;
             }
             FlowRouter.query.set(params);
             paramsState.set(FlowRouter.query.params());

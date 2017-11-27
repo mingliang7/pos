@@ -117,5 +117,12 @@ export const paymentSchema = new SimpleSchema({
             }
         }
     },
+    locationId: {
+        type: String,
+        optional: true,
+        autoform: {
+            type: 'select2'
+        }
+    }
 
 });

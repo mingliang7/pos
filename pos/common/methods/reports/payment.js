@@ -35,6 +35,9 @@ export const receivePaymentReport = new ValidatedMethod({
             selector.status = {
                 $in: ['partial', 'closed']
             };
+            let locationSelector = {
+                '_customer.locationId': {$ne: ''}
+            };
             let branchId = [];
             if (!params.branchId) {
                 let user = Meteor.users.findOne(Meteor.userId());
@@ -96,8 +99,13 @@ export const receivePaymentReport = new ValidatedMethod({
                     'paidAmount': '$paidAmount',
                     'balanceAmount': '$balanceAmount'
                 };
-                data.fields = [{field: 'Voucher'}, {field: '#Invoice'}, {field: 'Date'}, {field: 'Customer'}, {field: 'Due Amount'}, {field: 'Paid Amount'}, {field: 'Balance Amount'}];
-                data.displayFields = [{field: 'voucherId'}, {field: 'invoiceId'}, {field: 'paymentDate'}, {field: 'customerId'}, {field: 'dueAmount'}, {field: 'paidAmount'}, {field: 'balanceAmount'}];
+                data.fields = [{field: 'Voucher'}, {field: '#Invoice'}, {field: 'Date'}, {field: 'Customer'}, {field: 'Location'}, {field: 'Due Amount'}, {field: 'Paid Amount'}, {field: 'Balance Amount'}];
+                data.displayFields = [{field: 'voucherId'}, {field: 'invoiceId'}, {field: 'paymentDate'}, {field: 'customerId'}, {field: 'locationId'}, {field: 'dueAmount'}, {field: 'paidAmount'}, {field: 'balanceAmount'}];
+            }
+            if (params.locationId) {
+                locationSelector = {
+                    '_customer.locationId': {$eq: params.locationId}
+                };
             }
             /****** Title *****/
             data.title.company = Company.findOne();
@@ -118,6 +126,21 @@ export const receivePaymentReport = new ValidatedMethod({
                     }
                 },
                 {$unwind: {path: '$_customer', preserveNullAndEmptyArrays: true}},
+
+                {
+                    $match: locationSelector
+                },
+                {
+                    $lookup: {
+                        from: 'pos_location',
+                        localField: '_customer.locationId',
+                        foreignField: '_id',
+                        as: '_customer.locationDoc'
+                    }
+                },
+                {
+                    $unwind: {path: '$_customer.locationDoc', preserveNullAndEmptyArrays: true}
+                },
                 {
                     $project: {
                         actualDueAmount: {
