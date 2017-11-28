@@ -19,6 +19,10 @@ module.exports = {
       serverOnly: true,
     },
     env: {
+      /*
+        chhay: 172.104.162.237
+        leang-srun: 172.104.46.208
+      */
       ROOT_URL: 'http://172.104.162.237/',
       MONGO_URL: 'mongodb://localhost/pos'
     },
