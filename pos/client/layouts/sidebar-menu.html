@@ -337,14 +337,14 @@
                                 </a>
                             </li>
                         {{/if}}
-                        <!--{{#if isInRole 'total-sale-report' 'Pos'}}-->
-                            <!--<li>-->
-                                <!--<a href="{{invoiceSummary}}">-->
-                                    <!--<i class="fa fa-file-o"></i>-->
-                                    <!--<span>Total Sale</span>-->
-                                <!--</a>-->
-                            <!--</li>-->
-                        <!--{{/if}}-->
+                            <!--{{#if isInRole 'total-sale-report' 'Pos'}}-->
+                        <!--<li>-->
+                        <!--<a href="{{invoiceSummary}}">-->
+                        <!--<i class="fa fa-file-o"></i>-->
+                        <!--<span>Total Sale</span>-->
+                        <!--</a>-->
+                        <!--</li>-->
+                            <!--{{/if}}-->
                         {{#if isInRole 'sale-order-report' 'Pos'}}
                             <li>
                                 <a href="{{saleOrder}}">
@@ -560,10 +560,10 @@
                         </li>
                             <!--{{/if}}-->
                         <!--<li>-->
-                            <!--<a href="{{purchaseByItemSummary}}">-->
-                                <!--<i class="fa fa-file-o"></i>-->
-                                <!--<span>Purchase By Item</span>-->
-                            <!--</a>-->
+                        <!--<a href="{{purchaseByItemSummary}}">-->
+                        <!--<i class="fa fa-file-o"></i>-->
+                        <!--<span>Purchase By Item</span>-->
+                        <!--</a>-->
                         <!--</li>-->
                         {{#if isInRole 'enter-bill-summary-report' 'Pos'}}
                             <li>
@@ -643,14 +643,14 @@
                         <!--</a>-->
                         <!--</li>-->
                             <!--{{/if}}-->
-                        <!--{{#if isInRole 'receive-item-summary-report' 'Pos'}}-->
-                            <!--<li>-->
-                                <!--<a href="{{receiveItemSummary}}">-->
-                                    <!--<i class="fa fa-file-o"></i>-->
-                                    <!--<span>Receive Item Summary</span>-->
-                                <!--</a>-->
-                            <!--</li>-->
-                        <!--{{/if}}-->
+                            <!--{{#if isInRole 'receive-item-summary-report' 'Pos'}}-->
+                        <!--<li>-->
+                        <!--<a href="{{receiveItemSummary}}">-->
+                        <!--<i class="fa fa-file-o"></i>-->
+                        <!--<span>Receive Item Summary</span>-->
+                        <!--</a>-->
+                        <!--</li>-->
+                            <!--{{/if}}-->
                         {{#if isInRole 'transfer-money-report' 'Pos'}}
                             <li>
                                 <a href="{{transferMoney}}">
@@ -775,6 +775,14 @@
                         <i class="fa fa-angle-right"></i> <span>Location</span>
                     </a>
                 </li>
+                {{#if isInRole 'resetData' 'Pos'}}
+
+                    <li class="{{isActiveRoute name='pos.resetData'}}">
+                        <a href="{{pathFor 'pos.resetData'}}">
+                            <i class="fa fa-angle-right"></i> <span>Reset Data</span>
+                        </a>
+                    </li>
+                {{/if}}
             </ul>
         </li>
     {{/if}}

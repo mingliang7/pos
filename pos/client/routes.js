@@ -794,3 +794,17 @@ PosRoutes.route('/location', {
         parent: 'pos.home'
     }
 });
+
+import '../imports/ui/pages/resetData'
+PosRoutes.route('/resetData', {
+    name: 'pos.resetData',
+    title: 'Reset Data',
+    action: function (params,queryParams) {
+        Layout.main('Pos_resetData');
+    },
+    breadcrumb: {
+        title: 'Reset Data',
+        icon: '',
+        parent: 'pos.home'
+    }
+});

@@ -5,6 +5,7 @@ Module.Pos = {
     version: '2.0.0',
     summary: 'Simple POS Management System is ...',
     roles: [
+        'resetData',
         'setting',
         'data-insert',
         'data-update',
