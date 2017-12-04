@@ -56,7 +56,7 @@ export const customerDeposit = new ValidatedMethod({
                     'customerDoc.locationId': {$eq: params.locationId}
                 };
             }
-            if(params.status) {
+            if (params.status) {
                 selector.status = params.status;
             }
             /****** Content *****/
@@ -87,18 +87,14 @@ export const customerDeposit = new ValidatedMethod({
                         deposit: 1,
                         total: 1,
                         saleVoucher: {$ifNull: ['$voucherId', '$_id']},
-                        invoiceVoucher: {$ifNull: ['$invoiceDoc.voucherId', '$_id']},
+                        invoiceVoucher: {$ifNull: ['$invoiceDoc.voucherId', '$invoiceDoc._id']},
                         balance: {
-                            $abs: {
-                                $subtract: [
-                                    '$deposit', {
-                                        $sum:
-                                            {
-                                                $ifNull: ['$invoiceDoc.items.amount', '$deposit']
-                                            }
-                                    }
-                                ]
-                            }
+                            $cond: [
+                                {$eq: ['$status', 'closed']},
+                                0,
+                                '$deposit'
+                            ]
+
                         },
                         totalInInvoice: {
                             $sum: '$invoiceDoc.items.amount'

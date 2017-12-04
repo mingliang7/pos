@@ -88,8 +88,7 @@
                     <th>Invoice #</th>
                     <th>SO Amount</th>
                     <th>SO Deposit</th>
-                    <th>Invoice</th>
-                    <th>Balance</th>
+                    <th>Balance Deposit</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -101,7 +100,6 @@
                         <td>{{col.invoiceVoucher}}</td>
                         <td class="text-right">{{numFormat col.total '0,0.00'}}</td>
                         <td class="text-right">{{numFormat col.deposit '0,0.00'}}</td>
-                        <td class="text-right">{{numFormat col.totalInInvoice '0,0.00'}}</td>
                         <td class="text-right">{{numFormat col.balance '0,0.00'}}</td>
                     </tr>
                 {{/each}}
@@ -109,7 +107,6 @@
                     <td colspan="4" class="text-right"><b>Total</b></td>
                     <td class="text-right"><b>{{numFormat footer.total '0,0.00'}}</b></td>
                     <td class="text-right"><b>{{numFormat footer.totalDeposit '0,0.00'}}</b></td>
-                    <td class="text-right"><b>{{numFormat footer.totalInInvoice '0,0.00'}}</b></td>
                     <td class="text-right"><b>{{numFormat footer.totalBalance '0,0.00'}}</b></td>
                 </tr>
                 </tbody>
