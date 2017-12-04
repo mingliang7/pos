@@ -106,7 +106,7 @@ invoiceDataTmpl.helpers({
             }
             else if (obj.field == 'customerId') {
                 data += `<td>${col._customer.name}</td>`
-            } else if (obj.field == 'total') {
+            } else if (obj.field === 'total' || obj.field === 'deposit') {
                 data += `<td>${numeral(col[obj.field]).format('0,0.000')}</td>`
             }
             else {
@@ -116,13 +116,13 @@ invoiceDataTmpl.helpers({
 
         return data;
     },
-    getTotal(totalRemainQty, total) {
+    getTotal(totalDeposit, total) {
         let string = '';
-        let fieldLength = this.displayFields.length - 2;
+        let fieldLength = this.displayFields.length - 3;
         for (let i = 0; i < fieldLength; i++) {
             string += '<td></td>'
         }
-        string += `<td><b>Total:</td></b></td><td><b>${numeral(total).format('0,0.000')}</b></td>`;
+        string += `<td><b>Total:</td></b></td><td><b>${numeral(totalDeposit).format('0,0.000')}</b></td><td><b>${numeral(total).format('0,0.000')}</b></td>`;
         return string;
     }
 });
@@ -145,7 +145,7 @@ AutoForm.hooks({
             if (doc.filter) {
                 params.filter = doc.filter.join(',');
             }
-            if(doc.locationId) {
+            if (doc.locationId) {
                 params.locationId = doc.locationId;
             }
             FlowRouter.query.set(params);

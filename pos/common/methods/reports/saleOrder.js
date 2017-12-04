@@ -68,12 +68,14 @@ export const saleOrderReport = new ValidatedMethod({
                     '_id': '$_id',
                     'orderDate': '$orderDate',
                     'customer': '$_customer.name',
+                    'location': {$ifNull: ['$_customer.locationDoc.name', '']},
                     'status': '$status',
+                    'deposit': '$deposit',
                     'sumRemainQty': '$sumRemainQty',
                     'total': '$total'
                 };
-                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Customer'}, {field: 'Status'}, {field: 'Total'}];
-                data.displayFields = [{field: '_id'}, {field: 'orderDate'}, {field: 'customer'}, {field: 'status'}, {field: 'total'}];
+                data.fields = [{field: '#ID'}, {field: 'Date'}, {field: 'Customer'}, {field: 'Location'}, {field: 'Status'}, {field: 'Deposit'}, {field: 'Total'}];
+                data.displayFields = [{field: '_id'}, {field: 'orderDate'}, {field: 'customer'}, {field: 'location'}, {field: 'status'}, {field: 'deposit'}, {field: 'total'}];
             }
 
             /****** Title *****/
@@ -110,6 +112,17 @@ export const saleOrderReport = new ValidatedMethod({
                     $match: locationSelector
                 },
                 {
+                    $lookup: {
+                        from: 'pos_location',
+                        localField: '_customer.locationId',
+                        foreignField: '_id',
+                        as: '_customer.locationDoc'
+                    }
+                },
+                {
+                    $unwind: {path: '$_customer.locationDoc', preserveNullAndEmptyArrays: true}
+                },
+                {
                     $group: {
                         _id: '$_id',
                         data: {
@@ -133,8 +146,23 @@ export const saleOrderReport = new ValidatedMethod({
                         $match: selector
                     },
                     {
+                        $lookup: {
+                            from: 'pos_customers',
+                            localField: 'customerId',
+                            foreignField: '_id',
+                            as: '_customer'
+
+                        }
+                    },
+                    {$unwind: {path: '$_customer', preserveNullAndEmptyArrays: true}},
+                    {
+                        $match: locationSelector
+                    },
+                    {
                         $group: {
-                            _id: null, total: {$sum: '$total'},
+                            _id: null,
+                            totalDeposit: {$sum: '$deposit'},
+                            total: {$sum: '$total'},
                             totalRemainQty: {$sum: '$sumRemainQty'}
                         }
                     }
@@ -144,6 +172,7 @@ export const saleOrderReport = new ValidatedMethod({
                 saleOrders[0].data = sortData;
                 data.content = saleOrders;
                 data.footer.total = total[0].total;
+                data.footer.totalDeposit = total[0].totalDeposit;
                 data.footer.totalRemainQty = total[0].totalRemainQty
             }
             return data
