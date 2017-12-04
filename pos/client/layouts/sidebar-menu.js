@@ -21,6 +21,9 @@ Template.Pos_sidebarMenu.helpers({
     groupBalance() {
         return `/pos/report/groupCustomerBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}`;
     },
+    customerDeposit() {
+        return `/pos/report/customerDeposit`;
+    },
     termBalance() {
         return `/pos/report/termCustomerBalance?date=${moment().endOf('days').format('YYYY-MM-DD HH:mm:ss')}`;
     },

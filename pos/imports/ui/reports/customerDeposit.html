@@ -1,0 +1,129 @@
+<template name="Pos_customerDeposit">
+    <div class="panel-group" id="accordion1">
+        <div class="panel panel-default">
+            <div class="no-print panel-heading">
+                <h5 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1"
+                       href="#accordion1_1">ចុចទីនេះដើម្បីបង្ហាញឬលាក់ Form</a>
+                </h5>
+            </div>
+            <div id="accordion1_1" class="no-print panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="container-fluid">
+                        <div class="inbox-head report-header">
+                            {{#autoForm schema=schema id='customerDepositReport'}}
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        {{> afQuickField name="date" label= 'As of date'}}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{> afQuickField name="customer" label="Customer"}}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{> afQuickField name="branchId" label="Branch"}}
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        {{> afQuickField name="repId" label="Reps"}}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{> afQuickField name="locationId" label="Location" options=locationsOption}}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{> afQuickField name="status"}}
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Run
+                                </button>
+                                <a class="btn btn-default printReport"><i class="fa fa-print" aria-hidden="true"></i>
+                                    Print
+                                </a>
+                            {{/autoForm}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{>customerDepositData}}
+        </div>
+    </div>
+</template>
+
+<template name="customerDepositData">
+    <div class="container-fluid" id="to-print">
+        {{#with company}}
+            <div class="col-xs-12">
+                <h5 class="text-center text-blue">{{khName}}</h5>
+            </div>
+        {{/with}}
+        <div class="col-md-12" align="center"><h5 class="text-blue">Customer Deposit</h5></div>
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <div class="row">
+                    <div class="col-xs-3">
+                        <address class="">
+                            <strong>Date:</strong>
+                            {{data.title.date}}
+                        </address>
+                    </div>
+                    <!--<div class="col-xs-3 text-right">-->
+                    <!--<address class="">-->
+                    <!--<strong>Exchange: </strong>-->
+                    <!--{{{data.title.exchange}}}-->
+                    <!--</address>-->
+                    <!--</div>-->
+                </div>
+
+            </div>
+        </div>
+        <table class="fixed-table table table-striped">
+            {{#with data}}
+                <thead class="bg-aqua">
+                <tr>
+                    <th>No</th>
+                    <th>Customer</th>
+                    <th>Sale #</th>
+                    <th>Invoice #</th>
+                    <th>SO Amount</th>
+                    <th>SO Deposit</th>
+                    <th>Invoice</th>
+                    <th>Balance</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each col in content}}
+                    <tr>
+                        <td>{{no @index}}</td>
+                        <td>{{col.customerDoc.name}}</td>
+                        <td>{{col.saleVoucher}}</td>
+                        <td>{{col.invoiceVoucher}}</td>
+                        <td class="text-right">{{numFormat col.total '0,0.00'}}</td>
+                        <td class="text-right">{{numFormat col.deposit '0,0.00'}}</td>
+                        <td class="text-right">{{numFormat col.totalInInvoice '0,0.00'}}</td>
+                        <td class="text-right">{{numFormat col.balance '0,0.00'}}</td>
+                    </tr>
+                {{/each}}
+                <tr>
+                    <td colspan="4" class="text-right"><b>Total</b></td>
+                    <td class="text-right"><b>{{numFormat footer.total '0,0.00'}}</b></td>
+                    <td class="text-right"><b>{{numFormat footer.totalDeposit '0,0.00'}}</b></td>
+                    <td class="text-right"><b>{{numFormat footer.totalInInvoice '0,0.00'}}</b></td>
+                    <td class="text-right"><b>{{numFormat footer.totalBalance '0,0.00'}}</b></td>
+                </tr>
+                </tbody>
+
+                <!--<tbody>-->
+                <!--<tr>-->
+                <!--</tr>-->
+
+
+                <!--</tbody>-->
+
+
+            {{/with}}
+        </table>
+        {{> ReportSignFooter}}
+    </div>
+</template>

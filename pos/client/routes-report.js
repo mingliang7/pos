@@ -636,3 +636,18 @@ PosRoutes.route('/report/purchaseItem', {
         parent: 'pos.mainReport'
     }
 });
+
+import '../imports/ui/reports/customerDeposit';
+PosRoutes.route('/report/customerDeposit', {
+    name: 'pos.customerDeposit',
+    title: 'Customer Deposit',
+    action: function (params, queryParams) {
+        Layout.customReportLayout('Pos_customerDeposit');
+    },
+    breadcrumb:{
+        // params:['vendorId'],
+        title: 'Customer Deposit',
+        // icon: 'cart-plus',
+        parent: 'pos.mainReport'
+    }
+});
